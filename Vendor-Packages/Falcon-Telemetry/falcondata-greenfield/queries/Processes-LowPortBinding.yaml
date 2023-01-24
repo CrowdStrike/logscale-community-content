@@ -28,4 +28,5 @@ queryString: |-
   | $"falcondata/zen:ComputerName"()
 
   // Group by unique combinations of values.
-  | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max) | drop("_count")
+  | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max) 
+  | drop("_count")

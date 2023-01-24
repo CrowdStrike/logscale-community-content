@@ -48,5 +48,5 @@ queryString: |-
   // Add an aditional field in markdown syntax that's clickable and will pivot back to Falcon
   | ProcessExplorer:=format("[Process Explorer](https://falcon.crowdstrike.com/investigate/process-explorer/%s/%s)", field=["aid", "ProcessId"])
 
-  // Arrange the results in a table, woth a 20k limit to stop any complaints about default 200 limit in the UI
-  | select([aid, ComputerName, ParentFileName, ChildFileName, ProcessId, ProcessExplorer])
+  // Arrange the results in a table.
+  | table([aid, ComputerName, ParentFileName, ChildFileName, ProcessId, ProcessExplorer], limit=1000)

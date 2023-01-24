@@ -48,5 +48,5 @@ queryString: |-
   | shortKernelVersion:=format("%.20s...", field=kernelVersion)
 
   // Top version shows the shortened names, bottom version shows the full names. Only have one uncommented.
-  | select([aid, shortHostname, Version, shortKernelVersion, isInRFM, isInUserMode, status])
-  //| select([aid, hostname, Version, kernelVersion, isInRFM, isInUserMode, status])
+  | table([aid, shortHostname, Version, shortKernelVersion, isInRFM, isInUserMode, status], limit=1000)
+  //| table([aid, hostname, Version, kernelVersion, isInRFM, isInUserMode, status], limit=1000)

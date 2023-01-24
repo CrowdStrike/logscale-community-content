@@ -192,7 +192,7 @@ widgets:
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | $"falcondata/zen:ComputerName"()
       | $"falcondata/zen:UserName"()
-      | select([ComputerName, UserName, DetectName, FilePath, FileName, SeverityName, Tactic, Technique, DetectDescription])
+      | table([ComputerName, UserName, DetectName, FilePath, FileName, SeverityName, Tactic, Technique, DetectDescription], limit=1000)
     visualization: table-view
     start: 7d
     width: 12

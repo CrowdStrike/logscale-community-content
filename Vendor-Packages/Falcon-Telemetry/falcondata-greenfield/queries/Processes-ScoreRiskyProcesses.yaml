@@ -59,4 +59,4 @@ queryString: |-
   // Format the final output.
   | "Total Score":=rename(totalScore)
   | "Process Details":=rename(executionDetails)
-  | select([aid, ComputerName, "Total Score", "Process Details"])
+  | table([aid, ComputerName, "Total Score", "Process Details"], limit=1000)

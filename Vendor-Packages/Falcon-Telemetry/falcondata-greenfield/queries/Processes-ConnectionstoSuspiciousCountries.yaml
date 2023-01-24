@@ -43,4 +43,4 @@ queryString: |-
   | $"falcondata/zen:ComputerName"()
 
   // Format the output.
-  | select([@timestamp, aid, ComputerName, TargetProcessId, FileName, RemoteIP, Country, "Process Explorer", IOC])
+  | table([@timestamp, aid, ComputerName, TargetProcessId, FileName, RemoteIP, Country, "Process Explorer", IOC], limit=1000)

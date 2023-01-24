@@ -89,7 +89,7 @@ widgets:
       | ComputerName=?ComputerName
       | timeChart(DomainName, limit=10)
       | rename(_count, as="Total Requests")
-    start: 7d
+    start: 1d
     width: 12
     options:
       connect-points: false

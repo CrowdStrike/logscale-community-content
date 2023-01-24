@@ -1,4 +1,5 @@
 name: Windows - User Logon Activity
+updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
   enabled: true
@@ -41,7 +42,7 @@ widgets:
       | case {
           UserIsAdmin = "0"  | UserIsAdmin := "No" ;
           UserIsAdmin = "1"  | UserIsAdmin := "Yes" ;
-          * ; 
+          * ;
         }
       | case {
           RemoteAccount = "0"  | RemoteAccount := "No" ;
@@ -50,7 +51,7 @@ widgets:
         }
       | LogonTime := LogonTime*1000
       | LogonTime := formatTime("%Y-%m-%d %H:%M:%S", field=LogonTime, locale=en_US, timezone=Z)
-      | select([LogonTime, ClientComputerName, UserName, passwordAgeDays, UserSid, LogonTypeName, LogonDomain, LogonServer, RemoteAccount, UserIsAdmin])
+      | table([LogonTime, ClientComputerName, UserName, passwordAgeDays, UserSid, LogonTypeName, LogonDomain, LogonServer, RemoteAccount, UserIsAdmin], limit=1000)
     visualization: table-view
     start: 7d
     width: 12
@@ -70,7 +71,7 @@ widgets:
       | case {
           UserIsAdmin = "0"  | UserIsAdmin := "No" ;
           UserIsAdmin = "1"  | UserIsAdmin := "Yes" ;
-          * ; 
+          * ;
         }
       | case {
           RemoteAccount = "0"  | RemoteAccount := "No" ;
@@ -111,9 +112,12 @@ widgets:
     y: 4
     height: 5
     queryString: |-
-      #event_simpleName=UserLogon LogonType=10 RemoteAddressIP4 = *
+      #event_simpleName=UserLogon
+      | LogonType=10
+      | RemoteAddressIP4=*
       | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
-      | ?UserIsAdmin ?UserName
+      | UserIsAdmin=?UserIsAdmin
+      | UserName=?UserName
       | ipLocation(RemoteAddressIP4)
       | worldMap(ip=RemoteAddressIP4, magnitude=count(aid))
     start: 7d
@@ -134,7 +138,7 @@ widgets:
       opacityMode: size
       zLevel: 1.1
     visualization: world-map
-    title: RDP Connections by Destination IP (geoip)
+    title: RDP Connections by Destination IP
     type: query
   e0030889-7dc2-4474-9696-663735135434:
     x: 4
@@ -185,7 +189,7 @@ widgets:
       | case {
           UserIsAdmin = "0"  | UserIsAdmin := "No" ;
           UserIsAdmin = "1"  | UserIsAdmin := "Yes" ;
-          * ; 
+          * ;
         }
       | case {
           RemoteAccount = "0"  | RemoteAccount := "No" ;
@@ -229,7 +233,7 @@ widgets:
       opacityMode: size
       zLevel: 1.1
     visualization: world-map
-    title: Endpoint Location by External IP (geoip)
+    title: Endpoint Location by External IP
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.4.0
 parameters:

@@ -32,4 +32,4 @@ queryString: |-
   | FileNameCount > 1 OR CommandLineCount > 1
 
   // Filter the output so the columns are in the preferred order.
-  | select([aid, ComputerName, ParentProcessId, ParentBaseFileName, FileName, CommandLine, "Process Explorer"])
+  | table([aid, ComputerName, ParentProcessId, ParentBaseFileName, FileName, CommandLine, "Process Explorer"], limit=1000)

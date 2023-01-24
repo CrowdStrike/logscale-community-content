@@ -13,7 +13,7 @@ queryString: |-
   // This query finds the Command Prompt or Powershell commands run from hidden windows.
 
   // Filter on the events necessary for the query
-  #event_simpleName="ProcessRollup2"
+  #event_simpleName=ProcessRollup2
   | event_platform=Win
   | ImageFileName=/(powershell|cmd).exe/i
   | ShowWindowFlags=0

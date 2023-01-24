@@ -7,10 +7,10 @@ sharedTimeInterval:
   start: 7d
 widgets:
   4933bc82-83d1-4b21-9faa-12125d1a647b:
-    x: 4
-    y: 19
+    x: 0
+    y: 21
     description: This widget only shows result if a ComputerName is specified)
-    height: 9
+    height: 5
     queryString: |-
       #event_simpleName="*FileWritten" AND SHA256HashData = ?SHA256
       | test(?ComputerName != "*")
@@ -18,45 +18,42 @@ widgets:
       | ComputerName = ?ComputerName
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | FileName = ?FileName
-      | select([@timestamp, aid, ComputerName, TargetFileName])
+      | table([@timestamp, aid, ComputerName, TargetFileName], limit=1000)
     visualization: table-view
     start: 7d
-    width: 8
+    width: 12
     title: File Write Details - Must Specify ComputerName
     type: query
   b7e47912-8ab8-48ed-ae82-6f0b01143cc6:
-    x: 0
-    y: 10
-    height: 4
+    x: 4
+    y: 0
+    height: 3
     queryString: |-
-      #event_simpleName="ProcessRollup2" AND SHA256HashData = ?SHA256
-      | $"falcondata/zen:ComputerName"()
+      #event_simpleName=ProcessRollup2
+      | SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
-      | count(field=ComputerName, distinct=true)
+      | count(field=aid, distinct=true)
     start: 7d
     width: 4
     options:
-      color-method: static
-      ct: []
       default: {}
-      use-colorised-thresholds: false
     visualization: single-value
-    title: Number of Hosts With File Execution
+    title: Unique Hosts With File Execution
     type: query
   c9d12054-53dc-4585-b07e-aaeae936195c:
-    x: 6
-    y: 2
+    x: 0
+    y: 3
     height: 4
     queryString: |-
-      #event_simpleName="ProcessRollup2" AND SHA256HashData = ?SHA256
+      #event_simpleName="ProcessRollup2"
+      | SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
       | timeChart(function=count(as="Hosts", field=aid, distinct=true))
     start: 7d
     width: 6
     options:
-      series: {}
       legend: false
       connect-points: false
       yAxisScale: linear
@@ -65,20 +62,21 @@ widgets:
       yAxisTitle: ''
       stacking: none
     visualization: time-chart
-    title: Unique Host Executions
+    title: Unique Host with File Execution
     type: query
   279ea4ce-614e-45e8-991c-6b71fb594ac3:
     x: 0
-    y: 14
+    y: 7
     height: 5
     queryString: |-
-      #event_simpleName="ProcessRollup2" AND SHA256HashData = ?SHA256
+      #event_simpleName=ProcessRollup2
+      | SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
       | $"falcondata/zen:ComputerName"()
       | top(field=ComputerName, limit=25)
     start: 7d
-    width: 4
+    width: 6
     options:
       legendLabelOverflow: truncate
       series: {}
@@ -86,15 +84,15 @@ widgets:
     title: Top Hosts for File Execution
     type: query
   576d36cf-170b-4c59-bde4-8f8722a59cc3:
-    x: 0
-    y: 19
-    height: 4
+    x: 8
+    y: 0
+    height: 3
     queryString: |-
-      #event_simpleName="*FileWritten" AND SHA256HashData = ?SHA256
-      | $"falcondata/zen:ComputerName"()
+      #event_simpleName=*FileWritten
+      | SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | FileName = ?FileName
-      | count(field=ComputerName, distinct=true)
+      | count(aid, distinct=true)
     start: 7d
     width: 4
     options:
@@ -103,20 +101,20 @@ widgets:
       default: {}
       use-colorised-thresholds: false
     visualization: single-value
-    title: Unique Hosts for File Write Events
+    title: Unique Hosts with File Write
     type: query
   2a4bfa67-bfe9-4c42-b2b5-79046661dc25:
-    x: 0
-    y: 23
+    x: 6
+    y: 7
     height: 5
     queryString: |-
       #event_simpleName="*FileWritten" AND SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | FileName = ?FileName
       | $"falcondata/zen:ComputerName"()
-      | top(field=ComputerName,limit=25)
+      | top(field=ComputerName, limit=25)
     start: 7d
-    width: 4
+    width: 6
     options:
       legendLabelOverflow: truncate
       series: {}
@@ -124,27 +122,27 @@ widgets:
     title: Top Hosts for File Write Events
     type: query
   note-1659518722023-0:
-    x: 3
+    x: 0
     y: 0
-    height: 2
-    text: Start by entering a file name or a SHA256 to see results for 'Execution
-      History', File Execution Details', and 'File Written Details'.
-    width: 6
-    title: Workflow Note
+    height: 3
+    text: '- Enter a value for `FileName` or `SHA256` results to see results for Execution
+      History, File Execution Details, and File Written Details. '
+    width: 4
+    title: Workflow
     type: note
   663aece7-00e7-4a14-8ba5-0e1243cddd3d:
-    x: 0
-    y: 2
+    x: 6
+    y: 3
     height: 4
     queryString: |-
-      #event_simpleName = "ProcessRollup2" AND SHA256HashData = ?SHA256
+      #event_simpleName = "ProcessRollup2"
+      | SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
       | timeChart(function=count(as="Activity"))
     start: 7d
     width: 6
     options:
-      series: {}
       legend: false
       connect-points: false
       stacking: none
@@ -152,14 +150,15 @@ widgets:
       plotType: area
       imputation: none
     visualization: time-chart
-    title: Execution Activity
+    title: File Execution Events
     type: query
   b255f4bf-d175-4ea5-a18a-72dd653a8b50:
     x: 0
-    y: 6
+    y: 12
     height: 4
     queryString: |
-      #event_simpleName=ProcessRollup2 AND SHA256HashData = ?SHA256
+      #event_simpleName=ProcessRollup2
+      | SHA256HashData = ?SHA256
       // This query will only return results if at least one of ?FileName or ?SHA256 is specified.
       | case {
           test(?FileName == "*") | test(?SHA256 == "*") | runQuery:=false;
@@ -171,8 +170,8 @@ widgets:
       | FileName = ?FileName
       | groupby([SHA256HashData, FileName], function=[
           count(aid, as="Total Hosts", distinct=true),
-          { selectLast([ProcessStartTime, aid]) | rename(ProcessStartTime, as=LastExecutionDateTime) | rename(aid, as=LastExecutedOn) },
-          { head(1) | select([ProcessStartTime, aid]) | rename(ProcessStartTime, as=FirstExecutionDateTime) | rename(aid, as=FirstExecutedOn) }
+          {selectLast([ProcessStartTime, aid]) | rename(ProcessStartTime, as=LastExecutionDateTime) | rename(aid, as=LastExecutedOn)},
+          {head(1) | select([ProcessStartTime, aid]) | rename(ProcessStartTime, as=FirstExecutionDateTime) | rename(aid, as=FirstExecutedOn)}
       ], limit=max)
       | LastExecutionDateTime := LastExecutionDateTime*1000
       | FirstExecutionDateTime := FirstExecutionDateTime*1000
@@ -186,9 +185,9 @@ widgets:
     title: Execution History - Must Specify FileName or SHA256
     type: query
   26ba54ee-6fb6-444a-b3de-eb7e7621f0a9:
-    x: 4
-    y: 10
-    height: 9
+    x: 0
+    y: 16
+    height: 5
     queryString: |
       // This query will only return results if at least one of ?FileName or ?SHA256 is specified.
       case {
@@ -200,10 +199,10 @@ widgets:
       | #event_simpleName="ProcessRollup2" AND SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
-      | table([@timestamp, aid, ImageFileName, CommandLine], limit=20000)
+      | table([@timestamp, aid, ImageFileName, CommandLine], limit=1000)
     visualization: table-view
     start: 7d
-    width: 8
+    width: 12
     title: File Execution Details - Must Specify FileName or SHA256
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.4.0

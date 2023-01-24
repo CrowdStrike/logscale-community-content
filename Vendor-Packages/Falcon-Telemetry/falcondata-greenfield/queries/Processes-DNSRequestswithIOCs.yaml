@@ -44,4 +44,4 @@ queryString: |-
   | sort(iocMatch, limit=10000)
 
   // Remove the iocMatch field since we don't need it anymore.
-  | select([aid, ComputerName, FileName, DomainName, IOC])
+  | table([aid, ComputerName, FileName, DomainName, IOC], limit=1000)

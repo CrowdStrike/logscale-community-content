@@ -11,7 +11,7 @@ widgets:
     y: 0
     height: 10
     queryString: |-
-      #event_simpleName="AgentOnline"
+      #event_simpleName=SensorHeartbeat
       | worldMap(ip=aip)
     start: 7d
     width: 6
@@ -28,7 +28,9 @@ widgets:
     x: 0
     y: 5
     height: 5
-    queryString: timechart(function=count(field=aid, distinct=true, as="Total"))
+    queryString: |-
+      #event_simpleName=SensorHeartbeat
+      | timechart(function=count(field=aid, distinct=true, as="Total"))
     start: 7d
     width: 6
     options:
@@ -46,8 +48,9 @@ widgets:
     x: 3
     y: 0
     height: 5
-    queryString: GroupBy(event_platform, function=count(field=aid, distinct=true),
-      limit=max)
+    queryString: |-
+      #event_simpleName=SensorHeartbeat
+      | groupBy(event_platform, function=count(field=aid, distinct=true), limit=max)
     start: 7d
     width: 3
     options:
@@ -74,7 +77,8 @@ widgets:
     y: 0
     height: 5
     queryString: |-
-      GroupBy(event_platform, function=count(field=aid, distinct=true, as="Total"), limit=max)
+      #event_simpleName=SensorHeartbeat
+      | groupBy(event_platform, function=count(field=aid, distinct=true, as="Total"), limit=max)
       | sort(Total, limit=25)
     visualization: table-view
     start: 7d

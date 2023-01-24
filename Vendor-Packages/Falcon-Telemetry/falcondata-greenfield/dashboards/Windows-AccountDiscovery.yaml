@@ -1,4 +1,5 @@
 name: Windows - Account Discovery
+updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
   enabled: true
@@ -10,7 +11,8 @@ widgets:
     y: 16
     height: 5
     queryString: |-
-      #event_simpleName=ProcessRollup2 event_platform=Win
+      #event_simpleName=ProcessRollup2
+      | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>(GROUP|USER))\s+/i
       | CommandLine=/\/domain/i
@@ -19,8 +21,7 @@ widgets:
       | $"falcondata/zen:urlFalconAid"()
       | ProcessStartTime := ProcessStartTime*1000
       | "Endpoint Time (UTC)" := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
-      | select(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"])
-      | drop(["aid", UserSid])
+      | table(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"], limit=1000)
     visualization: table-view
     start: 7d
     width: 12
@@ -31,7 +32,8 @@ widgets:
     y: 5
     height: 6
     queryString: |-
-      #event_simpleName=ProcessRollup2 event_platform=Win
+      #event_simpleName=ProcessRollup2
+      | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
       | netFileName := lower("netFileName")
@@ -54,12 +56,13 @@ widgets:
     y: 0
     height: 5
     queryString: |-
-      #event_simpleName=ProcessRollup2 event_platform=Win
+      #event_simpleName=ProcessRollup2
+      | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
       | netFileName := lower("netFileName")
       | netFlag := lower(netFlag)
-      | groupBy([netFileName, netFlag])
+      | groupBy([netFileName, netFlag], limit=max)
     start: 7d
     width: 6
     options:
@@ -78,7 +81,8 @@ widgets:
     y: 0
     height: 5
     queryString: |-
-      #event_simpleName=ProcessRollup2 event_platform=Win
+      #event_simpleName=ProcessRollup2
+      | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
       | netFileName := lower("netFileName")
@@ -98,7 +102,8 @@ widgets:
     y: 11
     height: 5
     queryString: |+
-      #event_simpleName=ProcessRollup2 event_platform=Win
+      #event_simpleName=ProcessRollup2
+      | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>(LOCALGROUP|USER))\s+/i
       | CommandLine!=/\/domain/i
@@ -107,7 +112,7 @@ widgets:
       | $"falcondata/zen:urlFalconAid"()
       | ProcessStartTime := ProcessStartTime*1000
       | "Endpoint Time (UTC)" := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
-      | select(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"])
+      | table(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"], limit=1000)
       | drop(["aid", UserSid])
 
     visualization: table-view

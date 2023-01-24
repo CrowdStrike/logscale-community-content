@@ -1,4 +1,5 @@
 name: Search - By UserName
+updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
   enabled: true
@@ -7,7 +8,7 @@ sharedTimeInterval:
 widgets:
   aa5d7af7-8642-4e13-b653-64670f130aaf:
     x: 0
-    y: 17
+    y: 14
     height: 5
     queryString: |-
       // Test to ensure the UserName is not '*' or blank.
@@ -35,7 +36,7 @@ widgets:
     type: query
   7413482d-4556-4717-a304-bf3ef4d34e1c:
     x: 6
-    y: 7
+    y: 4
     height: 5
     queryString: |-
       // Test to ensure the UserName is not '*' or blank.
@@ -64,7 +65,7 @@ widgets:
     type: query
   6e91bca2-18e0-4ef4-9828-283dafcd9194:
     x: 0
-    y: 12
+    y: 9
     height: 5
     queryString: |-
       test(?UserName != "*") | test(?UserName != "")
@@ -91,9 +92,9 @@ widgets:
     title: Detection Events
     type: query
   9ff1add8-114f-4312-9c43-1bfaa3bbcffc:
-    x: 0
-    y: 2
-    height: 5
+    x: 4
+    y: 0
+    height: 4
     queryString: |-
       // Test to ensure the UserName is not '*' or blank.
       test(?UserName != "*") | test(?UserName != "")
@@ -105,7 +106,7 @@ widgets:
       // Create a chart of the top 10 events over time.
       | timeChart(#event_simpleName, limit=10)
     start: 7d
-    width: 12
+    width: 8
     options:
       series: {}
       showDataPoints: true
@@ -120,7 +121,7 @@ widgets:
     type: query
   bc1c1477-3f32-401b-bea3-77b69f295ec2:
     x: 0
-    y: 7
+    y: 4
     height: 5
     queryString: |-
       // Test to ensure the UserName is not '*' or blank.
@@ -152,7 +153,7 @@ widgets:
     type: query
   a1c55bb8-0195-4453-b9f7-889a9605c66c:
     x: 6
-    y: 17
+    y: 14
     height: 5
     queryString: |-
       test(?UserName != "*") | test(?UserName != "")
@@ -177,16 +178,17 @@ widgets:
   note-1671923344231-0:
     x: 0
     y: 0
-    height: 2
-    text: Enter a `UserName` input parameter to begin a search. The input is case-insensitive,
-      e.g. "USER" will match both "User" and "user" in the results.
-    width: 12
-    title: Dashboard Workflow
+    height: 4
+    text: "- Enter a `UserName` input parameter to begin a search. \n- The input is\
+      \ case-insensitive, e.g. \"USER\" will match both \"User\" and \"user\" in the\
+      \ results."
+    width: 4
+    title: Workflow
     type: note
   bf4a371b-e36b-4b3b-821a-18e3444f57a9:
     x: 0
-    y: 22
-    height: 4
+    y: 19
+    height: 5
     queryString: |-
       // Test to ensure the UserName is not '*' or blank.
       test(?UserName != "*") | test(?UserName != "")

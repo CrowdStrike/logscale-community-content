@@ -12,7 +12,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | groupBy(event_platform)
+      | groupBy(event_platform, limit=max)
     start: 7d
     width: 4
     options:
@@ -26,14 +26,15 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName=FileIntegrityMonitorRuleMatched AND event_platform=?Platform
+      #event_simpleName=FileIntegrityMonitorRuleMatched
+      | event_platform=?Platform
       | case {
         ObjectAccessOperationType = 1 | ObjectOperation:= "Create";
         ObjectAccessOperationType = 2 | ObjectOperation:= "Write";
         ObjectAccessOperationType = 3 | ObjectOperation:= "Delete";
         ObjectAccessOperationType = 4 | ObjectOperation:= "Set";
         ObjectAccessOperationType = 5 | ObjectOperation:= "Rename";}
-      | groupBy(ObjectOperation)
+      | groupBy(ObjectOperation, limit=max)
       | rename(_count, as="Total Alerts")
     start: 7d
     width: 4
@@ -47,7 +48,8 @@ widgets:
     y: 8
     height: 5
     queryString: |-
-      #event_simpleName=FileIntegrityMonitorRuleMatched AND event_platform=?Platform
+      #event_simpleName=FileIntegrityMonitorRuleMatched
+      | event_platform=?Platform
       | timechart(function=count(as="Total Alerts"))
     start: 7d
     width: 12
@@ -63,13 +65,14 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      #event_simpleName=FileIntegrityMonitorRuleMatched AND event_platform=?Platform
+      #event_simpleName=FileIntegrityMonitorRuleMatched
+      | event_platform=?Platform
       | case {
         ObjectType=1 | ObjectChanged:= "File";
         ObjectType=2 | ObjectChanged:= "Folder";
         ObjectType=3 | ObjectChanged:= "Value";
         ObjectType=4 | ObjectChanged:= "Key";}
-      | groupBy(ObjectChanged)
+      | groupBy(ObjectChanged, limit=max)
       | rename(_count, as="Total Alerts")
     visualization: bar-chart
     start: 7d
@@ -81,7 +84,8 @@ widgets:
     y: 13
     height: 5
     queryString: |-
-      #event_simpleName=FileIntegrityMonitorRuleMatched AND event_platform=?Platform
+      #event_simpleName=FileIntegrityMonitorRuleMatched
+      | event_platform=?Platform
       | case {
         ObjectType=1 | ObjectChanged:= "File";
         ObjectType=2 | ObjectChanged:= "Folder";
@@ -95,7 +99,7 @@ widgets:
         ObjectAccessOperationType = 5 | ObjectOperation:= "Rename";}
       | $"falcondata/zen:ComputerName"()
       | $"falcondata/zen:UserName"()
-      | select([@timestamp, PolicyRuleSeverity, aid, ComputerName, UserName, CommandLine, ImageFileName, ObjectChanged, ObjectOperation, ObjectName, ObjectNameNew])
+      | table([@timestamp, PolicyRuleSeverity, aid, ComputerName, UserName, CommandLine, ImageFileName, ObjectChanged, ObjectOperation, ObjectName, ObjectNameNew], limit=1000)
     visualization: table-view
     start: 7d
     width: 12
@@ -106,7 +110,8 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName=FileIntegrityMonitorRuleMatched AND event_platform=?Platform
+      #event_simpleName=FileIntegrityMonitorRuleMatched
+      | event_platform=?Platform
       | top(UserName, as="Total Alerts")
     start: 7d
     width: 4
@@ -120,14 +125,15 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      #event_simpleName=FileIntegrityMonitorRuleMatched AND event_platform=?Platform
+      #event_simpleName=FileIntegrityMonitorRuleMatched
+      | event_platform=?Platform
       | case {
         PolicyRuleSeverity=1 | Severity := "Low";
         PolicyRuleSeverity=2 | Severity := "Medium";
         PolicyRuleSeverity=3 | Severity := "High";
         PolicyRuleSeverity=4 | Severity := "Critical";
       }
-      | groupBy(Severity)
+      | groupBy(Severity, limit=max)
     start: 7d
     width: 4
     options:
@@ -149,7 +155,8 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName=FileIntegrityMonitorRuleMatched AND event_platform=?Platform
+      #event_simpleName=FileIntegrityMonitorRuleMatched
+      | event_platform=?Platform
       | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
       | top(FileName, as="Total Alerts")
     start: 7d

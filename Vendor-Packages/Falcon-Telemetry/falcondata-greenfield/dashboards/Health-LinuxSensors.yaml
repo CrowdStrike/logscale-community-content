@@ -25,7 +25,8 @@ widgets:
     y: 12
     height: 4
     queryString: |-
-      #event_simpleName=UserLogon event_platform=Lin LogonType=10
+      #event_simpleName=UserLogon
+      | event_platform=Lin LogonType=10
       | ipLocation(RemoteAddressIP4)
       | format(format="%s, %s", field=[RemoteAddressIP4.country, RemoteAddressIP4.city], as="Location")
       | case {
@@ -34,7 +35,7 @@ widgets:
       | $"falcondata/zen:ComputerName"()
       | groupBy(["RemoteAddressIP4"], function=([count(aid, as="Connection Count"), collect([Location, ComputerName, LocalAddressIP4, aid], limit=10000)]), limit=10)
       | rename("RemoteAddressIP4",as="Destination SSH")
-      | table([aid, ComputerName, Location, LocalAddressIP4, "Destination SSH", "Connection Count"], sortby="Connection Count", limit=10000)
+      | table([aid, ComputerName, Location, LocalAddressIP4, "Destination SSH", "Connection Count"], sortby="Connection Count", limit=1000)
     visualization: table-view
     start: 7d
     width: 8
@@ -75,7 +76,8 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      #event_simpleName=NetworkListenIP4 event_platform=Lin
+      #event_simpleName=NetworkListenIP4
+      | event_platform=Lin
       | $"falcondata/zen:ComputerName"()
       | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max)
       | match(file="falcondata/zen/service-names-port-numbers.csv", field=LocalPort, include=ServiceName, ignoreCase=true, strict=false)
@@ -110,7 +112,7 @@ widgets:
         }
       | $"falcondata/zen:urlFalconAid"()
       | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
-      | select([aid, hostName, aip.country, kernelVersion, AgentVersion, Status, "Host Management"])
+      | table([aid, hostName, aip.country, kernelVersion, AgentVersion, Status, "Host Management"], limit=1000)
     visualization: table-view
     start: 7d
     width: 12
@@ -123,10 +125,10 @@ widgets:
     queryString: |
       #event_simpleName=OsVersionInfo
       | event_platform=Lin
-      | groupBy([cid, aid], function=([selectLast([OSVersionString])]))
+      | groupBy([cid, aid], function=([selectLast([OSVersionString])]), limit=max)
       | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
       | kernelVersion=/(?<kernelBranch>\d+\.\d+)\./
-      | groupBy("kernelBranch")
+      | groupBy("kernelBranch", limit=max)
     start: 7d
     width: 6
     options:
@@ -144,12 +146,13 @@ widgets:
     y: 12
     height: 4
     queryString: |
-      #event_simpleName=UserLogon event_platform=Lin UID=0
+      #event_simpleName=UserLogon
+      | event_platform=Lin UID=0
       | $"falcondata/zen:ComputerName"()
       | case {
            LogonType=2  | LogonType := "Interactive" ;
            LogonType=10 | LogonType := "SSH" ;
-        * }| groupBy([aid, ComputerName], function=([count(aid, as="Logon Count"), collect(LogonType, limit=10000)]), limit=max)
+        * }| groupBy([aid, ComputerName], function=([count(aid, as="Logon Count"), collect(LogonType, limit=1000)]), limit=max)
     visualization: table-view
     start: 7d
     width: 4
@@ -218,7 +221,7 @@ widgets:
           isInUserMode=0 AND isInRFM=1 | Status := "RFM Enabled" ;
         * }
       | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
-      | groupBy("Status", function=(count(aid, as="Count")))
+      | groupBy("Status", function=(count(aid, as="Count")), limit=max)
     visualization: table-view
     start: 7d
     width: 3

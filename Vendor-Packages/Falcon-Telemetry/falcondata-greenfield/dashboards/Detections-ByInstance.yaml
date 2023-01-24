@@ -12,10 +12,10 @@ widgets:
     height: 4
     queryString: |
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -25,7 +25,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | timechart(function=count(as="Total Detections"))
     start: 7d
@@ -43,10 +43,10 @@ widgets:
     height: 4
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -56,7 +56,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | sankey(target=Tactic, source=Technique)
     start: 7d
@@ -73,10 +73,10 @@ widgets:
     queryString: |-
       EventType = "Event_ExternalApiEvent"
       | ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -86,7 +86,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | top(ComputerName, as="Top Hosts")
     visualization: table-view
@@ -100,10 +100,10 @@ widgets:
     height: 4
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -113,7 +113,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | top(Tactic, as="Top Tactics")
     start: 7d
@@ -130,10 +130,10 @@ widgets:
     height: 4
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -143,7 +143,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | top(UserName, as="Top Users")
     visualization: table-view
@@ -157,10 +157,10 @@ widgets:
     height: 4
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -170,7 +170,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | top(Technique, as="Top Techniques")
     start: 7d
@@ -186,10 +186,10 @@ widgets:
     height: 4
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -199,7 +199,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | sankey(target=Technique, source=SeverityName)
     start: 7d
@@ -215,10 +215,10 @@ widgets:
     height: 4
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -228,7 +228,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | top(SeverityName, as="Top Severities")
     start: 7d
@@ -244,10 +244,10 @@ widgets:
     height: 4
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -257,7 +257,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | top(DetectDescription, as="Top Detections")
     visualization: table-view
@@ -271,10 +271,10 @@ widgets:
     height: 8
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -284,7 +284,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | sankey(target=FileName, source=ParentImageFileName)
     start: 7d
@@ -300,10 +300,10 @@ widgets:
     height: 8
     queryString: |-
       ExternalApiType = "Event_DetectionSummaryEvent"
-      // Add the ComputerName. 
+      // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -313,7 +313,7 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       | sankey(target=ParentImageFileName, source=GrandparentImageFileName)
     start: 7d
@@ -332,7 +332,7 @@ widgets:
       // Add the ComputerName.
       | $"falcondata/zen:ComputerName"()
 
-      // Check inputs and make ComputerName case-insensitive. 
+      // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
       | case {
           test(?ComputerName == "*")
@@ -342,11 +342,11 @@ widgets:
           test(lower(inputComputerName) == lower(ComputerName)) ;
         }
 
-      // Check the remaining inputs. 
+      // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       // Add the UserName.
       | $"falcondata/zen:UserName"()
-      | select([ComputerName, UserName, DetectName, FilePath, FileName, SeverityName, Tactic, Technique, DetectDescription])
+      | table([ComputerName, UserName, DetectName, FilePath, FileName, SeverityName, Tactic, Technique, DetectDescription], limit=1000)
     visualization: table-view
     start: 7d
     width: 12

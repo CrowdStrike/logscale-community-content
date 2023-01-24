@@ -38,4 +38,4 @@ queryString: |-
   | "Remote IP":=rename(RemoteAddressIP4)
   | "IOC":=ioc[0].labels
   | "Country":=RemoteAddressIP4.country
-  | select([@timestamp, ComputerName, "Local IP", "Remote IP", "Country", "IOC"])
+  | table([@timestamp, ComputerName, "Local IP", "Remote IP", "Country", "IOC"], limit=1000)
