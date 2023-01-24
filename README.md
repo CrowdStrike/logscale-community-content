@@ -20,6 +20,6 @@ Here's a quick summary of the various folders in this repo:
 
 - **[Misc-Content](Misc-Content)**: scripts, lookup files, etc. 
 
-- **[Vendor-Packages](Vendor-Content)**: vendor packages used by the SE team. This is not a replacement for the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html). The packages tend to be much more complete than individual dashboards, queries, alerts, etc. 
+- **[Vendor-Packages](Vendor-Content)**: vendor packages used by the SE team. This is not a replacement for the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html). These packages tend to be much more complete than individual dashboards, queries, alerts, etc. 
 
 - **[Vendor-Content](Vendor-Packages)**: queries, dashboards, alerts, etc grouped by vendor.
