@@ -1,0 +1,12 @@
+// Transform to convert TcpConnectErrorCode decimal to human-readable value.
+| case {
+        TcpConnectErrorCode = "0"    | TcpConnectErrorCode := "TCP_CON_SUCCESS" ;
+        TcpConnectErrorCode = "92"   | TcpConnectErrorCode := "TCP_CON_NO_PROTO_ERROR" ;
+        TcpConnectErrorCode = "101"  | TcpConnectErrorCode := "TCP_CON_NET_UNREACH_ERROR" ;
+        TcpConnectErrorCode = "102"  | TcpConnectErrorCode := "TCP_CON_NET_RESET_ERROR" ;
+        TcpConnectErrorCode = "103"  | TcpConnectErrorCode := "TCP_CON_CONN_ABORTED_ERROR" ;
+        TcpConnectErrorCode = "106"  | TcpConnectErrorCode := "TCP_CON_IS_CONN_ERROR" ;
+        TcpConnectErrorCode = "110"  | TcpConnectErrorCode := "TCP_CON_TIMED_OUT_ERROR" ;
+        TcpConnectErrorCode = "111"  | TcpConnectErrorCode := "TCP_CON_REFUSED_ERROR" ;
+        TcpConnectErrorCode = "113"  | TcpConnectErrorCode := "TCP_CON_HOST_UNREACH_ERROR" ;
+        * }

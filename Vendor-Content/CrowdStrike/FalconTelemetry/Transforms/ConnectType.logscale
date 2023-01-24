@@ -1,0 +1,16 @@
+// Transform to convert ConnectType decimal to human-readable value.
+| case {
+        ConnectType = "0"  | ConnectType := "CONNECT_INVALID" ;
+        ConnectType = "1"  | ConnectType := "CONNECT_DIRECT" ;
+        ConnectType = "2"  | ConnectType := "CONNECT_WPAD" ;
+        ConnectType = "3"  | ConnectType := "CONNECT_IE_AUTOPROXY" ;
+        ConnectType = "4"  | ConnectType := "CONNECT_IE_PROXY" ;
+        ConnectType = "5"  | ConnectType := "CONNECT_SIMPLESTORE_AUTOCONFIG" ;
+        ConnectType = "6"  | ConnectType := "CONNECT_CACHE_PROXY" ;
+        ConnectType = "7"  | ConnectType := "CONNECT_PERSISTED_PROXY" ;
+        ConnectType = "8"  | ConnectType := "CONNECT_APP_PROXY" ;
+        ConnectType = "9"  | ConnectType := "CONNECT_DIRECT_DNS_BYPASS" ;
+        ConnectType = "10" | ConnectType := "CONNECT_CACHE_PROXYFORURL_WPAD" ;
+        ConnectType = "11" | ConnectType := "CONNECT_CACHE_PROXYFORURL_PACURL" ; 
+        ConnectType = "12" | ConnectType := "CONNECT_CACHE_PROXYFORURL_IE_PACURL" ; 
+        * }

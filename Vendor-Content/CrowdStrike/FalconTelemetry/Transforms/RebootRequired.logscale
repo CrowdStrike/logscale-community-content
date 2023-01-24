@@ -1,0 +1,5 @@
+// Transform to convert RebootRequired decimal to human-readable value.
+| case {
+        RebootRequired = "0"  | RebootRequired := "No" ;
+        RebootRequired = "1"  | RebootRequired := "Yes" ;
+        * }

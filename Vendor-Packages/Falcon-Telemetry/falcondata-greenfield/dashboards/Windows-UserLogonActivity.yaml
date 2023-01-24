@@ -1,0 +1,272 @@
+name: Windows - User Logon Activity
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  9df4615a-895c-4710-8050-1d5013e7e161:
+    x: 6
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon event_platform=Win
+      | $"falcondata/zen:LogonTypeName"()
+      | timeChart(LogonTypeName, function=count(UserSid))
+    start: 7d
+    width: 6
+    options:
+      series: {}
+      lastBucketBehavior: exclude
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      imputation: none
+      regression: false
+      regressionType: exp
+    visualization: time-chart
+    title: Logon Trends by Logon Type
+    type: query
+  d77a6257-f17d-49c1-94bc-294c982cb06b:
+    x: 0
+    y: 9
+    height: 6
+    queryString: |-
+      #event_simpleName=UserLogon event_platform=Win
+      | UserSid="S-1-5-21-*"
+      | ?UserIsAdmin ?UserName ?LogonType
+      | passwordAge := (now()-(PasswordLastSet*1000))/1000/60/60/24
+      | passwordAgeDays := round("passwordAge")
+      | $"falcondata/zen:LogonTypeName"()
+      | case {
+          UserIsAdmin = "0"  | UserIsAdmin := "No" ;
+          UserIsAdmin = "1"  | UserIsAdmin := "Yes" ;
+          * ; 
+        }
+      | case {
+          RemoteAccount = "0"  | RemoteAccount := "No" ;
+          RemoteAccount = "1"  | RemoteAccount := "Yes" ;
+          * ;
+        }
+      | LogonTime := LogonTime*1000
+      | LogonTime := formatTime("%Y-%m-%d %H:%M:%S", field=LogonTime, locale=en_US, timezone=Z)
+      | select([LogonTime, ClientComputerName, UserName, passwordAgeDays, UserSid, LogonTypeName, LogonDomain, LogonServer, RemoteAccount, UserIsAdmin])
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Logon Table
+    type: query
+  3e35cb3a-b1d1-4084-8b57-c6c80f256b18:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon event_platform=Win
+      | UserSid="S-1-5-21-*"
+      | ?UserIsAdmin ?UserName ?LogonType
+      | passwordAge := (now()-(PasswordLastSet*1000))/1000/60/60/24
+      | passwordAgeDays := round("passwordAge")
+      | $"falcondata/zen:LogonTypeName"()
+      | case {
+          UserIsAdmin = "0"  | UserIsAdmin := "No" ;
+          UserIsAdmin = "1"  | UserIsAdmin := "Yes" ;
+          * ; 
+        }
+      | case {
+          RemoteAccount = "0"  | RemoteAccount := "No" ;
+          RemoteAccount = "1"  | RemoteAccount := "Yes" ;
+          * ;
+        }
+      | avg("passwordAgeDays", as=passwordAgeDays)
+      | round("passwordAgeDays")
+    start: 7d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 365
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 270
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 90
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 180
+      decimal-places: 0
+      color-method: threshold
+      suffix: d
+      use-colorised-thresholds: true
+      value-format: raw
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Avg Password Age
+    type: query
+  dea3387b-f0ec-4e5a-9991-f4bd02d1a08c:
+    x: 0
+    y: 4
+    height: 5
+    queryString: |-
+      #event_simpleName=UserLogon LogonType=10 RemoteAddressIP4 = *
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ?UserIsAdmin ?UserName
+      | ipLocation(RemoteAddressIP4)
+      | worldMap(ip=RemoteAddressIP4, magnitude=count(aid))
+    start: 7d
+    width: 6
+    options:
+      maxOpacity: 100
+      projection: mercator
+      autoRotate: false
+      rotZ: 0
+      norm: true
+      opacity: 100
+      rotY: 0
+      fixedOpacity: 66
+      maxSize: 21
+      minSize: 5
+      minOpacity: 33
+      magnitudeMode: size
+      opacityMode: size
+      zLevel: 1.1
+    visualization: world-map
+    title: RDP Connections by Destination IP (geoip)
+    type: query
+  e0030889-7dc2-4474-9696-663735135434:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon event_platform=Win UserSid=/^S\-1\-5\-21\-.*/
+      | lowercase("UserName")
+      | groupby([UserSid], function=([count(UserName, distinct=true), collect(UserName, limit=10000)]), limit=max)
+      | _count > 1
+      | count(UserSid)
+    start: 7d
+    width: 2
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 3
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: SID Collisions
+    type: query
+  dbb3d16a-8032-40b1-8a18-788480c5f100:
+    x: 2
+    y: 0
+    description: 'Passwords over 365 days old. '
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon event_platform=Win
+      | UserSid="S-1-5-21-*"
+      | ?UserIsAdmin ?UserName ?LogonType
+      | passwordAge := (now()-(PasswordLastSet*1000))/1000/60/60/24
+      | passwordAgeDays := round("passwordAge")
+      | $"falcondata/zen:LogonTypeName"()
+      | case {
+          UserIsAdmin = "0"  | UserIsAdmin := "No" ;
+          UserIsAdmin = "1"  | UserIsAdmin := "Yes" ;
+          * ; 
+        }
+      | case {
+          RemoteAccount = "0"  | RemoteAccount := "No" ;
+          RemoteAccount = "1"  | RemoteAccount := "Yes" ;
+          * ;
+        }
+      | passwordAgeDays > 365
+      | count(UserSid, distinct=true)
+    start: 7d
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Stale Passwords
+    type: query
+  f7db0b90-a523-4696-a0a4-ca7fa77d6e2a:
+    x: 6
+    y: 4
+    height: 5
+    queryString: |-
+      #event_simpleName=UserLogon LogonType=2
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ?UserIsAdmin ?UserName
+      | ipLocation(aip)
+      | worldMap(ip=aip, magnitude=count(aid))
+    start: 7d
+    width: 6
+    options:
+      maxOpacity: 100
+      projection: mercator
+      autoRotate: false
+      rotZ: 0
+      norm: true
+      opacity: 100
+      rotY: 0
+      fixedOpacity: 66
+      maxSize: 21
+      minSize: 5
+      minOpacity: 33
+      magnitudeMode: size
+      opacityMode: size
+      zLevel: 1.1
+    visualization: world-map
+    title: Endpoint Location by External IP (geoip)
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  LogonType:
+    label: Logon Type
+    order: 50
+    values:
+    - '*'
+    - '12'
+    - '10'
+    - '0'
+    - '3'
+    - '13'
+    - '8'
+    - '2'
+    - '7'
+    - '11'
+    - '9'
+    - '4'
+    - '5'
+    type: list
+    defaultValue: '*'
+  UserIsAdmin:
+    label: Is Admin
+    order: 50
+    values:
+    - '1'
+    - '0'
+    - '*'
+    type: list
+    defaultValue: '*'
+  UserName:
+    label: UserName
+    query: '#event_simpleName=UserLogon event_platform=Win | groupBy(UserName) | drop(["_count"])'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserName

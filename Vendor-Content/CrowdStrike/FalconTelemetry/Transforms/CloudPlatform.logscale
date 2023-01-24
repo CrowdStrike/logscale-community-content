@@ -1,0 +1,6 @@
+// Transform to convert CloudPlatform decimal to human-readable value.
+| case {
+        CloudPlatform = "1"  | CloudPlatform := "Amazon Web Services" ;
+        CloudPlatform = "2"  | CloudPlatform := "Microsoft Azure Cloud Platform" ;
+        CloudPlatform = "3"  | CloudPlatform := "Google Cloud Platform" ;
+        * }

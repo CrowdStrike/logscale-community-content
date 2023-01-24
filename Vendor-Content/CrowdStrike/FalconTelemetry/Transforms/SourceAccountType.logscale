@@ -1,0 +1,6 @@
+// Transform to convert SourceAccountType decimal to human-readable value.
+| case {
+        SourceAccountType = "0"  | SourceAccountType := "USER" ;
+        SourceAccountType = "1"  | SourceAccountType := "COMPUTER" ;
+        SourceAccountType = "2"  | SourceAccountType := "GROUP" ;
+        * }

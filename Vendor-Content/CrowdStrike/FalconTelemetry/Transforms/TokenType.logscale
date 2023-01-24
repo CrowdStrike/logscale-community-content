@@ -1,0 +1,6 @@
+// Transform to convert TokenType decimal to human-readable value.
+| case {
+        TokenType = "0"  | TokenType := "Invalid token value" ;
+        TokenType = "1"  | TokenType := "Primary token" ;
+        TokenType = "2"  | TokenType := "Impersonation token" ; 
+        * }

@@ -1,0 +1,15 @@
+// Transform to convert RegType decimal to human-readable value.
+| case {
+        RegType = "0"  | RegType := "REG_NONE" ;
+        RegType = "1"  | RegType := "REG_SZ" ;
+        RegType = "2"  | RegType := "REG_EXPAND_SZ" ;
+        RegType = "3"  | RegType := "REG_BINARY" ;
+        RegType = "4"  | RegType := "REG_DWORD" ;
+        RegType = "5"  | RegType := "REG_DWORD_BIG_ENDIAN" ;
+        RegType = "6"  | RegType := "REG_LINK" ;
+        RegType = "7"  | RegType := "REG_MULTI_SZ" ;
+        RegType = "8"  | RegType := "REG_RESOURCE_LIST" ;
+        RegType = "9"  | RegType := "REG_FULL_RESOURCE_DESCRIPTOR" ;
+        RegType = "10" | RegType := "REG_RESOURCE_REQUIREMENTS_LIST" ;
+        RegType = "11" | RegType := "REG_QWORD" ;
+        * }

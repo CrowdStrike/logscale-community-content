@@ -1,0 +1,22 @@
+name: Top SSO Authentication Failures by Username
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |
+  // Top SSO Authentication Failures by Username
+
+  // Search for either event.
+  #event_simpleName=/(SsoApplicationAccessFailure|SsoUserLogonFailure)/
+
+  // Exclude anything that's a machine name.
+  | SamAccountName!="*$"
+
+  // List the top failures by username.
+  | top(SourceAccountUserName)
+
+  // Rename variables for display purposes
+  | Total:=rename(_count)

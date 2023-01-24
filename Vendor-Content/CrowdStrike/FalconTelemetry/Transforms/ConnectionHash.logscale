@@ -1,0 +1,7 @@
+// Transform to convert ConnectionHash decimal to human-readable value.
+| case {
+        ConnectionHash = "3271"   | ConnectionHash := "MD5" ;
+        ConnectionHash = "3272"   | ConnectionHash := "SHA" ;
+        ConnectionHash = "32780"  | ConnectionHash := "SHA-256" ;
+        ConnectionHash = "32781"  | ConnectionHash := "SHA-384" ;
+        * }

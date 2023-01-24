@@ -1,0 +1,46 @@
+name: Processes - Connections to Suspicious Countries
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"aid","format":"text","width":256},{"type":"field","fieldName":"ComputerName","format":"text","width":168},{"type":"field","fieldName":"FileName","format":"text","width":168},{"type":"field","fieldName":"RemoteIP","format":"text","width":128},{"type":"field","fieldName":"Country","format":"text","width":84},{"type":"link","openInNewBrowserTab":true,"style":"link","hrefTemplate":"{{fields[\"Process
+      Explorer\"]}}","textTemplate":"Process Explorer","header":"Process Explorer","width":146},{"type":"field","fieldName":"IOC","format":"text","width":160}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'true'
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Grab all of the ProcessRollup2 events.
+  #event_simpleName=ProcessRollup2
+
+  // Exclude certain executables. Comment out to include everything.
+  | ImageFileName!=/\\dns\.exe$/i
+
+  // Grab the DomainName from the DnsRequest events.
+  | join(
+      { #event_simpleName=NetworkConnectIP4 | ipLocation(RemoteAddressIP4) | RemoteAddressIP4.country=/CN|RU/ }, 
+      field=TargetProcessId, key=ContextProcessId, 
+      include=[RemoteAddressIP4, RemoteAddressIP4.country]
+    )
+
+  // Regex to extract the FileName.
+  | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
+
+  // Rename for output purposes.
+  | RemoteIP:=rename(RemoteAddressIP4)
+  | Country:=rename(RemoteAddressIP4.country)
+
+  // Perform an IOC lookup.
+  | ioc:lookup(RemoteIP, type="ip_address", confidenceThreshold=unverified)
+  | default(field=ioc[0].labels, value="NotMatched")
+  | IOC:=rename(ioc[0].labels)
+
+  // Add a link to Process Explorer.
+  | $"falcondata/zen:urlFalconPid"()
+
+  // Add the ComputerName.
+  | $"falcondata/zen:ComputerName"()
+
+  // Format the output.
+  | select([@timestamp, aid, ComputerName, TargetProcessId, FileName, RemoteIP, Country, "Process Explorer", IOC])

@@ -1,0 +1,11 @@
+// Transform to convert ServiceCurrentState decimal to human-readable value.
+| case {
+        ServiceCurrentState = "0"  | ServiceCurrentState := "UNABLE_TO_QUERY_SERVICE_STATE" ;
+        ServiceCurrentState = "1"  | ServiceCurrentState := "SERVICE_STOPPED" ;
+        ServiceCurrentState = "2"  | ServiceCurrentState := "SERVICE_START_PENDING" ;
+        ServiceCurrentState = "3"  | ServiceCurrentState := "SERVICE_STOP_PENDING" ;
+        ServiceCurrentState = "4"  | ServiceCurrentState := "SERVICE_RUNNING" ;
+        ServiceCurrentState = "5"  | ServiceCurrentState := "SERVICE_CONTINUE_PENDING" ;
+        ServiceCurrentState = "6"  | ServiceCurrentState := "SERVICE_PAUSE_PENDING" ;
+        ServiceCurrentState = "7"  | ServiceCurrentState := "SERVICE_PAUSED" ; 
+        * }

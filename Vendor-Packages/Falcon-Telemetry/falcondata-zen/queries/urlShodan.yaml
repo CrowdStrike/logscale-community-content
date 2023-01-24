@@ -1,0 +1,35 @@
+name: urlShodan
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Returns Shodan URLs that utilize the "RemoteAddressIP4" and "DomainName" fields.
+  //
+  // To call this function if installed from the falcondata/zen package:
+  // $"falcondata/zen:urlShodan"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"urlShodan"()
+
+  // The case statements will only return URLs where it only has the necessary fields.
+
+  | case {
+      RemoteAddressIP4=*
+        // Shodan.
+        | format("[Shodan](https://www.shodan.io/host/%s)", field=[RemoteAddressIP4], as="Shodan") ;
+      * ;
+    }
+
+  | case {
+      DomainName=*
+        // Shodan Domain
+        | format("[Shodan Domain](https://www.shodan.io/search?query=%s)", field=[DomainName], as="Shodan") ;
+      * ;
+    }

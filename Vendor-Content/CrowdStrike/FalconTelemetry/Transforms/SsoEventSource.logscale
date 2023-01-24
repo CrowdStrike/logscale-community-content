@@ -1,0 +1,7 @@
+// Transform to convert SsoEventSource decimal to human-readable value.
+| case {
+        SsoEventSource = "1"    | SsoEventSource := "Azure" ;
+        SsoEventSource = "2"    | SsoEventSource := "OKTA" ;
+        SsoEventSource = "100"  | SsoEventSource := "ADFS" ;
+        SsoEventSource = "101"  | SsoEventSource := "Ping Federate" ;
+        * }

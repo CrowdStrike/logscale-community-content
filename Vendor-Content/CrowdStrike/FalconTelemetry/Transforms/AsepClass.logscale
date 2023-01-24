@@ -1,0 +1,29 @@
+// Transform to convert AsepClass decimal to human-readable value.
+| case {
+        AsepClass = "0"   | AsepClass := "Effect is unknown" ;
+        AsepClass = "1"   | AsepClass := "Induces code execution at system startup" ;
+        AsepClass = "2"   | AsepClass := "Induces code execution at system shutdown" ;
+        AsepClass = "3"   | AsepClass := "Induces code execution at user logon" ;
+        AsepClass = "4"   | AsepClass := "Induces code execution at user logoff" ;
+        AsepClass = "5"   | AsepClass := "Induces code execution at when an application is launched" ;
+        AsepClass = "6"   | AsepClass := "Specifies a module that a 3rd party application loads" ;
+        AsepClass = "7"   | AsepClass := "An ASEP key or value that is related to a service" ;
+        AsepClass = "8"   | AsepClass := "ASEPs related to logon / authentication" ;
+        AsepClass = "9"   | AsepClass := "ASEPs related to Windows core processes" ;
+        AsepClass = "10"  | AsepClass := "ASEPs related to (plugins for) custom processes" ;
+        AsepClass = "11"  | AsepClass := "ASEPs related to Windows core services" ;
+        AsepClass = "12"  | AsepClass := "ASEPs related to core service plugins" ;
+        AsepClass = "13"  | AsepClass := "ASEPs related to server plugins" ;
+        AsepClass = "14"  | AsepClass := "ASEPs related to Networking services" ;
+        AsepClass = "15"  | AsepClass := "ASEPs related to text/speech/internationalization service plugins" ;
+        AsepClass = "16"  | AsepClass := "ASEPs related to Multimedia plugins" ;
+        AsepClass = "17"  | AsepClass := "ASEPs related to Shell plugins" ;
+        AsepClass = "18"  | AsepClass := "ASEPs related to Internet Explorer COM plugins" ;
+        AsepClass = "19"  | AsepClass := "ASEPs related to COM registration" ;
+        AsepClass = "20"  | AsepClass := "ASEPs related to printers" ;
+        AsepClass = "21"  | AsepClass := "ASEPs related to terminal server" ;
+        AsepClass = "22"  | AsepClass := "ASEPs related to core graphics" ;
+        AsepClass = "23"  | AsepClass := "ASEPs related to system configuration" ;
+        AsepClass = "100" | AsepClass := "Registry keys related to Boot Configuration Data" ;
+        AsepClass = "101" | AsepClass := "CrowdStrike-specific registry key" ;
+        * }

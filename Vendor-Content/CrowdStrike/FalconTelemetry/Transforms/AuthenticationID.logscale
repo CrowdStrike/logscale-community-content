@@ -1,0 +1,8 @@
+// Transform to convert AuthenticationId decimal to human-readable value.
+| case {
+        AuthenticationId = "0"     | AuthenticationId := "Invalid Luid" ;
+        AuthenticationId = "996"   | AuthenticationId := "Network Service" ;
+        AuthenticationId = "997"   | AuthenticationId := "Local Service" ;
+        AuthenticationId = "999"   | AuthenticationId := "System" ;
+        AuthenticationId = "1000"  | AuthenticationId := "Reserved Luid Max" ;
+        * }

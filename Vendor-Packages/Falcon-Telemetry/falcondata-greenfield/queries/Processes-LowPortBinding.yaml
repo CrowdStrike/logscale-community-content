@@ -1,0 +1,31 @@
+name: Processes - Low Port Binding
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Grab the process events.
+  #event_simpleName=ProcessRollup2
+
+  // Join the fields together since ProcessRollup2 has TargetProcessId, and NetworkListenIP4 has ContextProcessId.
+  // Restrict to low port binds in the join query.
+  | join(
+      { #event_simpleName=NetworkListenIP4 LocalPort<1024 LocalPort!=0 }, 
+      field=TargetProcessId, key=ContextProcessId, 
+      include=[LocalAddressIP4, LocalPort]
+    )
+
+  // Shorten the full path to just the file name.
+  | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
+
+  // Only find ones that have all of the necessary fields and exclude localhost.
+  | LocalAddressIP4=* LocalAddressIP4!=/^127\./ LocalPort=* FileName=*
+
+  // Add the ComputerName.
+  | $"falcondata/zen:ComputerName"()
+
+  // Group by unique combinations of values.
+  | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max) | drop("_count")

@@ -1,0 +1,11 @@
+// Transform to convert MachOSubType decimal to human-readable value.
+| case {
+        MachOSubType = "0"  | MachOSubType := "UNKNOWN" ;
+        MachOSubType = "1"  | MachOSubType := "EXECUTABLE64" ;
+        MachOSubType = "2"  | MachOSubType := "DYLIB64" ;
+        MachOSubType = "3"  | MachOSubType := "BUNDLE64" ;
+        MachOSubType = "4"  | MachOSubType := "KEXT64" ;
+        MachOSubType = "5"  | MachOSubType := "EXECUTABLE32" ;
+        MachOSubType = "6"  | MachOSubType := "DYLIB32" ;
+        MachOSubType = "7"  | MachOSubType := "BUNDLE32" ;
+        * }

@@ -1,0 +1,217 @@
+name: Search - By UserName
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  aa5d7af7-8642-4e13-b653-64670f130aaf:
+    x: 0
+    y: 17
+    height: 5
+    queryString: |-
+      // Test to ensure the UserName is not '*' or blank.
+      test(?UserName != "*") | test(?UserName != "")
+
+      // Do a case-insensitive comparison.
+      | inputUserName := ?UserName
+      | test(lower(inputUserName) == lower(UserName))
+
+      // aid must exist.
+      | aid=*
+
+      // Add the ComputerName.
+      | $"falcondata/zen:ComputerName"()
+
+      // Create a chart of the top associated hosts.
+      | groupBy(aid, function=[collect([ComputerName, #event_simpleName], limit=100000), count(as="Total Events")], limit=max)
+      | "Distinct Events":=rename(#event_simpleName)
+      | sort("Total Events", limit=1000)
+      | select([aid, ComputerName, "Distinct Events", "Total Events"])
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Distinct Event Types by Asset
+    type: query
+  7413482d-4556-4717-a304-bf3ef4d34e1c:
+    x: 6
+    y: 7
+    height: 5
+    queryString: |-
+      // Test to ensure the UserName is not '*' or blank.
+      test(?UserName != "*") | test(?UserName != "")
+
+      // Do a case-insensitive comparison.
+      | inputUserName := ?UserName
+      | test(lower(inputUserName) == lower(UserName))
+
+      // Find identity events.
+      | #event_simpleName=UserLogonFailed*
+
+      // Convert the results to a readable format.
+      | $"falcondata/zen:LogonTypeName"()
+
+      // Add the ComputerName.
+      | $"falcondata/zen:ComputerName"()
+
+      // Group the results.
+      | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=100000), count(as="Total Events")], limit=max)
+      | sort("Total Events", limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Failed Logon Events
+    type: query
+  6e91bca2-18e0-4ef4-9828-283dafcd9194:
+    x: 0
+    y: 12
+    height: 5
+    queryString: |-
+      test(?UserName != "*") | test(?UserName != "")
+
+      // Do a case-insensitive comparison.
+      | inputUserName := ?UserName
+      | test(lower(inputUserName) == lower(UserName))
+
+      // Find detection events.
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i
+
+      // Add the ComputerName if it's missing.
+      | $"falcondata/zen:ComputerName"()
+
+      // Find the details.
+      | aid:=rename(AgentIdString)
+
+      // These fields must exist.
+      | Tactic=* AND Technique=*
+      | select([aid, ComputerName, DetectName, Tactic, Technique, Objective, CommandLine])
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Detection Events
+    type: query
+  9ff1add8-114f-4312-9c43-1bfaa3bbcffc:
+    x: 0
+    y: 2
+    height: 5
+    queryString: |-
+      // Test to ensure the UserName is not '*' or blank.
+      test(?UserName != "*") | test(?UserName != "")
+
+      // Do a case-insensitive comparison.
+      | inputUserName := ?UserName
+      | test(lower(inputUserName) == lower(UserName))
+
+      // Create a chart of the top 10 events over time.
+      | timeChart(#event_simpleName, limit=10)
+    start: 7d
+    width: 12
+    options:
+      series: {}
+      showDataPoints: true
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Top Events Over Time
+    type: query
+  bc1c1477-3f32-401b-bea3-77b69f295ec2:
+    x: 0
+    y: 7
+    height: 5
+    queryString: |-
+      // Test to ensure the UserName is not '*' or blank.
+      test(?UserName != "*") | test(?UserName != "")
+
+      // Do a case-insensitive comparison.
+      | inputUserName := ?UserName
+      | test(lower(inputUserName) == lower(UserName))
+
+      // Find identity events.
+      | #event_simpleName=UserLogon OR #event_simpleName=UserIdentity
+
+      // Only include interactive logon events.
+      | LogonType=/(^2$|^7$|^10$)/
+
+      // Convert the results to a readable format.
+      | $"falcondata/zen:LogonTypeName"()
+
+      // Add the ComputerName.
+      | $"falcondata/zen:ComputerName"()
+
+      // Group the results.
+      | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=100000), count(as="Total Events")], limit=max)
+      | sort("Total Events", limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Successful Interactive Logon Events
+    type: query
+  a1c55bb8-0195-4453-b9f7-889a9605c66c:
+    x: 6
+    y: 17
+    height: 5
+    queryString: |-
+      test(?UserName != "*") | test(?UserName != "")
+
+      // Do a case-insensitive comparison.
+      | inputUserName := ?UserName
+      | test(lower(inputUserName) == lower(UserName))
+
+      // Find scheduled tasks being registered.
+      | #event_simpleName=ScheduledTask*
+
+      // Add the ComputerName.
+      | $"falcondata/zen:ComputerName"()
+
+      // Grab the output.
+      | select([aid, ComputerName, @timestamp, #event_simpleName, TaskName, TaskExecCommand])
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Scheduled Task Events
+    type: query
+  note-1671923344231-0:
+    x: 0
+    y: 0
+    height: 2
+    text: Enter a `UserName` input parameter to begin a search. The input is case-insensitive,
+      e.g. "USER" will match both "User" and "user" in the results.
+    width: 12
+    title: Dashboard Workflow
+    type: note
+  bf4a371b-e36b-4b3b-821a-18e3444f57a9:
+    x: 0
+    y: 22
+    height: 4
+    queryString: |-
+      // Test to ensure the UserName is not '*' or blank.
+      test(?UserName != "*") | test(?UserName != "")
+
+      // Do a case-insensitive comparison.
+      | inputUserName := ?UserName
+      | test(lower(inputUserName) == lower(UserName))
+
+      // Find events related to file writes.
+      | #event_simpleName=*FileWritten
+
+      // Add the ComputerName.
+      | $"falcondata/zen:ComputerName"()
+
+      // Grab the relevant data.
+      | groupBy([aid, ComputerName, #event_simpleName, OriginalFilename], function=[collect(TargetFileName, limit=10000), count(as="Total Events")], limit=max)
+      | sort("Total Events", limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: File Write Events
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  UserName:
+    defaultValue: '*'
+    order: 50
+    type: text

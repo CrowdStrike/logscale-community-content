@@ -1,0 +1,2 @@
+// Transform UsedDiskSpace to UsedDiskSpace Readble - percentage available.
+| UsedDiskSpaceReadable := format("%s%%", field=UsedDiskSpace)

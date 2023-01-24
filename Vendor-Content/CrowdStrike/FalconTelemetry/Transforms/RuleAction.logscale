@@ -1,0 +1,6 @@
+// Transform to convert RuleAction decimal to human-readable value.
+| case {
+        RuleAction = "0"  | RuleAction := "Invalid" ;
+        RuleAction = "1"  | RuleAction := "Allow" ;
+        RuleAction = "2"  | RuleAction := "Deny" ;
+        * }

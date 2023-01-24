@@ -1,0 +1,265 @@
+name: Detections Dashboard
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  762e559d-b636-49d8-9a76-4a455a53e695:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | Severity >= "80" and Severity <= "100"
+      | count(Severity)
+
+      // Severity mapping - numeric to label (from Event Data Dictionary)
+      // | case {
+      //        Severity >= "0" and Severity <= "19"  | Severity := "Info" ;
+      //        Severity >= "20" and Severity <= "39"  | Severity := "Low" ;
+      //        Severity >= "40" and Severity <= "59"  | Severity := "Medium" ;
+      //        Severity >= "60" and Severity <= "79"  | Severity := "High" ;
+      //        Severity >= "80" and Severity <= "100"  | Severity := "Critical" ;
+      //        * }
+      // | Severity != Info
+    start: 7d
+    width: 3
+    options:
+      default: {}
+      yAxisTitle: Critical (severity)
+      text-color: '#f60404'
+    visualization: single-value
+    title: Critical
+    type: query
+  5e4ac7b4-4727-4c95-a479-91433bb377af:
+    x: 9
+    y: 0
+    height: 3
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | Severity >= "20" and Severity <= "39"
+      | count(Severity)
+
+      // Severity mapping - numeric to label (from Event Data Dictionary)
+      // | case {
+      //        Severity >= "0" and Severity <= "19"  | Severity := "Info" ;
+      //        Severity >= "20" and Severity <= "39"  | Severity := "Low" ;
+      //        Severity >= "40" and Severity <= "59"  | Severity := "Medium" ;
+      //        Severity >= "60" and Severity <= "79"  | Severity := "High" ;
+      //        Severity >= "80" and Severity <= "100"  | Severity := "Critical" ;
+      //        * }
+      // | Severity != Info
+    start: 7d
+    width: 3
+    options:
+      default: {}
+      yAxisTitle: Low (severity)
+      text-color: '#71f604'
+    visualization: single-value
+    title: Low
+    type: query
+  e58cae9e-f776-47f8-bf16-08b4d06d6a20:
+    x: 0
+    y: 7
+    height: 4
+    queryString: |-
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | top(DetectName)
+
+      // Rename variables for display purposes
+      | "Detections by name" := rename(DetectName)
+      | Total:=rename(_count)
+    visualization: table-view
+    start: 30d
+    width: 6
+    title: Detections by name
+    type: query
+  cd48ab0c-5232-4551-ad78-27c4f7a99d6c:
+    x: 6
+    y: 11
+    height: 4
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+
+      | Tactic=*
+
+      | case {
+              Severity >= "0" and Severity <= "19"  | Severity := "Info" ;
+              Severity >= "20" and Severity <= "39"  | Severity := "🟢 Low" ;
+              Severity >= "40" and Severity <= "59"  | Severity := "🟡 Medium" ;
+              Severity >= "60" and Severity <= "79"  | Severity := "🟠 High" ;
+              Severity >= "80" and Severity <= "100"  | Severity := "🔴 Critical" ;
+              * }
+      | Severity != Info
+
+      // Set formatting for display
+      | format("[View detection](%s)", field=[FalconHostLink], as="Link")
+
+      // | "Account Name":=rename(SourceAccountName)
+      // | Source:=rename(SourceEndpointHostName)
+
+      // Display columns with all defined formatting
+      | select([Severity, Tactic, Technique, "Link"])
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: MITRE Tactics and Techniques Details
+    type: query
+  4f7a9226-00f6-465b-95a9-6a05e07cbbbe:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | top(SourceAccountName)
+
+      // Rename variables for display purposes
+      | "Account Name" := rename(SourceAccountName)
+      | Detections:=rename(_count)
+    visualization: table-view
+    start: 30d
+    width: 6
+    title: Source users most involved in detections
+    type: query
+  899aa23f-dd59-4140-8cb6-721d383ba420:
+    x: 6
+    y: 0
+    height: 3
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | Severity >= "40" and Severity <= "59"
+      | count(Severity)
+
+      // Severity mapping - numeric to label (from Event Data Dictionary)
+      // | case {
+      //        Severity >= "0" and Severity <= "19"  | Severity := "Info" ;
+      //        Severity >= "20" and Severity <= "39"  | Severity := "Low" ;
+      //        Severity >= "40" and Severity <= "59"  | Severity := "Medium" ;
+      //        Severity >= "60" and Severity <= "79"  | Severity := "High" ;
+      //        Severity >= "80" and Severity <= "100"  | Severity := "Critical" ;
+      //        * }
+      // | Severity != Info
+    start: 7d
+    width: 3
+    options:
+      default: {}
+      yAxisTitle: Medium (severity)
+      text-color: '#f2f604'
+    visualization: single-value
+    title: Medium
+    type: query
+  fa49b2db-6af3-432e-8dd4-a34a1534c018:
+    x: 0
+    y: 11
+    height: 4
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      //|
+      | groupBy([Tactic, Technique], function=stats([count(AgentIdString, as="detectCount")]))
+      | rename("detectCount", as="Detection Count")
+    start: 7d
+    width: 6
+    options:
+      colorPalette: greenRed
+    visualization: heat-map
+    title: MITRE Tactics and Techniques Overview
+    type: query
+  f74461e5-e337-41ed-84c8-e056fbabe73f:
+    x: 6
+    y: 15
+    height: 4
+    queryString: |-
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | Endpoints:= rename(SourceEndpointHostName)
+      | top(Endpoints)
+
+      // Rename variables for display purposes
+      | Detections:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Source endpoints most involved in detections
+    type: query
+  b76ac3cd-70f7-4d9a-bad1-d1872e3ba5b9:
+    x: 6
+    y: 7
+    height: 4
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+
+      // Severity mapping - numeric to label (from Event Data Dictionary)
+      | case {
+              Severity >= "0" and Severity <= "19"  | Severity := "Info" ;
+              Severity >= "20" and Severity <= "39"  | Severity := "Low" ;
+              Severity >= "40" and Severity <= "59"  | Severity := "Medium" ;
+              Severity >= "60" and Severity <= "79"  | Severity := "High" ;
+              Severity >= "80" and Severity <= "100"  | Severity := "Critical" ;
+              * }
+      | Severity != Info
+
+      | timeChart(Severity)
+    start: 30d
+    width: 6
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Detections by severity
+    type: query
+  f348e2f6-c6b6-4724-bc48-1936e620ecdc:
+    x: 3
+    y: 0
+    height: 3
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | Severity >= "60" and Severity <= "79"
+      | count(Severity)
+
+      // Severity mapping - numeric to label (from Event Data Dictionary)
+      // | case {
+      //        Severity >= "0" and Severity <= "19"  | Severity := "Info" ;
+      //        Severity >= "20" and Severity <= "39"  | Severity := "Low" ;
+      //        Severity >= "40" and Severity <= "59"  | Severity := "Medium" ;
+      //        Severity >= "60" and Severity <= "79"  | Severity := "High" ;
+      //        Severity >= "80" and Severity <= "100"  | Severity := "Critical" ;
+      //        * }
+      // | Severity != Info
+    start: 7d
+    width: 3
+    options:
+      default: {}
+      yAxisTitle: High (severity)
+      text-color: '#f69d04'
+    visualization: single-value
+    title: High
+    type: query
+  3d735db9-5d76-4f52-a6ae-a4b5e4903521:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+      | case {
+              Severity >= "0" and Severity <= "19"  | Severity := "Info" ;
+              Severity >= "20" and Severity <= "39"  | Severity := "🟢 Low" ;
+              Severity >= "40" and Severity <= "59"  | Severity := "🟡 Medium" ;
+              Severity >= "60" and Severity <= "79"  | Severity := "🟠 High" ;
+              Severity >= "80" and Severity <= "100"  | Severity := "🔴 Critical" ;
+              * }
+      | Severity != Info
+
+      // Set formatting for display
+      | format("[View detection](%s)", field=[FalconHostLink], as="Link")
+      | "Account Name":=rename(SourceAccountName)
+      | Source:=rename(SourceEndpointHostName)
+
+      // Display columns with all defined formatting
+      | select([Severity, DetectName, @timestamp, "Account Name", Source, "Link"])
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Most recent detections
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

@@ -1,0 +1,7 @@
+// Transform to convert TlsVersion decimal to human-readable value.
+| case {
+        TlsVersion = "0"  | TlsVersion := "v1.0" ;
+        TlsVersion = "1"  | TlsVersion := "v1.1" ;
+        TlsVersion = "2"  | TlsVersion := "v1.2" ;
+        TlsVersion = "3"  | TlsVersion := "v1.3" ;
+        * }

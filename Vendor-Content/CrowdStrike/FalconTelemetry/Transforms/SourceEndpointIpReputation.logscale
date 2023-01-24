@@ -1,0 +1,12 @@
+// Transform to convert SourceEndpointIpReputation decimal to human-readable value.
+| case {
+        SourceEndpointIpReputation = "0"   | SourceEndpointIpReputation := "NONE" ;
+        SourceEndpointIpReputation = "1"   | SourceEndpointIpReputation := "ANONYMOUS_ACTIVE" ;
+        SourceEndpointIpReputation = "2"   | SourceEndpointIpReputation := "ANONYMOUS_SUSPECT" ;
+        SourceEndpointIpReputation = "4"   | SourceEndpointIpReputation := "ANONYMOUS_INACTIVE" ;
+        SourceEndpointIpReputation = "8"   | SourceEndpointIpReputation := "ANONYMOUS_PRIVATE" ;
+        SourceEndpointIpReputation = "16"  | SourceEndpointIpReputation := "ASSOCIATED_WITH_DICTIONARY_ATTACK" ;
+        SourceEndpointIpReputation = "32"  | SourceEndpointIpReputation := "ASSOCIATED_WITH_DDOS_ATTACK" ;
+        SourceEndpointIpReputation = "64"  | SourceEndpointIpReputation := "ASSOCIATED_WITH_SPAM" ;
+        SourceEndpointIpReputation = "128" | SourceEndpointIpReputation := "HOSTING_FACILITY" ;
+        * }

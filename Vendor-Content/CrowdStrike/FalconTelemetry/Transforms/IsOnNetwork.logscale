@@ -1,0 +1,5 @@
+// Transform to convert IsOnNetwork decimal to human-readable value.
+| case {
+        IsOnNetwork = "1"  | IsOnNetwork := "Yes" ;
+        IsOnNetwork = "0"  | IsOnNetwork := "No" ;
+        * }

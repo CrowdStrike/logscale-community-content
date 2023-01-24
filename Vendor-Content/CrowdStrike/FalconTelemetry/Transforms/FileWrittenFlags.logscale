@@ -1,0 +1,6 @@
+// Transform to convert FileWrittenFlags decimal to human-readable value.
+| case {
+        FileWrittenFlags = 0 | FileWrittenFlags := "Hash is valid";
+        FileWrittenFlags = 1 | FileWrittenFlags := "Hash failed";
+        FileWrittenFlags = 2 | FileWrittenFlags := "Hash aborted, too large";
+        * }

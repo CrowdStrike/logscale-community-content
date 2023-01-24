@@ -1,0 +1,85 @@
+name: Identity-based Detections
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  f5abeb63-0014-4ee1-9151-c6ac988d05ef:
+    x: 0
+    y: 0
+    height: 9
+    queryString: |-
+      ExternalApiType="Event_IdpDetectionSummaryEvent"
+
+      | case {
+              Severity >= "0" and Severity <= "19"  | Severity := "🔵 Info";
+              Severity >= "20" and Severity <= "39"  | Severity := "🟢 Low";
+              Severity >= "40" and Severity <= "59"  | Severity := "🟡 Medium";
+              Severity >= "60" and Severity <= "79"  | Severity := "🟠 High";
+              Severity >= "80" and Severity <= "100"  | Severity := "🔴 Critical";
+              * }
+
+      // Add parameters for filtering
+      | Severity=?Severity
+      | DetectName=?DetectName
+      | SourceAccountName=?SourceAccountName
+
+      // Set formatting for display
+      | format("[View detection](%s)", field=[FalconHostLink], as="Link")
+      | "Account Name":=rename(SourceAccountName)
+      | "Account Domain":=rename(SourceAccountDomain)
+      | "Policy Rule Name":=rename(IdpPolicyRuleName)
+      | "Source endpoint name":=rename(SourceEndpointHostName)
+
+      // | case {
+              // Tactic !=* | Tactic := "-";
+              // Technique !=* | Technique := "-";
+              // Objective !=* | Objective := "-";
+              // "Policy rule name" !=* | "Policy rule name" := "-";
+              // * }
+
+
+      // Format extra context without adding multiple separate fields
+      | format(format="Policy Rule Name: %s %nTactic: %s %nTechnique: %s %nObjective: %s %n", field=["Policy Rule Name", Tactic, Techinque, Objective], as="Extra Context")
+
+      // Display columns with all formatting included
+      | select([Severity, @timestamp, DetectName, "Account Name", "Account Domain", "Source endpoint name", "Link", "Extra Context"])
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Identity-based Detections
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  DetectName:
+    label: Detection Name
+    query: DetectName=* | groupBy(DetectName)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DetectName
+  Severity:
+    label: Severity
+    order: 50
+    values:
+    - '*'
+    - '*Critical'
+    - '*Low'
+    - '*Medium'
+    - '*High'
+    - '*Info'
+    type: list
+    defaultValue: '*'
+  SourceAccountName:
+    label: ' Account Name'
+    query: SourceAccountName=* | groupBy(SourceAccountName)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: SourceAccountName

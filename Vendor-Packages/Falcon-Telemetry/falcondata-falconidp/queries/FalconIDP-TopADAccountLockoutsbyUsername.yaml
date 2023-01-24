@@ -1,0 +1,28 @@
+name: Top AD Account Lockouts by Username
+visualization:
+  options: {}
+  type: bar-chart
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |
+  // Top AD Account Lockouts by Username
+
+  // Search for the specific event type
+  #event_simpleName=ActiveDirectoryAccountLocked
+
+  // Exclude anything that's a machine name
+  | SamAccountName!="*$"
+
+  // Filter based on domain name
+  | AccountDomain = ?AccountDomain
+
+  // Use top to find the accounts with the most lockout events
+  | top(SamAccountName)
+
+  // Set the usernames to all lower case
+  | SamAccountName:=lower(SamAccountName)
+
+  // Rename variables for display purposes
+  | Total:=rename(_count)

@@ -1,0 +1,56 @@
+#####
+## Sample configuration file for Microsoft Windows.
+## This is YAML, so structure and indentation is important.
+## Lines can be uncommented by removing the #. You should not need to change the number of spaces after that.
+## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
+#####
+
+## This section can be found on your LogScale instance.
+## Main page -> Fleet Management -> LogScale Collector Download
+fleetManagement:
+  token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+  ## Change the URL if needed to reflect your LogScale URL.
+  url: https://cloud.us.humio.com
+  ## Keep this option as "none" unless you actually need a proxy.
+  proxy: none
+  ## The TLS option can be uncommented if you're using a self-signed certificate. 
+  #tls:
+    #insecure: true
+ 
+dataDirectory: C:\ProgramData\CrowdStrike\Humio Log Collector\
+ 
+sources:
+  windows_events:
+    type: wineventlog
+    ## Add other channels by simple adding additional "name" lines.
+    ## The following command can be used to find other channels:
+    ## Get-WinEvent -ListLog * -EA silentlycontinue | sort-object -Property Recordcount -desc
+    channels:
+      - name: Application
+      - name: Security
+      - name: System
+      - name: Windows PowerShell
+      - name: ForwardedEvents
+    ## You can manually specify a parser to be used here.
+    ## This overrides the parser specified in the LogScale UI.
+    #parser: SampleWindowsParser
+    sink: logscale
+     
+sinks:
+  logscale:
+    type: humio
+    token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    ## Change the URL if needed to reflect your LogScale URL.    
+    url: https://cloud.us.humio.com
+    ## Keep this option as "none" unless you actually need a proxy.
+    proxy: none
+    ## The TLS option can be uncommented if you're using a self-signed certificate.
+    ## This generally isn't needed unless it's a self-hosted instance. 
+    #tls:
+      #insecure: true
+    ## This increases the maximum single event size to 8 MB. You can change as needed.
+    maxEventSize: 8388608
+    ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
+    #maxBatchSize: 16777216
+      #compression: gzip
+      #compressionLevel: 9

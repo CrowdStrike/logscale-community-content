@@ -1,0 +1,15 @@
+// Transform to convert ShowWindowFlags decimal to human-readable value.
+| case {
+        ShowWindowFlags = "0"  | ShowWindowFlags := "Hide Window" ;
+        ShowWindowFlags = "1"  | ShowWindowFlags := "Normal" ;
+        ShowWindowFlags = "2"  | ShowWindowFlags := "Minimized Activated" ;
+        ShowWindowFlags = "3"  | ShowWindowFlags := "Maximized Activated" ;
+        ShowWindowFlags = "4"  | ShowWindowFlags := "Not Activated" ;
+        ShowWindowFlags = "5"  | ShowWindowFlags := "Activated" ;
+        ShowWindowFlags = "6"  | ShowWindowFlags := "Minimized" ;
+        ShowWindowFlags = "7"  | ShowWindowFlags := "Minimized Not Activated" ;
+        ShowWindowFlags = "8"  | ShowWindowFlags := "Not Activated" ;
+        ShowWindowFlags = "9"  | ShowWindowFlags := "Restored" ;
+        ShowWindowFlags = "10" | ShowWindowFlags := "Default" ;
+        ShowWindowFlags = "11" | ShowWindowFlags := "Forced Minimized" ;
+        * }

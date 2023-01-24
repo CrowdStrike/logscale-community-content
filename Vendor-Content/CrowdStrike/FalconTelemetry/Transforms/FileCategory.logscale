@@ -1,0 +1,13 @@
+// Transform to convert FileCategory decimal to human-readable value.
+| case {
+        FileCategory = "0"  | FileCategory := "Other" ;
+        FileCategory = "1"  | FileCategory := "Archives" ;
+        FileCategory = "2"  | FileCategory := "Office Documents" ;
+        FileCategory = "3"  | FileCategory := "Multimedia Files" ;
+        FileCategory = "4"  | FileCategory := "Design Files" ;
+        FileCategory = "5"  | FileCategory := "Source Code" ;
+        FileCategory = "6"  | FileCategory := "Executable Files" ;
+        FileCategory = "7"  | FileCategory := "Virtual Machine Files" ;
+        FileCategory = "8"  | FileCategory := "Email Files" ;
+        FileCategory = "9"  | FileCategory := "Data and Logs" ;
+        * }

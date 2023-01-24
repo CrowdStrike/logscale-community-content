@@ -1,0 +1,12 @@
+// Transform to convert IntegrityLevel decimal to human-readable value.
+| case {
+        IntegrityLevel = "0"                              | IntegrityLevel := "Untrusted" ;
+        IntegrityLevel = "4096"                           | IntegrityLevel := "Low" ;
+        IntegrityLevel = "8192"                           | IntegrityLevel := "Medium" ;
+        IntegrityLevel = "12288"                          | IntegrityLevel := "High" ;
+        IntegrityLevel = "16384"                          | IntegrityLevel := "System" ;
+        IntegrityLevel = "20480"                          | IntegrityLevel := "Protected" ;
+        IntegrityLevel > 4096  AND IntegrityLevel < 8192  | IntegrityLevel := "Low Plus";
+        IntegrityLevel > 8192  AND IntegrityLevel < 12288 | IntegrityLevel := "Medium Plus";
+        IntegrityLevel > 12288 AND IntegrityLevel < 16384 | IntegrityLevel := "High Plus";
+        * }

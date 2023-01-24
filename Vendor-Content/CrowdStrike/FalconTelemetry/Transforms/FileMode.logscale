@@ -1,0 +1,9 @@
+// Transform to convert FileMode decimal to human-readable value.
+| case {
+        FileMode = "1"  | FileMode := "CreateNew" ;
+        FileMode = "2"  | FileMode := "Create" ;
+        FileMode = "3"  | FileMode := "Open" ;
+        FileMode = "4"  | FileMode := "OpenOrCreate" ;
+        FileMode = "5"  | FileMode := "Truncate" ;
+        FileMode = "6"  | FileMode := "Append"  ;
+        * }

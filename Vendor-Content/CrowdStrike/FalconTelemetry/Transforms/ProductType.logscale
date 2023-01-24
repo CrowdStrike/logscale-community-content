@@ -1,0 +1,6 @@
+// Transform to convert ProductType decimal to human-readable value.
+| case {
+        ProductType = "1"  | ProductType := "Desktop" ;
+        ProductType = "2"  | ProductType := "Domain Controller" ;
+        ProductType = "3"  | ProductType := "Server" ;
+        * }

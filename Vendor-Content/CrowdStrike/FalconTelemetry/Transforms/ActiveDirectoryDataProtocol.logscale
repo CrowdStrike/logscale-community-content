@@ -1,0 +1,6 @@
+// ActiveDirectoryDataProtocol transform to readable
+| case {
+        ActiveDirectoryDataProtocol = "0" | ActiveDirectoryDataProtocol := "LDAP";
+        ActiveDirectoryDataProtocol = "1" | ActiveDirectoryDataProtocol := "DCE_RPC";
+        ActiveDirectoryDataProtocol = "2" | ActiveDirectoryDataProtocol := "RDP";
+        * }

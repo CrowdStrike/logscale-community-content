@@ -1,0 +1,15 @@
+// Transform to convert KerberosAnomaly decimal to human-readable value.
+| case {
+        KerberosAnomaly = "1"      | KerberosAnomaly := "MISSING_LOGON_SERVER_IN_REQUEST_TICKET" ;
+        KerberosAnomaly = "2"      | KerberosAnomaly := "DEFAULT_PASSWORD_LAST_SET_VALUE_IN_REQUEST_TICKET" ;
+        KerberosAnomaly = "4"      | KerberosAnomaly := "UNEXPECTED_SID_IN_REQUEST_TICKET" ;
+        KerberosAnomaly = "8"      | KerberosAnomaly := "UNEXPECTED_PRIMARY_GROUP_ID_IN_REQUEST_TICKET" ;
+        KerberosAnomaly = "16"     | KerberosAnomaly := "UNEXPECTED_GROUPS_ID_IN_REQUEST_TICKET" ;
+        KerberosAnomaly = "32"     | KerberosAnomaly := "UNEXPECTED_RESOURCE_GROUPS_ID_IN_REQUEST_TICKET" ;
+        KerberosAnomaly = "64"     | KerberosAnomaly := "UNEXPECTED_EXTRAS_SID_IN_REQUEST_TICKET" ;
+        KerberosAnomaly = "128"    | KerberosAnomaly := "RC4_PAC" ;
+        KerberosAnomaly = "256"    | KerberosAnomaly := "PACLESS_TICKET_GENERATION" ;
+        KerberosAnomaly = "512"    | KerberosAnomaly := "AP_REQ_MISSING_AUTHENTICATOR_CHECKSUM" ;
+        KerberosAnomaly = "1024"   | KerberosAnomaly := "AP_REQ_ZERO_FILLED_BIND_IN_AUTHENTICATOR_CHECKSUM" ;
+        KerberosAnomaly = "2048"   | KerberosAnomaly := "UNEXPECTED_HOSTNAME_IN_SERVICE_ACCESS_REQUEST" ;
+        * }

@@ -1,0 +1,14 @@
+// Transform to convert ThreadExecutionControlType decimal to human-readable value.
+| case {
+        ThreadExecutionControlType = "0"   | ThreadExecutionControlType := "THREAD_INJECT" ;
+        ThreadExecutionControlType = "1"   | ThreadExecutionControlType := "THREAD_INJECT_MASQUERADE" ;
+        ThreadExecutionControlType = "2"   | ThreadExecutionControlType := "THREAD_HIJACK" ;
+        ThreadExecutionControlType = "3"   | ThreadExecutionControlType := "PROCESS_HOLLOWING" ;
+        ThreadExecutionControlType = "4"   | ThreadExecutionControlType := "WINDOWS_HOOK" ;
+        ThreadExecutionControlType = "5"   | ThreadExecutionControlType := "PROCESS_OVERWRITE_HOLLOWING" ;
+        ThreadExecutionControlType = "6"   | ThreadExecutionControlType := "REMOTE_APC" ;
+        ThreadExecutionControlType = "7"   | ThreadExecutionControlType := "REMOTE_ATOM_BOMB" ;
+        ThreadExecutionControlType = "8"   | ThreadExecutionControlType := "PROCESS_HOLLOWING_APC" ;
+        ThreadExecutionControlType = "9"   | ThreadExecutionControlType := "SET_WINDOW_LONG" ;
+        ThreadExecutionControlType = "10"  | ThreadExecutionControlType := "SET_PROP" ;
+        * }

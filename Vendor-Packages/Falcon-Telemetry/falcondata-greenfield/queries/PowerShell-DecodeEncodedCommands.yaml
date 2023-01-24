@@ -1,0 +1,35 @@
+name: PowerShell - Decode Encoded Commands
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"ParentBaseFileName","format":"text","header":"File
+      Name","width":156},{"type":"field","fieldName":"CommandLine","format":"text","header":"Full
+      Command Line"},{"type":"field","fieldName":"decodedCommand","format":"text","header":"Decoded
+      Command"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Grab all PowerShell execution events.
+  #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\powershell(_ise)?\.exe/i
+
+  // Look for command line flags that indicate an encoded command.
+  | CommandLine=/\s-[e^]{1,2}[ncodema^]+\s(?<base64String>\S+)/i
+
+  // Get entropy of base64 string.
+  | b64Entroy:=shannonEntropy("base64String")
+
+  // Set the entropy threshold.
+  | b64Entroy>4.0
+
+  // Decode the encoded command blob.
+  | decodedCommand:=base64Decode(base64String, charset="UTF-16LE")
+
+  // Added to make identify demo events easier.
+  | ParentBaseFileName=?ParentFileName
+
+  // Uncomment the next line to include detection types.
+  // | join({ExternalApiType="Event_DetectionSummaryEvent"}, field=aid, key=AgentIdString, include=[DetectName, Tactic, Technique])

@@ -1,0 +1,16 @@
+// Transform to convert AuthenticationFailureMsEr decimal to human-readable value.
+| case {
+        AuthenticationFailureMsEr = "3221225506" | AuthenticationFailureMsEr := "STATUS_ACCESS_DENIED" ;
+        AuthenticationFailureMsEr = "3221225578" | AuthenticationFailureMsEr := "STATUS_WRONG_PASSWORD" ;
+        AuthenticationFailureMsEr = "3221225581" | AuthenticationFailureMsEr := "STATUS_LOGON_FAILURE" ;
+        AuthenticationFailureMsEr = "3221225572" | AuthenticationFailureMsEr := "STATUS_NO_SUCH_USER" ;
+        AuthenticationFailureMsEr = "3221225582" | AuthenticationFailureMsEr := "STATUS_ACCOUNT_RESTRICTION" ;
+        AuthenticationFailureMsEr = "3221225583" | AuthenticationFailureMsEr := "STATUS_INVALID_LOGON_HOURS" ;
+        AuthenticationFailureMsEr = "3221225584" | AuthenticationFailureMsEr := "STATUS_INVALID_WORKSTATION" ;
+        AuthenticationFailureMsEr = "3221225585" | AuthenticationFailureMsEr := "STATUS_PASSWORD_EXPIRED" ;
+        AuthenticationFailureMsEr = "3221225586" | AuthenticationFailureMsEr := "STATUS_ACCOUNT_DISABLED" ;
+        AuthenticationFailureMsEr = "3221225813" | AuthenticationFailureMsEr := "STATUS_LOGON_NOT_GRANTED" ;
+        AuthenticationFailureMsEr = "3221225819" | AuthenticationFailureMsEr := "STATUS_LOGON_TYPE_NOT_GRANTED" ;
+        AuthenticationFailureMsEr = "3221225875" | AuthenticationFailureMsEr := "STATUS_ACCOUNT_EXPIRED" ;
+        AuthenticationFailureMsEr = "3221226036" | AuthenticationFailureMsEr := "STATUS_ACCOUNT_LOCKED_OUT" ;
+        * }

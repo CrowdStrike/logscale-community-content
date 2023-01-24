@@ -1,0 +1,10 @@
+// Transform to convert ObjectAccessOperationType decimal to human-readable value.
+| case {
+        ObjectAccessOperationType = "1"   | ObjectAccessOperationType := "CREATE" ;
+        ObjectAccessOperationType = "2"   | ObjectAccessOperationType := "WRITE" ;
+        ObjectAccessOperationType = "3"   | ObjectAccessOperationType := "DELETE" ;
+        ObjectAccessOperationType = "4"   | ObjectAccessOperationType := "SET" ;
+        ObjectAccessOperationType = "5"   | ObjectAccessOperationType := "RENAME" ;
+        ObjectAccessOperationType = "6"   | ObjectAccessOperationType := "ATTRIBUTES_CHANGED" ;
+        ObjectAccessOperationType = "7"   | ObjectAccessOperationType := "PERMISSIONS_CHANGED" ;
+        * }

@@ -1,0 +1,10 @@
+// Transform to convert SourceEndpointHostNameResolutionMethod decimal to human-readable value.
+| case {
+        SourceEndpointHostNameResolutionMethod = "0"  | SourceEndpointHostNameResolutionMethod := "RAW_PACKET_DATA" ;
+        SourceEndpointHostNameResolutionMethod = "1"  | SourceEndpointHostNameResolutionMethod := "TRAFFIC_CACHE" ;
+        SourceEndpointHostNameResolutionMethod = "2"  | SourceEndpointHostNameResolutionMethod := "KERBEROS_TICKET_CACHE" ;
+        SourceEndpointHostNameResolutionMethod = "3"  | SourceEndpointHostNameResolutionMethod := "REVERSE_LOOKUP" ;
+        SourceEndpointHostNameResolutionMethod = "4"  | SourceEndpointHostNameResolutionMethod := "FORWARD_LOOKUP" ;
+        SourceEndpointHostNameResolutionMethod = "5"  | SourceEndpointHostNameResolutionMethod := "NETBIOS_LOOKUP" ;
+        SourceEndpointHostNameResolutionMethod = "6"  | SourceEndpointHostNameResolutionMethod := "DOMAIN_CONTROLLER" ;
+        * }

@@ -1,0 +1,6 @@
+// Transform to convert DriverLoadFlags decimal to human-readable value.
+| case {
+        DriverLoadFlags = "0"  | DriverLoadFlags := "NONE" ;
+        DriverLoadFlags = "1"  | DriverLoadFlags := "DRIVER_RUNDOWN" ;
+        DriverLoadFlags = "2"  | DriverLoadFlags := "DRIVER_RUNDOWN_BOOT_ONLY" ;
+        * }

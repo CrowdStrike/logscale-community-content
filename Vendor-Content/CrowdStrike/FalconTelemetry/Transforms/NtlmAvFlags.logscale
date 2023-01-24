@@ -1,0 +1,6 @@
+// Transform to convert NtlmAvFlags decimal to human-readable value.
+| case {
+        NtlmAvFlags = "1"  | NtlmAvFlags := "CONSTRAINED_AUTHENTICATION" ;
+        NtlmAvFlags = "2"  | NtlmAvFlags := "MESSAGE_INTEGRITY" ;
+        NtlmAvFlags = "4"  | NtlmAvFlags := "UNTRUSTED_SPN_SOURCE" ;
+        * }

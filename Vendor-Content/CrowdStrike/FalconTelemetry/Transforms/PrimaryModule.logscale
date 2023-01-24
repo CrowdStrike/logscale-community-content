@@ -1,0 +1,5 @@
+// Transform to convert PrimaryModule decimal to human-readable value.
+| case {
+        PrimaryModule = "0"  | PrimaryModule := "Not Main Executable for Process" ;
+        PrimaryModule = "1"  | PrimaryModule := "Main Executable for Process" ;
+        * }

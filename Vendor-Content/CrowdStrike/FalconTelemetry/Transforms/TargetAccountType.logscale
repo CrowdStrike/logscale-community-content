@@ -1,0 +1,5 @@
+// Transform to convert TargetAccountType decimal to human-readable value.
+| case {
+        TargetAccountType = "0"  | TargetAccountType := "User" ;
+        TargetAccountType = "1"  | TargetAccountType := "Computer" ;
+        * }

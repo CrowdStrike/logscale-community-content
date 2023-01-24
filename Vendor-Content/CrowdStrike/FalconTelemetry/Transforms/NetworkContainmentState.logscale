@@ -1,0 +1,5 @@
+// Transform to convert NetworkContainmentState decimal to human-readable value.
+| case {
+        NetworkContainmentState = "0"  | NetworkContainmentState := "Not Contained" ;
+        NetworkContainmentState = "1"  | NetworkContainmentState := "Contained" ;
+        * }

@@ -1,0 +1,6 @@
+// Transform to convert NamedPipeOperationType decimal to human-readable value.
+| case {
+        NamedPipeOperationType = "1"  | NamedPipeOperationType := "CREATE" ;
+        NamedPipeOperationType = "2"  | NamedPipeOperationType := "OPEN" ;
+        NamedPipeOperationType = "3"  | NamedPipeOperationType := "IMPERSONATE" ;
+        * }

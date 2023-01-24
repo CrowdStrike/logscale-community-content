@@ -1,0 +1,14 @@
+// Transform to convert IcmpType decimal to human-readable value.
+| case {
+        IcmpType = "0"  | IcmpType := "ECHO_REPLY" ;
+        IcmpType = "3"  | IcmpType := "DESTINATION_UNREACHABLE" ;
+        IcmpType = "4"  | IcmpType := "SOURCE_QUENCH" ;
+        IcmpType = "5"  | IcmpType := "REDIRECT" ;
+        IcmpType = "8"  | IcmpType := "ECHO" ;
+        IcmpType = "11" | IcmpType := "TIME_EXCEEDED" ;
+        IcmpType = "12" | IcmpType := "PARAMETER_PROBLEM" ;
+        IcmpType = "13" | IcmpType := "TIMESTAMP" ;
+        IcmpType = "14" | IcmpType := "TIMESTAMP_REPLY" ;
+        IcmpType = "15" | IcmpType := "INFORMATION_REQUEST" ;
+        IcmpType = "16" | IcmpType := "INFORMATION_REPLY" ;
+        * }

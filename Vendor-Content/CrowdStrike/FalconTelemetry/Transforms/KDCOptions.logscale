@@ -1,0 +1,18 @@
+// Transform to convert KDCOptions decimal to human-readable value.
+| case {
+        KDCOptions = "1073741824"  | KDCOptions := "Forwardable" ;
+        KDCOptions = "536870912"  | KDCOptions := "Forwarded" ;
+        KDCOptions = "268435456"  | KDCOptions := "Proxiable" ;
+        KDCOptions = "134217728"  | KDCOptions := "Proxy" ;
+        KDCOptions = "67108864"  | KDCOptions := "Allow_Postdate" ;
+        KDCOptions = "33554432"  | KDCOptions := "Postdated" ;
+        KDCOptions = "8388608"  | KDCOptions := "Renewable" ;
+        KDCOptions = "131072"  | KDCOptions := "CNAME_IN_ADDL_TKT" ;
+        KDCOptions = "65536" | KDCOptions := "Canonicalize" ;
+        KDCOptions = "32768" | KDCOptions := "Request_Anonymous" ;
+        KDCOptions = "32" | KDCOptions := "Disable_Transited_Check" ;
+        KDCOptions = "16" | KDCOptions := "Renewable_OK" ;
+        KDCOptions = "8" | KDCOptions := "ENC_TKT_IN_SKEY" ;
+        KDCOptions = "2" | KDCOptions := "Renew" ;
+        KDCOptions = "1" | KDCOptions := "Validate" ;
+        * }

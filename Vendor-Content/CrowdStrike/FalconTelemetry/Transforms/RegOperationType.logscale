@@ -1,0 +1,14 @@
+// Transform to convert RegOperationType decimal to human-readable value.
+| case {
+        RegOperationType = "1"   | RegOperationType := "REG_SET_VALUE_KEY" ;
+        RegOperationType = "2"   | RegOperationType := "REG_DELETE_VALUE_KEY" ;
+        RegOperationType = "3"   | RegOperationType := "REG_CREATE_KEY" ;
+        RegOperationType = "4"   | RegOperationType := "REG_DELETE_KEY" ;
+        RegOperationType = "5"   | RegOperationType := "REG_SET_KEY_SECURITY" ;
+        RegOperationType = "6"   | RegOperationType := "REG_LOAD_KEY" ;
+        RegOperationType = "7"   | RegOperationType := "REG_RENAME_KEY" ;
+        RegOperationType = "8"   | RegOperationType := "REG_OPEN_KEY" ;
+        RegOperationType = "9"   | RegOperationType := "REG_QUERY_NAME_KEY" ;
+        RegOperationType = "101" | RegOperationType := "REG_SET_VALUE_KEY_ANTI_TAMPER" ;
+        RegOperationType = "102" | RegOperationType := "REG_DELETE_VALUE_KEY_ANTI_TAMPER" ; 
+        * }

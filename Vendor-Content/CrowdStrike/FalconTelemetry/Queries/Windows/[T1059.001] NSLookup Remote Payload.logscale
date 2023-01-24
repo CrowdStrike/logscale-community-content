@@ -1,0 +1,6 @@
+// [T1059.001] NSLookup Remote Payload
+
+#event_simpleName=ProcessRollup2
+| ParentBaseFileName=powershell.exe ImageFileName=/.*\\nslookup\.exe/
+| CommandLine=/.*\s+\-q\=txt\s+.*/
+| select([aid, UserSid, ParentBaseFileName, ImageFileName, CommandLine])
