@@ -6,12 +6,12 @@ VERSION=$(grep version src/manifest.yaml | grep -o "\d*\.\d*\.\d*")
 ARCHIVE=vendor--app--${VERSION}.zip
 
 # Delete anything that might already be here
-rm -f $ARCHIVE
+rm -f Packages/$ARCHIVE
 
 # Create a new zip archive
 (
     cd src
-    zip -r ../$ARCHIVE \
+    zip -r ../Packages/$ARCHIVE \
 	manifest.yaml \
 	actions \
 	alerts \
