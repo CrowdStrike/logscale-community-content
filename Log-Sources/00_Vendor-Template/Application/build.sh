@@ -3,7 +3,7 @@ set -e
 VERSION=$(grep version src/manifest.yaml | grep -o "\d*\.\d*\.\d*")
 
 # Figure out the archive name
-ARCHIVE=vendor--app--${VERSION}.zip
+ARCHIVE=microsoft--windows--${VERSION}.zip
 
 # Delete anything that might already be here
 rm -f Packages/$ARCHIVE

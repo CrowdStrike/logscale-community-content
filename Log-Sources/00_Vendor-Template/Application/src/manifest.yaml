@@ -1,6 +1,6 @@
 author:
   name: community
-name: community/vendor-application
+name: logscale-community-content/vendor-application
 description: Brief Description
 version: 1.0.0
 minHumioVersion: 1.20.0
