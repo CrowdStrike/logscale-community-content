@@ -1,5 +1,0 @@
-// Transform to convert UserIsAdmin decimal to human-readable value.
-| case {
-        UserIsAdmin = "0"  | UserIsAdmin := "No" ;
-        UserIsAdmin = "1"  | UserIsAdmin := "Yes" ; 
-        * }

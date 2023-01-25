@@ -1,2 +1,0 @@
-// Converts field Status from decimal to hex value
-| Status_hex := format(field=Status, "%x")

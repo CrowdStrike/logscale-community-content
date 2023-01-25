@@ -1,8 +1,0 @@
-// [T1087.002] Account Discovery - Domain Accounts
-
-#event_simpleName=ProcessRollup2 
-| event_platform=Win ImageFileName=/net1?\.exe/
-| CommandLine=/\s+(user|group|)\s+.+\/domain/
-| select([timestamp, aid, UserSid, ParentBaseFileName, ImageFileName, CommandLine])
-| sort(field=timestamp, order=asc, limit=10000)
-| timestamp := formatTime("%Y-%m-%d %H:%M:%S", field=timestamp, locale=en_US, timezone=Z) 

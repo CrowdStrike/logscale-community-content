@@ -1,2 +1,0 @@
-// AverageUsedRam is in MB. This converts it to GB and stores it in a new field named AverageUsedRam_GB.
-| AverageUsedRam_GB := AverageUsedRam/1024 | round(AverageUsedRam_GB)

@@ -1,7 +1,0 @@
-// [T1087.002] Account Discovery - Domain Accounts
-
-#event_simpleName=ProcessRollup2 
-| event_platform=Lin ImageFileName=/.*\/ldapsearch/i
-| select([timestamp, aid, UserSid, ParentBaseFileName, ImageFileName, CommandLine])
-| sort(field=timestamp, order=asc, limit=10000)
-| timestamp := formatTime("%Y-%m-%d %H:%M:%S", field=timestamp, locale=en_US, timezone=Z) 

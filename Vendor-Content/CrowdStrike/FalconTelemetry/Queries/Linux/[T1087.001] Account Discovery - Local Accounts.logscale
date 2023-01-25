@@ -1,8 +1,0 @@
-// [T1087.001] Account Discovery - Local Accounts
-
-#event_simpleName=ProcessRollup2
-| event_platform=Lin
-| CommandLine=/.*\s+\/etc\/passwd\s+.*/
-| select([timestamp, aid, UID, ParentBaseFileName, ImageFileName, CommandLine])
-| sort(field=timestamp, order=asc, limit=10000)
-| timestamp := formatTime("%Y-%m-%d %H:%M:%S", field=timestamp, locale=en_US, timezone=Z)
