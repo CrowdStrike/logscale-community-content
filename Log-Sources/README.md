@@ -6,7 +6,7 @@
 5. Provide the following information and click Next
     
     **Note: values in BOLD should not be changed**
-  - Scope: **community**
+  - Scope: **logscale-community-content**
   - Package Name: <vendor_application>
   - Description: This text is used for displaying in lists to give a ~10 word intro.
   - Icon: Use a tool such as https://dataurl.app/ to data URL encode yor package image
