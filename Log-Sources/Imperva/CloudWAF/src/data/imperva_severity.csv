@@ -1,0 +1,13 @@
+sev_level,sev_name
+-1,ACL
+0,SQL Injection
+1,Cross Site Scripting
+3,Illegal Resource Access
+4,Bot Access Control
+8,DDoS
+9,Backdoor Protect
+10,Remote File Inclusion
+11,Manual rule (IncapRule)
+12,API Specification Violation
+13,Account Takeover Protection
+14,Bad Bot (Advanced Bot Protection)

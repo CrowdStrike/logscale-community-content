@@ -1,0 +1,616 @@
+name: WAF Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  401e77d1-45df-4d66-90f8-72247f236578:
+    x: 0
+    y: 0
+    description: Distributed denial-of-service attack (DDoS attack) detected on onboarded
+      web application/s. Websites using Imperva DDoS Protection are protected from
+      any type of DDoS attack, including both network (Layer 3 and 4) and application
+      (Layer 7) attacks.
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="DDoS"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: DDoS
+    type: query
+  58888203-a3b3-469e-b55b-d8b25c20403f:
+    x: 0
+    y: 2
+    description: Backdoor Protect identifies backdoors not only by their HTTP signatures
+      but also by tracing back suspicious remote commands on any onboarded web application.
+    height: 1
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="Backdoor Protect"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: 0
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Backdoor Protect
+    type: query
+  3464acd6-36ac-4f0b-9fbc-683b7df9be5e:
+    x: 2
+    y: 5
+    height: 5
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | sev_name = ?security_event
+      | worldMap(lat=cef.label.latitude, lon=cef.label.longitude)
+    start: 1d
+    width: 8
+    options:
+      magnitudeMode: size
+      fixedSize: 23
+      norm: true
+      minSize: 4
+      opacityMode: size
+      zLevel: 0
+      clon: 0
+      autoRotate: false
+      clat: 0
+      maxSize: 40
+    visualization: world-map
+    title: Traffic by Location
+    type: query
+  e8e95253-7d5b-44fe-bd67-31a301f81f7c:
+    x: 3
+    y: 3
+    description: An Illegal Resource Access attack attempts to access otherwise private
+      or restricted pages, or tries to view or execute system files. This is commonly
+      done using URL Fuzzing, Directory Traversal or Command Injection techniques.
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | sev_name=*
+      | "sev_name"="Illegal Resource Access"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: 0
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Illegal Resource Access
+    type: query
+  38eb850a-0dff-4e2b-81a6-b2a08ca484ca:
+    x: 9
+    y: 3
+    description: SQL injection is used to take advantage of non-validated input vulnerabilities
+      to pass SQL commands through a web application for execution by a backend database
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="SQL Injection"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: SQL Injection
+    type: query
+  d9a3268b-d348-4bae-9f33-4a18ce2c307c:
+    x: 0
+    y: 8
+    description: Account Takeover (ATO) Protection detects and mitigates account takeover
+      attempts, protecting your web applications against volumetric and low and slow
+      ATO attacks.
+    height: 1
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="Account Takeover Protection"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Account Takeover Protection
+    type: query
+  238fe242-9b4f-4113-bd4d-b8969360e4c0:
+    x: 0
+    y: 6
+    description: Bots are identified according to Imperva's system of client classification.
+      All detected bad bots on any onboarded web application are detected here.
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="Bot Access Control"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Bot Access Control
+    type: query
+  49686f50-1dc1-41de-a14f-b910badb5ecf:
+    x: 0
+    y: 9
+    height: 1
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="Bad Bot (Advanced Bot Protection)"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Bad Bot (Advanced Bot Protection)
+    type: query
+  1b6d8f12-073e-4458-abd0-2c0c96daaf4b:
+    x: 5
+    y: 3
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | top(["cef.ext.ccode"], limit=1)
+      | match("imperva/cwaf/ccode.csv",column="alpha-2", field="cef.ext.ccode")
+      | select(["name"])
+    start: 1d
+    width: 2
+    options:
+      background-color: ''
+      default: {}
+      text-color: '#ff0000'
+    visualization: single-value
+    title: Top Attacker
+    type: query
+  6e67aa59-482f-4dd6-a09f-c6268b950133:
+    x: 10
+    y: 6
+    description: Any requests incoming that does not meet the API schema specification
+      defined in Imperva.
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="API Specification Violation"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: API Specification Violation
+    type: query
+  64ad8d35-a6aa-49cf-80b7-0f7fce39d7f3:
+    x: 7
+    y: 3
+    description: Remote File Inclusion  (RFI) is an attack that targets the web servers
+      that run websites and their applications. It represents an attempt to manipulate
+      an application into downloading or executing a file from a remote location.
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="Remote File Inclusion"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Remote File Inclusion
+    type: query
+  b00a7dc8-4a6d-4a60-9c6a-77544c9897d6:
+    x: 1
+    y: 3
+    description: Cross Site Scripting (XSS or CSS) is an attack that attempts to run
+      malicious code on your website visitor’s browser.
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="Cross Site Scripting"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Cross Site Scripting
+    type: query
+  dea91a20-f8fb-4287-b30c-0219ee8619dc:
+    x: 2
+    y: 0
+    height: 3
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level", field="cef.severity")
+      | sev_name = ?security_event
+      | timeChart()
+    start: 1d
+    width: 8
+    options:
+      series:
+        _count:
+          color: '#983434'
+      interpolation: step-after
+      xAxisTitle: Time
+      legend: false
+      showDataPoints: true
+      connect-points: false
+      yAxisScale: linear
+      regression: true
+      imputation: none
+      yAxisTitle: Requests
+      stacking: none
+    visualization: time-chart
+    title: Security Events over time
+    type: query
+  6f953e1b-8ce4-424b-8ff0-24cbb6dd65e1:
+    x: 10
+    y: 8
+    description: Any manually defined rule within Imperva used to implement security,
+      delivery, and access control.
+    height: 1
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="Manual rule (IncapRule)"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Manual Rule
+    type: query
+  9c8e4940-2e03-4a06-8652-9f962166c3df:
+    x: 10
+    y: 9
+    description: Any Imperva defined WAF Policies.
+    height: 1
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | "sev_name"="ACL"
+      | count()
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 0
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: ACL
+    type: query
+  3bd3810a-3de9-48ae-bd5d-8635c1dc8d9a:
+    x: 10
+    y: 0
+    height: 3
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | cef.ext.ccode = ?Country
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level", field="cef.severity")
+      | sev_name = ?security_event
+      | groupby(field=[sev_name])
+      | sort(_count)
+    visualization: table-view
+    start: 1d
+    width: 2
+    title: Security Events
+    type: query
+  298980d9-6dad-4860-acfe-c06e0b0b20f0:
+    x: 0
+    y: 10
+    height: 9
+    queryString: |
+      | cef.name != "Normal"
+      | cef.ext.sourceServiceName = ?FQDN
+      | match("imperva/cwaf/imperva_severity.csv",column="sev_level",field="cef.severity")
+      | sev_name = ?security_event
+      | urlDecode(cef.ext.qstr)
+    start: 1d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","header":"Time","width":180},{"type":"field","fieldName":"cef.ext.ccode","format":"text","header":"Country
+        Code","width":130},{"type":"field","fieldName":"cef.ext.request","format":"text","header":"Request"},{"type":"field","fieldName":"cef.ext.qstr","format":"text","header":"Query
+        String"},{"type":"field","fieldName":"cef.ext.requestMethod","format":"text","header":"Request
+        Method","width":190},{"type":"field","fieldName":"cef.label.clapp","format":"text","header":"Client
+        Application","width":182},{"type":"field","fieldName":"cef.ext.act","format":"text","header":"Action
+        Taken","width":212},{"type":"field","fieldName":"cef.name","format":"text","header":"Violation
+        Type","width":205}]'
+      newestAtBottom: 'false'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Security Events
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  Country:
+    label: Country
+    query: test(cef.name != "Normal") | match("imperva/cwaf/ccode.csv",column="alpha-2",
+      field="cef.ext.ccode") | groupBy(field=[cef.ext.ccode, name])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cef.ext.ccode
+  FQDN:
+    label: FQDN
+    query: top(cef.ext.sourceServiceName)
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cef.ext.sourceServiceName
+  security_event:
+    label: Security Event
+    query: test(cef.name != "Normal") | match("imperva/cwaf/imperva_severity.csv",column="sev_level",
+      field="cef.severity") | groupBy(field=[cef.severity, sev_name])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: sev_name

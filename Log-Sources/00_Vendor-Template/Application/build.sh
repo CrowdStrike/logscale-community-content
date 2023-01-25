@@ -3,7 +3,7 @@ set -e
 VERSION=$(grep version src/manifest.yaml | grep -o "\d*\.\d*\.\d*")
 
 # Figure out the archive name
-ARCHIVE=microsoft--windows--${VERSION}.zip
+ARCHIVE=logscale-community-content--vendor-application--${VERSION}.zip
 
 # Delete anything that might already be here
 rm -f Packages/$ARCHIVE
