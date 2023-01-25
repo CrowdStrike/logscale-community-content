@@ -1,0 +1,46 @@
+name: urlFalconHash
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Returns CrowdStrike-specific URLs that utilize the "SHA256HashData" field.
+  //
+  // To call this function if installed from the falcondata/zen package:
+  // $"falcondata/zen:urlFalconHash"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"urlFalconHash"()
+
+  // Parse values from the ConfigBuild to determine the URL.
+  | ConfigBuild=/(?<config>\d+)\.(?<opSystem>\d+)\.(?<falconBuild>\d+)\.(?<cloudDecimal>\d+$)/i
+
+  // Figure out the URL from those parsed values. 
+  | cloudDecimal match {
+      1 => rootURL  := "https://falcon.crowdstrike.com/" ;
+      9 => rootURL  := "https://falcon.laggar.gcw.crowdstrike.com/" ;
+      10 => rootURL := "https://falcon.eu-1.crowdstrike.com/" ;
+      11 => rootURL := "https://falcon.us-2.crowdstrike.com/" ;
+    }
+
+  // Make writing the URL a bit easier. 
+  | colon := "%3A"
+  | tick := "%27"
+  | plus := "%2B"
+
+  // The case statements will only return URLs where it only has the necessary fields.
+
+  | case {
+      SHA256HashData=*
+        // Hash Search.
+        | format("[Hash Search](%sinvestigate/events/en-us/app/eam2/investigate__hash?&form.computer=*&form.user_tok=*&form.customer_tok=*&form.exfilename_tok_p=NONE&form.excmd_tok_p=NONE&form.hash=%s)", field=["rootURL", "SHA256HashData"], as="Hash Search")
+        // Indicator Graph.
+        | format("[Indicator Graph](%sintelligence/graph?indicators=hash%s%s%s%s)", field=["rootURL", "colon", "tick", "SHA256HashData", "tick"], as="Indicator Graph") ;
+      * ;
+    }

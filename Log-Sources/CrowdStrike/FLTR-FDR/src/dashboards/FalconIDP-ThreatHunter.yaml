@@ -1,0 +1,45 @@
+name: Threat Hunter
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  0d5c9fcf-88f9-4c50-956a-ce004cc6aa71:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |
+      ExternalApiType = "Event_IdpDetectionSummaryEvent"
+      | DetectName = "Privilege escalation (user)" or "Privilege escalation (endpoint)"
+
+      // Add parameters for selection
+      | SourceAccountName = ?SourceAccountName
+
+      // Set formatting for display
+      | format("[View detection](%s)", field=[FalconHostLink], as="Link")
+      | "Account Name":=rename(SourceAccountName)
+      | "Account Domain":=rename(SourceAccountDomain)
+      | "Policy Rule Name":=rename(IdpPolicyRuleName)
+      | "Source endpoint name":=rename(SourceEndpointHostName)
+      | "Added Privileges":=rename(AddedPrivileges)
+
+      // Display subset of fields
+      | select([@timestamp, "Account Name", "Account Domain", DetectName, "Added Privileges", "Source endpoint name", "Link"])
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Privilege Escalation Detections
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  SourceAccountName:
+    label: Account Name
+    query: SourceAccountName=* | groupBy(SourceAccountName)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: SourceAccountName

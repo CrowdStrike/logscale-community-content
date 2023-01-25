@@ -1,0 +1,153 @@
+name: Activity Viewer
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  32f45cd0-2422-4701-9d9c-b5ed1ef8b18c:
+    x: 10
+    y: 9
+    height: 4
+    queryString: |-
+      event = FileActivityMessage parentgroup=?parent_group group=?group execution_type=?execution_type hostname=?hostname username=?username path=?path publisher=?publisher parentprocess=?parent_process
+      | top(field=parentprocess, limit=10)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 2
+    title: Top 10 Parent Processes
+    isLive: true
+    type: query
+  ab540919-feba-43e7-b5f1-9d99ea6c9f0e:
+    x: 6
+    y: 9
+    height: 4
+    queryString: |-
+      event = FileActivityMessage parentgroup=?parent_group group=?group execution_type=?execution_type hostname=?hostname username=?username path=?path publisher=?publisher parentprocess=?parent_process
+      | top(field=path, limit=10)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 2
+    title: Top 10 Paths
+    isLive: true
+    type: query
+  655651d0-dded-483b-80f3-b35a66f52c42:
+    x: 0
+    y: 9
+    height: 4
+    queryString: |-
+      event = FileActivityMessage parentgroup=?parent_group group=?group execution_type=?execution_type hostname=?hostname username=?username path=?path publisher=?publisher parentprocess=?parent_process
+      | count()
+    end: now
+    start: 24h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Count
+    isLive: true
+    type: query
+  ab0f1c86-72b4-4407-a6ad-c17a54419902:
+    x: 2
+    y: 9
+    height: 4
+    queryString: |-
+      event = FileActivityMessage parentgroup=?parent_group group=?group execution_type=?execution_type hostname=?hostname username=?username path=?path publisher=?publisher parentprocess=?parent_process
+      | top(field=hostname, limit=10)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 2
+    title: Top 10 Hostnames
+    isLive: true
+    type: query
+  c19be42a-09ca-46c3-8a5f-914c0ff4cf2d:
+    x: 0
+    y: 0
+    height: 9
+    queryString: event = FileActivityMessage parentgroup=?parent_group group=?group
+      execution_type=?execution_type hostname=?hostname username=?username path=?path
+      publisher=?publisher parentprocess=?parent_process
+    end: now
+    start: 24h
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Activity Viewer
+    isLive: true
+    type: query
+  788a29e2-5755-4c37-9b96-fc2c252784f4:
+    x: 8
+    y: 9
+    height: 4
+    queryString: |-
+      event = FileActivityMessage parentgroup=?parent_group group=?group execution_type=?execution_type hostname=?hostname username=?username path=?path publisher=?publisher parentprocess=?parent_process
+      | top(field=publisher, limit=10)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 2
+    title: Top 10 Publisher
+    isLive: true
+    type: query
+  0dbe1573-4154-413a-81a2-d6696c2e994d:
+    x: 4
+    y: 9
+    height: 4
+    queryString: |-
+      event = FileActivityMessage parentgroup=?parent_group group=?group execution_type=?execution_type hostname=?hostname username=?username path=?path publisher=?publisher parentprocess=?parent_process
+      | top(field=username, limit=10)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 2
+    title: Top 10 Usernames
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.5.0
+parameters:
+  parent_process:
+    defaultValue: '*'
+    order: 15
+    type: text
+  publisher:
+    defaultValue: '*'
+    order: 14
+    type: text
+  parent_group:
+    query: event = FileActivityMessage | top(parentgroup)
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 1
+    valueField: parentgroup
+  group:
+    query: event = FileActivityMessage parentgroup=?parent_group | top(group)
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 2
+    valueField: group
+  path:
+    defaultValue: '*'
+    order: 13
+    type: text
+  hostname:
+    defaultValue: '*'
+    order: 11
+    type: text
+  username:
+    defaultValue: '*'
+    order: 12
+    type: text
+  execution_type:
+    defaultValue: '*'
+    order: 10
+    type: text

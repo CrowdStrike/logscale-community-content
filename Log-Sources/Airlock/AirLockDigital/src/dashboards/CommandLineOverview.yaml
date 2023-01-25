@@ -1,0 +1,22 @@
+name: Command Line Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  2b98feee-a0a1-4d53-80e0-c17189ffa21f:
+    x: 0
+    y: 0
+    height: 13
+    queryString: |-
+      event = FileActivityMessage hostname=?hostname path=?path filename=?filename parentprocess=?parentprocess commandline=?commandline username=?username
+      | table([datetime, hostname, username, parentprocess, path, filename, commandline])
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 12
+    title: Command Line History
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.5.0

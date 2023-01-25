@@ -1,0 +1,186 @@
+name: Airlock Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  35d50333-ed8f-41a1-b0af-9cb600db37dd:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      event = FileActivityMessage group=?groups execution_type=?execution_type
+      | top(group)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 4
+    title: Policies With Highest Events
+    isLive: true
+    type: query
+  a812f5be-f9cc-4093-836c-53fd17dce55e:
+    x: 4
+    y: 2
+    height: 2
+    queryString: |-
+      event = FileActivityMessage (execution_type="Untrusted Execution (Audit)" OR execution_type="Untrusted Execution [Audit]" OR execution_type="Untrusted Execution (OTP)" OR execution_type="Untrusted Execution [OTP]") group=?groups
+      | count()
+    end: now
+    start: 24h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Untrusted Executions (Total)
+    isLive: true
+    type: query
+  f7ef9b46-f7c0-4b9d-b54b-bef6cf235341:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      event = FileActivityMessage group=?groups execution_type=?execution_type
+      | top("execution_type")
+    end: now
+    start: 24h
+    width: 4
+    options:
+      legendLabelOverflow: truncate
+      series: {}
+    visualization: pie-chart
+    title: Execution Types
+    isLive: true
+    type: query
+  8bc02c2e-c975-4d9d-9fea-a6656a8110bf:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      event = FileActivityMessage group=?groups execution_type=?execution_type
+      | top(username)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 4
+    title: Users With Highest Events
+    isLive: true
+    type: query
+  28c311be-eeb9-4a3d-8d10-f0cb30900fea:
+    x: 6
+    y: 0
+    height: 2
+    queryString: |-
+      event = FileActivityMessage execution_type="Blocked Execution" group=?groups
+      | count(field=sha256, distinct=true)
+    end: now
+    start: 24h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Blocked Executions (Unique)
+    isLive: true
+    type: query
+  9cd61506-02df-4a85-ae18-ce1eb3282740:
+    x: 6
+    y: 2
+    height: 2
+    queryString: |-
+      event = FileActivityMessage (execution_type="Untrusted Execution (Audit)" OR execution_type="Untrusted Execution [Audit]" OR execution_type="Untrusted Execution (OTP)" OR execution_type="Untrusted Execution [OTP]") group=?groups
+      | count(field=sha256, distinct=true)
+    end: now
+    start: 24h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Untrusted Executions (Unique)
+    isLive: true
+    type: query
+  cd41fba3-baa9-4b32-887c-faa1499bb46f:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      event = ServerActivityMessage description = "*added to repository"
+      | replace(regex="(^[^ ]+)(.*)", with="$1", field=description, as="File Name")
+      | table([datetime, "File Name"])
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 4
+    title: New Files Seen
+    isLive: true
+    type: query
+  70e66ba4-15c1-4d10-b720-0caf3c10eea0:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      event = ServerActivityMessage task=?server_activity_task
+      | table([datetime, task, user, description])
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 12
+    title: Server Activity History
+    isLive: true
+    type: query
+  3686c4e8-f6cb-4d55-be00-f7c108973d8a:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      event = FileActivityMessage group=?groups execution_type=?execution_type
+      | top(hostname)
+    visualization: pie-chart
+    end: now
+    start: 24h
+    width: 4
+    title: Computers With Highest Events
+    isLive: true
+    type: query
+  6169f11a-353f-45bc-9167-d844dba2f3fb:
+    x: 4
+    y: 0
+    height: 2
+    queryString: |-
+      event = FileActivityMessage execution_type="Blocked Execution" group=?groups
+      | count()
+    end: now
+    start: 24h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Blocked Executions (Total)
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.5.0
+parameters:
+  execution_type:
+    query: event = FileActivityMessage | top("execution_type")
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: execution_type
+  groups:
+    query: event = FileActivityMessage | top(group)
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: group
+  server_activity_task:
+    label: server_activity_task
+    query: event = ServerActivityMessage  | top(task)
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: task

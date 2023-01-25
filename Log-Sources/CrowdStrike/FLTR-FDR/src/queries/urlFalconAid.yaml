@@ -1,0 +1,57 @@
+name: urlFalconAid
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Returns CrowdStrike-specific URLs that utilize the "aid" field.
+  //
+  // To call this function if installed from the falcondata/zen package:
+  // $"falcondata/zen:urlFalconAid"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"urlFalconAid"()
+
+  // Parse values from the ConfigBuild to determine the URL.
+  | ConfigBuild=/(?<config>\d+)\.(?<opSystem>\d+)\.(?<falconBuild>\d+)\.(?<cloudDecimal>\d+$)/i
+
+  // Figure out the URL from those parsed values. 
+  | cloudDecimal match {
+      1 => rootURL  := "https://falcon.crowdstrike.com/" ;
+      9 => rootURL  := "https://falcon.laggar.gcw.crowdstrike.com/" ;
+      10 => rootURL := "https://falcon.eu-1.crowdstrike.com/" ;
+      11 => rootURL := "https://falcon.us-2.crowdstrike.com/" ;
+    }
+
+  // Make writing the URL a bit easier. 
+  | colon := "%3A"
+  | tick := "%27"
+  | plus := "%2B"
+
+  // The case statements will only return URLs where it only has the necessary fields.
+
+  | case {
+      aid=* 
+        // Host Management.
+        | format("[Host Management](%shosts/hosts/host/%s)", field=["rootURL", "aid"], as="Host Management")
+        // Real Time Response. 
+        | format("[RTR](%sactivity/real-time-response/console?start=hosts&aid=%s=f)", field=["rootURL", "aid"], as="RTR")
+        // Host Search.
+        | format("[Host Search](%sinvestigate/events/en-us/app/eam2/investigate__computer?earliest=-24h&latest=now&computer=*&aid_tok=%s&customer_tok=*)", field=["rootURL", "aid"], as="Host Search")
+        // User Search.
+        | format("[User Search](%sinvestigate/events/en-us/app/eam2/investigate__user?form.aid=%s&form.computer=*&form.customer_tok=*&form.filename_tok=*&form.cmdline=*&form.exfilename_tok=NONE&form.excmd_tok=NONE&form.filename_tok_a=*&form.cmdline_a=*&form.exfilename_tok_a=NONE&form.excmd_tok_a=NONE&form.user_tok=*)", field=["rootURL", "aid"], as="User Search")
+        // Spotlight.
+        | format("[Spotlight](%sspotlight-v2/vulnerabilities/group-by/cve?filter=aid%s%s%s%s%sstatus%s%sopen%s)", field=["rootURL", "colon", "tick", "aid", "tick", "plus", "colon", "tick", "tick"], as="Spotlight")
+        // Zero Trust Assessment.
+        | format("[Zero Trust Assessment](%sinvestigate/events/en-us/app/eam2/zta_summary?form.selected_assessment=None&form.cid=*&form.aid_or_computername=%s&form.selected_score_range=0-100)", field=["rootURL", "aid"], as="Zero Trust Assessment") ;
+      * ;
+    }
+
+  // Drop the fields that are no longer needed. 
+  | drop([colon, tick, plus, rootURL, config, opSystem, falconBuild, cloudDecimal])

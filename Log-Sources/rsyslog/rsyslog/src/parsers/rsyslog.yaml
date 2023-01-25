@@ -1,0 +1,25 @@
+// This is an rsyslog parser for data forwarded by rsyslog with the RSYSLOG_ForwardFormat config option.
+// The RSYSLOG_ForwardFormat includes a more precise time and the forwarding hostname. 
+//
+// sudo mkdir /etc/rsyslog.d
+// sudo vi /etc/rsyslog.d/99-humio.conf
+//
+// module(load="imjournal"
+// StateFile="journal.state"
+// PersistStateInterval="128"
+// )
+// *.* action(type="omfwd"
+//  Template="RSYSLOG_ForwardFormat"
+//  Target="$LOGSCALE_SYSLOG_RECEIVER"
+//  Port="$LOGSCALE_SYSLOG_PORT"
+//  Protocol="udp"
+// )
+//
+// sudo systemctl restart rsyslog.service
+// sudo systemctl status rsyslog.service
+
+
+case {
+  /<(?<priority>\d+)>(?<@timestamp>\S+)\s(?<host>\S+)\s+(?<app>\S+):(?<msg>.*)/ | parseTimestamp(field="@timestamp") ;
+  * ;
+}

@@ -1,0 +1,229 @@
+name: Event Analysis Dashboard
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  1fa7d832-1020-4cc6-ba17-736eb079b8d3:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |
+      // Time Chart of Total AD Password Changes
+
+      // Search for the specific event type.
+      #event_simpleName=ActiveDirectoryAccountPasswordUpdate
+
+      // Filter based on domain name
+      | AccountDomain = ?AccountDomain
+
+      // Create a timechart of the events based on count.
+      | timechart()
+    start: 7d
+    width: 6
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Time Chart of Total AD Password Changes
+    type: query
+  646c31ae-32c7-4705-a35e-8819c680a6fb:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      // Top AD User Names with the Most Change Events
+
+      // Search for the specific event type
+      #event_simpleName=ActiveDirectoryAccount*
+
+      // Exclude anything that's a machine name
+      | SamAccountName!="*$"
+
+      // Filter based on domain name
+      | AccountDomain = ?AccountDomain
+
+      // Use top to find the accounts with the most password changes
+      | top(SamAccountName)
+
+      // Set the usernames to all lower case for consistency
+      | SamAccountName:=lower(SamAccountName)
+
+      // Rename variables for display purposes
+      | Total:=rename(_count)
+    visualization: bar-chart
+    start: 7d
+    width: 6
+    title: Top AD User Names with the Most Change Events
+    type: query
+  b57c04a3-c936-4546-8444-5bb54234ecde:
+    x: 6
+    y: 8
+    height: 4
+    queryString: |-
+      // List of AD Account Creations by Username
+
+      // List of new Active Directory accounts that have been created.
+
+      // Search for the specific event type.
+      #event_simpleName=ActiveDirectoryAccountCreated
+
+      // Exclude anything that's a machine name.
+      | SamAccountName!="*$"
+
+      // Filter based on domain name
+      | AccountDomain = ?AccountDomain
+
+      // Display the list of account names and their domain.
+      | groupBy(SamAccountName, function=collect([@timestamp, AccountDomain]))
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: AD Account Creations by Username
+    type: query
+  bdf9c834-5bbd-437b-94ef-59c22bb5a60b:
+    x: 6
+    y: 12
+    height: 4
+    queryString: |
+      // Top SSO Authentication Failures by Username
+
+      // Search for either event.
+      #event_simpleName=/(SsoApplicationAccessFailure|SsoUserLogonFailure)/
+
+      // Exclude anything that's a machine name.
+      | SamAccountName!="*$"
+
+      // List the top failures by username.
+      | top(SourceAccountUserName)
+
+      // Rename variables for display purposes
+      | Total:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Top SSO Authentication Failures by Username
+    type: query
+  5e3c289f-8aaf-49d4-8fcc-2d63d7807527:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |
+      // Top AD Account Lockouts by Username
+
+      // Search for the specific event type
+      #event_simpleName=ActiveDirectoryAccountLocked
+
+      // Exclude anything that's a machine name
+      | SamAccountName!="*$"
+
+      // Filter based on domain name
+      | AccountDomain = ?AccountDomain
+
+      // Use top to find the accounts with the most lockout events
+      | top(SamAccountName)
+
+      // Set the usernames to all lower case
+      | SamAccountName:=lower(SamAccountName)
+
+      // Rename variables for display purposes
+      | Total:=rename(_count)
+    visualization: bar-chart
+    start: 7d
+    width: 6
+    title: Top AD Account Lockouts by Username
+    type: query
+  7c6e62fb-4163-4d2a-876b-d464f8c1fb49:
+    x: 6
+    y: 0
+    height: 4
+    queryString: |-
+      // Top AD Password Changes by Username
+
+      // Search for the specific event type.
+      #event_simpleName=ActiveDirectoryAccountPasswordUpdate
+
+      // Exclude anything that's a machine name.
+      | SamAccountName!="*$"
+
+      // Filter based on domain name
+      | AccountDomain = ?AccountDomain
+
+      // Use top to find the accounts with the most password changes.
+      | top(SamAccountName)
+
+      // Set the usernames to all lower case.
+      | SamAccountName:=lower(SamAccountName)
+
+      // Rename variables for display purposes
+      | Total:=rename(_count)
+    visualization: bar-chart
+    start: 7d
+    width: 6
+    title: Top AD Password Changes by Username
+    type: query
+  e4c9304d-466d-4a8d-9222-5ee848e91c92:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      // Top AD Authentication Failures by Username
+
+      // Search for the specific event type.
+      #event_simpleName=ActiveDirectoryAuthenticationFailure
+
+      // Exclude anything that's a machine name.
+      | SamAccountName!="*$"
+
+      // Filter based on domain name
+      | SourceAccountDomain = ?AccountDomain
+
+      // Use top to find the accounts with the most failures.
+      | top(SourceAccountSamAccountName)
+
+      // Set the usernames to all lower case.
+      | SourceAccountSamAccountName:=lower(SourceAccountSamAccountName)
+
+      // Rename variables for display purposes
+      | Total:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Top AD Authentication Failures by Username
+    type: query
+  67abdb32-5172-41fb-867d-a13247db618b:
+    x: 6
+    y: 4
+    height: 4
+    queryString: |-
+      // Time Chart of Active Directory Account Changes
+
+      // Search for the specific event type.
+      #event_simpleName=ActiveDirectoryAccount*
+
+      // Filter based on domain name
+      | AccountDomain = ?AccountDomain
+
+      // Create a timechart of the events based on count.
+      | timechart()
+    start: 7d
+    width: 6
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Time Chart of Active Directory Account Changes
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  AccountDomain:
+    label: Account Domain
+    query: AccountDomain=* | groupBy(AccountDomain)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: AccountDomain

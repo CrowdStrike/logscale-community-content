@@ -1,0 +1,19 @@
+name: MITRE - Heatmap by Tactic and Technique
+visualization:
+  options:
+    colorPalette: greenRed
+    labelAngle: 17
+  type: heat-map
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Grab the detection summary events and ignore anything custom.
+  | EventType="Event_ExternalApiEvent" ExternalApiType="Event_DetectionSummaryEvent" Tactic!=/^custom/i
+
+  // These fields must exist.
+  | Tactic=* AND Technique=*
+
+  // Top Tactic and Technique, and then do a count against them.
+  | groupBy([Tactic, Technique], function=count(AgentIdString, as="Detection Count"), limit=max)

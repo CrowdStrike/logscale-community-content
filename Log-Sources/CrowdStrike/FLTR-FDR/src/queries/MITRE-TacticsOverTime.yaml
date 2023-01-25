@@ -1,0 +1,21 @@
+name: MITRE - Tactics Over Time
+visualization:
+  options:
+    colorPalette: greenRed
+    labelAngle: 17
+    legendTitle: Detection Count
+    lx: Day
+  type: heat-map
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 30d
+queryString: |-
+  // Find MITRE events and ignore any custom tactics.
+  | EventType="Event_ExternalApiEvent" ExternalApiType="Event_DetectionSummaryEvent" Tactic!=/custom\s.*/i Tactic!=""
+
+  // Group it by tactic than get a count.
+  | groupBy([Tactic, @timestamp], function=count(AgentIdString), limit=max)
+
+  // Bucket the results.
+  | bucket(field="Tactic", limit=32)

@@ -1,0 +1,30 @@
+name: ComputerName
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // This function includes the ComputerName from an aid.
+  //
+  // To call this function in a query if you have it saved as part of a package, e.g. falcondata/zen:
+  // $"falcondata/zen:ComputerName"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"ComputerName"()
+
+  // First look for ones missing a ComputerName.
+  | case {
+      // Identify any events that have an aid but not a ComputerName.
+      // Neither of these overwrite the value if it already exists.
+      aid=* AND ComputerName!=*
+        // Grab the ComputerName from the aidmaster file.
+        | match(file="falcondata_aidmaster.csv", field=aid, include=ComputerName, ignoreCase=true, strict=true);
+        // Assign the value NotMatched to anything else.
+      * | default(field=ComputerName, value=NotMatched);
+    }
