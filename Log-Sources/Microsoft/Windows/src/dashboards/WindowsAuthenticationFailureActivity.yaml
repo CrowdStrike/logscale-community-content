@@ -1,0 +1,237 @@
+name: Windows Authentication Failure Activity
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  1440c50f-abbc-44fe-9892-f760167ce8bb:
+    x: 0
+    y: 8
+    height: 6
+    queryString: |-
+      @collect.channel = Security
+      | in("windows.EventID",values=["4625","4771","4768","4769","4776"])
+      | windows.EventData.Status != 0x0 windows.EventData.Status != 0
+      | match(file="falcon-logscale-community-content/windows-overview-pack/kerberoscodes.csv", column=Status, field=windows.EventData.Status, include=["Description", "Notes"], strict=false)
+      | match(file="falcon-logscale-community-content/windows-overview-pack/win_event_codes.ascii.csv", column=EventID, field=windows.EventID, include=["Description"], strict=false)
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+
+      | sankey(source="windows.EventData.IpAddress",target="windows.EventData.TargetUserName")
+    visualization: sankey
+    start: 30d
+    width: 7
+    title: Source to User Logon Failures
+    type: query
+  note-1672170488671-0:
+    x: 0
+    y: 0
+    height: 2
+    text: '**Dashboards**: [System Overview](/General_Purpose_Lab_Data/dashboards/P0Gnc4vRHCkcFdoIhTiOs5ezr7izR670)
+      | [Group Management](/General_Purpose_Lab_Data/dashboards/B5P8c9tNmKWNxi0ktrcnv4nTXLsWLXS7)
+      | [Logon Failures](/General_Purpose_Lab_Data/dashboards/mViNgWpKuoCgGCQIi2PJChePcgbzt1qk)
+      | [Users](/General_Purpose_Lab_Data/dashboards/NZafvZEdHkaeXHHCiVkvzFKrgk4HQSSK)
+      | [Process Investigation](General_Purpose_Lab_Data/dashboards/J7mbqZ9wPIHLzhYnORGsjcXOaBvqNDfr) '
+    width: 3
+    title: Links
+    type: note
+  0d31873c-c1fe-4934-af5f-b8bcd07db61d:
+    x: 10
+    y: 8
+    height: 6
+    queryString: |-
+      @collect.channel = Security
+      | in("windows.EventID",values=["4625","4771","4768","4769","4776",4624,4648])
+
+      | case {
+         in("windows.EventID",values=["4625","4771","4768","4769","4776"])
+      | windows.EventData.Status != 0x0  | LogonResult:= "Failure";
+          *;
+      }
+      | case {
+         in("windows.EventID",values=["4624","4648","4768","4769","4776"])
+      | windows.EventData.Status = 0x0 OR not windows.EventData.Status = * | LogonResult:= "Success";
+          *;
+      }
+      | User:=windows.EventData.TargetUserName
+
+      | User!=/\$/i and User!=/system/i
+      | groupBy(LogonResult)
+    start: 30d
+    width: 2
+    options:
+      innerRadius: 55
+      legendLabelOverflow: full
+      maxSeriesCount: 50
+      series: {}
+    visualization: pie-chart
+    title: LogonResult Breakdown
+    type: query
+  c3c2b8fc-f12c-4df8-a895-8456697ffedf:
+    x: 3
+    y: 0
+    height: 8
+    queryString: |-
+      @collect.channel = Security
+      | in("windows.EventID",values=["4625","4771","4768","4769","4776"])
+      | windows.EventData.Status != 0x0 windows.EventData.Status != 0
+      | match(file="falcon-logscale-community-content/windows-overview-pack/kerberoscodes.csv", column=Status, field=windows.EventData.Status, include=["Description", "Notes"], strict=false)
+      | match(file="falcon-logscale-community-content/windows-overview-pack/win_event_codes.ascii.csv", column=EventID, field=windows.EventID, include=["Description"], strict=false)
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+
+      | timeChart(windows.EventData.TargetUserName,buckets=30,span=1d,limit=50)
+    start: 30d
+    width: 4
+    options:
+      interpolation: monotone
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Authentication Failure Trends
+    type: query
+  af9d2bd9-7f35-4e67-b456-b28f7bfcbca6:
+    x: 7
+    y: 8
+    height: 3
+    queryString: |-
+      @collect.channel = Security
+
+      | windows.EventID = 4740
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | count()
+    start: 30d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: static
+      text-color: '#cce222'
+      use-colorised-thresholds: false
+      background-color: '#130b0b'
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Account Lockouts
+    type: query
+  3b5a7c8e-c596-4b54-b35a-54b4b2f506e2:
+    x: 7
+    y: 11
+    height: 3
+    queryString: |-
+      @collect.channel = Security
+
+      | windows.EventID = 4767
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | count()
+    start: 30d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: static
+      text-color: '#22e2a9'
+      use-colorised-thresholds: false
+      background-color: '#130b0b'
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: User Accounts Unlocked
+    type: query
+  3a889eae-4c20-4bc6-9537-86ae1b80390a:
+    x: 7
+    y: 0
+    height: 8
+    queryString: |-
+      @collect.channel = Security
+      | in("windows.EventID",values=["4625","4771","4768","4769","4776"])
+      | windows.EventData.Status != 0x0 windows.EventData.Status != 0
+      | match(file="falcon-logscale-community-content/windows-overview-pack/kerberoscodes.csv", column=Status, field=windows.EventData.Status, include=["Description", "Notes"], strict=false)
+      | match(file="falcon-logscale-community-content/windows-overview-pack/ntlmcodes.csv", column=Status, field=windows.EventData.Status, include=["Notes"],mode=glob, ignoreCase=true, strict=false)
+      | match(file="falcon-logscale-community-content/windows-overview-pack/win_event_codes.ascii.csv", column=EventID, field=windows.EventID, include=["Description"], strict=false)
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | StatusCode:=windows.EventData.Status
+      | EventID:=windows.EventID
+    start: 1y
+    width: 5
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"User","format":"text","width":100},{"type":"field","fieldName":"StatusCode","format":"text","width":140},{"type":"field","fieldName":"EventID","format":"text","width":140},{"type":"field","fieldName":"Description","format":"text","width":347},{"type":"field","fieldName":"Notes","format":"text","width":227}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'true'
+    visualization: list-view
+    title: Authentication Failure Table
+    type: query
+  22859f8f-1b70-4d8b-ac3a-bff77377788e:
+    x: 0
+    y: 2
+    height: 6
+    queryString: |-
+      @collect.channel = Security
+      | in("windows.EventID",values=["4625","4771","4768","4769","4776"])
+      | windows.EventData.Status != 0x0 windows.EventData.Status != 0
+      | match(file="falcon-logscale-community-content/windows-overview-pack/kerberoscodes.csv", column=Status, field=windows.EventData.Status, include=["Description", "Notes"], strict=false)
+      | match(file="falcon-logscale-community-content/windows-overview-pack/win_event_codes.ascii.csv", column=EventID, field=windows.EventID, include=["Description"], strict=false)
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+
+      | timeChart(span=1d)
+    start: 30d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 15
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 10
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      last-bucket: include
+      color-method: threshold
+      first-bucket: include
+      yAxisTitle: Authentication Failures
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Auth Failure Current Trend
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

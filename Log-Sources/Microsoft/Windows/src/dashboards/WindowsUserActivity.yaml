@@ -1,0 +1,236 @@
+name: Windows User Activity
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  note-1672180278193-0:
+    x: 0
+    y: 0
+    height: 3
+    text: '**Dashboards**: [System Overview](/General_Purpose_Lab_Data/dashboards/P0Gnc4vRHCkcFdoIhTiOs5ezr7izR670)
+      | [Group Management](/General_Purpose_Lab_Data/dashboards/B5P8c9tNmKWNxi0ktrcnv4nTXLsWLXS7)
+      | [Logon Failures](/General_Purpose_Lab_Data/dashboards/mViNgWpKuoCgGCQIi2PJChePcgbzt1qk)
+      | [Users](/General_Purpose_Lab_Data/dashboards/NZafvZEdHkaeXHHCiVkvzFKrgk4HQSSK)
+      | [Process Investigation](General_Purpose_Lab_Data/dashboards/J7mbqZ9wPIHLzhYnORGsjcXOaBvqNDfr) '
+    width: 3
+    title: Links
+    type: note
+  d2463938-2aa1-428a-95f7-6f59d5bd6201:
+    x: 7
+    y: 3
+    height: 6
+    queryString: |-
+      @collect.channel=Security
+      |windows.EventID=4624
+      |windows.EventData.LogonType=*
+      | User:=windows.EventData.TargetUserName
+      | LogonType:=windows.EventData.LogonType
+      | LogonType=?LogonType
+      | User=?User
+      | groupBy(windows.EventData.LogonType)
+    visualization: table-view
+    start: 30d
+    width: 2
+    title: Logon Type Breakdown
+    type: query
+  984647e9-089f-4625-81aa-14b651b14304:
+    x: 5
+    y: 3
+    height: 6
+    queryString: |-
+      @collect.channel = Security
+      | EventID:=windows.EventID
+      | EventID=4672
+      | User:=windows.EventData.SubjectUserName
+      | User!=/\$/i and User!=/system/i
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | top(windows.EventData.SubjectUserName)
+    visualization: pie-chart
+    start: 30d
+    width: 2
+    title: Top Privileged Logon Users
+    type: query
+  c47a320a-6b25-4bfe-9111-e35f6ae937b5:
+    x: 3
+    y: 0
+    height: 3
+    queryString: |-
+      @collect.channel = Security
+      | case {
+         in("windows.EventID",values=["4624","4648","4768","4769","4776"])
+      | windows.EventData.Status = 0x0 OR not windows.EventData.Status = * | LogonResult:= "Success";
+          *;
+      }
+      | User:=windows.EventData.TargetUserName
+      | User!=/\$/i and User!=/system/i
+      | LogonResult = Success
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | count(User,distinct=true)
+    start: 30d
+    width: 2
+    options:
+      background-color: '#b16dba'
+      default: {}
+      text-color: '#07d5ab'
+    visualization: single-value
+    title: Total Logons Distinct Users
+    type: query
+  b33ac037-043f-42da-8b64-3e62f18d280b:
+    x: 5
+    y: 0
+    height: 3
+    queryString: |-
+      @collect.channel = Security
+      | EventID:=windows.EventID
+      | EventID=4672
+      | User:=windows.EventData.SubjectUserName
+      | User!=/\$/i and User!=/system/i
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | count(User,distinct=true)
+    start: 1y
+    width: 2
+    options:
+      background-color: '#1c3497'
+      default: {}
+      text-color: '#fb8888'
+    visualization: single-value
+    title: Privileged User Activity Unique Count
+    type: query
+  3c06930c-366b-4950-b312-b269ee992c8f:
+    x: 7
+    y: 0
+    height: 3
+    queryString: |-
+      @collect.channel=Security
+      |windows.EventID=4624
+      |windows.EventData.LogonType=10
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | timeChart(span=1d)
+    start: 30d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 501.4
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: null
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: null
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: null
+      color-method: static
+      text-color: '#641162'
+      use-colorised-thresholds: false
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: RDP Event Count
+    type: query
+  1b6d9765-b9d5-4d72-a105-8ab441b50302:
+    x: 0
+    y: 3
+    height: 6
+    queryString: |-
+      @collect.channel = Security
+      | EventID:=windows.EventID
+      | EventID=4672
+      | User:=windows.EventData.SubjectUserName
+      | User!=/\$/i and User!=/system/i
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | top(windows.Computer)
+    start: 30d
+    width: 5
+    options:
+      labelAngle: 43
+      yScaleType: linear
+      barChartType: grouped
+      seriesPadding: 0.09
+      sortOrder: descending
+      categoryPadding: 0.52
+      inputDataFormat: ''
+    visualization: bar-chart
+    title: Top Privileged Logons by Source Machine
+    type: query
+  f3fba45c-d147-41f7-84d6-1b4b186f5faf:
+    x: 7
+    y: 9
+    height: 4
+    queryString: |-
+      @collect.channel=Security
+      |windows.EventID=4624
+      |windows.EventData.LogonType=10
+      | User:=windows.EventData.TargetUserName
+      | User=?User
+      | sankey(source="windows.EventData.IpAddress",target="windows.EventData.WorkstationName")
+    visualization: sankey
+    start: 30d
+    width: 5
+    title: RDP Activity
+    type: query
+  cb12ec90-6cdf-4ed8-80cf-ff778c39f9eb:
+    x: 0
+    y: 9
+    height: 4
+    queryString: |-
+      @collect.channel=Security
+      |windows.EventID=4624
+      |windows.EventData.LogonType=*
+      | LogonType:=windows.EventData.LogonType
+      | UserName:=windows.EventData.TargetUserName
+      | LogonType=?LogonType
+      | UserName=?User
+      | UserName!=/\$/i and UserName!=/system/i
+      | case { LogonType="2" | Logon_Type:="Interactive"; LogonType="3" | Logon_Type:="Network";
+      LogonType="4" | Logon_Type:="Batch"; LogonType="5" | Logon_Type:="Service";
+      LogonType="6" | Logon_Type:="Proxy"; LogonType="7" | Logon_Type:="Unlock";
+      LogonType="8" | Logon_Type:="Network clear text"; LogonType="9" | Logon_Type:="New Credentials";
+      LogonType="10" | Logon_Type:="RDP"; LogonType="11" | Logon_Type:="Cached Credentials";
+      LogonType="12" | Logon_Type:="Auditing"; LogonType="13" | Logon_Type:="Unlock Workstation";*}
+      | groupBy([UserName,Logon_Type], limit=max)
+    start: 30d
+    width: 7
+    options:
+      colorPalette: monoTeal
+      includeHistogram: false
+      labelAngle: 0
+      reversePalette: false
+    visualization: heat-map
+    title: User Logon Type Heat Map
+    type: query
+  note-1672184209394-0:
+    x: 9
+    y: 0
+    height: 9
+    text: "<div style=\"color:white\">###Logon Type 2: \nInteractive (logon at keyboard\
+      \ and screen of system)\n\n###Logon Type 3: \nNetwork (i.e. connection to shared\
+      \ folder on this computer from elsewhere on network)\n\n###Logon Type 4: \n\
+      Batch (i.e. scheduled task)\n\n###Logon Type 5: \nService (Service startup)\n\
+      \n###Logon Type 7: \nUnlock (i.e. unattended workstation with password protected\
+      \ screen saver)\n\n###Logon Type 8: \nNetwork Cleartext (Logon with credentials\
+      \ sent in the clear text. Most often indicates a logon to IIS with \"basic authentication\"\
+      ) See this article for more information.\n\n\n###Logon Type 9: \nNew Credentials\
+      \ such as with RunAs or mapping a network drive with alternate credentials.\
+      \  This logon type does not seem to show up in any events.  If you want to track\
+      \ users attempting to logon with alternate credentials see 4648.  MS says \"\
+      A caller cloned its current token and specified new credentials for outbound\
+      \ connections. The new logon session has the same local identity, but uses different\
+      \ credentials for other network connections.\"\n\n\n###Logon Type 10: \nRemote\
+      \ Interactive (Terminal Services, Remote Desktop or Remote Assistance)\n\n###Logon\
+      \ Type 11: \nCached Interactive (logon with cached domain credentials such as\
+      \ when logging on to a laptop when away from the network)\n\n\n\nreference:https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventID=4624</div>"
+    width: 3
+    title: Logon Types
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.4.0

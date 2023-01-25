@@ -1,0 +1,178 @@
+name: Windows Group Management
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  6dd17ce0-f73e-4899-8174-cb8c542e0404:
+    x: 6
+    y: 5
+    height: 5
+    queryString: |-
+      #type=windows
+      | in("windows.EventID",values=["4729","4733"])
+      | windows.EventData.MemberName=/^CN=(?<UserRemoved>(([^,]+)))/
+      | "Person Removing User" := windows.EventData.SubjectUserName
+      | "Group Removed From" := windows.EventData.TargetUserName
+      | windows.EventData.TargetUserName=?groupRemovedFrom  windows.EventData.SubjectUserName=?admin UserRemoved=?UserRemoved
+      | groupby([@timestamp,"Person Removing User","UserRemoved","windows.EventData.MemberName","Group Removed From"]) | sort(@timestamp,order=desc)
+    visualization: table-view
+    start: 1y
+    width: 6
+    title: Users Removed from Groups
+    type: query
+  53fdbd7c-45aa-45cb-9908-ff9d6f2b8375:
+    x: 0
+    y: 5
+    height: 5
+    queryString: |-
+      #type=windows
+      |in("windows.EventID",values=["4728",4732])
+      | windows.EventData.MemberName=/^CN=(?<UserAdded>(([^,]+)))/
+      | "Person Adding User" := windows.EventData.SubjectUserName
+      | "Group Added To" := windows.EventData.TargetUserName
+      | windows.EventData.TargetUserName=?groupAddedTo  windows.EventData.SubjectUserName=?admin UserAdded=?UserAdded
+      | groupby([@timestamp,"Person Adding User","UserAdded","windows.EventData.MemberName","Group Added To"]) | sort(@timestamp,order=desc)
+    visualization: table-view
+    start: 1y
+    width: 6
+    title: Users Added to Groups
+    type: query
+  note-1672165394870-0:
+    x: 0
+    y: 0
+    height: 5
+    text: "**Dashboards**: [System Overview](/General_Purpose_Lab_Data/dashboards/P0Gnc4vRHCkcFdoIhTiOs5ezr7izR670)\
+      \ | [Group Management](/General_Purpose_Lab_Data/dashboards/B5P8c9tNmKWNxi0ktrcnv4nTXLsWLXS7)\
+      \ | [Logon Failures](/General_Purpose_Lab_Data/dashboards/mViNgWpKuoCgGCQIi2PJChePcgbzt1qk)\
+      \ | [Users](/General_Purpose_Lab_Data/dashboards/NZafvZEdHkaeXHHCiVkvzFKrgk4HQSSK)\
+      \ | [Process Investigation](General_Purpose_Lab_Data/dashboards/J7mbqZ9wPIHLzhYnORGsjcXOaBvqNDfr)\
+      \ \n"
+    width: 3
+    title: Links
+    type: note
+  fc367163-90e3-4f93-a9dc-df0fa547d125:
+    x: 8
+    y: 10
+    height: 4
+    queryString: |-
+      #type=windows
+      | in("windows.EventID",values=["4729","4733"])
+      | timeChart(span=7d)
+    start: 30d
+    width: 4
+    options:
+      trend-value: abs
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 10
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 5
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: threshold
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      sparkline-type: gradient
+    visualization: single-value
+    title: Group Removed Trend
+    type: query
+  a2cdf833-5964-4625-9e45-17cac5bf230e:
+    x: 3
+    y: 0
+    height: 5
+    queryString: |-
+      #type=windows
+      | in("windows.EventID",values=["4729","4733","4728","4732"])
+
+
+      | case {
+          windows.EventID=4729 | GroupManagment := "UserRemoved";
+          windows.EventID=4733 | GroupManagment := "UserRemoved";
+          windows.EventID=4728 | GroupManagment := "UserAdded";
+          windows.EventID=4732 | GroupManagment := "UserAdded";
+          *;
+      }
+      | timechart(GroupManagment)
+    start: 30d
+    width: 9
+    options:
+      colorPalette: monoPeach
+    visualization: heat-map
+    title: Group Management Heatmap Trend
+    type: query
+  da6eb9aa-9cbf-4aac-b050-7c04c01537c6:
+    x: 4
+    y: 10
+    height: 4
+    queryString: |-
+      #type=windows
+      | in("windows.EventID",values=["4729","4733","4728","4732"])
+
+
+      | case {
+          windows.EventID=4729 | GroupManagment := "UserRemoved";
+          windows.EventID=4733 | GroupManagment := "UserRemoved";
+          windows.EventID=4728 | GroupManagment := "UserAdded";
+          windows.EventID=4732 | GroupManagment := "UserAdded";
+          *;
+      }
+      | timechart(GroupManagment)
+    start: 30d
+    width: 4
+    options:
+      interpolation: natural
+      showDataPoints: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: line
+      show-utc: false
+      imputation: none
+      regression: false
+      regressionType: exp
+    visualization: time-chart
+    title: Group Adds / Removed Timeline
+    type: query
+  5a900622-ef21-48d3-a657-b336a6a25302:
+    x: 0
+    y: 10
+    height: 4
+    queryString: |-
+      #type=windows
+      |in("windows.EventID",values=["4728",4732])
+      | timeChart(span=7d)
+    start: 30d
+    width: 4
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 15
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 7
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 5
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Group Add Trend
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

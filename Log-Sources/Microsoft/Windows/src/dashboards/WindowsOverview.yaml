@@ -1,0 +1,118 @@
+name: Windows Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  note-1672164737488-0:
+    x: 0
+    y: 0
+    height: 2
+    text: '**Dashboards**: [System Overview](/General_Purpose_Lab_Data/dashboards/P0Gnc4vRHCkcFdoIhTiOs5ezr7izR670)
+      | [Group Management](/General_Purpose_Lab_Data/dashboards/B5P8c9tNmKWNxi0ktrcnv4nTXLsWLXS7)
+      | [Logon Failures](/General_Purpose_Lab_Data/dashboards/mViNgWpKuoCgGCQIi2PJChePcgbzt1qk)
+      | [Users](/General_Purpose_Lab_Data/dashboards/NZafvZEdHkaeXHHCiVkvzFKrgk4HQSSK)
+      | [Process Investigation](General_Purpose_Lab_Data/dashboards/J7mbqZ9wPIHLzhYnORGsjcXOaBvqNDfr) '
+    width: 3
+    title: Links
+    type: note
+  b7d10abf-f32d-4054-a9dc-f146fbb68f01:
+    x: 3
+    y: 0
+    height: 5
+    queryString: |-
+      * | #type=windows
+      | match(file="falcon-logscale-community-content/windows-overview-pack/win_event_codes.ascii.csv", column=EventID, field=windows.EventID, include=["Description"], strict=false)
+      | top([windows.EventID,Description],limit=25)
+
+      //Windows Ultimate Security
+      | format("[Learn More](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-%s)", field=[windows.EventID], as="Microsoft Documentation")
+      |sort(_count,order=desc)
+    visualization: table-view
+    start: 1d
+    width: 7
+    title: Top 25 EventIDs
+    type: query
+  e13b08cb-9dc4-44aa-beb1-cf3c671719e3:
+    x: 0
+    y: 2
+    height: 3
+    queryString: |-
+      #type=windows
+      | timeChart(span=1h)
+    start: 1d
+    width: 3
+    options:
+      color-method: threshold
+      default: {}
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Total Events
+    type: query
+  8ad7326e-5faa-47d1-86d2-789b065d83bf:
+    x: 10
+    y: 0
+    height: 5
+    queryString: |-
+      #type=windows
+
+
+      | case {
+          windows.Level=1 | LogLevel := "Critical";
+          windows.Level=2 | LogLevel := "Error";
+          windows.Level=3 | LogLevel := "Warning";
+          windows.Level=4 | LogLevel := "Informational";
+          windows.Level=0 | LogLevel := "Informational";
+          *; }
+
+      | groupBy("LogLevel")
+    visualization: table-view
+    start: 30d
+    width: 2
+    title: Events Log Levels
+    type: query
+  3bb84bf7-1a71-4b9c-b69e-334cdd4be297:
+    x: 7
+    y: 5
+    height: 9
+    queryString: |-
+      #type=windows
+      | groupBy(@collect.channel)
+    start: 1d
+    width: 5
+    options:
+      series: {}
+      valuesOnBars: true
+      yScaleType: log
+      barChartType: grouped
+      seriesPadding: 0
+      categoryPadding: 0.62
+      inputDataFormat: ''
+    visualization: bar-chart
+    title: Top Collected Channels
+    type: query
+  dc693591-95ce-480f-9a48-80a0484d3473:
+    x: 0
+    y: 5
+    height: 9
+    queryString: |-
+      #type=windows
+       | timeChart(@collect.channel)
+    start: 1d
+    width: 7
+    options:
+      series: {}
+      interpolation: basis
+      tension: 1
+      showDataPoints: true
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Collected Channel Trends
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
