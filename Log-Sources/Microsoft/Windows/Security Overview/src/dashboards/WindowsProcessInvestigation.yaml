@@ -1,0 +1,162 @@
+name: Windows Process Investigation
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  note-1672249323017-0:
+    x: 0
+    y: 0
+    height: 3
+    text: "**Dashboards**: [System Overview](/General_Purpose_Lab_Data/dashboards/P0Gnc4vRHCkcFdoIhTiOs5ezr7izR670)\
+      \ | [Group Management](/General_Purpose_Lab_Data/dashboards/B5P8c9tNmKWNxi0ktrcnv4nTXLsWLXS7)\
+      \ | [Logon Failures](/General_Purpose_Lab_Data/dashboards/mViNgWpKuoCgGCQIi2PJChePcgbzt1qk)\
+      \ | [Users](/General_Purpose_Lab_Data/dashboards/NZafvZEdHkaeXHHCiVkvzFKrgk4HQSSK)\
+      \ | [Process Investigation](General_Purpose_Lab_Data/dashboards/J7mbqZ9wPIHLzhYnORGsjcXOaBvqNDfr)\
+      \ \n"
+    width: 3
+    title: Links
+    type: note
+  40ff1bf7-a2d6-4f49-b561-212293f347ef:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |-
+      @collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.NewProcessId=?ProcessId
+      | test(?paramFileName != "*")
+      | windows.EventData.NewProcessName =  /(?<FileName>[^\\]*$)/i
+      | FileName = ?paramFileName
+      | rename(field=windows.EventData.NewProcessName, as=OriginalFileName) | rename(field=windows.EventData.CommandLine, as=OriginalCommandLine)
+      | groupBy([@timestamp,windows.Computer,windows.EventData.NewProcessId, OriginalFileName, OriginalCommandLine])
+      | sort(_count, order=asc)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Original Processes
+    type: query
+  6cab01be-8d4e-422f-9432-917bb1da5661:
+    x: 0
+    y: 12
+    height: 5
+    queryString: |-
+      @collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.NewProcessId=?ProcessId
+      | test(?paramFileName != "*")
+      | windows.EventData.NewProcessName =  /(?<FileName>[^\\]*$)/i
+      | FileName = ?paramFileName
+      | rename(field=windows.EventData.NewProcessName, as=OriginalFileName) | rename(field=windows.EventData.CommandLine, as=OriginalCommandLine)
+      | join({@collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName}, field=windows.EventData.ProcessId,  include=[windows.EventData.ParentProcessName,windows.EventData.NewProcessName],max=100000)
+      | rename(field=windows.EventData.ParentProcessName, as=ParentFileName) | rename(field=windows.EventData.NewProcessName,as=ChildrenProcesses)
+       | groupBy(["ParentFileName","windows.EventData.ProcessId"],function=collect(["ChildrenProcesses"]))
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Other Children of Parent
+    type: query
+  dcf7cccc-2b12-4fe5-9409-0df12137bcad:
+    x: 0
+    y: 21
+    height: 4
+    queryString: |-
+      @collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.NewProcessId=?ProcessId
+      | test(?paramFileName != "*")
+      | windows.EventData.NewProcessName =  /(?<FileName>[^\\]*$)/i
+      | FileName = ?paramFileName
+      | rename(field=windows.EventData.NewProcessName, as=OriginalFileName) | rename(field=windows.EventData.CommandLine, as=OriginalCommandLine)
+      | join({@collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.NewProcessId=?ProcessId windows.EventData.NewProcessName=?paramFileName}, field=windows.EventData.NewProcessId, include=[windows.EventData.ParentProcessName,windows.EventData.ProcessId])
+      | rename(field=windows.EventData.ParentProcessName, as=ParentFileName) | rename(field=windows.EventData.ProcessId,as=ParentProcessId)
+      | groupBy([ParentFileName, ParentCommandLine])
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Show Parent of Process
+    type: query
+  ea861476-d4ba-42a3-a1da-84caab5deabd:
+    x: 6
+    y: 7
+    height: 5
+    queryString: |-
+      @collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.NewProcessId=?ProcessId
+      | test(?paramFileName != "*")
+      | windows.EventData.NewProcessName =  /(?<FileName>[^\\]*$)/i
+      | FileName = ?paramFileName
+      | rename(field=windows.EventData.NewProcessName, as=OriginalFileName) | rename(field=windows.EventData.CommandLine, as=OriginalCommandLine)
+      | join({@collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.NewProcessId=?ProcessId windows.EventData.NewProcessName=?paramFileName}, field=windows.EventData.NewProcessId, include=[windows.EventData.ParentProcessName,windows.EventData.ProcessId])
+      | rename(field=windows.EventData.ParentProcessName, as=ParentFileName) | rename(field=windows.EventData.ProcessId,as=ParentProcessId)
+       | top([ParentFileName])
+    visualization: pie-chart
+    start: 7d
+    width: 6
+    title: Parent File Names
+    type: query
+  note-1647472954694-0:
+    x: 3
+    backgroundColor: '#25c1af'
+    y: 0
+    height: 3
+    text: "# Workflow Instructions\n\nStart by entering a FileName in the parameter\
+      \ field above. Then the widgets below will populate, showing where that file\
+      \ has run, and all the child and parent processes. This is useful for looking\
+      \ for trends. To get more specific information add a ComputerName to the parameter\
+      \ field above to limit to a single endpoint. To focus on a specific process\
+      \ copy the ProcessId from the widget below and paste it to the parameter above\
+      \ to show only that one process. "
+    width: 9
+    title: HowTo
+    type: note
+  0209fc60-0ca8-44aa-986b-cfd273ff2ee1:
+    x: 0
+    y: 7
+    height: 5
+    queryString: |-
+      @collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.ProcessId=?ProcessId
+      | test(?paramFileName != "*")
+      | windows.EventData.NewProcessName =  /(?<FileName>[^\\]*$)/i
+      | FileName = ?paramFileName
+      | rename(field=windows.EventData.NewProcessName, as=OriginalFileName) | rename(field=windows.EventData.CommandLine, as=OriginalCommandLine)
+      | join({@collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.ProcessId=?ProcessId  windows.EventData.ParentProcessName = ?paramFileName}, field=windows.EventData.NewProcessId,key=windows.EventData.ProcessId, include=[windows.EventData.NewProcessName, windows.EventData.CommandLine])
+      | rename(field=windows.EventData.NewProcessName, as=ChildFileName) | rename(field=windows.EventData.CommandLine, as=ChildCommandLine)
+       | top([ChildFileName])
+    start: 7d
+    width: 6
+    options:
+      series: {}
+    visualization: pie-chart
+    title: Child Processes
+    type: query
+  52216388-d9f2-4425-a1b3-4f8ea591c13d:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      @collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.ProcessId=?ProcessId
+      | test(?paramFileName != "*")
+      | windows.EventData.NewProcessName =  /(?<FileName>[^\\]*$)/i
+      | FileName = ?paramFileName
+      | rename(field=windows.EventData.NewProcessName, as=OriginalFileName) | rename(field=windows.EventData.CommandLine, as=OriginalCommandLine)
+      | join({@collect.channel = Security
+      | windows.EventID = 4688  windows.Computer=?ComputerName windows.EventData.ProcessId=?ProcessId  windows.EventData.ParentProcessName = ?paramFileName}, field=windows.EventData.NewProcessId,key=windows.EventData.ProcessId, include=[windows.EventData.NewProcessName, windows.EventData.CommandLine])
+      | rename(field=windows.EventData.NewProcessName, as=ChildFileName) | rename(field=windows.EventData.CommandLine, as=ChildCommandLine)
+       | groupBy([ChildFileName, ChildCommandLine])
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Show Children of Process
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  paramFileName:
+    defaultValue: '*'
+    label: file name
+    order: 1
+    type: text

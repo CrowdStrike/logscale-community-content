@@ -1,0 +1,89 @@
+name: Audit Activity - Past 7 Days
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 24h
+widgets:
+  9c24041e-2219-43df-9fb7-84f6411fd50d:
+    x: 0
+    y: 0
+    description: Pie chart showing which users have been active in the cluster in
+      the past 7 days
+    height: 5
+    queryString: groupBy(actor.user.username) | sort()
+    visualization: pie-chart
+    start: 7d
+    width: 4
+    title: User Activity
+    type: query
+  5597cec1-675c-412e-a301-cd895360e5d3:
+    x: 0
+    y: 9
+    height: 3
+    queryString: 'actionName =~ in(values=["addUsers","removeUsers"]) '
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","width":210},{"type":"field","fieldName":"type","width":205},{"type":"field","fieldName":"actionName","width":109},{"type":"field","fieldName":"userNames[0]","width":198},{"type":"field","fieldName":"groupName","width":193},{"type":"field","fieldName":"actor.user.username","width":188}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: User Group Management
+    type: query
+  e0a705b8-3b67-46e6-b76c-2ff208389510:
+    x: 8
+    y: 5
+    height: 4
+    queryString: user.signin | groupby(field=[actor.user.username,actor.ip]) | sort(actor.user.username)
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: User Login by IP Address
+    type: query
+  ee05ae5d-416f-4fd7-ae4c-69e6031f4496:
+    x: 0
+    y: 5
+    description: User sign ins over the past 7 days
+    height: 4
+    queryString: type = user.signin | groupBy(actor.user.username) | sort()
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: User Sign Ins
+    type: query
+  bca65404-d5f2-4a73-bbcc-f218acd34743:
+    x: 3
+    y: 5
+    description: Grouping of types of sensitive activities by user
+    height: 4
+    queryString: '#sensitive = true | groupBy(field=[actor.user.username,type]) |
+      sort()'
+    visualization: table-view
+    start: 7d
+    width: 5
+    title: User Activity/Type (Sensitive)
+    type: query
+  654ff8c5-bf34-4aab-a5f3-0c65ca7d56d7:
+    x: 8
+    y: 0
+    description: Level of activity by repository for the past 7 days
+    height: 5
+    queryString: groupBy(repoName) | sort()
+    visualization: pie-chart
+    start: 7d
+    width: 4
+    title: Repository Activity
+    type: query
+  cf3ab032-d3ff-4970-9f10-265b3036f79e:
+    x: 4
+    y: 0
+    description: Distribution of activity types for the past 7 days.
+    height: 5
+    queryString: groupBy(type) | sort()
+    visualization: pie-chart
+    start: 7d
+    width: 4
+    title: Activity Type
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.3.0

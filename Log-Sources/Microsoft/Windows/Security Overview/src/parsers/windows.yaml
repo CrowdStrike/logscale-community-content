@@ -1,0 +1,23 @@
+name: windows
+tests:
+- 'A token right was adjusted. Subject: Security ID: S-1-5-18 Account Name: DC1$ Account
+  Domain: AD-BUZZALOO Logon ID: 0x3E7 Target Account: Security ID: S-1-5-18 Account
+  Name: DC1$ Account Domain: AD-BUZZALOO Logon ID: 0x3E7 Process Information: Process
+  ID: 0x634 Process Name: C:\Windows\System32\svchost.exe Enabled Privileges: SeAssignPrimaryTokenPrivilege
+  SeIncreaseQuotaPrivilege SeSecurityPrivilege SeTakeOwnershipPrivilege SeLoadDriverPrivilege
+  SeSystemtimePrivilege SeBackupPrivilege SeRestorePrivilege SeShutdownPrivilege SeSystemEnvironmentPrivilege
+  SeUndockPrivilege SeManageVolumePrivilege Disabled Privileges: -'
+- 'An account was logged off. Subject: Security ID: S-1-5-18 Account Name: DC1$ Account
+  Domain: AD-BUZZALOO Logon ID: 0x16A8F1CEA Logon Type: 3 This event is generated
+  when a logon session is destroyed. It may be positively correlated with a logon
+  event using the Logon ID value. Logon IDs are only unique between reboots on the
+  same computer.'
+- 'The Windows Filtering Platform has permitted a connection. Application Information:
+  Process ID: 2700 Application Name: \device\harddiskvolume2\program files\elastic\beats\8.0.1\filebeat\filebeat.exe
+  Network Information: Direction: Outbound Source Address: 192.168.2.33 Source Port:
+  49727 Destination Address: 44.235.151.134 Destination Port: 443 Protocol: 6 Filter
+  Information: Filter Run-Time ID: 86450 Layer Name: Connect Layer Run-Time ID: 48'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: kvParse(@rawstring) | findTimestamp(addErrors=false)
+tagFields: []

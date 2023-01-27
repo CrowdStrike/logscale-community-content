@@ -1,0 +1,25 @@
+name: cef
+tests:
+- 'CEF:0|Incapsula|SIEMintegration|1|1|Normal|0| fileId=0000000000000000001 sourceServiceName=www.example.com
+  siteid=0000011 suid=0000111 requestClientApplication=Mozilla/5.0+(compatible; UptimeRobot/2.0;
+  http://www.uptimerobot.com/) deviceFacility=dfw cs2=false cs2Label=Javascript Support
+  cs3=false cs3Label=CO Support cs1=NA cs1Label=Cap Support cs4=aa45a37f-7130-4da2-bcf6-72e1a9bd9532
+  cs4Label=VID cs5=7322da0f6df8b27cd4770f288f300309fec968c732ceb37508f599398f3939df5808b09545aac7b376d2db6326a1f674e45115380b29d6458be2069588d604b2ac55c6906d10948e467377c52389503e025ba6bdcb70600119e4da09a7dc349b
+  cs5Label=clappsig dproc=Site Helper cs6=UptimeRobot cs6Label=clapp ccode=US cicode=New
+  Castle cs7=39.587 cs7Label=latitude cs8=-75.6112 cs8Label=longitude Customer=example
+  start=1665420152885 request=example.com/example ref=http://example.co.nz/ requestMethod=HEAD
+  cn1=200 app=HTTPS act=REQ_PASSED deviceExternalId=1161190558426402315 sip=192.0.2.142
+  spt=443 in=0 xff=198.51.100.47 cs10=[{"rule_id":"568142346","type":"AD_HEADER_RW","header_name":"Content-Security-Policy-Report-Only","header_rewrite":"font-src
+  ''self'' ''unsafe-eval'' ''unsafe-hashes'' ''unsafe-inline'' data: blob: use.typekit.net;
+  script-src ''self'' ''unsafe-eval'' ''unsafe-hashes'' ''unsafe-inline'' data: blob:
+  www.googletagmanager.com use.fontawesome.com js.hs-scripts.com ml314.com; style-src
+  ''self'' ''unsafe-eval'' ''unsafe-hashes'' ''unsafe-inline'' data: blob: p.typekit.net
+  use.typekit.net; default-src ''self'' ''unsafe-eval'' ''unsafe-hashes'' ''unsafe-inline''
+  data: blob: ; form-action ''none'' data: blob: ; frame-ancestors ''self'' ; report-uri
+  /csp_report"}] cs10Label=Rule Info cpt=42224 src=203.0.113.25 ver=TLSv1.3 TLS_AES_128_GCM_SHA256
+  end=1665420153144'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |
+  parseCEF(@rawstring) | time := formatTime("%Y/%m/%d %H:%M:%S", field=cef.ext.start, timezone=Z)
+tagFields: []

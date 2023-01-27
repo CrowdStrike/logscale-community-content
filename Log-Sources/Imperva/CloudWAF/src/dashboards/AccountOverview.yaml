@@ -1,0 +1,308 @@
+name: Account Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  642484ba-4be3-4dc6-803f-6e08fab70581:
+    x: 8
+    y: 3
+    description: 'REQ_CHALLENGED_X: If a challenge was returned to the client'
+    height: 2
+    queryString: |-
+      | cef.ext.act="REQ_BAD_*"
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 1
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -2
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#cc3600'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Bad Requests
+    type: query
+  2f8ef281-946c-40cc-95aa-381e43e38a58:
+    x: 0
+    y: 5
+    description: Visually shows source traffic to onboarded web applications and websites.
+    height: 6
+    queryString: |-
+      | cef.ext.sourceServiceName = ?FQDN
+      | worldMap(lat=cef.label.latitude, lon=cef.label.longitude)
+    start: 1d
+    width: 7
+    options:
+      magnitudeMode: size
+      fixedSize: 11
+      projection: mercator
+      norm: true
+      opacityMode: size
+      zLevel: 0
+    visualization: world-map
+    title: Countries Accessing Web Application / Websites
+    type: query
+  7cfa29ca-d5ac-4b75-9d8e-a6bd9e5243f5:
+    x: 4
+    y: 3
+    description: 'REQ_CACHED_X: If a response was returned from the data center''s
+      cache'
+    height: 2
+    queryString: |-
+      | cef.ext.act="REQ_CACHED_*"
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 10000
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 5000
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: 50
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 5
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#cc3600'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Cached Requests
+    type: query
+  003a3b1e-b33f-4fd1-95e8-d8ff2b12e7f2:
+    x: 11
+    y: 5
+    description: Count of all seen web applications and websites in the last 24 hours.
+    height: 3
+    queryString: |-
+      | groupBy(("cef.ext.sourceServiceName"), function=count())
+      | stats()
+    start: 1d
+    width: 1
+    options:
+      background-color: ''
+      default: {}
+      text-color: '#2f63ca'
+    visualization: single-value
+    title: Sites
+    type: query
+  3e23b535-54a6-4999-a563-0c87aa532ee6:
+    x: 0
+    y: 0
+    description: Visually shows all traffic over the last 1 day in buckets of 15 minutes
+      across all web applications and wesites.
+    height: 3
+    queryString: |-
+      | cef.ext.act = *
+      | cef.ext.sourceServiceName = ?FQDN
+      | timeChart()
+    start: 1d
+    width: 12
+    options:
+      legendPosition: bottom
+      series:
+        _count:
+          color: '#2c62ce'
+      gradient: false
+      interpolation: step-after
+      xAxisTitle: Time
+      legendLabelOverflow: truncate
+      legend: false
+      showDataPoints: true
+      connect-points: false
+      yAxisScale: linear
+      plotType: area
+      maxSeriesCount: 50
+      show-utc: false
+      imputation: none
+      yAxisTitle: Events
+      stacking: none
+      regression: true
+      regressionType: linear
+    visualization: time-chart
+    title: All Traffic over time
+    type: query
+  0855c84f-c939-48f6-b394-276a547c212e:
+    x: 2
+    y: 3
+    description: 'REQ_PASSED: If the request was routed to the site''s web server'
+    height: 2
+    queryString: |-
+      | cef.ext.act="REQ_PASSED"
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 10000
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 5000
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: 50
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 5
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#cc00b8'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Allowed Requests
+    type: query
+  16df78d8-8ef5-4f6e-bc63-0265a80c8f99:
+    x: 7
+    y: 8
+    description: Table list of the top 5 countries by visit.
+    height: 3
+    queryString: |-
+      | cef.ext.sourceServiceName = ?FQDN
+      | top(cef.ext.ccode, limit=5)
+    visualization: table-view
+    start: 1d
+    width: 5
+    title: Top 5 countries
+    type: query
+  41cd073b-3795-48ba-a4f5-7c83858e6914:
+    x: 10
+    y: 3
+    description: 'REQ_BLOCKED_X: If the request was blocked'
+    height: 2
+    queryString: |-
+      | cef.ext.act="REQ_CHALLENGE_*"
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 1
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -2
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#cc3600'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Challenged Requests
+    type: query
+  0315e023-9c65-47a2-b72c-b7d46226d0d4:
+    x: 6
+    y: 3
+    description: 'REQ_BAD_X: If a protocol or network error occurred'
+    height: 2
+    queryString: |-
+      | cef.ext.act="REQ_BLOCKED_*"
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 1
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: -1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: -2
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#cc0022'
+      default:
+        bg: inherit
+        txt: rgb(239 68 68)
+    visualization: single-value
+    title: Blocked Requests
+    type: query
+  21ddb249-9ad4-4b8a-a826-f4e8f10b34ad:
+    x: 0
+    y: 3
+    description: All incoming requests inclusive of both good and bad traffic.
+    height: 2
+    queryString: |-
+      | cef.ext.act=*
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 2
+    options:
+      background-color: ''
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: All Requests
+    type: query
+  edc2cd7f-d927-485f-98b0-6c6c80b6ebe8:
+    x: 7
+    y: 5
+    description: 'Basic information about web applications and websites onboarded
+      in the Imperva Cloud WAF Platform including Account and Site ID''s useful for
+      API Calls. Note: This may not show all onboarded web application if there has
+      been no traffic to them in the last 24 hours.'
+    height: 3
+    queryString: '| groupby(field=[cef.ext.sourceServiceName, cef.ext.siteid, cef.ext.suid])'
+    visualization: table-view
+    start: 1d
+    width: 4
+    title: Web Application/s
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  FQDN:
+    label: FQDN
+    query: top(cef.ext.sourceServiceName)
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cef.ext.sourceServiceName

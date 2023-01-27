@@ -1,0 +1,196 @@
+name: Search
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  8cd67165-62d2-4aec-baf0-fe7b0812aa38:
+    x: 0
+    y: 5
+    height: 2
+    queryString: |-
+      | cef.name != "Normal"
+      | cef.ext.src=?sourceIP
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Security Events
+    type: query
+  05ad8e1d-0b96-4769-b95a-56cce5ce5025:
+    x: 7
+    y: 3
+    description: Top 3 locations when default.
+    height: 4
+    queryString: |-
+      | cef.ext.src = ?sourceIP
+      | cef.ext.sourceServiceName = ?FQDN
+      | top(cef.ext.src, limit=3)
+      | ipLocation(cef.ext.src)
+    visualization: table-view
+    start: 1d
+    width: 5
+    title: Top 3 Locations
+    type: query
+  fe6e0cb6-9902-4489-b05c-e79edd059351:
+    x: 3
+    y: 3
+    height: 4
+    queryString: |-
+      | cef.ext.src = ?sourceIP
+      | cef.ext.sourceServiceName = ?FQDN
+      | groupby(field=[cef.label.clapp])
+    start: 1d
+    width: 2
+    options:
+      innerRadius: 0
+      legendLabelOverflow: full
+      maxSeriesCount: 4
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Client used
+    type: query
+  6aa320fa-2e3b-4310-8789-ccda76ec2547:
+    x: 0
+    y: 3
+    height: 2
+    queryString: |-
+      | cef.name = "Normal"
+      | cef.ext.src=?sourceIP
+      | cef.ext.sourceServiceName = ?FQDN
+      | count(cef.ext.act)
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 9999999
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 8888888
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: -1
+      color-method: threshold
+      use-colorised-thresholds: true
+      background-color: '#CC0022'
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Non-Security Events
+    type: query
+  dea91a20-f8fb-4287-b30c-0219ee8619dc:
+    x: 0
+    y: 0
+    description: Events over time, filtered using parameter "sourceIP" and/or "FQDN".
+      Default value is *.
+    height: 3
+    queryString: |-
+      | cef.ext.act = *
+      | cef.ext.src = ?sourceIP
+      | cef.ext.sourceServiceName = ?FQDN
+      | timeChart()
+    start: 1d
+    width: 12
+    options:
+      interpolation: step-after
+      xAxisTitle: Time
+      legend: false
+      showDataPoints: true
+      connect-points: false
+      yAxisScale: linear
+      regression: true
+      imputation: none
+      yAxisTitle: Requests
+      stacking: none
+    visualization: time-chart
+    title: Events over time
+    type: query
+  3bd3810a-3de9-48ae-bd5d-8635c1dc8d9a:
+    x: 5
+    y: 3
+    height: 4
+    queryString: |-
+      | cef.ext.src = ?sourceIP
+      | cef.ext.sourceServiceName = ?FQDN
+      | groupby(field=[cef.name])
+    start: 1d
+    width: 2
+    options:
+      innerRadius: 0
+      maxLegendRows: 4
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Actions taken
+    type: query
+  298980d9-6dad-4860-acfe-c06e0b0b20f0:
+    x: 0
+    y: 7
+    height: 9
+    queryString: |
+      | cef.ext.src=?sourceIP
+      | cef.ext.sourceServiceName = ?FQDN
+      | urlDecode(cef.ext.qstr)
+    start: 1d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","header":"Time","width":180},{"type":"field","fieldName":"cef.ext.request","format":"text","header":"Request"},{"type":"field","fieldName":"cef.ext.qstr","format":"text","header":"Query
+        String"},{"type":"field","fieldName":"cef.ext.requestMethod","format":"text","header":"Request
+        Method"},{"type":"field","fieldName":"cef.label.clapp","format":"text","header":"Client
+        Application"},{"type":"field","fieldName":"cef.ext.act","format":"text","header":"Action
+        Taken"},{"type":"field","fieldName":"cef.name","format":"text","header":"Violation
+        Type","width":205},{"type":"field","fieldName":"cef.ext.src","format":"text","header":"Source
+        IP"},{"type":"field","fieldName":"cef.ext.ccode","format":"text","header":"Country
+        Code"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Events
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  FQDN:
+    label: FQDN
+    query: top(cef.ext.sourceServiceName)
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cef.ext.sourceServiceName
+  sourceIP:
+    label: Source IP
+    query: top(cef.ext.src)
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cef.ext.src

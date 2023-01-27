@@ -1,0 +1,17 @@
+name: AirlockDigital
+tests:
+- '{"event":"ServerActivityMessage", "datetime":"28/06/2022 02:04:36 PM", "task":"Login",
+  "user":"admin", "description":"User: admin logged in successfully from 61.245.151.244
+  using Chrome"}'
+- '{"event":"FileActivityMessage", "datetime":"02/02/2022 12:08:24 PM", "hostname":"jenkins-mac.local",
+  "username":"aldousjump", "path":"/Applications/Google Chrome.app/Contents/Frameworks/Google
+  Chrome Framework.framework/Versions/96.0.4664.110/Helpers/Google Chrome Helper.app/Contents/MacOS/",
+  "filename":"Google Chrome Helper", "sha256":"b6f836da5fb4af5d80ce2815774eb1bed28098048ceb818fec813f9d80976dff",
+  "md5":"65a0aacf8524de7bc59df1bbecc99d04", "sha1":"c4098d2aba3d057246a9de346ff8ab091ce3db05",
+  "publisher":"Google, Inc. (EQHXZ8M8AV) (Mac)", "parentgroup":"Airlock Groups", "group":"Apple
+  Mac", "execution_type":"Untrusted Execution [Audit]", "parentprocess":"Google Chrome",
+  "commandline":"--seatbelt-client=124"}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: parseJson() | parseTimestamp("dd/MM/yyyy hh:mm:ss a", field=datetime,timezone="UTC")
+tagFields: []
