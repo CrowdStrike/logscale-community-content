@@ -1,0 +1,2 @@
+// Transform to convert Size to megabytes in field Size_MB 
+| Size_MB := Size / 1000 | Size_MB := round(field=Size_MB)

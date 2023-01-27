@@ -1,0 +1,26 @@
+// Transform to convert SubStatus decimal to human-readable value.
+// Values defined here: https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4625
+| case {
+		SubStatus = "0"  		  | SubStatus := "Status OK." ;
+        SubStatus = "3221225572"  | SubStatus := "User logon with misspelled or bad user account" ;
+        SubStatus = "3221225578"  | SubStatus := "User logon with misspelled or bad password" ;
+        SubStatus = "3221225581"  | SubStatus := "The cause is either a bad username or authentication information" ;
+        SubStatus = "3221225582"  | SubStatus := "Indicates a referenced user name and authentication information are valid, but some user account restriction has prevented successful authentication (such as time-of-day restrictions)." ;
+        SubStatus = "3221225583"  | SubStatus := "User logon outside authorized hours" ;
+        SubStatus = "3221225584"  | SubStatus := "User logon from unauthorized workstation" ;
+        SubStatus = "3221225585"  | SubStatus := "User logon with expired password" ;
+        SubStatus = "3221225586"  | SubStatus := "User logon to account disabled by administrator" ;
+        SubStatus = "3221225692"  | SubStatus := "Indicates the Sam Server was in the wrong state to perform the desired operation." ;
+        SubStatus = "3221225779"  | SubStatus := "Clocks between DC and other computer too far out of sync" ;
+        SubStatus = "3221225819"  | SubStatus := "The user has not been granted the requested logon type (also called the logon right) at this machine" ;
+        SubStatus = "3221225868"  | SubStatus := "The logon request failed because the trust relationship between the primary domain and the trusted domain failed." ;
+        SubStatus = "3221225874"  | SubStatus := "An attempt was made to logon, but the Netlogon service was not started." ;
+        SubStatus = "3221225566"  | SubStatus := "There are currently no logon servers available to service the logon request." ;
+        SubStatus = "3221225875"  | SubStatus := "User logon with expired account" ;
+        SubStatus = "3221225587"  | SubStatus := "STATUS_NONE_MAPPED" ;
+        SubStatus = "3221226020"  | SubStatus := "User is required to change password at next logon" ;
+        SubStatus = "3221226021"  | SubStatus := "Evidently a bug in Windows and not a risk" ;
+        SubStatus = "3221226036"  | SubStatus := "User logon with account locked" ;
+        SubStatus = "3221226222"  | SubStatus := "Failure Reason: An Error occurred during Logon" ;
+        SubStatus = "3221226515"  | SubStatus := "Logon Failure: The machine you are logging on to is protected by an authentication firewall. The specified account is not allowed to authenticate to the machine." ;
+        * }

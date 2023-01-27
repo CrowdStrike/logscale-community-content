@@ -1,0 +1,5 @@
+// Transform to convert MappedFromUserMode decimal to human-readable value.
+| case {
+        MappedFromUserMode = "0"  | MappedFromUserMode := "Kernel" ;
+        MappedFromUserMode = "1"  | MappedFromUserMode := "User" ;
+        * }

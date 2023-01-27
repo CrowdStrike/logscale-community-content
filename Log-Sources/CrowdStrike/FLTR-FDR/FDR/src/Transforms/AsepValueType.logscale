@@ -1,0 +1,9 @@
+// Transform to convert AsepValueType decimal to human-readable value.
+| case {
+        AsepValueType = "0"  | AsepValueType := "unknown" ;
+        AsepValueType = "1"  | AsepValueType := "cmd_line" ;
+        AsepValueType = "2"  | AsepValueType := "dll_path" ;
+        AsepValueType = "3"  | AsepValueType := "dll_name" ;
+        AsepValueType = "4"  | AsepValueType := "app_name" ;
+        AsepValueType = "5"  | AsepValueType := "guid" ; 
+        * }

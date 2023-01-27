@@ -1,0 +1,7 @@
+// Transform to convert FirewallProfile decimal to human-readable value.
+| case {
+        FirewallProfile = "0"   | FirewallProfile := "Invalid" ;
+        FirewallProfile = "1"   | FirewallProfile := "Domain" ;
+        FirewallProfile = "2"   | FirewallProfile := "Standard" ;
+        FirewallProfile = "3"   | FirewallProfile := "Public" ;
+        * }

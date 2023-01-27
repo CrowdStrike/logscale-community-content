@@ -1,0 +1,15 @@
+// Transform to convert ConnectionProtocol decimal to human-readable value.
+| case {
+        ConnectionProtocol = "1"    | ConnectionProtocol := "PCT 1.0 Server" ;
+        ConnectionProtocol = "2"    | ConnectionProtocol := "PCT 1.0 Client" ;
+        ConnectionProtocol = "4"    | ConnectionProtocol := "SSL 2.0 Server" ;
+        ConnectionProtocol = "8"    | ConnectionProtocol := "SSL 2.0 Client" ;
+        ConnectionProtocol = "16"   | ConnectionProtocol := "SSL 3.0 Server" ;
+        ConnectionProtocol = "32"   | ConnectionProtocol := "SSL 3.0 Client" ;
+        ConnectionProtocol = "64"   | ConnectionProtocol := "TLS 1.0 Server" ;
+        ConnectionProtocol = "128"  | ConnectionProtocol := "TLS 1.0 Client" ;
+        ConnectionProtocol = "256"  | ConnectionProtocol := "TLS 1.1 Server" ;
+        ConnectionProtocol = "512"  | ConnectionProtocol := "TLS 1.1 Client" ;
+        ConnectionProtocol = "1024" | ConnectionProtocol := "TLS 1.2 Server" ;
+        ConnectionProtocol = "2048" | ConnectionProtocol := "TLS 1.2 Client" ; 
+        * }

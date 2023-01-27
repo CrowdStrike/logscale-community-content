@@ -1,0 +1,5 @@
+// Transform to convert IsOnRemovableDisk decimal to human-readable value.
+| case {
+        IsOnRemovableDisk = "0"  | IsOnRemovableDisk := "No" ;
+        IsOnRemovableDisk = "1"  | IsOnRemovableDisk := "Yes" ;
+        * }

@@ -1,0 +1,6 @@
+// Transform to convert ObjectType decimal to human-readable value.
+| case {
+        ObjectType = "1"  | ObjectType := "FILE" ;
+        ObjectType = "2"  | ObjectType := "FOLDER" ;
+        ObjectType = "3"  | ObjectType := "VALUE" ;
+        * }

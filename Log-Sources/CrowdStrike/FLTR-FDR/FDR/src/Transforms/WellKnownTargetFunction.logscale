@@ -1,0 +1,9 @@
+// Transform to convert WellKnownTargetFunction decimal to human-readable value.
+| case {
+        WellKnownTargetFunction = "0"  | WellKnownTargetFunction := "This address is not a well-known function." ;
+        WellKnownTargetFunction = "1"  | WellKnownTargetFunction := "Address matches LoadLibraryA address." ;
+        WellKnownTargetFunction = "2"  | WellKnownTargetFunction := "Address matches LoadLibraryW address." ;
+        WellKnownTargetFunction = "3"  | WellKnownTargetFunction := "Address matches GlobalGetAtomNameA address." ;
+        WellKnownTargetFunction = "4"  | WellKnownTargetFunction := "Address matches GlobalGetAtomNameW address." ;
+        WellKnownTargetFunction = "5"  | WellKnownTargetFunction := "Address matches RtlDispatchApc address." ;
+        * }

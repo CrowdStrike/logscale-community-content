@@ -1,0 +1,5 @@
+// Transform to convert IsSouthBridgeSupported decimal to human-readable value.
+| case {
+        IsSouthBridgeSupported = "0"  | IsSouthBridgeSupported := "No" ;
+        IsSouthBridgeSupported = "1"  | IsSouthBridgeSupported := "Yes" ;
+        * }

@@ -1,0 +1,8 @@
+// Transform to convert ZoneIdentifier decimal to human-readable value.
+| case {
+        ZoneIdentifier = "0"  | ZoneIdentifier := "Local machine" ;
+        ZoneIdentifier = "1"  | ZoneIdentifier := "Local intranet" ;
+        ZoneIdentifier = "2"  | ZoneIdentifier := "Trusted sites" ;
+        ZoneIdentifier = "3"  | ZoneIdentifier := "Internet" ;
+        ZoneIdentifier = "4"  | ZoneIdentifier := "Restricted sites" ;
+        * }

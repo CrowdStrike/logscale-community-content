@@ -1,0 +1,7 @@
+// Transform to convert Protocol decimal to human-readable value.
+| case {
+        Protocol = "1"   | Protocol := "ICMP" ;
+        Protocol = "6"   | Protocol := "TCP" ;
+        Protocol = "17"  | Protocol := "UDP" ;
+        Protocol = "58"  | Protocol := "ICMPv6" ; 
+        * }

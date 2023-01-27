@@ -1,0 +1,2 @@
+// Converts MHz to GHz.  
+| CpuClockSpeed_GHz := CpuClockSpeed/1024 + 0.05 | CpuClockSpeed_GHz := format(format="%.1f", field=CpuClockSpeed_GHz)

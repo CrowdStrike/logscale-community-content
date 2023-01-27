@@ -1,0 +1,6 @@
+// Transform to convert AccountStatus decimal to human-readable value.
+| case {
+        AccountStatus = "0"  | AccountStatus := "Provisioned" ;
+        AccountStatus = "1"  | AccountStatus := "Operational" ;
+        AccountStatus = "2"  | AccountStatus := "Regression" ;
+        * }

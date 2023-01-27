@@ -1,0 +1,21 @@
+| regex("\d+\.(?<ConfigPlatformId>\d+)\.\d+\.\d+", field=ConfigBuild, strict=false)
+| case {
+    ConfigPlatformId = 1 | ConfigPlatformId := "Windows x86";
+    ConfigPlatformId = 2 | ConfigPlatformId := "Windows x64";
+    ConfigPlatformId = 3 | ConfigPlatformId := "Windows";
+    ConfigPlatformId = 4 | ConfigPlatformId := "Mac";
+    ConfigPlatformId = 8 |  ConfigPlatformId := "Linux";
+    ConfigPlatformId = 16 | ConfigPlatformId := "Android";
+    ConfigPlatformId = 32 | ConfigPlatformId := "iOS";
+    ConfigPlatformId = 64 | ConfigPlatformId := "zlinux s390";
+    ConfigPlatformId = 128 | ConfigPlatformId := "Linux Arm64";
+    ConfigPlatformId = 256 | ConfigPlatformId := "Lumos" ;
+    ConfigPlatformId = 512 | ConfigPlatformId := "Win Arm64" ;
+    ConfigPlatformId = 1024 | ConfigPlatformId := "Kubernetes 64" ;
+    ConfigPlatformId = 2048 | ConfigPlatformId := "PPC-64" ;
+    ConfigPlatformId = 4096 | ConfigPlatformId := "PPC-64LE" ;
+    * ; 
+}
+
+// Find Cloud Workload Protection, aka CWP. 
+//| ConfigPlatformId = "Kubernetes 64" OR ConfigPlatformId = "Lumos"

@@ -1,0 +1,11 @@
+// Transform to convert AsepFlags decimal to human-readable value.
+| case {
+        AsepFlags = "1"   | AsepFlags := "GLOBAL" ;
+        AsepFlags = "2"   | AsepFlags := "PRIVILEGED" ;
+        AsepFlags = "3"   | AsepFlags := "GLOBAL_PRIVILEGED" ;
+        AsepFlags = "4"   | AsepFlags := "NEEDS_SOURCE_SIGNED" ;
+        AsepFlags = "8"   | AsepFlags := "NEEDS_TARGET_SIGNED" ;
+        AsepFlags = "16"  | AsepFlags := "NEEDS_SOURCE_MS_SIGNED" ;
+        AsepFlags = "32"  | AsepFlags := "NEEDS_TARGET_MS_SIGNED" ;
+        AsepFlags = "64"  | AsepFlags := "SUSPICIOUS" ;
+        * }

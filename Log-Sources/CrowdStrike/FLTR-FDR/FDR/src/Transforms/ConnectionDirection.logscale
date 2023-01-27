@@ -1,0 +1,7 @@
+// Transform to convert ConnectionDirection decimal to human-readable value.
+| case {
+        ConnectionDirection = "0" | ConnectionDirection := "Outbound" ;
+        ConnectionDirection = "1" | ConnectionDirection := "Inbound" ;
+        ConnectionDirection = "2" | ConnectionDirection := "Neither" ;
+        ConnectionDirection = "3" | ConnectionDirection := "Both" ;
+        * }

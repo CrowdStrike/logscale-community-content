@@ -1,0 +1,8 @@
+// Transform to convert NamedPipeImpersonationType decimal to human-readable value.
+| case {
+        NamedPipeImpersonationType = "0"  | NamedPipeImpersonationType := "UNKOWN" ;
+        NamedPipeImpersonationType = "1"  | NamedPipeImpersonationType := "USER_TO_USER" ;
+        NamedPipeImpersonationType = "2"  | NamedPipeImpersonationType := "USER_TO_SERVICE" ;
+        NamedPipeImpersonationType = "3"  | NamedPipeImpersonationType := "USER_TO_SYSTEM" ;
+        NamedPipeImpersonationType = "4"  | NamedPipeImpersonationType := "SERVICE" ;
+        * }

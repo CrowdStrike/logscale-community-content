@@ -1,0 +1,2 @@
+// MemoryTotal is in bytes. This converts it to GB by dividing by 1.074e+9 and stores it in a new field named MemoryTotal_GB.
+| MemoryTotal_GB := MemoryTotal/1074000000 | round(MemoryTotal_GB)

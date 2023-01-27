@@ -1,0 +1,5 @@
+// Transform IsAndroidAppContainerized from binary to Yes/No
+| case {
+        IsAndroidAppContainerized = 0 | IsAndroidAppContainerized := "No";
+        IsAndroidAppContainerized = 1 | IsAndroidAppContainerized := "Yes";
+        * }

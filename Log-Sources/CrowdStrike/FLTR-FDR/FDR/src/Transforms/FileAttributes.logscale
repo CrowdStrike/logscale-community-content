@@ -1,0 +1,17 @@
+// Transform to convert FileAttributes decimal to human-readable value.
+| case {
+        FileAttributes = "1"     | FileAttributes := "FILE_ATTRIBUTE_READONLY" ;
+        FileAttributes = "2"     | FileAttributes := "FILE_ATTRIBUTE_HIDDEN" ;
+        FileAttributes = "4"     | FileAttributes := "FILE_ATTRIBUTE_SYSTEM" ;
+        FileAttributes = "16"    | FileAttributes := "FILE_ATTRIBUTE_DIRECTORY" ;
+        FileAttributes = "32"    | FileAttributes := "FILE_ATTRIBUTE_ARCHIVE" ;
+        FileAttributes = "64"    | FileAttributes := "FILE_ATTRIBUTE_DEVICE" ;
+        FileAttributes = "128"   | FileAttributes := "FILE_ATTRIBUTE_NORMAL" ;
+        FileAttributes = "256"   | FileAttributes := "FILE_ATTRIBUTE_TEMPORARY" ;
+        FileAttributes = "512"   | FileAttributes := "FILE_ATTRIBUTE_SPARSE_FILE" ;
+        FileAttributes = "1024"  | FileAttributes := "FILE_ATTRIBUTE_REPARSE_POINT" ;
+        FileAttributes = "2048"  | FileAttributes := "FILE_ATTRIBUTE_COMPRESSED" ;
+        FileAttributes = "4096"  | FileAttributes := "FILE_ATTRIBUTE_OFFLINE" ; 
+        FileAttributes = "8192"  | FileAttributes := "FILE_ATTRIBUTE_NOT_CONTENT_INDEXED" ; 
+        FileAttributes = "16384" | FileAttributes := "FILE_ATTRIBUTE_ENCRYPTED" ; 
+        * }

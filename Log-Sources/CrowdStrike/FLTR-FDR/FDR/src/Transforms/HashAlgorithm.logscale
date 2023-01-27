@@ -1,0 +1,20 @@
+// Transform to convert HashAlgorithm decimal to human-readable value.
+| case {
+        HashAlgorithm = "0"     | HashAlgorithm := "No hashing algorithm";
+        HashAlgorithm = "2"     | HashAlgorithm := "MAC keyed-hash algorithm" ;
+        HashAlgorithm = "3"     | HashAlgorithm := "MD2 hashing algorithm" ;
+        HashAlgorithm = "4"     | HashAlgorithm := "MD4 hashing algorithm" ;
+        HashAlgorithm = "5"     | HashAlgorithm := "MD5 hashing algorithm" ;
+        HashAlgorithm = "6"     | HashAlgorithm := "SHA hashing algorithm" ;
+        HashAlgorithm = "7"     | HashAlgorithm := "SHA-256 hashing algorithm" ;
+        HashAlgorithm = "8"     | HashAlgorithm := "SHA-384 hashing algorithm" ;
+        HashAlgorithm = "9"     | HashAlgorithm := "SHA-512 hashing algorithm" ;
+        HashAlgorithm = "32773" | HashAlgorithm := "MAC keyed-hash algorithm" ;
+        HashAlgorithm = "32769" | HashAlgorithm := "MD2 hashing algorithm" ;
+        HashAlgorithm = "32770" | HashAlgorithm := "MD4 hashing algorithm" ;
+        HashAlgorithm = "32771" | HashAlgorithm := "MD5 hashing algorithm" ;
+        HashAlgorithm = "32772" | HashAlgorithm := "SHA hashing algorithm" ;
+        HashAlgorithm = "32780" | HashAlgorithm := "SHA-256 hashing algorithm" ;
+        HashAlgorithm = "32781" | HashAlgorithm := "SHA-384 hashing algorithm" ;
+        HashAlgorithm = "32782" | HashAlgorithm := "SHA-512 hashing algorithm" ;
+        * }

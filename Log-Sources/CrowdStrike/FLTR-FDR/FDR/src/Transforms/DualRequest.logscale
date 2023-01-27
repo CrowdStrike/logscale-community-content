@@ -1,0 +1,5 @@
+// Transform to convert DualRequest decimal to human-readable value.
+| case {
+        DualRequest = "1"  | DualRequest := "Yes" ;
+        DualRequest = "0"  | DualRequest := "No" ;
+        * }

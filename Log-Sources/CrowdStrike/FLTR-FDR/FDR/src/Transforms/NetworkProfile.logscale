@@ -1,0 +1,8 @@
+// Transform to convert NetworkProfile decimal to human-readable value.
+| case {
+        NetworkProfile = "0"   | NetworkProfile := "Invalid" ;
+        NetworkProfile = "1"   | NetworkProfile := "Domain" ;
+        NetworkProfile = "2"   | NetworkProfile := "Public" ;
+        NetworkProfile = "4"   | NetworkProfile := "Private" ;
+        NetworkProfile = "255" | NetworkProfile := "Any" ;
+        * }

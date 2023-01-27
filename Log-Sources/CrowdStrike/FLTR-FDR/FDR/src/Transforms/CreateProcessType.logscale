@@ -1,0 +1,9 @@
+// Transform to convert CreateProcessType decimal to human-readable value.
+| case {
+        CreateProcessType = "0"  | CreateProcessType := "Unavailable" ;
+        CreateProcessType = "1"  | CreateProcessType := "Unknown" ;
+        CreateProcessType = "2"  | CreateProcessType := "NTCreateProcess" ;
+        CreateProcessType = "3"  | CreateProcessType := "CreateProcess" ;
+        CreateProcessType = "4"  | CreateProcessType := "ShellExecute" ;
+        CreateProcessType = "5"  | CreateProcessType := "CRT System" ;
+        * }

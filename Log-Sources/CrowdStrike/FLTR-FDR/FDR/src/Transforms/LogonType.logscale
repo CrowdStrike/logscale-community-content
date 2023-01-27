@@ -1,0 +1,15 @@
+// Transform to convert LogonType decimal to human-readable value.
+| case {
+        LogonType = "2"  | LogonType := "Interactive" ;
+        LogonType = "3"  | LogonType := "Network" ;
+        LogonType = "4"  | LogonType := "Batch" ;
+        LogonType = "5"  | LogonType := "Service" ;
+        LogonType = "6"  | LogonType := "Proxy" ;
+        LogonType = "7"  | LogonType := "Unlock" ;
+        LogonType = "8"  | LogonType := "Network Cleartext" ;
+        LogonType = "9"  | LogonType := "New Credential" ;
+        LogonType = "10" | LogonType := "Remote Interactive" ;
+        LogonType = "11" | LogonType := "Cached Interactive" ;
+        LogonType = "12" | LogonType := "Cached Remote Interactive" ;
+        LogonType = "13" | LogonType := "Cached Unlock" ; 
+        * }

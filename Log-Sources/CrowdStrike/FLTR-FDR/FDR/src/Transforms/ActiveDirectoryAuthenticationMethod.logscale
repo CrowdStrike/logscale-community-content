@@ -1,0 +1,9 @@
+// Transform to convert ActiveDirectoryAuthenticationMethod decimal to human-readable value.
+| case {
+        ActiveDirectoryAuthenticationMethod = "0"  | ActiveDirectoryAuthenticationMethod := "KERBEROS" ;
+        ActiveDirectoryAuthenticationMethod = "1"  | ActiveDirectoryAuthenticationMethod := "NTLM_V1" ;
+        ActiveDirectoryAuthenticationMethod = "2"  | ActiveDirectoryAuthenticationMethod := "NTLM_V2" ;
+        ActiveDirectoryAuthenticationMethod = "3"  | ActiveDirectoryAuthenticationMethod := "SIMPLE_BIND" ;
+        ActiveDirectoryAuthenticationMethod = "4"  | ActiveDirectoryAuthenticationMethod := "NO_AUTHENTICATION" ;
+        ActiveDirectoryAuthenticationMethod = "5"  | ActiveDirectoryAuthenticationMethod := "UNKNOWN_NTLM" ;
+        * }

@@ -1,0 +1,10 @@
+// Transform to convert ConnectionCipher decimal to human-readable value.
+| case {
+        ConnectionCipher = "26115"  | ConnectionCipher := "CALG_3DES" ;
+        ConnectionCipher = "26126"  | ConnectionCipher := "CALG_AES_128" ;
+        ConnectionCipher = "26128"  | ConnectionCipher := "CALG_AES_256" ;
+        ConnectionCipher = "26113"  | ConnectionCipher := "CALG_DES" ;
+        ConnectionCipher = "26114"  | ConnectionCipher := "CALG_RC2" ;
+        ConnectionCipher = "26625"  | ConnectionCipher := "CALG_RC4" ;
+        ConnectionCipher = "0"      | ConnectionCipher := "N0_ENCRYPTION" ;
+        * }

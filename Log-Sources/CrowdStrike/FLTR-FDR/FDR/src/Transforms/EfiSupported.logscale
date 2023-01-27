@@ -1,0 +1,5 @@
+// Transform to convert EfiSupported decimal to human-readable value.
+| case {
+        EfiSupported = "0"  | EfiSupported := "No" ;
+        EfiSupported = "1"  | EfiSupported := "Yes" ;
+        * }

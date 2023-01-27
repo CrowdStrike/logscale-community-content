@@ -1,0 +1,9 @@
+// Transform to convert ImageSubsystem decimal to human-readable value.
+| case {
+        ImageSubsystem = "0"   | ImageSubsystem := "UNKNOWN" ;
+        ImageSubsystem = "1"   | ImageSubsystem := "NATIVE" ;
+        ImageSubsystem = "2"   | ImageSubsystem := "WINDOWS_GUI" ;
+        ImageSubsystem = "3"   | ImageSubsystem := "WINDOWS_CUI" ;
+        ImageSubsystem = "7"   | ImageSubsystem := "POSIX_CUI" ;
+        ImageSubsystem = "256" | ImageSubsystem := "WSL" ;
+        * }

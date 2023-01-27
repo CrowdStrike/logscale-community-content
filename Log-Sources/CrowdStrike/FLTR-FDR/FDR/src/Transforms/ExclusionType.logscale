@@ -1,0 +1,5 @@
+// Transform to convert ExclusionType decimal to human-readable value.
+| case {
+        ExclusionType = "1"  | ExclusionType := "BEHAVIORAL_IOA" ;
+        ExclusionType = "2"  | ExclusionType := "HASH_BASED_IOC" ;
+        * }

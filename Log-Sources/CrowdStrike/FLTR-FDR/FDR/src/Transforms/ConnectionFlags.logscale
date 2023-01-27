@@ -1,0 +1,19 @@
+// Transform to convert ConnectionFlags bitmask to human-readable value.
+
+| case {
+        ConnectionFlags = "1" | ConnectionFlags_RawSocket := "Yes";
+        ConnectionFlags = 2 | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+        ConnectionFlags = 3 | ConnectionFlags_RawSocket := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+        ConnectionFlags = 4 | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes";
+        ConnectionFlags = 5 | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes" | ConnectionFlags_RawSocket := "Yes";
+        ConnectionFlags = 6 | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+        ConnectionFlags = 7 | ConnectionFlags_RawSocket := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+        ConnectionFlags = 8 | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes";
+        ConnectionFlags = 9 | ConnectionFlags_RawSocket := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes";
+        ConnectionFlags = 10 | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+        ConnectionFlags = 11 | ConnectionFlags_RawSocket := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+        ConnectionFlags = 12 | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes";
+        ConnectionFlags = 13 | ConnectionFlags_RawSocket := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes";
+        ConnectionFlags = 14 | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+        ConnectionFlags = 15 | ConnectionFlags_RawSocket := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_Mcast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall_IGMPCast := "Yes" | ConnectionFlags_PromiscuousModeSioRcvall := "Yes";
+    * }

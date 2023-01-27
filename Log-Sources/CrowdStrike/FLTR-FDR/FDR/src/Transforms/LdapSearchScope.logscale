@@ -1,0 +1,6 @@
+// Transform to convert LdapSearchScope decimal to human-readable value.
+| case {
+        LdapSearchScope = "0"  | LdapSearchScope := "BASE_OBJECT" ;
+        LdapSearchScope = "1"  | LdapSearchScope := "SINGLE_LEVEL" ;
+        LdapSearchScope = "2"  | LdapSearchScope := "WHOLE_SUBTREE" ;
+        * }

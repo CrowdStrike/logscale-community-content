@@ -1,0 +1,2 @@
+// MaxUsedRam is in MB. This converts it to GB and stores it in a new field named MaxUsedRam_GB.
+| MaxUsedRam_GB := MaxUsedRam/1024 | round(MaxUsedRam_GB)

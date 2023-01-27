@@ -1,0 +1,5 @@
+// Transform to convert ProvisionState decimal to human-readable value.
+| case {
+        ProvisionState = "0"  | ProvisionState := "SENSOR_NOT_PROVISIONED" ;
+        ProvisionState = "1"  | ProvisionState := "SENSOR_PROVISIONED" ;
+        * }
