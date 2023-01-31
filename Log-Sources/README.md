@@ -19,9 +19,7 @@
    `mv Application Application-Name`
 
 # Add a new Package
-## Via the GitHub Web Site
-
-## Via Git commandline
+## Create Package
 1. Log into your LogScale instance and open the Repository containing your created content
 2. Select Settings | Create a Package | Export Package
 3. Provide the following information and click Next
@@ -37,23 +35,28 @@
   - Type: **Application**
 4. Select your content you would like included in your package
 5. Click Export Package and choose the "src" subdirectory under the new directory you created in step 2
-6. Extract the package zip file
+
+## Submit Package via the GitHub Web Site
+
+## Submit Package via Git commandline
+
+1. Extract the package zip file
 
    `unzip -o community--vendor-application--1.0.0.zip`
 
-7. Replace the README.md with README-template.md
+2. Replace the README.md with README-template.md
 
    `mv README-template.md README.md`
 
-8. Review and Update the following files as required
+3. Review and Update the following files as required
   - manifest.yaml
   - README.md
   
-9. Delete the original package
+4. Delete the original package
 
     `rm -f community--vendor-application--1.0.0.zip`
    
-10. Optionally, update the ARCHIVE value in build.sh with the new package name and build the package
+5. Optionally, update the ARCHIVE value in build.sh with the new package name and build the package
 
     `cd ../`
     
@@ -61,13 +64,13 @@
    
     `./build.sh`
     
-11. Verify the package was created in the Packages directory
+6. Verify the package was created in the Packages directory
     
-12. Test the new package
+7. Test the new package
 
     1. Create a new View and specify the repository from step 3.
     2. Select Settings | Installed | Import Package 
     3. Specify the package zip file created in step 14.
     4. Verify all content has been imprted correctly and operating as expected
    
-13. Stage, Commit and create a Pull. Refer to [INSERT LINK TO GITHUB STEPS] for an overview of working with Git
+8. Stage, Commit and create a Pull. Refer to [INSERT LINK TO GITHUB STEPS] for an overview of working with Git
