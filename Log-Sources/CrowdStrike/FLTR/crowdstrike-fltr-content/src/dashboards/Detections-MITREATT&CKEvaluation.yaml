@@ -1,0 +1,188 @@
+name: Detections - MITRE ATT&CK Evaluation
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  baa9257c-cb56-42b2-b274-ca2b87a6466f:
+    x: 0
+    y: 0
+    height: 8
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | Tactic!=/^custom/i
+      | Tactic!=""
+      | Tactic=*
+      | Technique=*
+      | groupBy([Tactic, Technique], function=count(AgentIdString, as="Detection Count"), limit=max)
+    start: 7d
+    width: 12
+    options:
+      colorPalette: greenRed
+      labelAngle: 8
+      legendLocation: right
+      reversePalette: false
+    visualization: heat-map
+    title: Heatmap by Tactic and Technique
+    type: query
+  bfc606a1-aeef-4f6d-ac28-ceab769362e2:
+    x: 0
+    y: 37
+    height: 8
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | top([FileName, Tactic, Technique], limit=25)
+      | rename("_count", as="Detection Count")
+    visualization: table-view
+    start: 7d
+    width: 7
+    title: Top 25 Triggering Files by Tactic and Technique
+    type: query
+  3b9031e9-7af8-40e2-a383-99910583a45f:
+    x: 8
+    y: 21
+    height: 4
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy([Tactic], function=count(AgentIdString, as="Detection Count"), limit=max)
+    start: 7d
+    width: 4
+    options:
+      legend: false
+    visualization: pie-chart
+    title: Tactic Distribution
+    type: query
+  ba90b7af-f5a6-4985-b0a9-8f6668a26bc4:
+    x: 6
+    y: 29
+    height: 8
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | top([ComputerName, Technique], limit=25)
+      | rename("_count", as="Detection Count")
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Top 25 Endpoints by Technique
+    type: query
+  a56865c4-1395-4386-8d1e-abee0487915d:
+    x: 0
+    y: 21
+    height: 8
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy([Tactic, Technique, Severity], function=count(AgentIdString, as="detectCount"), limit=max)
+      | sankey(source="Tactic", target="Technique", weight=sum(Severity))
+    start: 7d
+    width: 8
+    options:
+      series: {}
+      stackSortOrder: descending
+      stackSortType: total
+    visualization: sankey
+    title: Tactic to Technique - Weighted by Severity
+    type: query
+  903e41d3-5ac0-4309-981d-8826aef63226:
+    x: 8
+    y: 25
+    height: 4
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy(Technique, function=count(AgentIdString, as="Detection Count"), limit=max)
+    start: 7d
+    width: 4
+    options:
+      legend: false
+      series: {}
+    visualization: pie-chart
+    title: Technique Distribution
+    type: query
+  3b138d0d-94ba-4936-97e7-0150b78c0185:
+    x: 0
+    y: 29
+    height: 8
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | top([ComputerName, Tactic], limit=25)
+      | rename("_count", as="Detection Count")
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Top 25 Endpoints by Tactic
+    type: query
+  fe06f999-8152-47c4-be9d-9df57ad2b55d:
+    x: 0
+    y: 8
+    height: 6
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | Tactic!=/(^custom|machine\slearning)/i
+      | Tactic!=""
+      | Technique=*
+      | groupBy([Tactic, Technique], function=count(AgentIdString, as="detectCount"), limit=max)
+      | rename("detectCount",as="Detection Count")
+    start: 7d
+    width: 12
+    options:
+      series: {}
+      valuesOnBars: true
+      yScaleType: linear
+      barChartType: stacked
+      sortOrder: descending
+      inputDataFormat: long
+    visualization: bar-chart
+    title: Tactic and Technique - Stacked
+    type: query
+  dd56053e-7391-47b3-be86-c87aa6ed7256:
+    x: 7
+    y: 37
+    height: 8
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | top([Tactic, Technique], limit=25)
+      | rename("_count", as="Detection Count")
+    visualization: table-view
+    start: 7d
+    width: 5
+    title: Top 25 Tactic and Technique Combinations
+    type: query
+  36a81859-72fd-436f-bc75-710e9d076fea:
+    x: 0
+    y: 14
+    height: 7
+    queryString: |
+      #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | Tactic!=/custom\s.*/i
+      | Tactic!=""
+      | groupBy([Tactic, @timestamp], function=count(AgentIdString, as="Detection Count"), limit=max)
+      | bucket(field="Tactic")
+    start: 7d
+    width: 12
+    options:
+      colorPalette: monoPeach
+      labelAngle: 13
+      legendTitle: Detection Count
+      xAxisTitle: Time
+    visualization: heat-map
+    title: Tactic by Time
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

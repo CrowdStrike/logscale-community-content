@@ -1,0 +1,14 @@
+name: FLTR aidmaster Schedule
+description: ''
+enabled: true
+queryString: |-
+  #kind=Secondary OR #event_simpleName=AgentOnline OR #event_simpleName=HostnameChanged
+  | groupBy(aid, function=selectLast(ComputerName), limit=max)
+backfillLimit: 0
+schedule: H */3 * * *
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC+00:00
+queryStart: 30d
+actionNameReferences:
+- FLTR aidmaster Upload

@@ -1,0 +1,25 @@
+name: PowerShell - Hidden Window Flags
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"ComputerName","format":"text","width":132},{"type":"field","fieldName":"UserName","format":"text","width":164},{"type":"field","fieldName":"CommandLine","format":"text","width":1708}]'
+    newestAtBottom: 'false'
+    showOnlyFirstLine: 'true'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // This query finds the Command Prompt or Powershell commands run from hidden windows.
+
+  // Filter on the events necessary for the query
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win
+  | ImageFileName=/(powershell|cmd).exe/i
+  | ShowWindowFlags=0
+  | ImageFileName=*
+  | CommandLine=*
+
+  // Add ComputerName and UserName details.
+  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-run:UserName"()

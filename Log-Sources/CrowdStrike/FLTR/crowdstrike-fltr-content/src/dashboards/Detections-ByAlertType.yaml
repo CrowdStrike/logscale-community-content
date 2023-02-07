@@ -1,0 +1,234 @@
+name: Detections - By Alert Type
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  2060d750-1c73-4632-a976-4293cf494fe9:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary 
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | timechart(function=count(as="Total Detections"))
+    start: 7d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+      series: {}
+    visualization: time-chart
+    title: Detection Rate
+    type: query
+  b0618476-d5d2-4728-9013-7f06872bcd54:
+    x: 6
+    y: 8
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | sankey(target=Tactic, source=Technique)
+    start: 7d
+    width: 6
+    options:
+      series: {}
+    visualization: sankey
+    title: 'Map: Technique -> Tactic'
+    type: query
+  d230b296-3415-4212-9d71-9c3cd3905a73:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary 
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | EventType=Event_ExternalApiEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | top(ComputerName, as="Top ComputerNames")
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: Detections by Host
+    type: query
+  0ed2aa7d-a8f5-4dc9-bc6a-6e40c3295ad5:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | top(Tactic, as="Top Tactics")
+    start: 7d
+    width: 4
+    options:
+      innerRadius: 28
+      series: {}
+    visualization: pie-chart
+    title: Detections by Tactic
+    type: query
+  e06e9462-2858-40ea-be51-c496a0eed0fe:
+    x: 4
+    y: 20
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | $"crowdstrike/fltr-run:UserName"()
+      | top(UserName, as="Top UserNames")
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: Detections by User
+    type: query
+  76307711-ec33-4b97-996f-65224a5f483f:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | top(Technique, as="Top Techniques")
+    start: 7d
+    width: 4
+    options:
+      series: {}
+    visualization: bar-chart
+    title: Detections by Technique
+    type: query
+  47420c28-6845-4c52-a733-b6a7bd6fd77c:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary 
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | sankey(target=Technique, source=SeverityName)
+    start: 7d
+    width: 6
+    options:
+      series: {}
+    visualization: sankey
+    title: 'Map: Severity -> Technique'
+    type: query
+  70fc45f6-63a2-467f-9325-a5ba0b6b268e:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary 
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | top(SeverityName, as="Top Severities")
+    start: 7d
+    width: 4
+    options:
+      series: {}
+    visualization: pie-chart
+    title: Detections by Severity
+    type: query
+  9bea2809-f92e-43ef-b449-29b4baa6702c:
+    x: 8
+    y: 20
+    height: 4
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | top(DetectDescription, as="Top Detections")
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: Detection by Attack
+    type: query
+  adc076bb-73cb-4ecd-8783-def7d90e781c:
+    x: 6
+    y: 12
+    height: 8
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      |sankey(target=FileName, source=ParentImageFileName)
+    start: 7d
+    width: 6
+    options:
+      series: {}
+    visualization: sankey
+    title: 'Detection: Parent File -> File'
+    type: query
+  a74886b3-3044-4109-965d-845d29e213b0:
+    x: 0
+    y: 12
+    height: 8
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | sankey(target=ParentImageFileName, source=GrandparentImageFileName)
+    start: 7d
+    width: 6
+    options:
+      series: {}
+    visualization: sankey
+    title: 'Detection: Grandparent File -> Parent File'
+    type: query
+  c10aa261-3a2e-43ca-8778-57120c02d433:
+    x: 0
+    y: 24
+    height: 7
+    queryString: |-
+      #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-run:UserName"()
+      | table([ComputerName, UserName, DetectName, FilePath, FileName, SeverityName, Tactic, Technique, DetectDescription], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Detection Table
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  Severity:
+    label: Severity
+    order: 1
+    values:
+    - Informational
+    - Medium
+    - Critical
+    - High
+    - Low
+    - '*'
+    type: list
+    defaultValue: '*'
+  Tactic:
+    label: Tactic
+    query: '#event_simpleName!=* #kind=Primary | ExternalApiType=Event_DetectionSummaryEvent | groupBy(Tactic,
+      limit=100)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 1
+    valueField: Tactic
+  Technique:
+    label: Technique
+    query: '#event_simpleName!=* #kind=Primary | ExternalApiType=Event_DetectionSummaryEvent | groupBy(Technique,
+      limit=100) | sort(limit=100)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 1
+    valueField: Technique

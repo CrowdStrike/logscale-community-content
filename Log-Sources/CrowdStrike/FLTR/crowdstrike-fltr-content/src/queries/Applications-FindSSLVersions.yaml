@@ -1,0 +1,20 @@
+name: Applications - Find SSL Versions
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Find anything where OpenSSL is installed. Requires Discover or Spotlight.
+  #event_simpleName=InstalledApplication openssl
+
+  // Use format to ensure everything is aligned when you do the collect.
+  | format(format="%s | %s | %s)", field=[AppSource, AppName, AppVersion], as="opensslDetails")
+
+  // Group by aid and collect the string from above.
+  | groupBy(aid, function=collect(opensslDetails, limit=10000), limit=max)
+
+  // Add the ComputerName.
+  | $"crowdstrike/fltr-run:ComputerName"()

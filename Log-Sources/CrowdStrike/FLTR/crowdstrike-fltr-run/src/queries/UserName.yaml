@@ -1,0 +1,24 @@
+name: UserName
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Function for looking up the UserName from an event.
+  //
+  // To call this function in a query if you have it saved as part of a package, e.g. crowdstrike/fltr-run:
+  // $"crowdstrike/fltr-run:UserName"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"UserName"()
+  
+  // Grab the UserName. This excludes any of the generic Windows usernames.
+  default(field=UserName, value="NotMatched")
+  | join({#event_simpleName=UserLogon OR #event_simpleName=UserIdentity}, field=aid, include=UserName, limit=100000, mode=left)
+  | UserName!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$)/

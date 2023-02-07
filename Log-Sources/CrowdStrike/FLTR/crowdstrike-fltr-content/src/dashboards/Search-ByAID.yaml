@@ -1,0 +1,266 @@
+name: Search - By AID
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  68ae18b0-930e-4b6a-8937-36cb392c93d3:
+    x: 6
+    y: 11
+    height: 6
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i Tactic!=""
+      | AgentIdString=?aid #cid=?cid
+      | Tactic=* Technique=*
+      | groupBy([Tactic, Technique], function=count(AgentIdString, as="Detection Count"), limit=max)
+    start: 7d
+    width: 6
+    options:
+      colorPalette: greenRed
+      labelAngle: 45
+      withLegendTitle: true
+    visualization: heat-map
+    title: 'Heatmap: Tactics and Techniques'
+    type: query
+  7a22925e-2091-4291-9959-1641c9fa4d93:
+    x: 6
+    y: 21
+    height: 5
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=DnsRequest
+      | aid=?aid #cid=?cid
+      | ioc:lookup(DomainName, type=domain, confidenceThreshold=unverified)
+      | ioc[0].labels=/^(?<iocActor>Actor\/.*?)\,/
+      | top([DomainName, iocActor])
+      | rename(_count, as="Total Requests")
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Top DNS IOC Hits
+    type: query
+  8bd1a02b-e8d9-471a-9f50-5bc4ec8bf499:
+    x: 0
+    y: 39
+    height: 4
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=ScheduledTaskRegistered
+      | aid=?aid #cid=?cid
+      | table([UserName, TaskName, TaskExecCommand, TaskExecArguments], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: List of Scheduled Tasks
+    type: query
+  df473744-13a0-423c-9ffd-2631b70009e0:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=PeFileWritten
+      | aid=?aid #cid=?cid
+      | count(SHA256HashData, distinct=true)
+    start: 7d
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique Executables Written
+    type: query
+  430d57e9-b25b-420c-8e1b-21fc2046c6a3:
+    x: 0
+    y: 43
+    height: 4
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=ProcessRollup2
+      | aid=?aid #cid=?cid
+      | join(
+          {#event_simpleName=NetworkListenIP4 LocalPort!=0},
+          field=TargetProcessId, key=ContextProcessId,
+          include=[LocalAddressIP4, LocalPort], limit=100000
+        )
+      | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | LocalAddressIP4=* LocalPort=* ImageFileName=*
+      | table([aid, ComputerName, ImageFileName, LocalAddressIP4, LocalPort], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: List of Listening Processes
+    type: query
+  2296f7d9-25e0-4dd4-8b60-25c00bdb46a1:
+    x: 6
+    y: 26
+    height: 5
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=NetworkConnectIP4
+      | aid=?aid #cid=?cid
+      | worldMap(ip=RemoteAddressIP4)
+    visualization: world-map
+    start: 7d
+    width: 6
+    title: Geographic Connection Destinations
+    type: query
+  134ff519-c089-4efa-aa8e-32c06b1327c9:
+    x: 0
+    y: 31
+    height: 4
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=ServiceStarted event_platform=Win
+      | aid=?aid #cid=?cid
+      | table([@timestamp, UserName, ServiceDisplayName, CommandLine], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: List of Started Services
+    type: query
+  e3a9d2e6-7833-4281-ae13-6fc588596bbb:
+    x: 0
+    y: 35
+    height: 4
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=ProcessRollup2
+      | aid=?aid #cid=?cid
+      | regex(field=ImageFileName, regex="(?<FileName>[^/\\\]+$)")
+      | table([@timestamp, FileName, CommandLine, ParentBaseFileName], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: List of Processes
+    type: query
+  fbb84b70-9e0d-42b3-ad1a-86e67a28dcb1:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=AgentOnline
+      | aid=?aid #cid=?cid
+      | ipLocation(field=aip, as=aip)
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | groupby([ComputerName, AgentVersion, aip, aip.country, aip.city, BiosManufacturer, BiosVersion, ChassisManufacturer, SystemManufacturer, SystemProductName, aid], limit=max)
+      | drop(_count)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Host Information
+    type: query
+  538450b2-4613-4ea4-895b-2e28fc4572a0:
+    x: 0
+    y: 21
+    height: 5
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=DnsRequest
+      | aid=?aid #cid=?cid
+      | top(DomainName)
+      | rename(_count, as="Total Requests")
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Top DNS Requests
+    type: query
+  ae0c6647-8e97-4c26-ac39-6cda26c134c5:
+    x: 0
+    y: 7
+    height: 4
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName!=* #kind=Primary
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | AgentIdString=?aid CustomerIdString=?cid
+      | groupby([UserName, FileName, DetectName, DetectDescription, SeverityName], function=[count(as="Total Detections")], limit=max)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Total Detections
+    type: query
+  8a2df0ba-ce56-43bc-97f2-c0a7baed6585:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=UserLogon
+      | aid=?aid #cid=?cid
+      | $"crowdstrike/fltr-run:LogonTypeName"()
+      | table([@timestamp, event_platform, UserName, UserSid, UserIsAdmin, LogonTypeName, ClientComputerName, LogonDomain], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: User Logon Events
+    type: query
+  b89d56ee-7e80-4f51-a1a9-b8c6cf92939a:
+    x: 4
+    y: 0
+    height: 3
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=PackedExecutableWritten
+      | aid=?aid #cid=?cid
+      | count()
+    start: 7d
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Total Packed Executable Written
+    type: query
+  note-1671481558493-0:
+    x: 0
+    y: 0
+    height: 3
+    text: "- Dashboard does not return results by default. \n- Add an aid to the `aid`\
+      \ parameter above.\n- The default time range is 7 days. "
+    width: 4
+    title: Workflow Note
+    type: note
+  a469227a-2755-4855-8927-6cd1ad919ebc:
+    x: 0
+    y: 26
+    height: 5
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName=NetworkConnectIP4
+      | aid=?aid #cid=?cid
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(field=RemoteAddressIP4, as=RemoteAddressIP4)
+      | top([RemoteAddressIP4, RemoteAddressIP4.country])
+      | rename(_count, as="Total Connections")
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: Top Network Connections by IP and Country
+    type: query
+  87690ec2-e046-4b80-ae0a-cd686cb3c856:
+    x: 0
+    y: 11
+    height: 6
+    queryString: |-
+      test(?aid != "*")
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent
+      | AgentIdString=?aid #cid=?cid
+      | sankey(target=Tactic, source=Technique)
+    start: 7d
+    width: 6
+    options:
+      series: {}
+    visualization: sankey
+    title: 'Detections: Tactics and Techniques'
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

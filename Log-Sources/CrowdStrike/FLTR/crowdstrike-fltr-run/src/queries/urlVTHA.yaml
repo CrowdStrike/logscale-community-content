@@ -1,0 +1,30 @@
+name: urlVTHA
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Returns Virus Total and Hybrid Analysis URLs that utilize the "SHA256HashData" field.
+  //
+  // To call this function if installed from the crowdstrike/fltr-run package:
+  // $"crowdstrike/fltr-run:urlVTHA"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"urlVTHA"()
+
+  // The case statements will only return URLs where it only has the necessary fields.
+
+  | case {
+      SHA256HashData=*
+        // Virus Total.
+        | format("[Virus Total](https://www.virustotal.com/gui/file/%s)", field=[SHA256HashData], as="VT")
+        // Hybrid Analysis.
+        | format("[Hybrid Analysis](https://www.hybrid-analysis.com/search?query=%s)", field=[SHA256HashData], as="HA") ;
+      * ;
+    }

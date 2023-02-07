@@ -1,0 +1,24 @@
+name: Processes - Linux Command Execution
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Find all Linux process events.
+  #event_simpleName=ProcessRollup2 event_platform=Lin
+
+  // Remove noisy items.
+  | ImageFileName!=/\/ln$|\/kmod$|\/runc$/
+
+  // Shorten the file name just to keep the column width sane.
+  | ImageFileName:=format("%.32s", field=ImageFileName)
+
+  // Grab ComputerName
+  | $"crowdstrike/fltr-run:ComputerName"()
+
+  // Group it by ComputerName and ImageFileName, then grab all of the CommandLine entries for those groups.
+  | groupBy([aid, ImageFileName], function=collect([ComputerName, CommandLine], limit=10000), limit=max)
+  | table([aid, ComputerName, ImageFileName, CommandLine], limit=1000)

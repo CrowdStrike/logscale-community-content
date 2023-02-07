@@ -1,0 +1,47 @@
+name: Processes - DNS Requests 
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Grab all of the ProcessRollup2 events.
+  #event_simpleName=ProcessRollup2
+
+  // Grab the DomainName from the DnsRequest events.
+  | join(
+      { #event_simpleName=DnsRequest }, 
+      field=TargetProcessId, key=ContextProcessId, 
+      include=[DomainName], limit=100000
+    )
+
+  // Filter out non-DNS names.
+  | DomainName=/\./ DomainName!=/(_|\.arpa\.$)/
+
+  // Regex to extract the FileName.
+  | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
+
+  // Make these fields as optional inputs by putting a ? at the beginning.
+  | DomainName=?DomainName FileName=?FileName
+
+  // Add the ComputerName.
+  | $"crowdstrike/fltr-run:ComputerName"()
+
+  // Do an IOC lookup on the domain and rename the field.
+  | ioc:lookup(DomainName, type=domain, confidenceThreshold=unverified)
+  | IOC:=rename(ioc[0].labels)
+
+  // Assign a value for IOC matches to make sorting easier at the end.
+  | case {
+      IOC=* | iocMatch:=1;
+      *     | iocMatch:=0 | IOC:="NoMatchFound";
+    }
+
+  // Group the results, sort by the ones with IOCs first.
+  | groupBy([aid, FileName], function=collect([ComputerName, DomainName, IOC, iocMatch], limit=10000), limit=max)
+  | sort(iocMatch, limit=10000)
+
+  // Remove the iocMatch field since we don't need it anymore.
+  | table([aid, ComputerName, FileName, DomainName, IOC], limit=1000)

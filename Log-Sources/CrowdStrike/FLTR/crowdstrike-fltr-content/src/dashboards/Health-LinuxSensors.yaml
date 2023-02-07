@@ -1,0 +1,230 @@
+name: Health - Linux Sensors
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  9d199dfb-021c-4a6e-a63c-f315da6ff059:
+    x: 6
+    y: 3
+    height: 5
+    queryString: |-
+      #event_simpleName=SensorHeartbeat
+      | event_platform=Lin
+      | ipLocation(aip)
+      | worldMap(ip=aip, magnitude=count(aid))
+    visualization: world-map
+    start: 7d
+    width: 6
+    title: Linux Endpoint Locations
+    type: query
+  9aa62dbe-1918-4f43-9925-6fbf64469a93:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon
+      | event_platform=Lin LogonType=10
+      | ipLocation(RemoteAddressIP4)
+      | format(format="%s, %s", field=[RemoteAddressIP4.country, RemoteAddressIP4.city], as="Location")
+      | case {
+           Location="null, null" | Location := "-" ;
+        * }
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | groupBy(["RemoteAddressIP4"], function=([count(aid, as="Connection Count"), collect([Location, ComputerName, LocalAddressIP4, aid], limit=10000)]), limit=10)
+      | rename("RemoteAddressIP4",as="Destination SSH")
+      | table([aid, ComputerName, Location, LocalAddressIP4, "Destination SSH", "Connection Count"], sortby="Connection Count", limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 8
+    title: Top 10 SSH Destinations
+    type: query
+  8b823c4c-c017-4422-96ef-1479a21d238a:
+    x: 6
+    y: 0
+    height: 3
+    queryString: |-
+      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      | event_platform=Lin
+      | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]))
+      | ConfigStateData match {
+          /1400000000c4/ => isInUserMode:="1" ;
+          *              => isInUserMode:="0" ;
+        }
+      | SensorStateBitMap match {
+          2 => isInRFM:="1" ;
+          0 => isInRFM:="0" ;
+        }
+      | isInRFM=1 AND isInUserMode=0
+      | count(aid, distinct=true)
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      text-color: '#f5f4f4'
+      yAxisTitle: ''
+      use-colorised-thresholds: false
+      background-color: '#136cc6'
+      default: {}
+    visualization: single-value
+    title: Linux Sensors in RFM
+    type: query
+  beb4f366-f764-48b7-b9d5-8903aa939daf:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #event_simpleName=NetworkListenIP4
+      | event_platform=Lin
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max)
+      | match(file="crowdstrike/fltr-run/service-names-port-numbers.csv", field=LocalPort, include=ServiceName, ignoreCase=true, strict=false)
+      | sort(field=LocalPort, order=asc, limit=10)
+      | drop(_count)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Top 10 Listening Ports
+    type: query
+  6fafbaeb-8c49-4071-b009-c385338cc50d:
+    x: 0
+    y: 16
+    height: 8
+    queryString: |-
+      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      | event_platform=Lin
+      | groupBy([cid, aid], function=([selectLast([aip, ConfigBuild, AgentVersion, LocalAddressIP4, ConfigStateData, OSVersionString, SensorStateBitMap])]), limit=max)
+      | ConfigStateData match {
+          /1400000000c4/ => isInUserMode:="1" ;
+          *              => isInUserMode:="0" ;
+        }
+      | SensorStateBitMap match {
+          2 => isInRFM:="1" ;
+          0 => isInRFM:="0" ;
+        }
+      | case {
+          isInUserMode=1 AND isInRFM=1 | Status := "User Mode" ;
+          isInUserMode=0 AND isInRFM=0 | Status := "Kernel Mode" ;
+          isInUserMode=0 AND isInRFM=1 | Status := "RFM" ;
+          * ;
+        }
+      | $"crowdstrike/fltr-run:urlFalconAid"()
+      | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
+      | table([aid, hostName, aip.country, kernelVersion, AgentVersion, Status, "Host Management"], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Linux Endpoints
+    type: query
+  b35e0ba8-fbbd-4170-af55-0d8c2dd1a6f6:
+    x: 0
+    y: 3
+    height: 5
+    queryString: |
+      #event_simpleName=OsVersionInfo
+      | event_platform=Lin
+      | groupBy([cid, aid], function=([selectLast([OSVersionString])]), limit=max)
+      | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
+      | kernelVersion=/(?<kernelBranch>\d+\.\d+)\./
+      | groupBy("kernelBranch", limit=max)
+    start: 7d
+    width: 6
+    options:
+      series: {}
+      valuesOnBars: true
+      xAxisTitle: Kernel Branch
+      yAxisTitle: Count
+      sortOrder: ascending
+      orderBy: kernelBranch
+    visualization: bar-chart
+    title: Linux Kernels
+    type: query
+  8a6f1661-0be9-4756-bfe9-9a4fdce25f4f:
+    x: 8
+    y: 12
+    height: 4
+    queryString: |
+      #event_simpleName=UserLogon
+      | event_platform=Lin UID=0
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | case {
+           LogonType=2  | LogonType := "Interactive" ;
+           LogonType=10 | LogonType := "SSH" ;
+        * }| groupBy([aid, ComputerName], function=([count(aid, as="Logon Count"), collect(LogonType, limit=1000)]), limit=max)
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: Endpoints with Root Logons
+    type: query
+  fd4d9247-3b6d-4715-8e71-77e632abcc53:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      | event_platform=Lin
+      | count(aid, distinct=true)
+    start: 7d
+    width: 3
+    options:
+      default: {}
+      yAxisTitle: ''
+    visualization: single-value
+    title: Total Linux Sensors
+    type: query
+  5ede3818-40fe-4c17-8862-0662ddf5dd51:
+    x: 3
+    y: 0
+    height: 3
+    queryString: |-
+      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      | event_platform=Lin
+      | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]), limit=max)
+      | ConfigStateData match {
+          /1400000000c4/ => isInUserMode:="1" ;
+          *              => isInUserMode:="0" ;
+        }
+      | SensorStateBitMap match {
+          2 => isInRFM:="1" ;
+          0 => isInRFM:="0" ;
+        }
+      | isInRFM=1 AND isInUserMode=1
+      | count(aid, distinct=true)
+    start: 7d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Linux Sensors in User Mode
+    type: query
+  549d133a-2005-4df0-9d0b-7fae4fa05181:
+    x: 9
+    y: 0
+    height: 3
+    queryString: |-
+      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      | event_platform=Lin
+      | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]))
+      | ConfigStateData match {
+          /1400000000c4/ => isInUserMode:="1" ;
+          *              => isInUserMode:="0" ;
+        }
+      | SensorStateBitMap match {
+          2 => isInRFM:="1" ;
+          0 => isInRFM:="0" ;
+        }
+      | case {
+          isInUserMode=1 AND isInRFM=1 | Status := "User Mode Enabled" ;
+          isInUserMode=0 AND isInRFM=0 | Status := "Kernel Mode Enabled" ;
+          isInUserMode=0 AND isInRFM=1 | Status := "RFM Enabled" ;
+        * }
+      | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
+      | groupBy("Status", function=(count(aid, as="Count")), limit=max)
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: Linux Sensor Status
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

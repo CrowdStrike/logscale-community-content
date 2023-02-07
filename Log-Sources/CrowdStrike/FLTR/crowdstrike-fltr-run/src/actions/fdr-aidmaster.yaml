@@ -1,0 +1,4 @@
+$schema: https://schemas.humio.com/action/v0.4.0
+fileName: fdr_aidmaster.csv
+name: FLTR aidmaster Upload
+type: upload-file

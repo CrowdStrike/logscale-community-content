@@ -1,0 +1,52 @@
+name: Processes - Windows Executable File Creation
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Initial filter to only deal with the events we need in the remainder of the query.
+  // This is optimised to make best use of the tags in the repo.
+  #event_simpleName="*ExecutableWritten" OR #event_simpleName="*PeFileWritten" OR #event_simpleName="SuspiciousEseFileWritten" OR #event_simpleName="ProcessRollup2"
+
+  // Restrict to just the Windows platform.
+  event_platform=Win
+
+  // We rename and/or reassign some fields and values depending on the event type we're looking at
+  | #event_simpleName match {
+      ProcessRollup2 => rename(field=TargetProcessId, as=ProcessId)  | rename(field=SHA256HashData, as=SHA256ProcessHash) ;
+      *              => rename(field=ContextProcessId, as=ProcessId) | rename(field=SHA256HashData, as=SHA256FileHash) ;
+  }
+
+  // SelfJoinFilter will filter events so that only those with a processID that matches both where statements are passed through
+  // This can introduce some false positives, but those are filtered out later after the groupby
+  | selfJoinFilter(ProcessId, where=[
+      {#event_simpleName=ProcessRollup2 ImageFileName=/\\Users\\/i},
+      {#event_simpleName!=ProcessRollup2 SHA256FileHash=* TargetFileName=/\\Users\\.*\.exe$/i}
+    ], prefilter=True
+  )
+
+  // Add the ComputerName.
+  | $"crowdstrike/fltr-run:ComputerName"()
+
+  // Shorten the name for display purposes.
+  | case {
+      ImageFileName=/(?<ParentFileName>[^\\/|\\\\]*)$/ ;
+      TargetFileName=/(?<ChildFileName>[^\\/|\\\\]*)$/ ;
+      * ;
+  }
+
+  // Groupby the aid and processid, which should be a unique combination
+  // Collect all the other interesting field values for each group
+  | groupBy([aid, ProcessId], function=[count(), collect([ComputerName, #event_simpleName, ParentFileName, ChildFileName], limit=10000)], limit=max)
+
+  // This should filter any false positives, if the group only has a single entry then only a single event was found etc
+  | _count>3
+
+  // Add an aditional field in markdown syntax that's clickable and will pivot back to Falcon
+  | ProcessExplorer:=format("[Process Explorer](https://falcon.crowdstrike.com/investigate/process-explorer/%s/%s)", field=["aid", "ProcessId"])
+
+  // Arrange the results in a table.
+  | table([aid, ComputerName, ParentFileName, ChildFileName, ProcessId, ProcessExplorer], limit=1000)

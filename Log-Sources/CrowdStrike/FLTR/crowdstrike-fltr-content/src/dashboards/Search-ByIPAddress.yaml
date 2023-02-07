@@ -1,0 +1,124 @@
+name: Search - By IP Address
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  65d3a65a-32b2-4565-9953-9252661b14eb:
+    x: 0
+    y: 10
+    height: 5
+    queryString: |
+      /*
+       * This query finds the IP Connections for a given host
+       */
+      #event_simpleName=NetworkConnectIP4
+      | RemoteAddressIP4=?IP
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | ComputerName=?ComputerName
+      | groupBy([ComputerName, RemoteAddressIP4], limit=max)
+      | top(ComputerName, sum=_count)
+    start: 7d
+    width: 6
+    options:
+      series: {}
+    visualization: bar-chart
+    title: IP Connections by Host
+    type: query
+  19e9da5e-a754-41e7-94d6-a86e4e65e825:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #event_simpleName=NetworkConnectIP4
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | groupBy(RemoteAddressIP4, function=[
+          { selectLast([ContextTimeStamp]) | rename(ContextTimeStamp, as=LastLookup) },
+          { select([ContextTimeStamp]) | head(1) | rename(ContextTimeStamp, as=FirstLookup) | drop(@timestamp) },
+          { count(ComputerName, as=NumberOfHosts, distinct=true) }
+        ], limit=max)
+      | sort(NumberOfHosts, order=descending, limit=20000)
+      // Convert the time fields to human readable format
+      | LastLookup := LastLookup*1000
+      | FirstLookup := FirstLookup*1000
+      | LastLookup := formatTime(field=LastLookup, format="%Y/%m/%d %H:%M:%S")
+      | FirstLookup := formatTime(field=FirstLookup, format="%Y/%m/%d %H:%M:%S")
+      | table([RemoteAddressIP4, NumberOfHosts, FirstLookup, LastLookup], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: IP Summary
+    type: query
+  95326074-9d63-449f-8ef1-571d0228c0cc:
+    x: 6
+    y: 0
+    height: 5
+    queryString: |-
+      | test(?IP != "*")
+      | #event_simpleName=NetworkConnectIP4
+      | RemoteAddressIP4 = ?IP
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | groupBy([RemoteAddressIP4, ComputerName], function=[
+          { count(ContextTimeStamp, as="Total Connections", distinct=true) },
+          { selectLast(ContextTimeStamp) | rename(ContextTimeStamp, as=LastLookup) },
+          { select(ContextTimeStamp) | head(1) | rename(ContextTimeStamp, as=FirstLookup) }
+        ], limit=max)
+      | sort(ComputerName, limit=20000)
+      | LastLookup := LastLookup*1000
+      | FirstLookup := FirstLookup*1000
+      | LastLookup := formatTime(field=LastLookup, format="%Y/%m/%d %H:%M:%S")
+      | FirstLookup := formatTime(field=FirstLookup, format="%Y/%m/%d %H:%M:%S")
+      | table([RemoteAddressIP4, ComputerName, FirstLookup, LastLookup, "Total Connections"], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: IP Lookup Details - Must Specify IP Value
+    type: query
+  8054b661-43f3-4906-9849-d9bb9dcef35b:
+    x: 0
+    y: 5
+    height: 5
+    queryString: |2-
+        #event_simpleName=ProcessRollup2
+      | ImageFileName=*
+      | aid=*
+      | join(max=10000, field=[TargetProcessId], key=ContextProcessId, include=[_count], limit=100000, mode=inner, query={
+          #event_simpleName=NetworkConnectIP4
+        | groupBy([RemoteAddressIP4], function=[
+          { count(RemoteAddressIP4, distinct=true) | _count > 0 },
+          { selectLast(ContextProcessId) }
+        ], limit=max)
+      })
+      | groupby([ImageFileName], function=[sum(_count, as="Total IPs"), { tail(1) | selectLast(aid) }], limit=max)
+      | "Total IPs" > 0
+      | sort("Total IPs", order=descending, limit=100)
+      | table([ImageFileName, aid, "Total IPs"], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Processes and IPs
+    type: query
+  44459588-5c91-4155-be3d-6d6f09704236:
+    x: 6
+    y: 10
+    height: 5
+    queryString: |-
+      /*
+       * This query finds the IP Connections for a given host
+       */
+      | #event_simpleName=NetworkConnectIP4
+      | RemoteAddressIP4=?IP
+      | $"crowdstrike/fltr-run:ComputerName"()
+      | ComputerName=?ComputerName
+      | groupby([ComputerName, RemoteAddressIP4], limit=max)
+      | top(ComputerName, sum=_count)
+      | rename(_sum, as="Total Connections")
+    visualization: table-view
+    start: 7d
+    width: 6
+    title: IP Connections by Host
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

@@ -1,0 +1,160 @@
+name: Health - Cloud Workload Protection
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  1f60acd6-826e-403e-a888-8e5720effe99:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      #event_simpleName=PodInfo
+      | count(PodServiceAccountName, distinct=true)
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Pod Service Account Names
+    type: query
+  9d199dfb-021c-4a6e-a63c-f315da6ff059:
+    x: 6
+    y: 11
+    height: 5
+    queryString: |-
+      #event_simpleName=PodInfo
+      | worldMap(ip=aip, magnitude=count(aid))
+    visualization: world-map
+    start: 7d
+    width: 6
+    title: Sensor Locations
+    type: query
+  aa561f1b-5816-4e7c-ab77-2afdb7ac3b0d:
+    x: 0
+    y: 7
+    height: 4
+    queryString: |-
+      #kind=Primary
+      | eventType=K8SDetectionEvent
+      | "Detection Type":=format("%-18s %s", field=[severity, detectionName])
+      | groupBy(resourceName, function=[collect(["Detection Type", clusterName], limit=10000), count(as="Total Events")], limit=max)
+      | sort("Total Events", limit=10000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Detection Events
+    type: query
+  4e1e4a2e-1e59-4ba6-8be2-d6b91918ae41:
+    x: 8
+    y: 3
+    height: 4
+    queryString: |-
+      #kind=Primary
+      | eventType=K8SDetectionEvent
+      | groupBy(detectionName, limit=max)
+    visualization: pie-chart
+    start: 7d
+    width: 4
+    title: Pod Detections by Name
+    type: query
+  6fafbaeb-8c49-4071-b009-c385338cc50d:
+    x: 0
+    y: 16
+    height: 5
+    queryString: |-
+      #event_simpleName=PodInfo
+      | join({#event_simpleName=OsVersionInfo}, field=aid, include=AgentVersion, limit=100000)
+      | groupBy(aid, function=selectLast([AgentVersion, PodName, PodNamespace, PodHostname]), limit=max)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Sensor List
+    type: query
+  b35e0ba8-fbbd-4170-af55-0d8c2dd1a6f6:
+    x: 0
+    y: 11
+    height: 5
+    queryString: |-
+      #event_simpleName=PodInfo
+      | join({#event_simpleName=OsVersionInfo}, field=aid, include=OSVersionString, limit=100000)
+      | groupBy(aid, function=selectLast(OSVersionString), limit=max)
+      | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
+      | kernelVersion=/(?<kernelBranch>\d+\.\d+)\./
+      | groupBy("kernelBranch")
+    start: 7d
+    width: 6
+    options:
+      valuesOnBars: true
+      xAxisTitle: Kernel Branch
+      yAxisTitle: Count
+      sortOrder: ascending
+      orderBy: kernelBranch
+    visualization: bar-chart
+    title: Linux Kernel Versions
+    type: query
+  9baeee14-8cf6-49a0-88b5-47b77e96b67f:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |-
+      #kind=Primary
+      | eventType=K8SDetectionEvent
+      | count(detectionName)
+    start: 7d
+    width: 4
+    options:
+      color-method: static
+      text-color: ''
+      yAxisTitle: ''
+      use-colorised-thresholds: false
+      background-color: ''
+      default: {}
+    visualization: single-value
+    title: Pod Detections
+    type: query
+  5ede3818-40fe-4c17-8862-0662ddf5dd51:
+    x: 4
+    y: 0
+    height: 3
+    queryString: |-
+      #event_simpleName=PodInfo
+      | count(field=PodNamespace, distinct=true)
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Pod Namespaces
+    type: query
+  fd4d9247-3b6d-4715-8e71-77e632abcc53:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      #event_simpleName=PodInfo
+      | count(aid, distinct=true)
+    start: 7d
+    width: 4
+    options:
+      default: {}
+      yAxisTitle: ''
+    visualization: single-value
+    title: Total Pods
+    type: query
+  5ed8d2ea-378f-446d-bcbc-ee4bbaf4715d:
+    x: 4
+    y: 3
+    height: 4
+    queryString: |-
+      #kind=Primary
+      | eventType=K8SDetectionEvent
+      | groupBy(severity, limit=max)
+    visualization: pie-chart
+    start: 7d
+    width: 4
+    title: Pod Detections by Severity
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0

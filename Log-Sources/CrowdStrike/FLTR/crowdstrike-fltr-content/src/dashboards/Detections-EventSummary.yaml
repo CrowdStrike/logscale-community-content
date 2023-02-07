@@ -1,0 +1,336 @@
+name: Detections - Event Summary
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  26dea3a4-6341-4666-b1c0-e622de62ca74:
+    x: 0
+    y: 4
+    description: Number of preventions versus detections issued by Falcon. This directly
+      correlates with the configured prevention policy for the target endpoint.
+    height: 4
+    queryString: |
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
+      | groupBy("preventStatus", limit=max)
+    start: 7d
+    width: 4
+    options:
+      xAxisTitle: Action
+      yAxisTitle: Count
+      series: {}
+      valuesOnBars: true
+    visualization: bar-chart
+    title: Falcon Actions
+    type: query
+  baed388c-9480-4a13-b4df-3b3a7a9f85c1:
+    x: 6
+    y: 0
+    description: 'Total number of behaviors detected (note: a single detection can
+      contain multiple behaviors).'
+    height: 4
+    queryString: |-
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | count(AgentIdString,  as="Total Behaviors")
+    start: 7d
+    width: 3
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2000
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1000
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 500
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1500
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Total Behaviors
+    type: query
+  6af6ef6b-cdca-4258-aa00-7a49a0c10a9c:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |-
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | UserName!="N/A"
+      | groupBy([UserName], function=([count(DetectId, distinct=true, as="Detection Count"), max(Severity, as=maxSev)]))
+      | sort(["Detection Count", UserName], order=desc, limit=5)
+      | maxSev match {
+          1 => maxSev := "Informational" ;
+          2 => maxSev := "Low" ;
+          3 => maxSev := "Medium" ;
+          4 => maxSev := "High" ;
+          5 => maxSev := "Critical" ;
+      }
+      | rename("UserName",as="Username")
+      | rename("maxSev",as="Max Severity")
+      | table(["Username", "Max Severity", "Detection Count"], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: Top Users with Endpoint Detections
+    type: query
+  de9566de-cfa6-474a-b373-34e9f2f9a197:
+    x: 7
+    y: 4
+    description: Falcon action taken by detection severity.
+    height: 4
+    queryString: |
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
+      | sankey(source="preventStatus",target="SeverityName", weight=count(DetectId, distinct=true))
+    start: 7d
+    width: 5
+    options:
+      series: {}
+      stackSortType: total
+      labelPosition: inside
+      showAxes: true
+      labelLimit: 292
+      stackSortOrder: ascending
+    visualization: sankey
+    title: Falcon Action by Severity
+    type: query
+  b595492b-0ba6-4ba3-b47e-5fe29f76a9ba:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |+
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | top(["MachineDomain"], limit=5)
+      | sort(field="_count", order=desc)
+      | rename("MachineDomain",as="Domain")
+      | rename("_count",as="Total Detections")
+      | table(["Domain", "Total Detections"], limit=1000)
+
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: Top Machine Domains with Endpoint Detections
+    type: query
+  61841a33-f034-422f-83e3-4d50b153ad22:
+    x: 4
+    y: 8
+    height: 4
+    queryString: |-
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | LocalIP=/(?<endpointSubnet>\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}/i
+      | top(["endpointSubnet"], limit=5)
+      | sort(field="_count", order=desc)
+      | rename("endpointSubnet",as="Subnet (/24)")
+      | rename("_count",as="Detection Count")
+      | table(["Subnet (/24)", "Detection Count"], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 4
+    title: Top Subnets with Endpoint Detections
+    type: query
+  24f53ff3-968a-4221-aa1c-0e31b1b878bc:
+    x: 0
+    y: 0
+    description: Unique Falcon Agent ID values with endpoint detections.
+    height: 4
+    queryString: |-
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | count(AgentIdString, distinct=true, as="Total Endpoints")
+    start: 7d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 200
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 50
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 10
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 100
+      color-method: threshold
+      yAxisTitle: ''
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Total Endpoints
+    type: query
+  cb2edac0-7d43-4bb4-81cb-a022a4894975:
+    x: 4
+    y: 4
+    description: 'Actions Falcon would have blocked had the requisite prevention policy
+      setting been enabled. '
+    height: 4
+    queryString: |+
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      //| PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
+      //| preventStatus != "Prevention"
+      | PatternDispositionDescription=/would\shave/i
+      //| groupBy([preventStatus, PatternDispositionDescription])
+      | count(DetectId)
+
+    start: 7d
+    width: 3
+    options:
+      background-color: '#FF7E00'
+      default: {}
+    visualization: single-value
+    title: Potential Preventions
+    type: query
+  b410d633-70b3-40a1-8904-99b7b36f82b0:
+    x: 0
+    y: 12
+    height: 5
+    queryString: |-
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | DetectId=/\S+\:(?<aid>\S+)\:(?<detectID>\S+)$/i
+      | groupBy([aid, ComputerName, detectID, DetectId, FalconHostLink], function=([max(Severity, as=maxSev), sum(Severity, as=SeveritySum)]))
+      | sort(field=SeveritySum, order=desc, limit=10)
+      | FalconHostLink=/(?<rootURL>https\:\/\/.*\.com\/).*/i
+      | format("[Detect Link](%s)", field=FalconHostLink, as="Falcon UI Link")
+      | drop([DetectId, FalconHostLink])
+      | maxSev match {
+          1 => maxSev := "Informational" ;
+          2 => maxSev := "Low" ;
+          3 => maxSev := "Medium" ;
+          4 => maxSev := "High" ;
+          5 => maxSev := "Critical" ;
+      }
+      | rename("ComputerName",as="Endpoint")
+      | rename("aid",as="Agent ID")
+      | rename("detectID",as="Detect UUID")
+      | rename("SeveritySum",as="Detection Weight")
+      | rename("maxSev", as="Severity")
+      | table(["Agent ID", "Detect UUID", "Endpoint", "Severity", "Detection Weight", "Falcon UI Link"], limit=1000)
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Top Endpoint Detections by Severity Weight
+    type: query
+  b634133f-95e7-430f-a7f8-ed7a183de8dd:
+    x: 3
+    y: 0
+    description: Total number of unique endpoint detections.
+    height: 4
+    queryString: |-
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | count(DetectId, distinct=true, as="Total Detections")
+    start: 7d
+    width: 3
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 400
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 200
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 100
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 300
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Total Detections
+    type: query
+  98586614-6ae5-4a95-9046-4996deff9b39:
+    x: 9
+    y: 0
+    description: Detection count by maximum severity.
+    height: 4
+    queryString: |-
+      | #event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent ?ComputerName ?aid ?MachineDomain
+      | groupBy([DetectId], function=(max(Severity, as=Severity)), limit=max)
+      | groupBy([Severity], function=(count(DetectId, as="Total Detections")), limit=max)
+      | NumberSeverity:=Severity
+      | Severity match {
+          1 => Severity := "Informational" ;
+          2 => Severity := "Low" ;
+          3 => Severity := "Medium" ;
+          4 => Severity := "High" ;
+          5 => Severity := "Critical" ;
+      }
+      | sort(field="NumberSeverity", order=asc, limit=10)
+    start: 7d
+    width: 3
+    options:
+      series:
+        Informational:
+          color: '#9DC1FD'
+        Medium:
+          color: '#FF7E00'
+        High:
+          color: '#FF575E'
+        Low:
+          color: '#FFBE00'
+        Critical:
+          color: '#FC3896'
+      legendLabelOverflow: truncate
+      legend: false
+      maxLegendRows: 1
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Detections by Max Severity
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  ComputerName:
+    label: Hostname
+    query: '#event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy(ComputerName)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: ComputerName
+  MachineDomain:
+    label: Domain
+    query: '#event_simpleName!=* #kind=Primary
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy(MachineDomain)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: MachineDomain
+  aid:
+    defaultValue: '*'
+    label: Agent ID
+    order: 50
+    type: text

@@ -1,0 +1,30 @@
+name: Detections - Grouped By AID
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // These events don't have an #event_simpleName tag.
+  // Excluding the tag is almost as fast, i.e. "everything without this tag".
+  #event_simpleName!=* #kind=Primary
+
+  // Find the detection events.
+  | ExternalApiType=Event_DetectionSummaryEvent
+
+  // Rename AgentIdString to aid.
+  | aid:=rename(AgentIdString)
+
+  // Include the ComputerName if it's missing.
+  | $"crowdstrike/fltr-run:ComputerName"()
+
+  // Uncomment if you'd like to exclude certain detection names.
+  | DetectName!=/(custom|overwatch)/i
+
+  // Group the results by aid.
+  | groupBy([aid, ComputerName], function=[collect(DetectName), count(as="TotalHits")], limit=max)
+
+  // Sort by the number of hits.
+  | sort(TotalHits, limit=1000)
