@@ -4,7 +4,7 @@ The packages generally include much more content than individual dashboards, que
 
 - **[general-content](general-content)**: standalone transforms, dashboards, queries, etc.  
 
-- **[crowdstrike-fltr-identityprotection](crowdstrike-fltr-identityprotection)**: queries and dashboards for Falcon Identity Detection in LogScale. 
+- **[crowdstrike-fltr-identityprotection](crowdstrike-fltr-identityprotection)**: queries and dashboards for Falcon Identity Protection in LogScale. 
 
 - **[crowdstrike-fltr-content](crowdstrike-fltr-content)**: queries and dashboards for Falcon telemetry, aka FDR. This must be installed with the [crowdstrike-fltr-run](crowdstrike-fltr-run) package.
 
