@@ -15,8 +15,6 @@ Here's a quick summary of the various folders in this repo:
 
    **Note:** This is not a replacement for the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html)
 
-- **[Use-Cases](Use-Cases)**: Cross-vendor content
-
 - **[Config-Samples](Config-Samples)**: these are configuration examples for varios log shippers, as well as other useful artefacts such as scripts, lookup files, etc. 
 
 # Wiki
