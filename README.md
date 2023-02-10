@@ -5,7 +5,7 @@
 
 # LogScale Community Content
 
-Welcome to the LogScale community content repo, formerly known as Humio. Here we'll include useful queries, dashboards, tutorials, etc for LogScale. These are not meant as replacements for the [official documentation](https://library.humio.com) or the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html).
+Welcome to the LogScale (fka Humio) Community Content Repository. Here we'll include useful queries, dashboards, tutorials, etc for LogScale. These are not meant as replacements for the [official documentation](https://library.humio.com) or the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html).
 
 # Content
 
