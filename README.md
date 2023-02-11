@@ -40,4 +40,27 @@ The wiki contains the following guides and tutorials:
 
 - **[Hunting and Investigations](https://github.com/CrowdStrike/logscale-community-content/wiki/Hunting-and-Investigations)**: ever wondered how to hunt through Falcon telemetry data, aka LTR, aka FDR? This is likely the best place to start. 
 
+# Documentation and Support
+LogScale Community Content is a community-driven open source project. As such it carries no formal support, expressed or implied.
 
+# Issues and Questions
+
+Is something going wrong? GitHub Issues are used to report bugs and errors. You can check to see if anyone else has reported the issue or create a new issue here - [Report Issue](https://github.com/CrowdStrike/logscale-community-content/issues/)
+
+# Contribute
+
+There are *many* ways you can contribute to the LogScale Community Content repository.
+
+- _Add new Vendor content_ by opening a pull request. More details on this process can be found in the Log-Sources folder here - [Log-Sources](Log-Sources)].
+
+- _Add new Samples_ by opening a pull request. More details on this process can be found in the Configuration Sample folder here - [Config-Samples](Config-Samples).
+
+- _Review pull requests_ by going through the queue of [open pull requests on GitHub](https://github.com/CrowdStrike/logscale-community-content/pulls) and giving feedback to the authors.
+
+- _Documenting, blogging, or creating videos_, of how you've used LogScale Community Content. This type of content is *invaluable* and helps our community grow. Open a pull request for inclusion in the [Additional content](https://github.com/CrowdStrike/falconpy#additional-content) section of this page.
+
+- _Fix a bug or implement a new feature_. Check out our [open issues on GitHub](https://github.com/CrowdStrike/logscale-community-content/issues) for inspiration.
+
+- _Providing feedback_ by opening a GitHub ticket. Even a fly-by "hey, this worked..." is appreciated and helps validate approaches. Ideas on improving the project are most welcome.
+
+To get started, review the [Code of Conduct](https://github.com/CrowdStrike/logscale-community-content/blob/main/CODE_OF_CONDUCT.md) for community guidelines, and the [contribution guide](https://github.com/CrowdStrike/logscale-community-content/blob/main/CONTRIBUTING.md) for more detail regarding contributing to the LogScale Community Content repository.
