@@ -27,17 +27,9 @@ The Code of Conduct helps us establish community norms and how they'll be enforc
 
 ## How you can contribute
 - See something? Say something! Submit a [bug report](https://github.com/CrowdStrike/logscale-community-content/issues) to let the community know what you've experienced or found. Bonus points if you suggest possible fixes or what you feel may resolve the issue. 
-- Join the [discussion board](https://github.com/CrowdStrike/falconpy/discussions) where you can:
-    - [Interact](https://github.com/CrowdStrike/falconpy/discussions/categories/general) with other members of the community
-    - Suggest [new functionality](https://github.com/CrowdStrike/falconpy/discussions/categories/ideas)
-    - Provide [feedback](https://github.com/CrowdStrike/falconpy/discussions/categories/q-a)
-    - [Show others](https://github.com/CrowdStrike/falconpy/discussions/categories/show-and-tell) how you are using FalconPy
 - Submit a [Pull Request](#pull-requests)
 
 ### Bug reporting is handled using GitHub issues
-[![GitHub issues](https://github.com/CrowdStrike/logscale-community-content/issues)
-[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/crowdstrike/falconpy?color=green&logo=github)](https://github.com/CrowdStrike/falconpy/issues?q=is%3Aissue+is%3Aclosed)
-
 We use [GitHub issues](https://github.com/CrowdStrike/falconpy/issues) to track:
 
 + [bugs](https://github.com/CrowdStrike/falconpy/issues?q=is%3Aissue+label%3A%22bug+%3Abug%3A%22) (`BUG`)
@@ -45,20 +37,7 @@ We use [GitHub issues](https://github.com/CrowdStrike/falconpy/issues) to track:
 + [enhancements](https://github.com/CrowdStrike/falconpy/issues?q=is%3Aissue+label%3A%22enhancement+%3Astar2%3A%22) (`ENH`)
 + [security concerns](https://github.com/CrowdStrike/falconpy/issues?q=is%3Aissue+label%3Asecurity) (`SEC`)
 
-[![Report Issue](https://raw.githubusercontent.com/CrowdStrike/falconpy/main/docs/asset/report-issue.png)](https://github.com/CrowdStrike/falconpy/issues/new/choose)
-
-### Discussions are used for questions, suggestions and feedback.
-[![GitHub Discussions](https://img.shields.io/github/discussions/CrowdStrike/falconpy?logo=github&logoColor=white)](https://github.com/CrowdStrike/falconpy/discussions)
-
-We use GitHub's discussion board functionality to handle community discussions related to:
-
-+ [questions](https://github.com/CrowdStrike/falconpy/discussions/categories/q-a)
-+ [feedback](https://github.com/CrowdStrike/falconpy/discussions/categories/general)
-+ [functionality enhancements](https://github.com/CrowdStrike/falconpy/discussions/categories/ideas)
-+ [new releases and usage examples](https://github.com/CrowdStrike/falconpy/discussions/categories/show-and-tell)
-
-[![Discussions](https://raw.githubusercontent.com/CrowdStrike/falconpy/main/docs/asset/ask-a-question.png)](https://github.com/CrowdStrike/falconpy/discussions?discussions_q=category%3AQ%26A)
-[![Discussions](https://raw.githubusercontent.com/CrowdStrike/falconpy/main/docs/asset/join-the-discussion.png)](https://github.com/CrowdStrike/falconpy/discussions)
+[Report Issue](https://github.com/CrowdStrike/falconpy/issues/new)
 
 ---
 
@@ -68,7 +47,6 @@ In order for your pull request to be merged, it must pass code style and unit te
 ### All contributions will be submitted under the Unlicense license
 When you submit code changes, your submissions are understood to be under the same Unlicense [license](LICENSE) that covers the repository. 
 If this is a concern, contact the maintainers before contributing.
-
 
 ### Code Quality and Style (Linting)
 [![Check Docstrings](https://github.com/CrowdStrike/falconpy/actions/workflows/pydocstyle.yml/badge.svg)](https://github.com/CrowdStrike/falconpy/actions/workflows/pydocstyle.yml)
