@@ -8,13 +8,21 @@
 
 ## Contributing Individual Content
 
-- Create or export your dashboard, query, or alert. The file name should reflect the purpose, e.g. CVE-2011-0762.yaml.
+   - Create or export your dashboard, query, or alert. The file name should reflect the purpose, e.g. CVE-2011-0762.yaml.
 
-- Add descriptive comments at the top of the file. Comments start with //, e.g. // This is my comment.
+   - Add descriptive comments at the top of the file. Comments start with // 
 
-- Save the file into the Content directory of your forked repo in the appropriate location, e.g. CrowdStrike/FalconTelemetry/queries.
+      e.g. `// This is my comment.`
+      
+### Contributing via the GitHub Web Site
 
-- All done! Submit the pull request.
+
+
+   - Save the file into the ***Content*** directory within the appropriate Log Source directory, e.g. CrowdStrike/FLTR/queries.
+
+### Contributing via Git commandline
+
+- Submit the pull request.
 
 ## Creating and Submitting Packages
 Packages are generally considered to be more "complete" in the sense that they generally includes multiple queries, dashboards, etc. The process of creating a package is fairly simple. You'll want to do this from a bash or zsh shell.
@@ -35,7 +43,7 @@ Packages are generally considered to be more "complete" in the sense that they g
 
 - Run the command bash ./package-export-build.sh from the CLI. This will build the package. You'll end up with something like this:
 
-   2023-01-29_21-54-03
+   `2023-01-29_21-54-03`
 
 - All done! Submit the pull request.
 
