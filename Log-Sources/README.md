@@ -7,6 +7,8 @@
 + [Create a New Log Source](#create-a-new-log-source)
 + [Submit Package via Git Commandline](#submit-package-via-git-commandline)
 
+If you are struggling with GitHub or the process, reach out via an [Issue](https://github.com/CrowdStrike/logscale-community-content/issues). We are here to help.
+
 ## Contributing Individual Content
 
 ***NOTE:*** We may on a regular basis roll individual content controibutions into an appropriate package
