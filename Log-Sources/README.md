@@ -29,7 +29,9 @@ Individual content is "ad-hoc" content such as Queries, Dashboards, Parsers, etc
 
       e.g. `CrowdStrike/FLTR/queries`
 
-   3. Create a new file and upload the file to exported from LogScale earlier. You will be prompted to create a new branch to stage the changes in.
+   3. Create a new file and upload the file to exported from LogScale earlier. You will be prompted to create a new branch to stage the changes in. Please use a branch name similar to this:
+
+   `<username>-update-XXX-content`
 
    4. Repeat for other individual content
 
