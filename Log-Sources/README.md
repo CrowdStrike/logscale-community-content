@@ -3,11 +3,11 @@
 ❗LogScale Community Content is managed through a Pull Request (PR), Review and Approval process. Nobody is able to contribute directly into main. Contributors will need to create a new branch of the LogScale Community Content before prior to submitting content and packages via a PR.❗
 
 + [Contributing Individual Content](#contributing-individual-content)
-+ [Creating and Submitting Packages](#creating-and-submitting-packages)
++ [Creating Build and Submitting Packages](#creating-build-and-submitting-packages)
 + [Create a New Log Source](#create-a-new-log-source)
-+ [Submit Package via Git Commandline](#submit-package-via-git-commandline)
++ [Stage, Commit and PR](#stage-commit-and-pr)
 
-If you are struggling with GitHub or the process, reach out via an [Issue](https://github.com/CrowdStrike/logscale-community-content/issues). We are here to help.
+If you are struggling with GitHub or the process, reach out via an [Issue](https://github.com/CrowdStrike/logscale-community-content/issues) and we can do it for you. We are here to help.
 
 ## Contributing Individual Content
 
@@ -44,7 +44,7 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
   
   - Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr) for the required steps
 
-## Creating and Submitting Packages
+## Creating, Build and Submitting Packages
 Packages are generally considered to be more "complete" in the sense that they generally includes multiple queries, dashboards, etc. We highly recommend that you contribute/update Packges from the Git commandline via bash or zsh shell with the supplied packaging shell script.
 
 If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
@@ -65,18 +65,11 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
     Recommendations on versioning can be found here - https://library.humio.com/falcon-logscale/packages-developer-guidelines-contents.html#packages-developer-guidelines-contents-version
   - Type: **Application**
 4. Select your content you would like included in your package
-5. Click Export Package and choose the "src" subdirectory under the new directory you created in step 2
+5. Click Export Package and choose a temporary working directory
 
+## Build the Package via Git commandline
 
-- Run the command bash ./package-export-build.sh from the CLI. This will build the package.
-
-- All done! Submit the pull request.
-
-
-
-## Submit Package via Git commandline
-
-1. Extract the package zip file
+1. Extract the package zip file in the temporary directory
 
    `unzip -o community--vendor-application--1.0.0.zip`
 
@@ -88,23 +81,21 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
   - manifest.yaml
   - README.md
   
-4. Delete the original package
+4. Copy the **README.md** and **manifest.yaml** files to the **Packages** directory, under the appropriat Vendor/Application in your local cloned repository
 
-    `rm -f community--vendor-application--1.0.0.zip`
+5. Copy the Content directories, queries, dashboards, etc., to the **Content** directory, under the appropriate Vendor/Application in your local cloned repository
    
-5. Optionally, update the ARCHIVE value in build.sh with the new package name and build the package. If you do not update the package we will update it on your behalf.
+6. Optionally, build the new package. If you choose not to build the package we will do that for you.
 
-    `cd ../`
-    
-    `vi build.sh`. <- ARCHIVE=vendor--app--${VERSION}.zip
-   
-    `./build.sh`
-    
-6. Verify the package was created in the Packages directory.  You'll end up with something like this:
+   Change to the **Packages** directory and run the package build script
 
-   `2023-01-29_21-54-03`
+      `./package-export-build.sh`
     
-7. Test the new package
+   Verify the package was created in the Packages directory.  You'll end up with something like this:
+
+      `2023-01-29_21-54-03`
+    
+   Test the new package
 
     1. Create a new View and specify the repository from step 3.
     2. Select Settings | Installed | Import Package 
@@ -144,5 +135,15 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
    `mv Application Application-Name`
 
 ## Stage, Commit and PR
+- Stage Added, Removed and Modified files and directories
 
+   `git add .`
+   
+- Commit staged files and directories
+
+   `git commit -m "<Commit Comment>`
+ 
+- Create Pull Request
+
+   `git push`
 
