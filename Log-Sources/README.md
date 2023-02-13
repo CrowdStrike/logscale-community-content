@@ -1,6 +1,8 @@
 # Contributing Individual Content and Packages
 
-❗LogScale Community Content is managed through a Pull Request (PR), Review and Approval process. Nobody is able to contribute directly into main. Contributors will need to create a new branch of the LogScale Community Content before prior to submitting content and packages via a PR.❗
+LogScale Community Content is managed through a Pull Request (PR), Review and Approval process. 
+
+Nobody is able to contribute directly into main. Contributors will need to create a new branch of the LogScale Community Content prior to submitting content and packages via a PR.
 
 + [Contributing Individual Content](#contributing-individual-content)
 + [Creating Build and Submitting Packages](#creating-build-and-submitting-packages)
