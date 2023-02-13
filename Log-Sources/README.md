@@ -143,7 +143,7 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
    
 - Commit staged files and directories
 
-   `git commit -m "<Commit Comment>`
+   `git commit -m "<Commit Comment>"`
  
 - Create Pull Request
 
