@@ -5,9 +5,9 @@ LogScale Community Content is managed through a Pull Request (PR), Review and Ap
 Nobody is able to contribute directly into main. Contributors will need to create a new branch of the LogScale Community Content prior to submitting content and packages via a PR.
 
 + [Contributing Individual Content](#contributing-individual-content)
-+ [Creating Build and Submitting Packages](#creating-build-and-submitting-packages)
++ [Creating Build and Submitting Packages via the Git Commandline](#creating-build-and-submitting-packages-via-the-git-commandline)
 + [Create a New Log Source](#create-a-new-log-source)
-+ [Stage, Commit and PR](#stage-commit-and-pr)
++ [Stage, Commit and PR via the Git Commandline](#stage-commit-and-pr-via-the-git-commandline)
 
 If you are struggling with GitHub or the process, reach out via an [Issue](https://github.com/CrowdStrike/logscale-community-content/issues) and we can do it for you. We are here to help.
 
@@ -34,7 +34,7 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
 
    - Submit the pull request.
 
-### Contributing Individual Content via the Git commandline
+### Contributing Individual Content via the Git Commandline
 
    - If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
 
@@ -44,9 +44,9 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
   
   - Repeat for other individual content
   
-  - Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr) for the required steps
+  - Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
 
-## Creating, Build and Submitting Packages via the Git commandline
+## Creating, Build and Submitting Packages via the Git Commandline
 Packages are generally considered to be more "complete" in the sense that they generally includes multiple queries, dashboards, etc. We highly recommend that you contribute/update Packges from the Git commandline via bash or zsh shell with the supplied packaging shell script.
 
 If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
@@ -69,7 +69,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 4. Select your content you would like included in your package
 5. Click Export Package and choose a temporary working directory
 
-## Build the Package via the Git commandline
+## Build the Package via the Git Commandline
 
 1. Extract the package zip file in the temporary directory
 
@@ -104,7 +104,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
     3. Specify the package zip file created in step 14.
     4. Verify all content has been imprted correctly and operating as expected
    
-8. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr) for the required steps
+8. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
 
 ## Create a New Log Source
 
@@ -113,7 +113,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 The following blog provides a great walkthrough for creating folder structures in GitHub via the Web Site -
 https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-repository-36b0fd8f9bf8
 
-### Create a New Log Source via Git commandline
+### Create a New Log Source via the Git Commandline
 1. Clone the repository 
 
    `git clone https://github.com/CrowdStrike/logscale-community-content.git`
@@ -136,7 +136,7 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
    
    `mv Application Application-Name`
 
-## Stage, Commit and PR
+## Stage, Commit and PR via the Git Commandline
 - Stage Added, Removed and Modified files and directories
 
    `git add .`
