@@ -125,12 +125,16 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
 3. Create a new branch with an appropriate name
 
    e.g. `git branch <username>-update-XXX-content`
+   
+4. Switch to the newly created branch
 
-4. Copy the template folder for new vendor content and rename it apprpriately
+   e.g. `git checkout <username>-update-XXX-content`
+
+5. Copy the template folder for new vendor content and rename it apprpriately
    
    `cp -r 00_Vendor-Template Vendor-Name`
    
-5. Rename the new Vendor Application appropriately
+6. Rename the new Vendor Application appropriately
    
    `cd Vendor-Name`
    
@@ -140,6 +144,10 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
 - Stage Added, Removed and Modified files and directories
 
    `git add .`
+   
+- Check to make sure all changes have bee staged
+
+   `git status`
    
 - Commit staged files and directories
 
