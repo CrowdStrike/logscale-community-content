@@ -34,7 +34,7 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
 
    - Submit the pull request.
 
-### Contributing Individual Content via Git commandline
+### Contributing Individual Content via the Git commandline
 
    - If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
 
@@ -46,7 +46,7 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
   
   - Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr) for the required steps
 
-## Creating, Build and Submitting Packages
+## Creating, Build and Submitting Packages via the Git commandline
 Packages are generally considered to be more "complete" in the sense that they generally includes multiple queries, dashboards, etc. We highly recommend that you contribute/update Packges from the Git commandline via bash or zsh shell with the supplied packaging shell script.
 
 If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
@@ -69,7 +69,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 4. Select your content you would like included in your package
 5. Click Export Package and choose a temporary working directory
 
-## Build the Package via Git commandline
+## Build the Package via the Git commandline
 
 1. Extract the package zip file in the temporary directory
 
@@ -108,12 +108,12 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 
 ## Create a New Log Source
 
-### Via the GitHub Web Site
+### Create a New Log Source via the GitHub Web Site
 
 The following blog provides a great walkthrough for creating folder structures in GitHub via the Web Site -
 https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-repository-36b0fd8f9bf8
 
-### Via Git commandline
+### Create a New Log Source via Git commandline
 1. Clone the repository 
 
    `git clone https://github.com/CrowdStrike/logscale-community-content.git`
