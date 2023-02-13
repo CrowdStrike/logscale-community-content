@@ -19,7 +19,7 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
 
       e.g. `// This is my comment.`
       
-### Contributing via the GitHub Web Site
+### Contributing Individual Content via the GitHub Web Site
    - If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
 
    - Change to the appropriate ***Content*** sub-folder under the Vendor and Application it is associated with. If required you may need to create the folder. Please refer to the template Application for examples of mandatory content folder names [here](https://github.com/CrowdStrike/logscale-community-content/tree/main/Log-Sources/00_Vendor-Template/Application/Content)
@@ -32,7 +32,7 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
 
    - Submit the pull request.
 
-### Contributing via Git commandline
+### Contributing Individual Content via Git commandline
 
    - If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
 
