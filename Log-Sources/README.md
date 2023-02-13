@@ -131,6 +131,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 
 ### Via the GitHub Web Site
 
+The following blog provides a great walkthrough for creating folder structures in GitHub via the Web Site -
 https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-repository-36b0fd8f9bf8
 
 ### Via Git commandline
