@@ -149,3 +149,4 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
 
    `git push`
 
+Once your contribution is merged into main we will delete your branch.
