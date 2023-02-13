@@ -1,0 +1,102 @@
+name: Cisco ASA Events
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  5f6ac0b9-c924-42b3-aba1-6bf1a3785d3b:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      cisco_facility=ASA cisco_severity=?severity cisco_className=?classname |
+      groupby(host)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      innerRadius: 40
+    visualization: pie-chart
+    title: Events per firewall
+    isLive: true
+    type: query
+  612dc49d-d080-43dc-bc4a-5796aadafe1a:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      cisco_facility=ASA |
+      count(field=host, distinct=true)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      background-color: '#1f5cea'
+      default: {}
+    visualization: single-value
+    title: Number of ASA firewalls
+    isLive: true
+    type: query
+  7142b136-a0f8-4c8f-a7ba-807b0a246365:
+    x: 0
+    y: 3
+    height: 8
+    queryString: |-
+      cisco_facility=ASA host=?asaHost cisco_severity=?severity cisco_className=?classname |
+      rename(cisco_severity,as=Severity) | rename(cisco_className,as="Class name") | rename(cisco_mnemonic,as=Mnemonic) | rename(cisco_message,as=Message) |
+      table(["@timestamp","host","Severity","Class name","Mnemonic","Message"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Event list
+    isLive: true
+    type: query
+  d4f1840b-6f42-4272-a66d-4ce942af50b6:
+    x: 4
+    y: 0
+    height: 3
+    queryString: |-
+      cisco_facility=ASA cisco_severity=?severity cisco_className=?classname |
+      groupby(host) |
+      rename("_count",as="Number of events")
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Events per firewall
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.7.0
+parameters:
+  asaHost:
+    isMultiParam: false
+    label: Host
+    query: cisco_facility=ASA | groupby(field=host)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 40
+    valueField: host
+  classname:
+    isMultiParam: false
+    label: Message class
+    valueFilters: {}
+    fileName: asa_message_class.csv
+    defaultValue: '*'
+    order: 60
+    valueField: cisco_className
+    type: file
+    labelField: cisco_classDefinition
+  severity:
+    isMultiParam: false
+    label: Severity
+    valueFilters: {}
+    fileName: asa_severity_lookup.csv
+    defaultValue: '*'
+    order: 50
+    valueField: cisco_severity
+    type: file
+    labelField: cisco_severity_message
