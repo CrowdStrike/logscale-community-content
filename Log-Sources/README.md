@@ -62,7 +62,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
   - Package Name: <vendor_application>
   - Description: This text is used for displaying in lists to give a ~10 word intro.
   - Icon: Use a tool such as https://dataurl.app/ to data URL encode yor package image
-  - Version: 1.0.0 
+  - Version: 0.1.0 
     
     Recommendations on versioning can be found here - https://library.humio.com/falcon-logscale/packages-developer-guidelines-contents.html#packages-developer-guidelines-contents-version
   - Type: **Application**
@@ -147,6 +147,10 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
  
 - Create Pull Request
 
-   `git push`
+   `git push --set-upstream origin <branch name>`
+   
+- Log into the [LogScale Community Content Repository](https://github.com/CrowdStrike/logscale-community-content)
+
+- When prompted create the Pull Request
 
 Once your contribution is merged into main we will delete your branch.
