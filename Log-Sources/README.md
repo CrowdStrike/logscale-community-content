@@ -43,7 +43,7 @@ Individual content is "ad-hoc" content such as Queries, Dashboards, Parsers, etc
 
   2. Change to the appropriate ***Content*** sub-folder under the Vendor and Application it is associated with. If required you may need to create the folder. Please refer to the template Application for examples of mandatory content folder names [here](https://github.com/CrowdStrike/logscale-community-content/tree/main/Log-Sources/00_Vendor-Template/Application/Content)
 
-  3. Copy into the approprite directory the file to exported from LogScale earlier
+  3. Copy into the appropriate directory the files to exported from LogScale earlier
   
   4. Repeat for other individual content
   
@@ -78,7 +78,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 
    `unzip -o community--vendor-application--1.0.0.zip`
 
-2. Replace the README.md with README-template.md
+2. Replace the README.md with README-template.md in the top level directory
 
    `mv README-template.md README.md`
 
@@ -86,7 +86,9 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
   - manifest.yaml
   - README.md
   
-4. Copy the **README.md** and **manifest.yaml** files to the **Packages** directory, under the appropriat Vendor/Application in your local cloned repository
+4. Copy the **README.md** file to the **top level** directory, under the appropriate Vendor/Application in your local cloned repository
+
+5. Copy the **manifest.yaml** file to the **Packages** directory, under the appropriate Vendor/Application in your local cloned repository
 
 5. Copy the Content directories, queries, dashboards, etc., to the **Content** directory, under the appropriate Vendor/Application in your local cloned repository
    
