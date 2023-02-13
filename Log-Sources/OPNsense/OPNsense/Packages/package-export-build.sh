@@ -29,6 +29,7 @@ find . -type f -name '.gitignore' -delete
 	./queries \
 	./parsers \
 	./dashboards \
+	./data \
 	./scheduled-searches \
 	./README.md
 )
