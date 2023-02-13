@@ -1,7 +1,3 @@
-
-
-This package is not a replacement for the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html). It is primarily used by the CrowdStrike SE team as learning examples. 
-
 ## CrowdStrike Falcon Identity Protection
 This package contains dashboards and saved searches that highlight Falcon Identity Protection detections as well as identity telemetry events. For more information on the CrowdStrike Falcon Identity Protection, please visit the following:
 

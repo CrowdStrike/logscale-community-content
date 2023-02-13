@@ -10,11 +10,14 @@ queryString: |-
   // Find anything where OpenSSL is installed. Requires Discover or Spotlight.
   #event_simpleName=InstalledApplication openssl
 
-  // Use format to ensure everything is aligned when you do the collect.
-  | format(format="%s | %s | %s)", field=[AppSource, AppName, AppVersion], as="opensslDetails")
+  // Create a formatted list. 
+  | opensslDetails:=format("%-38s %s", field=[AppSource, AppName])
 
-  // Group by aid and collect the string from above.
-  | groupBy(aid, function=collect(opensslDetails, limit=10000), limit=max)
+  // Use format to ensure everything is aligned when you do the collect.
+  //| format(format="%s | %s | %s)", field=[AppSource, AppName, AppVersion], as="opensslDetails")
 
   // Add the ComputerName.
   | $"crowdstrike/fltr-run:ComputerName"()
+
+  // Group by aid and collect the string from above.
+  | groupBy(aid, function=collect([opensslDetails, ComputerName], limit=10000), limit=max)

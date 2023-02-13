@@ -1,0 +1,284 @@
+name: USB Device Control Activity
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  1e8702f5-4aa0-4442-8f35-3e9cfbdc2968:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-run:ComputerName"()
+
+      // Parameters
+      | ComputerName=?ComputerName
+      | #event_simpleName=?DCEventName
+      | DeviceProduct=?DeviceProduct
+      | DeviceManufacturer=?DeviceManufacturer
+      | event_platform=?EventPlatform
+
+      | top(DeviceManufacturer)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: Vendor Name
+    type: query
+  1579ba28-1956-4d6f-bbf4-ea89df454e71:
+    x: 3
+    y: 0
+    height: 4
+    queryString: |
+      #event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-run:ComputerName"()
+
+      // Parameters
+      | ComputerName=?ComputerName
+      | #event_simpleName=?DCEventName
+      | DeviceProduct=?DeviceProduct
+      | DeviceManufacturer=?DeviceManufacturer
+      | event_platform=?EventPlatform
+
+      | top(DeviceProduct)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: Product Name
+    type: query
+  6506e962-f770-48a7-b569-b7d90383ed75:
+    x: 6
+    y: 0
+    height: 4
+    queryString: |
+      #event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-run:ComputerName"()
+
+      // Parameters
+      | ComputerName=?ComputerName
+      | #event_simpleName=?DCEventName
+      | DeviceProduct=?DeviceProduct
+      | DeviceManufacturer=?DeviceManufacturer
+      | event_platform=?EventPlatform
+
+      | case {
+      DcPolicyAction = "0" | DcPolicyAction := "Allow" ;
+      DcPolicyAction = "1" | DcPolicyAction := "Block" ;
+      DcPolicyAction = "2" | DcPolicyAction := "Mass Storage" ;
+      * }
+
+      | top(DcPolicyAction)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 30d
+    width: 2
+    title: Policy Action
+    type: query
+  7f6b144f-dc15-40d2-9029-cf0379161da2:
+    x: 0
+    y: 4
+    height: 5
+    queryString: |-
+      #event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation|DcUsbInterfaceDescriptor)/
+
+      | join({"#event_simpleName"=DcUsbInterfaceDescriptor DeviceUsbClass != 0 | rename(DeviceUsbClass, as=DeviceUsbClass_2)}, field=DeviceDescriptorSetHash, include=DeviceUsbClass_2, mode=left)
+
+      | DeviceUsbClass match {
+        0 => DeviceUsbClass := DeviceUsbClass_2;
+        * => *;
+        }
+      | drop(DeviceUsbClass_2)
+
+      // Add Mapping for Values
+      | case {
+      DeviceConnectionStatus = "1" | DeviceConnectionStatus := "Connected" ;
+      DeviceConnectionStatus = "2" | DeviceConnectionStatus := "Failed Enumeration" ;
+      DeviceConnectionStatus = "3" | DeviceConnectionStatus := "General Failure" ;
+      DeviceConnectionStatus = "4" | DeviceConnectionStatus := "Caused Over Current" ;
+      DeviceConnectionStatus = "5" | DeviceConnectionStatus := "Not Enough Power" ;
+      DeviceConnectionStatus = "6" | DeviceConnectionStatus := "Not Enough Bandwidth" ;
+      DeviceConnectionStatus = "7" | DeviceConnectionStatus := "Hub Nested Too Deeply" ;
+      DeviceConnectionStatus = "8" | DeviceConnectionStatus := "In Legacy Hub" ;
+      DeviceConnectionStatus = "9" | DeviceConnectionStatus := "Enumerating" ;
+      DeviceConnectionStatus = "10" | DeviceConnectionStatus := "Reset" ;
+      * }
+
+      | case {
+      DeviceUsbClass = "0" | DeviceUsbClass := "Per-interface" ;
+      DeviceUsbClass = "1" | DeviceUsbClass := "Audio" ;
+      DeviceUsbClass = "2" | DeviceUsbClass := "Communication" ;
+      DeviceUsbClass = "3" | DeviceUsbClass := "Human Interface Device" ;
+      DeviceUsbClass = "5" | DeviceUsbClass := "Physical" ;
+      DeviceUsbClass = "6" | DeviceUsbClass := "Still image (camera)" ;
+      DeviceUsbClass = "7" | DeviceUsbClass := "Printer" ;
+      DeviceUsbClass = "8" | DeviceUsbClass := "Mass storage" ;
+      DeviceUsbClass = "9" | DeviceUsbClass := "USB hub" ;
+      DeviceUsbClass = "10" | DeviceUsbClass := "CDC (Communications)" ;
+      DeviceUsbClass = "11" | DeviceUsbClass := "Content Smart Card" ;
+      DeviceUsbClass = "13" | DeviceUsbClass := "Content Security" ;
+      DeviceUsbClass = "14" | DeviceUsbClass := "Video" ;
+      DeviceUsbClass = "224" | DeviceUsbClass := "Wireless controller" ;
+      DeviceUsbClass = "239" | DeviceUsbClass := "Wireless Misc" ;
+      DeviceUsbClass = "254" | DeviceUsbClass := "Application-specific" ;
+      DeviceUsbClass = "255" | DeviceUsbClass := "Vendor-specific" ;
+      * }
+
+      | case {
+      DcPolicyAction = "0" | DcPolicyAction := "Allow" ;
+      DcPolicyAction = "1" | DcPolicyAction := "Block" ;
+      DcPolicyAction = "2" | DcPolicyAction := "Mass Storage" ;
+      * }
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-run:ComputerName"()
+
+      // Parameters
+      | ComputerName=?ComputerName
+      | #event_simpleName=?DCEventName
+      | DeviceProduct=?DeviceProduct
+      | DeviceManufacturer=?DeviceManufacturer
+      | event_platform=?EventPlatform
+
+      // Display values
+      | table([@timestamp, ComputerName, DeviceManufacturer, DeviceProduct, DevicePropertyDeviceDescription, DeviceUsbClass, DcPolicyAction, event_platform], limit=5000)
+    visualization: table-view
+    start: 1d
+    width: 12
+    title: USB Device Control Activity
+    type: query
+  ea0f4b8b-1f5c-44c2-9dcd-9c9f37472bd2:
+    x: 10
+    y: 0
+    height: 4
+    queryString: |-
+      // Query / join logic
+      | "#event_simpleName" = /(DcUsbDeviceConnected|DcUsbInterfaceDescriptor)/ DeviceUsbClass=*
+      | join({"#event_simpleName"=DcUsbInterfaceDescriptor DeviceUsbClass != 0 | rename(DeviceUsbClass, as=DeviceUsbClass_2)}, field=DeviceDescriptorSetHash, include=DeviceUsbClass_2, mode=left)
+      | DeviceUsbClass match {
+        0 => DeviceUsbClass := DeviceUsbClass_2;
+        * => *;
+        }
+      | drop(DeviceUsbClass_2)
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-run:ComputerName"()
+
+      // Parameters
+      | ComputerName=?ComputerName
+      | #event_simpleName=?DCEventName
+      | DeviceProduct=?DeviceProduct
+      | DeviceManufacturer=?DeviceManufacturer
+      | event_platform=?EventPlatform
+
+      | case {
+      DeviceUsbClass = "0" | DeviceUsbClass := "Per-interface" ;
+      DeviceUsbClass = "1" | DeviceUsbClass := "Audio" ;
+      DeviceUsbClass = "2" | DeviceUsbClass := "Communication" ;
+      DeviceUsbClass = "3" | DeviceUsbClass := "Human Interface Device" ;
+      DeviceUsbClass = "5" | DeviceUsbClass := "Physical" ;
+      DeviceUsbClass = "6" | DeviceUsbClass := "Still image (camera)" ;
+      DeviceUsbClass = "7" | DeviceUsbClass := "Printer" ;
+      DeviceUsbClass = "8" | DeviceUsbClass := "Mass storage" ;
+      DeviceUsbClass = "9" | DeviceUsbClass := "USB hub" ;
+      DeviceUsbClass = "10" | DeviceUsbClass := "CDC (Communications)" ;
+      DeviceUsbClass = "11" | DeviceUsbClass := "Content Smart Card" ;
+      DeviceUsbClass = "13" | DeviceUsbClass := "Content Security" ;
+      DeviceUsbClass = "14" | DeviceUsbClass := "Video" ;
+      DeviceUsbClass = "224" | DeviceUsbClass := "Wireless controller" ;
+      DeviceUsbClass = "239" | DeviceUsbClass := "Wireless Misc" ;
+      DeviceUsbClass = "254" | DeviceUsbClass := "Application-specific" ;
+      DeviceUsbClass = "255" | DeviceUsbClass := "Vendor-specific" ;
+      * }
+
+      | top(DeviceUsbClass)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 1d
+    width: 2
+    title: USB Device Class
+    type: query
+  4f1a3508-a46e-43ed-befd-11bb959aabd3:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |
+      #event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-run:ComputerName"()
+
+      // Parameters
+      | ComputerName=?ComputerName
+      | #event_simpleName=?DCEventName
+      | DeviceProduct=?DeviceProduct
+      | DeviceManufacturer=?DeviceManufacturer
+      | event_platform=?EventPlatform
+
+      | top(event_platform)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 2
+    title: Event Platform
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  DCEventName:
+    label: DC Event Name
+    order: 50
+    values:
+    - DcUsbDeviceConnected
+    - DcUsbDeviceDisconnected
+    - DcUsbDevicePolicyViolation
+    type: list
+    defaultValue: DcUsbDeviceConnected
+  DeviceProduct:
+    label: Product Name
+    query: '#event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+      | groupBy(DeviceProduct)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DeviceProduct
+  EventPlatform:
+    label: EventPlatform
+    query: '#event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+      | groupBy(event_platform)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: event_platform
+  ComputerName:
+    label: ComputerName
+    query: '#event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+      | $"crowdstrike/fltr-run:ComputerName"() | groupBy(ComputerName)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: ComputerName
+  DeviceManufacturer:
+    label: Vendor Name
+    query: '#event_simpleName=/(DcUsbDeviceConnected|DcUsbDeviceDisconnected|DcUsbDevicePolicyViolation)/
+      | groupBy(DeviceManufacturer)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DeviceManufacturer
