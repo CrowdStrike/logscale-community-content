@@ -42,7 +42,7 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
   
   - Repeat for other individual content
   
-  - Stage, Commit and create a Pull. Refer to [INSERT LINK TO GITHUB STEPS] for an overview of working with Git
+  - Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr) for the required steps
 
 ## Creating and Submitting Packages
 Packages are generally considered to be more "complete" in the sense that they generally includes multiple queries, dashboards, etc. We highly recommend that you contribute/update Packges from the Git commandline via bash or zsh shell with the supplied packaging shell script.
@@ -68,25 +68,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 5. Click Export Package and choose the "src" subdirectory under the new directory you created in step 2
 
 
-
-
-- Go into the top-level Packages directory of the forked repo. Create a directory reflecting the name and product of the package you're creating. The first directory is the generally the company name, and the subdirectory is generally the product name, e.g. MyVendor/MyPackage. Just create a new package directory in the vendor directory if the vendor directory already exists.
-
-- Start by exporting the package from LogScale or FLTR. This should generally be exported as an Application. Use whatever you'd like for the mandatory fields since we'll replace them later.
-
-- Save the exported package to the subdirectory you'd created above, e.g. MyVendor/MyPackage.
-
-- Uncompress the package and delete the zip file, e.g. unzip MyVendor--MyPackage--0.1.0.zip; rm -f MyVendor--MyPackage--0.1.0.zip.
-
-- Delete the files README.md and manifest.yaml that were just created, i.e. rm -f README.md manifest.yaml. You'll add new ones in the next step.
-
-- Save the files README.md, manifest.yaml, and package-export-build.sh in the subdirectory you'd created, e.g. the MyPackage directory of MyVendor/MyPackage. Right-click and "Save As" is the easiest method.
-
-- Modify the README.md and manifest.yaml files as needed. Please be sure to use a code editor, e.g. vim, Visual Studio Code, etc. Office suite applications will likely break the text formatting.
-
-- Run the command bash ./package-export-build.sh from the CLI. This will build the package. You'll end up with something like this:
-
-   `2023-01-29_21-54-03`
+- Run the command bash ./package-export-build.sh from the CLI. This will build the package.
 
 - All done! Submit the pull request.
 
@@ -110,7 +92,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 
     `rm -f community--vendor-application--1.0.0.zip`
    
-5. Optionally, update the ARCHIVE value in build.sh with the new package name and build the package
+5. Optionally, update the ARCHIVE value in build.sh with the new package name and build the package. If you do not update the package we will update it on your behalf.
 
     `cd ../`
     
@@ -118,7 +100,9 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
    
     `./build.sh`
     
-6. Verify the package was created in the Packages directory
+6. Verify the package was created in the Packages directory.  You'll end up with something like this:
+
+   `2023-01-29_21-54-03`
     
 7. Test the new package
 
@@ -127,7 +111,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
     3. Specify the package zip file created in step 14.
     4. Verify all content has been imprted correctly and operating as expected
    
-8. Stage, Commit and create a Pull. Refer to [INSERT LINK TO GITHUB STEPS] for an overview of working with Git
+8. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr) for the required steps
 
 ## Create a New Log Source
 
@@ -158,5 +142,7 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
    `cd Vendor-Name`
    
    `mv Application Application-Name`
+
+## Stage, Commit and PR
 
 
