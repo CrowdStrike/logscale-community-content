@@ -12,39 +12,40 @@ Nobody is able to contribute directly into main. Contributors will need to creat
 If you are struggling with GitHub or the process, reach out via an [Issue](https://github.com/CrowdStrike/logscale-community-content/issues) and we can do it for you. We are here to help.
 
 ## Contributing Individual Content
+Individual content is "ad-hoc" content such as Queries, Dashboards, Parsers, etc. without a full package.
 
-***NOTE:*** We may on a regular basis roll individual content controibutions into an appropriate package
+***NOTE:*** We may on a regular basis roll individual content contributions into an appropriate package
 
-   - Create or export your dashboard, query, or alert. The file name should reflect the purpose, e.g. CVE-2011-0762.yaml.
+   1. Create or export your dashboard, query, or alert. The file name should reflect the purpose, e.g. CVE-2011-0762.yaml.
 
-   - Add descriptive comments at the top of the file. Comments start with // 
+   2. Add descriptive comments at the top of the file. Comments start with // 
 
       e.g. `// This is my comment.`
       
 ### Contributing Individual Content via the GitHub Web Site
-   - If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
+   1. If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
 
-   - Change to the appropriate ***Content*** sub-folder under the Vendor and Application it is associated with. If required you may need to create the folder. Please refer to the template Application for examples of mandatory content folder names [here](https://github.com/CrowdStrike/logscale-community-content/tree/main/Log-Sources/00_Vendor-Template/Application/Content)
+   2. Change to the appropriate ***Content*** sub-folder under the Vendor and Application it is associated with. If required you may need to create the folder. Please refer to the template Application for examples of mandatory content folder names [here](https://github.com/CrowdStrike/logscale-community-content/tree/main/Log-Sources/00_Vendor-Template/Application/Content)
 
       e.g. `CrowdStrike/FLTR/queries`
 
-   - Create a new file and upload the file to exported from LogScale earlier. You will be prompted to create a new branch to stage the changes in.
+   3. Create a new file and upload the file to exported from LogScale earlier. You will be prompted to create a new branch to stage the changes in.
 
-   - Repeat for other individual content
+   4. Repeat for other individual content
 
-   - Submit the pull request.
+   5. Submit the pull request.
 
 ### Contributing Individual Content via the Git Commandline
 
-   - If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
+   1. If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
 
-  - Change to the appropriate ***Content*** sub-folder under the Vendor and Application it is associated with. If required you may need to create the folder. Please refer to the template Application for examples of mandatory content folder names [here](https://github.com/CrowdStrike/logscale-community-content/tree/main/Log-Sources/00_Vendor-Template/Application/Content)
+  2. Change to the appropriate ***Content*** sub-folder under the Vendor and Application it is associated with. If required you may need to create the folder. Please refer to the template Application for examples of mandatory content folder names [here](https://github.com/CrowdStrike/logscale-community-content/tree/main/Log-Sources/00_Vendor-Template/Application/Content)
 
-  - Copy into the approprite directory the file to exported from LogScale earlier
+  3. Copy into the approprite directory the file to exported from LogScale earlier
   
-  - Repeat for other individual content
+  4. Repeat for other individual content
   
-  - Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
+  5. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
 
 ## Creating, Build and Submitting Packages via the Git Commandline
 Packages are generally considered to be more "complete" in the sense that they generally includes multiple queries, dashboards, etc. We highly recommend that you contribute/update Packges from the Git commandline via bash or zsh shell with the supplied packaging shell script.
@@ -99,12 +100,12 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
     
    Test the new package
 
-    1. Create a new View and specify the repository from step 3.
+    1. Create a new View and specify the repository from where you exported the package earlier. **NOTE**: You will need to test in a Repository directly if your package contains one or more parsers
     2. Select Settings | Installed | Import Package 
-    3. Specify the package zip file created in step 14.
+    3. Specify the package zip file created in step 6.
     4. Verify all content has been imprted correctly and operating as expected
    
-8. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
+7. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
 
 ## Create a New Log Source
 
@@ -141,24 +142,31 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
    `mv Application Application-Name`
 
 ## Stage, Commit and PR via the Git Commandline
-- Stage Added, Removed and Modified files and directories
+
+1. Make sure you are at the top level directory - ***logscale-community-content***
+
+2. ***MAC USERS ONLY*** remove all .DS_STORE files
+
+   `find . -name '.DS_Store' -type f -delete`
+
+3. Stage Added, Removed and Modified files and directories
 
    `git add .`
    
-- Check to make sure all changes have bee staged
+4. Check to make sure all changes have bee staged
 
    `git status`
    
-- Commit staged files and directories
+5. Commit staged files and directories
 
    `git commit -m "<Commit Comment>"`
  
-- Create Pull Request
+6. Create Pull Request
 
    `git push --set-upstream origin <branch name>`
    
-- Log into the [LogScale Community Content Repository](https://github.com/CrowdStrike/logscale-community-content)
+7. Log into the [LogScale Community Content Repository](https://github.com/CrowdStrike/logscale-community-content)
 
-- When prompted create the Pull Request
+8. When prompted create the Pull Request
 
 Once your contribution is merged into main we will delete your branch.
