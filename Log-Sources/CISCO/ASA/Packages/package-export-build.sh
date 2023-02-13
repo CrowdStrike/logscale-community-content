@@ -1,9 +1,11 @@
 set -e
 
-VERSION=$(grep version ./manifest.yaml | grep -o "\d*\.\d*\.\d*")
+VERSION=$(grep version src/manifest.yaml | grep -o "\d*\.\d*\.\d*")
+PACKAGENAME=$(grep -o "^name: .*" ./manifest.yaml | awk -F": " '{print $2}' | sed 's/\//--/g')
 
-# Figure out the archive name
-ARCHIVE=logscale-community-content--cisco_asa--${VERSION}.zip
+# Figure out the archive name.
+ARCHIVE=$PACKAGENAME--${VERSION}.zip
+
 
 # Delete anything that might already be here
 rm -f ./$ARCHIVE
