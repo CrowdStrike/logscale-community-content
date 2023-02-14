@@ -109,17 +109,20 @@ widgets:
     title: Top 10 Usernames
     isLive: true
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.5.0
+$schema: https://schemas.humio.com/dashboard/v0.7.0
 parameters:
   parent_process:
     defaultValue: '*'
+    isMultiParam: false
     order: 15
     type: text
   publisher:
     defaultValue: '*'
+    isMultiParam: false
     order: 14
     type: text
   parent_group:
+    isMultiParam: false
     query: event = FileActivityMessage | top(parentgroup)
     timeInterval: 24h
     useDashboardTimeIfSet: true
@@ -128,6 +131,7 @@ parameters:
     order: 1
     valueField: parentgroup
   group:
+    isMultiParam: false
     query: event = FileActivityMessage parentgroup=?parent_group | top(group)
     timeInterval: 24h
     useDashboardTimeIfSet: true
@@ -137,17 +141,21 @@ parameters:
     valueField: group
   path:
     defaultValue: '*'
+    isMultiParam: false
     order: 13
     type: text
   hostname:
     defaultValue: '*'
+    isMultiParam: false
     order: 11
     type: text
   username:
     defaultValue: '*'
+    isMultiParam: false
     order: 12
     type: text
   execution_type:
     defaultValue: '*'
+    isMultiParam: false
     order: 10
     type: text

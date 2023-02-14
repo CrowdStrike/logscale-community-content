@@ -1,4 +1,4 @@
-name: AirlockDigital
+name: airlock
 tests:
 - '{"event":"ServerActivityMessage", "datetime":"28/06/2022 02:04:36 PM", "task":"Login",
   "user":"admin", "description":"User: admin logged in successfully from 61.245.151.244
@@ -14,4 +14,5 @@ tests:
 fieldsToBeRemovedBeforeParsing: []
 $schema: https://schemas.humio.com/parser/v0.2.0
 script: parseJson() | parseTimestamp("dd/MM/yyyy hh:mm:ss a", field=datetime,timezone="UTC")
-tagFields: []
+tagFields:
+- event
