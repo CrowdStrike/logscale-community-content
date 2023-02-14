@@ -12,34 +12,36 @@ If you are struggling with GitHub or the process, reach out via an [Issue](https
 
 ## Contributing Config Samples
 
-   - Create or export your Config Sample. The file name should reflect the purpose, e.g. windows_event_codes.csv
+   1. Create or export your Config Sample. The file name should reflect the purpose, e.g. windows_event_codes.csv
 
-   - Add descriptive comments at the top of the file. Comments start with // 
+   2. Add descriptive comments at the top of the file. Comments start with // 
 
       e.g. `// This is my comment.`
       
 ### Contributing Config Samples via the GitHub Web Site
-   - If an appropriate Config Sample directory does not exist follow the [Create a new Config Samples Directory](#create-a-new-config-samples-directory) steps below to create the appropriate folder structure
+   1. If an appropriate Config Sample directory does not exist follow the [Create a new Config Samples Directory](#create-a-new-config-samples-directory) steps below to create the appropriate folder structure
 
       e.g. `Config-Samples/Log-Shippers/Fluentd`
 
-   - Create a new file and upload the Config Sample. You will be prompted to create a new branch to stage the changes in.
+   2. Create a new file and upload the Config Sample. You will be prompted to create a new branch to stage the changes in. Please use a branch name similar to this:
 
-   - Repeat for other Config Samples
+   `<username>-update-XXX-config-samples`
 
-   - Submit the pull request.
+   3. Repeat for other Config Samples
+
+   4. Submit the pull request.
 
 ### Contributing Config Samples via the Git Commandline
 
-  - If an appropriate Config Samples directory does not exist follow the [Create a new Config Samples Directory](#create-a-new-config-samples-directory) steps below to create the appropriate folder structure
+  1. If an appropriate Config Samples directory does not exist follow the [Create a new Config Samples Directory](#create-a-new-config-samples-directory) steps below to create the appropriate folder structure
 
       e.g. `Config-Samples/Log-Shippers/Fluentd`
       
-  - Copy into the approprite directory your Config Sample
+  2. Copy into the approprite directory your Config Sample
   
-  - Repeat for other Config Samples
+  3. Repeat for other Config Samples
   
-  - Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
+  4. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
 
 ## Create a New Config Sample
 
@@ -63,7 +65,7 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
    
 4. Switch to the newly created branch
 
-   e.g. `git checkout <username>-update-XXX-content`
+   e.g. `git checkout <username>-update-XXX-config-sample`
 
 5. Create a new folder under the Config-Sample directory
    
