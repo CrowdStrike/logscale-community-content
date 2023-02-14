@@ -60,22 +60,41 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
 3. Create a new branch with an appropriate name
 
    e.g. `git branch <username>-update-XXX-config-sample`
+   
+4. Switch to the newly created branch
 
-4. Create a new folder under the Config-Sample directory
+   e.g. `git checkout <username>-update-XXX-content`
+
+5. Create a new folder under the Config-Sample directory
    
    `mkdir Config-Sample\new_Config-Sample`
 
 ## Stage, Commit and PR via the Git Commandline
-- Stage Added, Removed and Modified files and directories
+1. Make sure you are at the top level directory - ***logscale-community-content***
+
+2. ***MAC USERS ONLY*** remove all .DS_STORE files
+
+   `find . -name '.DS_Store' -type f -delete`
+
+3. Stage Added, Removed and Modified files and directories
 
    `git add .`
    
-- Commit staged files and directories
+4. Check to make sure all changes have bee staged
 
-   `git commit -m "<Commit Comment>`
+   `git status`
+   
+5. Commit staged files and directories
+
+   `git commit -m "<Commit Comment>"`
  
-- Create Pull Request
+6. Create Pull Request
 
-   `git push`
+   `git push --set-upstream origin <branch name>`
+   
+7. Log into the [LogScale Community Content Repository](https://github.com/CrowdStrike/logscale-community-content)
+
+8. When prompted create the Pull Request
 
 Once your contribution is merged into main we will delete your branch.
+
