@@ -1,4 +1,4 @@
-# CrowdStrike FLTR Package
+# CrowdStrike Core FLTR Package
 
 This package provides a robust set of queries and dashboards for use with FLTR. In addition, the majority of the content is commented to act as a tutorial and learning guide.
 

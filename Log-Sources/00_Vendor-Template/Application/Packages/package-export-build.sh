@@ -6,7 +6,6 @@ PACKAGENAME=$(grep -o "^name: .*" ./manifest.yaml | awk -F": " '{print $2}' | se
 # Figure out the archive name.
 ARCHIVE=$PACKAGENAME--${VERSION}.zip
 
-
 # Delete anything that might already be here
 rm -f ./$ARCHIVE
 
@@ -21,8 +20,7 @@ cp ../manifest.yaml .
 find . -type f -name '.gitignore' -delete
 # Create a new zip archive
 (
-
-    zip -r ../$ARCHIVE \
+  zip -r ../$ARCHIVE \
 	./manifest.yaml \
 	./actions \
 	./alerts \

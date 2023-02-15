@@ -1,5 +1,5 @@
-## <Package Name/Title>
-<Package Name/Title> this should be the name of the package but may include a couple of extra words if it help provide a meaningful title, must be less than 40 characters)
+## Package Name
+This should be the name of the package but may include a couple of extra words if it help provide a meaningful title, must be less than 40 characters).
 
 Underneath the title there should be a description of what it does and why. Focus on what log sources does it apply to, what data does it use and what does it show from that data. Make it really clear as to what the purpose of the package is.You can include links to external websites as long as they are directly relevant and help explain the package or add context. You can include links to Humio's documentation library to explain concepts and provide technical details or helpful tips.
 
@@ -7,7 +7,6 @@ Underneath the title there should be a description of what it does and why. Focu
 
 v0.1.0 
 - Initial creation
-
 
 ## Package Contents
 List which of below are included. (you can include a description of each component if you wish but limited to 100 characters each. All packages need to include the required parsers. This may change in the future but for now a working parser must be included (it can be subject to dependencies as listed in the dependencies section below).
@@ -28,8 +27,6 @@ List which of below are included. (you can include a description of each compone
 
 - IoT/OT - used to provide security and/or operational management of Internet of Things devices or Operational Technology such as Scada and industrial process control and monitoring.
 
-
-
 ## Technology Vendor:
 (list of vendors supported by package) e.g. AWS (Amazon Web Services) or Cisco.
 
@@ -49,4 +46,3 @@ If your package is an application, it should also explain:
 Any additional pre- or post-installation steps users need to take.
 
 A general introduction about how to get started, e.g. including configuration files.
-

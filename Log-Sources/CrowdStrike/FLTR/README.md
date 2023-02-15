@@ -2,7 +2,7 @@ These are packages used by the LogScale SE team during POVs. They are not meant 
 
 - **[standalone-content](standalone-content)**: individual FLTR dashboards, queries, alerts, etc.
 
-- **[crowdstrike-fltr-content](crowdstrike-fltr-content)**: queries and dashboards for Falcon telemetry, aka FDR. This must be installed with the [crowdstrike-fltr-run](crowdstrike-fltr-run) package.
+- **[crowdstrike-fltr-core](crowdstrike-fltr-core)**: queries and dashboards for Falcon telemetry, aka FDR. This must be installed with the [crowdstrike-fltr-run](crowdstrike-fltr-run) package.
 
 - **[crowdstrike-fltr-run](crowdstrike-fltr-run)**: scheduled searches and user functions that act as the underpinning for the [crowdstrike-fltr-content](crowdstrike-fltr-content) package.
 

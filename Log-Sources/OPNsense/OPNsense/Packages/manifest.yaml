@@ -1,6 +1,6 @@
 author:
   name: community
-name: logscale-community-content/vendor-application
+name: crowdstrike-lcc/opnsense
 description: Brief Description
 version: 1.0.0
 minHumioVersion: 1.20.0

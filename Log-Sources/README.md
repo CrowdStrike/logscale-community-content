@@ -1,13 +1,20 @@
 # Contributing Individual Content and Packages
 
-LogScale Community Content is managed through a Pull Request (PR), Review and Approval process. 
+LogScale Community Content is managed through pull requests. 
 
-Nobody is able to contribute directly into main. Contributors will need to create a new branch of the LogScale Community Content prior to submitting content and packages via a PR.
+Contributors will need to create a new branch of the LogScale Community Content prior to submitting content and packages via a PR.
 
-+ [Contributing Individual Content](#contributing-individual-content)
-+ [Creating Build and Submitting Packages via the Git Commandline](#creating-build-and-submitting-packages-via-the-git-commandline)
-+ [Create a New Log Source](#create-a-new-log-source)
-+ [Stage, Commit and PR via the Git Commandline](#stage-commit-and-pr-via-the-git-commandline)
+- [Contributing Individual Content and Packages](#contributing-individual-content-and-packages)
+  - [Contributing Individual Content](#contributing-individual-content)
+    - [Contributing Individual Content via the GitHub Web Site](#contributing-individual-content-via-the-github-web-site)
+    - [Contributing Individual Content via the Git Commandline](#contributing-individual-content-via-the-git-commandline)
+  - [Creating, Building, and Submitting Packages via the Git Commandline](#creating-building-and-submitting-packages-via-the-git-commandline)
+    - [Creating a Package](#creating-a-package)
+  - [Building the Package via the Git Commandline](#building-the-package-via-the-git-commandline)
+  - [Creating a New Log Source](#creating-a-new-log-source)
+    - [Creating a New Log Source via the GitHub Web Site](#creating-a-new-log-source-via-the-github-web-site)
+    - [Creating a New Log Source via the Git Commandline](#creating-a-new-log-source-via-the-git-commandline)
+  - [Staging, Committing, and PR via the Git Commandline](#staging-committing-and-pr-via-the-git-commandline)
 
 If you are struggling with GitHub or the process, reach out via an [Issue](https://github.com/CrowdStrike/logscale-community-content/issues) and we can do it for you. We are here to help.
 
@@ -49,12 +56,12 @@ Individual content is "ad-hoc" content such as Queries, Dashboards, Parsers, etc
   
   5. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
 
-## Creating, Build and Submitting Packages via the Git Commandline
+## Creating, Building, and Submitting Packages via the Git Commandline
 Packages are generally considered to be more "complete" in the sense that they generally includes multiple queries, dashboards, etc. We highly recommend that you contribute/update Packges from the Git commandline via bash or zsh shell with the supplied packaging shell script.
 
 If the Log Source does not exist follow the [Create a New Log Source](#create-a-new-log-source) steps below to create the appropriate folder structure
 
-### Create Package
+### Creating a Package
 
 1. Log into your LogScale instance and open the Repository containing your created content
 2. Select Settings | Create a Package | Export Package
@@ -72,7 +79,7 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
 4. Select your content you would like included in your package
 5. Click Export Package and choose a temporary working directory
 
-## Build the Package via the Git Commandline
+## Building the Package via the Git Commandline
 
 1. Extract the package zip file in the temporary directory
 
@@ -111,14 +118,14 @@ If the Log Source does not exist follow the [Create a New Log Source](#create-a-
    
 7. Stage, Commit and create a Pull Request. Refer to [Stage, Commit and PR](#stage-commit-and-pr-via-the-git-commandline) for the required steps
 
-## Create a New Log Source
+## Creating a New Log Source
 
-### Create a New Log Source via the GitHub Web Site
+### Creating a New Log Source via the GitHub Web Site
 
 The following blog provides a great walkthrough for creating folder structures in GitHub via the Web Site -
 https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-repository-36b0fd8f9bf8
 
-### Create a New Log Source via the Git Commandline
+### Creating a New Log Source via the Git Commandline
 1. Clone the repository 
 
    `git clone https://github.com/CrowdStrike/logscale-community-content.git`
@@ -145,7 +152,7 @@ https://medium.com/@kartikagrawal7196/how-to-create-a-folder-in-a-github-reposit
    
    `mv Application Application-Name`
 
-## Stage, Commit and PR via the Git Commandline
+## Staging, Committing, and PR via the Git Commandline
 
 1. Make sure you are at the top level directory - ***logscale-community-content***
 

@@ -5,7 +5,7 @@
 
 # LogScale Community Content
 
-Welcome to the LogScale (fka Humio) Community Content Repository. 
+Welcome to the LogScale Community Content Repository. 
 
 This repository contains Community and Field contributed content for LogScale which includes:
  - Complete Packages
@@ -14,21 +14,20 @@ This repository contains Community and Field contributed content for LogScale wh
  - Alerts
  - Lookup Files
  
- as well as Tutorials and FAQs
+ ...as well as Tutorials and FAQs.
  
-**NOTE:** These are not meant as replacements for the [official documentation](https://library.humio.com) or the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html), however please feel free to use and contribute as much as you like.
+**NOTE:** These are not meant as replacements for the [official documentation](https://library.humio.com) or the [LogScale Package Marketplace](https://library.humio.com/humio-server/packages-marketplace.html). However, please feel free to use and contribute as much as you'd like.
 
 # Content
 
 Here's a quick summary of the various folders in this repository contaiming LogScale content:
 
 - **[Log-Sources](Log-Sources)**: 
-   - Complete Packages grouped by Vendor and Application 
-   - Queries, Dashboards, Alerts, etc. grouped by Vendor and Application 
+   - Complete packages grouped by vendor and application.
+   - Queries, dashboards, alerts, etc. grouped by vendor and application
 
 - **[Config-Samples](Config-Samples)**: 
-
-   These folders contain quick starts, configuration examples for varios log shippers and other useful artefacts such as scripts, lookup files, etc. 
+   - These folders contain quick starts, configuration examples, and other useful artifacts.
 
 # Wiki
 
@@ -41,21 +40,21 @@ The wiki contains the following guides and tutorials:
 - **[Hunting and Investigations](https://github.com/CrowdStrike/logscale-community-content/wiki/Hunting-and-Investigations)**: ever wondered how to hunt through Falcon telemetry data, aka LTR, aka FDR? This is likely the best place to start. 
 
 # Documentation and Support
-LogScale Community Content is a community-driven open source project. As such it carries no formal support, expressed or implied.
+LogScale Community Content is a community-driven open source project. As such, it carries no formal support, expressed or implied.
 
 # Issues and Questions
 
-Is something going wrong? GitHub Issues are used to report bugs and errors. You can check to see if anyone else has reported the issue or create a new issue here - [Report Issue](https://github.com/CrowdStrike/logscale-community-content/issues/)
+Is something going wrong? GitHub Issues are used to report bugs and errors. You can check to see if anyone else has reported the issue or create a new issue here: [Report Issue](https://github.com/CrowdStrike/logscale-community-content/issues/)
 
 # Contribute
 
 There are *many* ways you can contribute to the LogScale Community Content repository.
 
-- _Add new Vendor content_ by opening a pull request. More details on this process can be found in the Log-Sources folder here - [Log-Sources](Log-Sources).
+- _Add new vendor content_ by opening a pull request. More details on this process can be found in the Log-Sources folder: [Log-Sources](Log-Sources).
 
-- _Add new Samples_ by opening a pull request. More details on this process can be found in the Configuration Sample folder here - [Config-Samples](Config-Samples).
+- _Add new samples_ by opening a pull request. More details on this process can be found in the Configuration Sample folder: [Config-Samples](Config-Samples).
 
-- _Review pull requests_ by going through the queue of [open pull requests on GitHub](https://github.com/CrowdStrike/logscale-community-content/pulls) and giving feedback to the authors.
+- _Review pull requests_ by going through the queue of [open pull requests on GitHub](https://github.com/CrowdStrike/logscale-community-content/pulls) and providing feedback to the authors.
 
 - _Documenting, blogging, or creating videos_, of how you've used LogScale Community Content. This type of content is *invaluable* and helps our community grow. Open a pull request for inclusion in the [LogScale Community Content Wiki](https://github.com/CrowdStrike/logscale-community-content/wiki) section of this page.
 
