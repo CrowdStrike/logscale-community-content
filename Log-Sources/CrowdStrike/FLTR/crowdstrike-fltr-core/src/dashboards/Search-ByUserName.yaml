@@ -75,7 +75,7 @@ widgets:
       | test(lower(inputUserName) == lower(UserName))
 
       // Find detection events.
-      | #event_simpleName!=* #kind=Primary
+      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i
 
       // Add the ComputerName if it's missing.
