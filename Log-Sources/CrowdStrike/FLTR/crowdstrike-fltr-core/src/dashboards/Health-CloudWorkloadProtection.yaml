@@ -37,8 +37,8 @@ widgets:
     y: 7
     height: 4
     queryString: |-
-      #kind=Primary
-      | eventType=K8SDetectionEvent
+      #kind=Primary #event_simpleName!=*
+      | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent 
       | "Detection Type":=format("%-18s %s", field=[severity, detectionName])
       | groupBy(resourceName, function=[collect(["Detection Type", clusterName], limit=10000), count(as="Total Events")], limit=max)
       | sort("Total Events", limit=10000)
@@ -52,8 +52,8 @@ widgets:
     y: 3
     height: 4
     queryString: |-
-      #kind=Primary
-      | eventType=K8SDetectionEvent
+      #kind=Primary #event_simpleName!=*
+      | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent 
       | groupBy(detectionName, limit=max)
     visualization: pie-chart
     start: 7d
@@ -100,8 +100,8 @@ widgets:
     y: 3
     height: 4
     queryString: |-
-      #kind=Primary
-      | eventType=K8SDetectionEvent
+      #kind=Primary #event_simpleName!=*
+      | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent 
       | count(detectionName)
     start: 7d
     width: 4
@@ -149,8 +149,8 @@ widgets:
     y: 3
     height: 4
     queryString: |-
-      #kind=Primary
-      | eventType=K8SDetectionEvent
+      #kind=Primary #event_simpleName!=*
+      | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent 
       | groupBy(severity, limit=max)
     visualization: pie-chart
     start: 7d
