@@ -10,7 +10,7 @@ timeInterval:
   start: 7d
 queryString: |-
   // These events don't have an #event_simpleName tag.
-  // Excluding the tag is almost as fast, i.e. "everything without this tag".Ba
+  // Excluding the tag is almost as fast, i.e. "everything without this tag".
   #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
 
   // Grab the detection summary events and ignore anything custom.
