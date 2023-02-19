@@ -2,7 +2,7 @@
 
 ## geo_mapping.csv 
 
-***ISO-3166 2-char Country Code Reference*** - The value supplied from an ipLocation lookup is a 2 character value that matches ISO-3166 convenstion. 
+***ISO-3166 2-char Country Code Reference*** - The value supplied from an ipLocation lookup is a 2 character value that matches ISO-3166 convention. 
 
 This look-up file contains an easy way to to translate the country code to a full country name, as well as provide additional context including Continent name and a graphical icon of the flag for the country
 
