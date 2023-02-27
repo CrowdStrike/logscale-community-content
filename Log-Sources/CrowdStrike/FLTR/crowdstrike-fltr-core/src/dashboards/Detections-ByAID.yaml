@@ -1,4 +1,4 @@
-name: Detections - By Instance
+name: Detections - By AID
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:

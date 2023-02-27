@@ -2,7 +2,7 @@ name: FLTR aidmaster Schedule
 description: ''
 enabled: true
 queryString: |-
-  #kind=Secondary OR #event_simpleName=AgentOnline OR #event_simpleName=HostnameChanged
+  #event_simpleName=AgentOnline OR #event_simpleName=HostnameChanged
   | groupBy(aid, function=selectLast(ComputerName), limit=max)
 backfillLimit: 0
 schedule: H */3 * * *

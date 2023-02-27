@@ -196,17 +196,24 @@ script: |-
       * ;
   }
 
-  | case {
-      eventType=K8SDetectionEvent
-        | EventType:=rename(eventType)
-        | EventOccurredAt:=rename(eventOccurredAt) ;
-      * ;
-  }
-
   // Alias "ExternalApiType" as an "event_simpleName" value for tagging purposes.
   | case {
       event_simpleName!=* ExternalApiType=*
         | event_simpleName:=ExternalApiType ;
+      * ;
+  }
+
+  // Alias "eventType" as an "event_simpleName" value for tagging purposes.
+  | case {
+      event_simpleName!=* ExternalApiType!=* eventType=*
+        | event_simpleName:=eventType ;
+      * ;
+  }
+
+  // Alias "name" as an "event_simpleName" value for tagging purposes.
+  | case {
+      event_simpleName!=* ExternalApiType!=* name=*
+        | event_simpleName:=name ;
       * ;
   }
 
@@ -243,7 +250,7 @@ script: |-
         | kind:="Primary" ;
   }
 
-  // identify appropriate time stamps
+  // Identify appropriate time stamps.
   | case {
 
     // Look for "Time".
@@ -271,11 +278,11 @@ script: |-
         | findTimestamp(field=_time) ;
     } ;
 
-    // Exception - Zero Trust Assessment
+    // Exception - Zero Trust Assessment.
     event_type=ZeroTrustHostAssessment
       | findTimestamp(field=scores.modified_time) ;
 
-    // Exception - Mobile Key Store Status
+    // Exception - Mobile Key Store Status.
     // MobileSafetyNetStatus
     event_simpleName=MobileKeyStoreStatus
       | findTimestamp(field=ContextTimeStamp_decimal) ;
@@ -284,22 +291,29 @@ script: |-
     name=MobileDetectionJsonData
       | findTimestamp(field=ContextTimeStamp_decimal) ;
 
-    // Exception - Mobile Detection
+    // Exception - Mobile Detection.
     EventType=MobileDetectionJsonData
       | findTimestamp(field=ContextTimeStamp_decimal) ;
-    name=MobileDetectionJsonData
+    name=/(MobileDetectionJsonData|MobileKeyStoreDetection|MobileSafetyNetDetection)/
       | findTimestamp(field=ContextTimeStamp_decimal) ;
 
-    // Exception - Horizon
+    // Exception - Horizon.
     EventType=OciImageScan*
       | findTimestamp(field=EventOccurredAt) ;
     EventType=OciPreventionPolicyAlertEvent
       | findTimestamp(field=EventOccurredAt) ;
     EventType=OciRegistryEvent
       | findTimestamp(field=EventOccurredAt) ;
-    EventType=K8SDetectionEvent
-      | findTimestamp(field=EventOccurredAt) ;
+    eventType=K8SDetectionEvent
+      | findTimestamp(field=eventOccurredAt) ;
+    
+    // Exception - Sandbox.
+    eventType=ImageSandboxCompleteEvent
+      | findTimestamp(field=sandboxCompletedAt) ;
+    eventType=ImageSandboxStartEvent
+      | findTimestamp(field=sandboxStartedAt) ;
 
+    // Catch all.
     timestamp=*
       | findTimestamp(field=timestamp) ;
 

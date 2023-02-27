@@ -12,7 +12,7 @@ widgets:
     height: 4
     queryString: |-
       test(?ProcessId != "*")
-      | #event_simpleName=FileDeleteInfo ContextProcessId = ?ProcessId aid = ?aid
+      | #event_simpleName=FileDeleteInfo ContextProcessId=?ProcessId aid=?aid
       | groupBy([#event_simpleName, TargetFileName], limit=max)
       | rename(_count, as="Total")
     visualization: table-view
@@ -43,7 +43,7 @@ widgets:
     height: 4
     queryString: |-
       test(?FileName != "*")
-      | #event_simpleName=ProcessRollup2 aid=?aid TargetProcessId = ?ProcessId
+      | #event_simpleName=ProcessRollup2 aid=?aid TargetProcessId=?ProcessId
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
       | $"crowdstrike/fltr-run:ComputerName"()
@@ -70,7 +70,7 @@ widgets:
     height: 4
     queryString: |-
       test(?ProcessId != "*")
-      | (#event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6) ContextProcessId = ?ProcessId aid = ?aid
+      | (#event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6) ContextProcessId=?ProcessId aid=?aid
       | groupBy([RemoteAddressIP4, RemoteAddressIP6], limit=max)
     start: 7d
     width: 4
@@ -85,7 +85,7 @@ widgets:
     height: 4
     queryString: |-
       test(?ProcessId != "*")
-      | (#event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6) ContextProcessId = ?ProcessId aid = ?aid
+      | (#event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6) ContextProcessId=?ProcessId aid=?aid
       | case {
       Protocol=6 | eval(aProtocol="TCP");
       Protocol=1 | eval(aProtocol="ICMP");
@@ -103,7 +103,7 @@ widgets:
     height: 4
     queryString: |-
       test(?ProcessId != "*")
-      | ContextProcessId = ?ProcessId
+      | ContextProcessId=?ProcessId
       | groupBy([aid, #event_simpleName], limit=max)
     start: 7d
     width: 4
@@ -118,7 +118,7 @@ widgets:
     height: 4
     queryString: |-
       test(?ProcessId != "*")
-      | #event_simpleName=DnsRequest ContextProcessId = ?ProcessId aid = ?aid
+      | #event_simpleName=DnsRequest ContextProcessId=?ProcessId aid=?aid
       | groupBy(DomainName, limit=max)
       | rename(_count, as="Total")
     visualization: table-view
@@ -132,7 +132,7 @@ widgets:
     height: 4
     queryString: |-
       test(?ProcessId != "*")
-      | #event_simpleName=*Written ContextProcessId = ?ProcessId aid = ?aid
+      | #event_simpleName=*Written ContextProcessId=?ProcessId aid=?aid
       | groupBy([#event_simpleName, TargetFileName], limit=max)
       | rename(_count, as="Total")
     visualization: table-view
@@ -146,7 +146,7 @@ widgets:
     height: 4
     queryString: |-
       test(?ProcessId != "*")
-      | #event_simpleName=ImageHash ContextProcessId = ?ProcessId aid = ?aid
+      | #event_simpleName=ImageHash ContextProcessId=?ProcessId aid=?aid
       | groupBy(ImageFileName, limit=max)
       | rename(_count, as="Total")
     visualization: table-view
