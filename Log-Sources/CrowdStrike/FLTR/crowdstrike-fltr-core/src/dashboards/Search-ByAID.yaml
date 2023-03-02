@@ -89,7 +89,7 @@ widgets:
           include=[LocalAddressIP4, LocalPort], limit=100000
         )
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | LocalAddressIP4=* LocalPort=* ImageFileName=*
       | table([aid, ComputerName, ImageFileName, LocalAddressIP4, LocalPort], limit=1000)
     visualization: table-view
@@ -149,7 +149,7 @@ widgets:
       | #event_simpleName=AgentOnline
       | aid=?aid #cid=?cid
       | ipLocation(field=aip, as=aip)
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | groupby([ComputerName, AgentVersion, aip, aip.country, aip.city, BiosManufacturer, BiosVersion, ChassisManufacturer, SystemManufacturer, SystemProductName, aid], limit=max)
       | drop(_count)
     visualization: table-view
@@ -195,7 +195,7 @@ widgets:
       test(?aid != "*")
       | #event_simpleName=UserLogon
       | aid=?aid #cid=?cid
-      | $"crowdstrike/fltr-run:LogonTypeName"()
+      | $"crowdstrike/fltr-core:zLogonTypeName"()
       | table([@timestamp, event_platform, UserName, UserSid, UserIsAdmin, LogonTypeName, ClientComputerName, LogonDomain], limit=1000)
     visualization: table-view
     start: 7d

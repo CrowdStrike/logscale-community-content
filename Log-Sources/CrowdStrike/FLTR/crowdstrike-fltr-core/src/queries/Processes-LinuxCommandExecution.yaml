@@ -17,7 +17,7 @@ queryString: |-
   | ImageFileName:=format("%.32s", field=ImageFileName)
 
   // Grab ComputerName
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Group it by ComputerName and ImageFileName, then grab all of the CommandLine entries for those groups.
   | groupBy([aid, ImageFileName], function=collect([ComputerName, CommandLine], limit=10000), limit=max)

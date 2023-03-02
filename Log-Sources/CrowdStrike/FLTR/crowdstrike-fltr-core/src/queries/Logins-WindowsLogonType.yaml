@@ -16,7 +16,7 @@ queryString: |-
   #event_simpleName=UserLogon event_platform=Win ?UserName
 
   // Map the LogonTypes to readable names.
-  | $"crowdstrike/fltr-run:LogonTypeName"()
+  | $"crowdstrike/fltr-core:zLogonTypeName"()
 
   // Create a time chart of the LogonTypes.
   | timeChart(LogonTypeName, function=count(aid))

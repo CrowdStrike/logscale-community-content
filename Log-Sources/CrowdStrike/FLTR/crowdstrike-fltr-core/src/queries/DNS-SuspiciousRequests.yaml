@@ -11,8 +11,8 @@ queryString: |-
   #event_simpleName=SuspiciousDnsRequest
 
   // Add ComputerName and UserName details.
-  | $"crowdstrike/fltr-run:ComputerName"()
-  | $"crowdstrike/fltr-run:UserName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
+  | $"crowdstrike/fltr-core:zUserName"()
 
   // Group by the ComputerName and collect the rest.
   | groupBy(aid, function=collect([ComputerName, UserName, DomainName], limit=10000), limit=max) 

@@ -14,7 +14,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -46,7 +46,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -77,7 +77,7 @@ widgets:
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -105,7 +105,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -136,7 +136,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -164,7 +164,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -194,7 +194,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -224,7 +224,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -254,7 +254,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -282,7 +282,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -312,7 +312,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -342,7 +342,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
       | inputComputerName:=?ComputerName
@@ -357,7 +357,7 @@ widgets:
       // Check the remaining inputs.
       | AgentIdString = ?aid AND CustomerIdString = ?cid
       // Add the UserName.
-      | $"crowdstrike/fltr-run:UserName"()
+      | $"crowdstrike/fltr-core:zUserName"()
       | table([ComputerName, UserName, DetectName, FilePath, FileName, SeverityName, Tactic, Technique, DetectDescription], limit=1000)
     visualization: table-view
     start: 7d

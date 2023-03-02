@@ -1,4 +1,4 @@
-name: ConfigPlatformIdName
+name: zConfigPlatformIdName
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
@@ -12,11 +12,11 @@ timeInterval:
 queryString: |-
   // Returns the human-readable name of ConfigPlatformId values.
   //
-  // To call this function if installed from the crowdstrike/fltr-run package:
-  // $"crowdstrike/fltr-run:ConfigPlatformIdName"()
+  // To call this function if installed from the crowdstrike/fltr-core package:
+  // $"crowdstrike/fltr-core:zConfigPlatformIdName"()
   //
   // To call this function in a query if you have it saved locally:
-  // $"ConfigPlatformIdName"()
+  // $"zConfigPlatformIdName"()
   
   | regex("\d+\.(?<ConfigPlatformId>\d+)\.\d+\.\d+", field=ConfigBuild, strict=false)
   | case {

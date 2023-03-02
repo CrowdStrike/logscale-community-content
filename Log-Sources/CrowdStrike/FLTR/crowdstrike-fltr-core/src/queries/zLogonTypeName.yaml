@@ -1,4 +1,4 @@
-name: LogonTypeName
+name: zLogonTypeName
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
@@ -12,11 +12,11 @@ timeInterval:
 queryString: |-
   // Returns the human-readable name of LogonType values.
   //
-  // To call this function if installed from the crowdstrike/fltr-run package:
-  // $"crowdstrike/fltr-run:LogonTypeName"()
+  // To call this function if installed from the crowdstrike/fltr-core package:
+  // $"crowdstrike/fltr-core:zLogonTypeName"()
   //
   // To call this function in a query if you have it saved locally:
-  // $"LogonTypeName"()
+  // $"zLogonTypeName"()
 
   | LogonType match {
       "2"  => LogonTypeName:="Interactive" ;

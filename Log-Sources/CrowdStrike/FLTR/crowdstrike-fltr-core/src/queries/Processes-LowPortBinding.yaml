@@ -25,7 +25,7 @@ queryString: |-
   | LocalAddressIP4=* LocalAddressIP4!=/^127\./ LocalPort=* FileName=*
 
   // Add the ComputerName.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Group by unique combinations of values.
   | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max) 

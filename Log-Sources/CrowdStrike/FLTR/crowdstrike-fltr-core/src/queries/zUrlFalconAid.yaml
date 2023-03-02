@@ -1,4 +1,4 @@
-name: urlFalconAid
+name: zUrlFalconAid
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
@@ -12,11 +12,11 @@ timeInterval:
 queryString: |-
   // Returns CrowdStrike-specific URLs that utilize the "aid" field.
   //
-  // To call this function if installed from the crowdstrike/fltr-run package:
-  // $"crowdstrike/fltr-run:urlFalconAid"()
+  // To call this function if installed from the crowdstrike/fltr-core package:
+  // $"crowdstrike/fltr-core:zUrlFalconAid"()
   //
   // To call this function in a query if you have it saved locally:
-  // $"urlFalconAid"()
+  // $zUrlFalconAid"()
 
   // Parse values from the ConfigBuild to determine the URL.
   | ConfigBuild=/(?<config>\d+)\.(?<opSystem>\d+)\.(?<falconBuild>\d+)\.(?<cloudDecimal>\d+$)/i

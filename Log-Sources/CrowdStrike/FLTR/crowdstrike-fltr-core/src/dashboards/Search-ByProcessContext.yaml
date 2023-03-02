@@ -46,7 +46,7 @@ widgets:
       | #event_simpleName=ProcessRollup2 aid=?aid TargetProcessId=?ProcessId
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | ShortCommandLine:=format("%.64s...", field=CommandLine)
       | groupBy([aid, TargetProcessId], function=collect([ComputerName, ImageFileName, ShortCommandLine], limit=10000), limit=max)
     visualization: table-view

@@ -50,7 +50,7 @@ queryString: |-
   | groupby([cid, aid, dayBucket], function=[count(FileName, distinct=true, as="fileCount"), sum(behaviorWeight, as="totalScore"), collect(executionDetails)], limit=max)
 
   // Add the ComputerName
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Set thresholds.
   | fileCount >= 5 OR totalScore > 30

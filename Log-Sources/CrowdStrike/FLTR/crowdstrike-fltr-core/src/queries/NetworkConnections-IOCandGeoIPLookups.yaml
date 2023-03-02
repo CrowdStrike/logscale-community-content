@@ -31,7 +31,7 @@ queryString: |-
   | ioc[0].labels=*
 
   // Add the ComputerName and UserName.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Format the output.
   | "Local IP":=rename(LocalAddressIP4)

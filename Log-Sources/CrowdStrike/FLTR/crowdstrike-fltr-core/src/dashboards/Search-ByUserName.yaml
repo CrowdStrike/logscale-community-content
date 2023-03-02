@@ -22,7 +22,7 @@ widgets:
       | aid=*
 
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Create a chart of the top associated hosts.
       | groupBy(aid, function=[collect([ComputerName, #event_simpleName], limit=100000), count(as="Total Events")], limit=max)
@@ -50,10 +50,10 @@ widgets:
       | #event_simpleName=UserLogonFailed*
 
       // Convert the results to a readable format.
-      | $"crowdstrike/fltr-run:LogonTypeName"()
+      | $"crowdstrike/fltr-core:zLogonTypeName"()
 
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Group the results.
       | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=100000), count(as="Total Events")], limit=max)
@@ -79,7 +79,7 @@ widgets:
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i
 
       // Add the ComputerName if it's missing.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Find the details.
       | aid:=rename(AgentIdString)
@@ -139,10 +139,10 @@ widgets:
       | LogonType=/(^2$|^7$|^10$)/
 
       // Convert the results to a readable format.
-      | $"crowdstrike/fltr-run:LogonTypeName"()
+      | $"crowdstrike/fltr-core:zLogonTypeName"()
 
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Group the results.
       | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=100000), count(as="Total Events")], limit=max)
@@ -167,7 +167,7 @@ widgets:
       | #event_simpleName=ScheduledTask*
 
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Grab the output.
       | table([aid, ComputerName, @timestamp, #event_simpleName, TaskName, TaskExecCommand], limit=1000)
@@ -202,7 +202,7 @@ widgets:
       | #event_simpleName=*FileWritten
 
       // Add the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
 
       // Grab the relevant data.
       | groupBy([aid, ComputerName, #event_simpleName, OriginalFilename], function=[collect(TargetFileName, limit=10000), count(as="Total Events")], limit=max)

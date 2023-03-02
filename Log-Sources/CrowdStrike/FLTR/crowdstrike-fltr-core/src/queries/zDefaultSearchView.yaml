@@ -1,4 +1,4 @@
-name: Default Search View
+name: zDefaultSearchView
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'

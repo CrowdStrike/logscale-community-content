@@ -22,6 +22,7 @@ find . -name .DS_Store -exec rm -f {} \;
 	queries \
 	parsers \
 	dashboards \
+        data \
 	scheduled-searches \
         view-interactions \
 	README.md

@@ -14,7 +14,7 @@ widgets:
     queryString: |-
       #event_simpleName="*FileWritten" AND SHA256HashData = ?SHA256
       | test(?ComputerName != "*")
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName = ?ComputerName
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | FileName = ?FileName
@@ -73,7 +73,7 @@ widgets:
       | SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | FileName = ?FileName
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | top(field=ComputerName, limit=25)
     start: 7d
     width: 6
@@ -111,7 +111,7 @@ widgets:
       #event_simpleName="*FileWritten" AND SHA256HashData = ?SHA256
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | FileName = ?FileName
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | top(field=ComputerName, limit=25)
     start: 7d
     width: 6

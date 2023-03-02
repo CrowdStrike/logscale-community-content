@@ -18,7 +18,7 @@ queryString: |-
   | aid:=rename(AgentIdString)
 
   // Include the ComputerName if it's missing.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Uncomment if you'd like to exclude certain detection names.
   //| DetectName!=/(custom|overwatch)/i

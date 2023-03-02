@@ -97,8 +97,8 @@ widgets:
         ObjectAccessOperationType = 3 | ObjectOperation:= "Delete";
         ObjectAccessOperationType = 4 | ObjectOperation:= "Set";
         ObjectAccessOperationType = 5 | ObjectOperation:= "Rename";}
-      | $"crowdstrike/fltr-run:ComputerName"()
-      | $"crowdstrike/fltr-run:UserName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
+      | $"crowdstrike/fltr-core:zUserName"()
       | table([@timestamp, PolicyRuleSeverity, aid, ComputerName, UserName, CommandLine, ImageFileName, ObjectChanged, ObjectOperation, ObjectName, ObjectNameNew], limit=1000)
     visualization: table-view
     start: 7d

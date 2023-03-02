@@ -49,7 +49,7 @@ widgets:
       | ExternalApiType=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | top(ComputerName, as="Top ComputerNames")
     visualization: table-view
     start: 7d
@@ -81,7 +81,7 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
-      | $"crowdstrike/fltr-run:UserName"()
+      | $"crowdstrike/fltr-core:zUserName"()
       | top(UserName, as="Top UserNames")
     visualization: table-view
     start: 7d
@@ -190,8 +190,8 @@ widgets:
       #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
-      | $"crowdstrike/fltr-run:ComputerName"()
-      | $"crowdstrike/fltr-run:UserName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
+      | $"crowdstrike/fltr-core:zUserName"()
       | table([ComputerName, UserName, DetectName, FilePath, FileName, SeverityName, Tactic, Technique, DetectDescription], limit=1000)
     visualization: table-view
     start: 7d

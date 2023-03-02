@@ -33,14 +33,14 @@ queryString: |-
     )
 
   // Add the ComputerName.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Shorten the name for display purposes.
   | regex("(?<ParentFileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
   | regex("(?<ChildFileName>[^\\/|\\\\]*)$", field=TargetFileName, strict=false)
 
   // Add an aditional field in markdown syntax that's clickable and will pivot back to Falcon
-  | $"crowdstrike/fltr-run:urlFalconPid"()
+  | $"crowdstrike/fltr-core:zUrlFalconPid"()
 
   // Groupby the aid and processid, which should be a unique combination
   // Collect all the other interesting field values for each group

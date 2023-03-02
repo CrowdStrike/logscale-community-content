@@ -196,26 +196,16 @@ script: |-
       * ;
   }
 
-  // Alias "ExternalApiType" as an "event_simpleName" value for tagging purposes.
+  // Alias various modules to "event_simpleName".
   | case {
       event_simpleName!=* ExternalApiType=*
         | event_simpleName:=ExternalApiType ;
-      * ;
-  }
-
-  // Alias "eventType" as an "event_simpleName" value for tagging purposes.
-  | case {
       event_simpleName!=* ExternalApiType!=* eventType=*
         | event_simpleName:=eventType ;
-      * ;
-  }
-
-  // Alias "name" as an "event_simpleName" value for tagging purposes.
-  | case {
       event_simpleName!=* ExternalApiType!=* name=*
         | event_simpleName:=name ;
       * ;
-  }
+    }
 
   // Add an alias for events that use "AgentIdString" instead of "aid". 
   | case {

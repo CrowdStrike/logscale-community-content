@@ -1,4 +1,4 @@
-name: urlFalconPid
+name: zUrlFalconPid
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
@@ -12,11 +12,11 @@ timeInterval:
 queryString: |-
   // Returns CrowdStrike-specific URLs that utilize the "pid" field.
   //
-  // To call this function if installed from the crowdstrike/fltr-run package:
-  // $"crowdstrike/fltr-run:urlFalconPid"()
+  // To call this function if installed from the crowdstrike/fltr-core package:
+  // $"crowdstrike/fltr-core:zUrlFalconPid"()
   //
   // To call this function in a query if you have it saved locally:
-  // $"urlFalconPid"()
+  // $"zUrlFalconPid"()
 
   // By default we ignore anything older than 7 days for Graph Explorer and Process Explorer. 
   | ignoreTime:=604800

@@ -37,10 +37,10 @@ queryString: |-
   | IOC:=rename(ioc[0].labels)
 
   // Add a link to Process Explorer.
-  | $"crowdstrike/fltr-run:urlFalconPid"()
+  | $"crowdstrike/fltr-core:zUrlFalconPid"()
 
   // Add the ComputerName.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Format the output.
   | table([@timestamp, aid, ComputerName, TargetProcessId, FileName, RemoteIP, Country, "Process Explorer", IOC], limit=1000)

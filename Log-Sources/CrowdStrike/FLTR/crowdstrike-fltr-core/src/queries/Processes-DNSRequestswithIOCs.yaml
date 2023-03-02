@@ -27,7 +27,7 @@ queryString: |-
   | DomainName=?DomainName FileName=?FileName
 
   // Add the ComputerName.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Do an IOC lookup on the domain and rename the field.
   | ioc:lookup(DomainName, type=domain, confidenceThreshold=unverified)

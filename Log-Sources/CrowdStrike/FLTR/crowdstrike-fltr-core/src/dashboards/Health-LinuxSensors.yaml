@@ -32,7 +32,7 @@ widgets:
       | case {
            Location="null, null" | Location := "-" ;
         * }
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | groupBy(["RemoteAddressIP4"], function=([count(aid, as="Connection Count"), collect([Location, ComputerName, LocalAddressIP4, aid], limit=10000)]), limit=10)
       | rename("RemoteAddressIP4",as="Destination SSH")
       | table([aid, ComputerName, Location, LocalAddressIP4, "Destination SSH", "Connection Count"], sortby="Connection Count", limit=1000)
@@ -78,9 +78,9 @@ widgets:
     queryString: |-
       #event_simpleName=NetworkListenIP4
       | event_platform=Lin
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max)
-      | match(file="crowdstrike/fltr-run/service-names-port-numbers.csv", field=LocalPort, include=ServiceName, ignoreCase=true, strict=false)
+      | match(file="crowdstrike/fltr-core/service-names-port-numbers.csv", field=LocalPort, include=ServiceName, ignoreCase=true, strict=false)
       | sort(field=LocalPort, order=asc, limit=10)
       | drop(_count)
     visualization: table-view
@@ -110,7 +110,7 @@ widgets:
           isInUserMode=0 AND isInRFM=1 | Status := "RFM" ;
           * ;
         }
-      | $"crowdstrike/fltr-run:urlFalconAid"()
+      | $"crowdstrike/fltr-core:zUrlFalconAid"()
       | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
       | table([aid, hostName, aip.country, kernelVersion, AgentVersion, Status, "Host Management"], limit=1000)
     visualization: table-view
@@ -148,7 +148,7 @@ widgets:
     queryString: |
       #event_simpleName=UserLogon
       | event_platform=Lin UID=0
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | case {
            LogonType=2  | LogonType := "Interactive" ;
            LogonType=10 | LogonType := "SSH" ;

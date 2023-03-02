@@ -11,7 +11,7 @@ queryString: |-
   #event_simpleName=ProcessRollup2
 
   // Add the ComputerName to the results.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Allow the option to select the aid or ComputerName.
   | aid=?aid ComputerName=?ComputerName
@@ -23,7 +23,7 @@ queryString: |-
   | FileName=/^(net|ipconfig|whoami|quser|ping|netstat|tasklist|hostname|at)\.exe$/i
 
   // Call the function for creating URLs.
-  | $"crowdstrike/fltr-run:urlFalconPid"()
+  | $"crowdstrike/fltr-core:zUrlFalconPid"()
 
   // Group by the aid and ParentProcessID.
   | groupBy([aid, ParentProcessId], function=[collect([ComputerName, UserName, ParentProcessId, ParentBaseFileName, FileName, CommandLine], limit=10000), count(FileName, as="FileNameCount"), count(CommandLine, as="CommandLineCount"), selectLast("Process Explorer")], limit=max)

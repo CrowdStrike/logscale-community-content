@@ -16,7 +16,7 @@ widgets:
        */
       #event_simpleName=NetworkConnectIP4
       | RemoteAddressIP4=?IP
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName=?ComputerName
       | groupBy([ComputerName, RemoteAddressIP4], limit=max)
       | top(ComputerName, sum=_count)
@@ -34,7 +34,7 @@ widgets:
     queryString: |-
       #event_simpleName=NetworkConnectIP4
       | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | groupBy(RemoteAddressIP4, function=[
           { selectLast([ContextTimeStamp]) | rename(ContextTimeStamp, as=LastLookup) },
           { select([ContextTimeStamp]) | head(1) | rename(ContextTimeStamp, as=FirstLookup) | drop(@timestamp) },
@@ -60,7 +60,7 @@ widgets:
       | test(?IP != "*")
       | #event_simpleName=NetworkConnectIP4
       | RemoteAddressIP4 = ?IP
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | groupBy([RemoteAddressIP4, ComputerName], function=[
           { count(ContextTimeStamp, as="Total Connections", distinct=true) },
           { selectLast(ContextTimeStamp) | rename(ContextTimeStamp, as=LastLookup) },
@@ -111,7 +111,7 @@ widgets:
        */
       | #event_simpleName=NetworkConnectIP4
       | RemoteAddressIP4=?IP
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName=?ComputerName
       | groupby([ComputerName, RemoteAddressIP4], limit=max)
       | top(ComputerName, sum=_count)

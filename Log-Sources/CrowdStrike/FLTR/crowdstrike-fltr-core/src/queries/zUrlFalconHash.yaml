@@ -1,4 +1,4 @@
-name: urlFalconHash
+name: zUrlFalconHash
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
@@ -12,11 +12,11 @@ timeInterval:
 queryString: |-
   // Returns CrowdStrike-specific URLs that utilize the "SHA256HashData" field.
   //
-  // To call this function if installed from the crowdstrike/fltr-run package:
-  // $"crowdstrike/fltr-run:urlFalconHash"()
+  // To call this function if installed from the crowdstrike/fltr-core package:
+  // $"crowdstrike/fltr-core:zUrlFalconHash"()
   //
   // To call this function in a query if you have it saved locally:
-  // $"urlFalconHash"()
+  // $"zUrlFalconHash"()
 
   // Parse values from the ConfigBuild to determine the URL.
   | ConfigBuild=/(?<config>\d+)\.(?<opSystem>\d+)\.(?<falconBuild>\d+)\.(?<cloudDecimal>\d+$)/i

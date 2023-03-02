@@ -17,7 +17,7 @@ queryString: |-
   //| format(format="%s | %s | %s)", field=[AppSource, AppName, AppVersion], as="opensslDetails")
 
   // Add the ComputerName.
-  | $"crowdstrike/fltr-run:ComputerName"()
+  | $"crowdstrike/fltr-core:zComputerName"()
 
   // Group by aid and collect the string from above.
   | groupBy(aid, function=collect([opensslDetails, ComputerName], limit=10000), limit=max)

@@ -18,6 +18,3 @@ queryString: |-
 
   // Group by the name and version, weight by distinct aids.
   | groupBy([AppName, AppVersion], function=count(aid, distinct=true, as=Endpoints), limit=max)
-
-  // This can be lowered to find everything. We're just looking at 3 hits and above.
-  | Endpoints>5

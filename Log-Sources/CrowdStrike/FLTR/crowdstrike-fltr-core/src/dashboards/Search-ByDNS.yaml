@@ -14,7 +14,7 @@ widgets:
       test(?DomainName != "*")
       | #event_simpleName="DnsRequest"
       | DomainName=?DomainName
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | groupBy(DomainName, function=[
           {selectLast([ContextTimeStamp, ComputerName]) | rename(ContextTimeStamp, as=LastLookup) | rename(ComputerName, as=LastLookupBy)},
           {select([ContextTimeStamp, ComputerName]) | head(1) | rename(ContextTimeStamp, as=FirstLookup) | rename(ComputerName, as=FirstLookupBy) | drop(@timestamp)},
@@ -40,7 +40,7 @@ widgets:
       | #event_simpleName=DnsRequest
       | aid=?aid
       | DomainName=?DomainName
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName=?ComputerName
       | Time:=formatTime(field=@timestamp, format="%Y-%m-%d %H:%M:%S")
       | table([aid, ComputerName, DomainName], limit=1000)
@@ -67,7 +67,7 @@ widgets:
     queryString: |-
       test(?DomainName != "*")
       | #event_simpleName=DnsRequest
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | DomainName=?DomainName
       | groupBy([aid, ComputerName, DomainName], function=count(as="Total Requests"), limit=max)
       | sort("Total Requests", limit=1000)
@@ -85,7 +85,7 @@ widgets:
       | aid=?aid
       | #event_simpleName="DnsRequest"
       | DomainName=?DomainName
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName=?ComputerName
       | timeChart(DomainName, limit=10)
       | rename(_count, as="Total Requests")
@@ -113,7 +113,7 @@ widgets:
       // Extract the filename.
       | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
       // Get the ComputerName.
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       // Remove entries that have no domain name or process start time.
       | DomainName=?DomainName ProcessStartTime=* FileName=* ComputerName=?ComputerName
       // Make the process start time human-readable.
@@ -135,7 +135,7 @@ widgets:
       | aid=?aid
       | #event_simpleName="DnsRequest"
       | DomainName=?DomainName
-      | $"crowdstrike/fltr-run:ComputerName"()
+      | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName=?ComputerName
       | timeChart(function=count())
       | rename(_count, as="Total Requests")

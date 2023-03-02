@@ -16,9 +16,9 @@ widgets:
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>(GROUP|USER))\s+/i
       | CommandLine=/\/domain/i
-      | $"crowdstrike/fltr-run:ComputerName"()
-      | $"crowdstrike/fltr-run:urlFalconPid"()
-      | $"crowdstrike/fltr-run:urlFalconAid"()
+      | $"crowdstrike/fltr-core:zComputerName"()
+      | $"crowdstrike/fltr-core:zUrlFalconPid"()
+      | $"crowdstrike/fltr-core:zUrlFalconAid"()
       | ProcessStartTime := ProcessStartTime*1000
       | "Endpoint Time (UTC)" := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
       | table(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"], limit=1000)
@@ -107,9 +107,9 @@ widgets:
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>(LOCALGROUP|USER))\s+/i
       | CommandLine!=/\/domain/i
-      | $"crowdstrike/fltr-run:ComputerName"()
-      | $"crowdstrike/fltr-run:urlFalconPid"()
-      | $"crowdstrike/fltr-run:urlFalconAid"()
+      | $"crowdstrike/fltr-core:zComputerName"()
+      | $"crowdstrike/fltr-core:zUrlFalconPid"()
+      | $"crowdstrike/fltr-core:zUrlFalconAid"()
       | ProcessStartTime := ProcessStartTime*1000
       | "Endpoint Time (UTC)" := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
       | table(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"], limit=1000)

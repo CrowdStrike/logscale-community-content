@@ -1,4 +1,4 @@
-name: ComputerName
+name: zComputerName
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
@@ -13,11 +13,11 @@ queryString: |-
   // This function includes the ComputerName from an aid.
   // You generally want to run this near the end of the query for performance reasons. 
   //
-  // To call this function in a query if you have it saved as part of a package, e.g. crowdstrike/fltr-run:
-  // $"crowdstrike/fltr-run:ComputerName"()
+  // To call this function in a query if you have it saved as part of a package, e.g. crowdstrike/fltr-core:
+  // $"crowdstrike/fltr-core:zComputerName"()
   //
   // To call this function in a query if you have it saved locally:
-  // $"ComputerName"()
+  // $"zComputerName"()
 
   // First look for ones missing a ComputerName.
   | case {
