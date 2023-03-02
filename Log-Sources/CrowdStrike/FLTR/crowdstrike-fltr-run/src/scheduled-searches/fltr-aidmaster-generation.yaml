@@ -1,5 +1,5 @@
-name: FLTR aidmaster Schedule
-description: ''
+name: FLTR aidmaster Generation
+description: 'Scheduled search to generate an aid to ComputerName mapping.'
 enabled: true
 queryString: |-
   #event_simpleName=AgentOnline OR #event_simpleName=HostnameChanged

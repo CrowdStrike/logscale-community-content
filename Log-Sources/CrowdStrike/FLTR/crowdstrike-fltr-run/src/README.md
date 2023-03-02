@@ -4,31 +4,34 @@ This package includes enrichment functions and lookups that can be leveraged by 
 
 # Install
 
-This is meant to be installed in a **view** of the FLTR data, *not* the repo. 
+The `crowdstrike/fltr-run` package is meant to be installed in a **view** of the FLTR repo, not the repo itself. 
 
-Two scheduled queries are installed that will generate `fltr_aidmaster.csv` files every 3 hours. You will receive a query error about the file not being found prior to the initial generation. To force the generation of this file before the 3 hour window:
+This package will generate an `fdr_aidmaster.csv` mapping file every 3 hours. You may receive a query error about the file not being found prior to the initial generation. To force the generation of this file before the 3 hour window:
 
-- Go to both *Alerts -> Scheduled Searches -> FLTR aidmaster* scheduled searches.
-- Change the *Search schedule* to `* * * * *` and click *Save scheduled search*.
-- Wait approximately 1-2 minutes.
-- Click on *Alerts -> Scheduled Searches*. This should now show a *Last Triggered* time for *Falcon Data aidmaster Scheduled Search*. This means the file has been generated.
+1. Go to both *Alerts -> Scheduled Searches -> FLTR aidmaster Generation* scheduled search.
+2. Change the *Search schedule* to `* * * * *` and click *Save scheduled search*.
+3. Wait approximately 1-2 minutes.
+4. Click on *Alerts -> Scheduled Searches*. This should now show a *Last Triggered* time for the *FLTR aidmaster Generation* scheduled search. This means the file has been generated.
 
-**Do not skip these next steps**. Revert the settings after the file has been generated:
+**Do not skip these next steps**. 
 
-- Go back to both *FLTR aidmaster* scheduled searches in *Alerts -> Scheduled Searches*.
-- Change the *Search schedule* back to the original value of `H */3 * * *`.
-- Click *Save scheduled search*.
+Revert the settings after the file has been generated:
+
+1. Go back to the *FLTR aidmaster Generation* scheduled search in *Alerts -> Scheduled Searches*.
+2. Change the *Search schedule* back to the original value of `H */3 * * *`.
+3. Click *Save scheduled search*.
 
 # Changelog
 
-- 1.2.0 
-  - Initial public release. 
+`1.3.0`: 
+
+- Initial public release. 
 
 # Package Contents
 
 ## Queries
 
-The included queries are designed to act as user functions for commonly used queries. 
+The included queries are designed to act as user functions for commonly used queries. These are used extensively in the `crowdstrike/fltr-core` package. 
 
 ## Scheduled Searches
 

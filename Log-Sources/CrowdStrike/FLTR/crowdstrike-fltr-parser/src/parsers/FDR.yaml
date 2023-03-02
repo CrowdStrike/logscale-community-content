@@ -1,4 +1,4 @@
-name: FLTR
+name: FDR
 tests:
 - '{"eid":118,"UserIp":"10.20.12.35","CustomerIdString":"5ddb0407bef249c19c7a975f17979a1f","EventType":"Event_ExternalApiEvent","OperationName":"validateEntitlementsHmac","UTCTimestamp":1622049663110,"Success":false,"ExternalApiType":"Event_AuthActivityAuditEvent","Nonce":1,"ServiceName":"CrowdStrike
   Authentication","UserId":"Customer","AgentIdString":"","cid":"5ddb0407bef249c19c7a975f17979a1f"}'

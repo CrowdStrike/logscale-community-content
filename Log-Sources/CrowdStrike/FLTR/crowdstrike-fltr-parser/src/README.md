@@ -8,8 +8,9 @@ This is meant to be installed in the repo for FLTR. It works for both FDR and Da
 
 # Changelog
 
-- 1.2.0 
-  - Initial public release. 
+`1.3.0`:
+
+- Initial public release. 
 
 # Package Contents
 
