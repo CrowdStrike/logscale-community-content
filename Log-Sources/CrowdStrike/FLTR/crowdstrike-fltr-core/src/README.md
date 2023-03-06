@@ -1,12 +1,16 @@
 # CrowdStrike Core FLTR Package
 
-This package contains a robust set of content for use with FLTR. 
+This package contains a robust set of content for use with Falcon Long Term Repository (FLTR). 
 
-# Install
+# Important
 
-This is meant to be installed in a **view** of the FLTR repo, not the repo itself. 
+This package should be installed in a *view* linked to your FLTR repo. It is not necessary or recommended to install this directly into the FLTR repo. The FLTR *repo* should already have the additional `crowdstrike/fdr` package installed, which contains the parser necessary for this data.
 
-Prior to installation, please uninstall any related versions of this package that did not originate from the Marketplace, e.g. a version of this package downloaded from the CrowdStrike GitHub site. 
+If both packages are mistakenly installed in the FLTR repo, go to `Alerts -> Scheduled Searches -> FDR aidmaster Scheduled Search` and **uncheck** `Enable scheduled search` followed by `Save Scheduled Search`. Otherwise both packages will be attempting to generate the same file. You only need the `FLTR aidmaster Generation` scheduled search running. 
+
+# Installation
+
+Prior to installation, please uninstall any related versions of this package that did not originate from the Marketplace.
 
 This package will generate an `fdr_aidmaster.csv` mapping file every 3 hours. You may receive a query error about the file not being found prior to the initial generation. To force the generation of this file before the 3 hour window:
 
@@ -23,10 +27,11 @@ Revert the settings after the file has been generated:
 2. Change the *Search schedule* back to the original value of `H */3 * * *`.
 3. Click *Save scheduled search*.
 
+## Support
+This package is supported by CrowdStrike. For any assistance with installing or using the package please contact us via the [support portal](https://www.crowdstrike.com/products/observability-and-log-management/support/), or by email at logscalesupport@crowdstrike.com.
+
 # Changelog
-
-`1.3.2`:
-
+Version 1.3.2
 - Initial public release. 
 
 # Package Contents

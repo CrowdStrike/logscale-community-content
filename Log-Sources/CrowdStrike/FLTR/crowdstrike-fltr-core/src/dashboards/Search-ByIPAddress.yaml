@@ -6,119 +6,217 @@ sharedTimeInterval:
   isLive: false
   start: 7d
 widgets:
-  65d3a65a-32b2-4565-9953-9252661b14eb:
-    x: 0
-    y: 10
-    height: 5
-    queryString: |
-      /*
-       * This query finds the IP Connections for a given host
-       */
-      #event_simpleName=NetworkConnectIP4
-      | RemoteAddressIP4=?IP
-      | $"crowdstrike/fltr-core:zComputerName"()
-      | ComputerName=?ComputerName
-      | groupBy([ComputerName, RemoteAddressIP4], limit=max)
-      | top(ComputerName, sum=_count)
-    start: 7d
-    width: 6
-    options:
-      series: {}
-    visualization: bar-chart
-    title: IP Connections by Host
-    type: query
-  19e9da5e-a754-41e7-94d6-a86e4e65e825:
+  55721549-4c36-4be7-a5cc-412a65fa7262:
     x: 0
     y: 0
-    height: 5
+    height: 2
     queryString: |-
-      #event_simpleName=NetworkConnectIP4
-      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
-      | $"crowdstrike/fltr-core:zComputerName"()
-      | groupBy(RemoteAddressIP4, function=[
-          { selectLast([ContextTimeStamp]) | rename(ContextTimeStamp, as=LastLookup) },
-          { select([ContextTimeStamp]) | head(1) | rename(ContextTimeStamp, as=FirstLookup) | drop(@timestamp) },
-          { count(ComputerName, as=NumberOfHosts, distinct=true) }
-        ], limit=max)
-      | sort(NumberOfHosts, order=descending, limit=20000)
-      // Convert the time fields to human readable format
-      | LastLookup := LastLookup*1000
-      | FirstLookup := FirstLookup*1000
-      | LastLookup := formatTime(field=LastLookup, format="%Y/%m/%d %H:%M:%S")
-      | FirstLookup := formatTime(field=FirstLookup, format="%Y/%m/%d %H:%M:%S")
-      | table([RemoteAddressIP4, NumberOfHosts, FirstLookup, LastLookup], limit=1000)
+      test(?remoteIP != "*")
+      | #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+      | RemoteAddressIP4=?remoteIP
+      | asn:=asn(RemoteAddressIP4)
+      | rdns:=rdns(RemoteAddressIP4)
+      | default(value="-", field=[asn.org, asn.asn, rdns])
+      | groupBy([RemoteAddressIP4, asn.org, asn.asn, rdns])
+      | ipLocation(RemoteAddressIP4)
+      | rename(field="RemoteAddressIP4", as="IP")
+      | rename(field="asn.org", as="IP ASN Org.")
+      | rename(field="asn.asn", as="IP ASN")
+      | rename(field="rdns", as="Reverse DNS")
+      | rename(field="RemoteAddressIP4.city", as="GeoIP City")
+      | rename(field="RemoteAddressIP4.state", as="GeoIP State")
+      | rename(field="RemoteAddressIP4.country", as="GeoIP Country")
+      | rename(field="RemoteAddressIP4.lat", as="GeoIP Latitude")
+      | rename(field="RemoteAddressIP4.lon", as="GeoIP Longitude")
+      | rename(field="RemoteAddressIP4.lat", as="Event Types")
+      | drop([_count])
+      | select(["IP", "Reverse DNS", "IP ASN", "IP ASN Org.", "GeoIP Country", "GeoIP State", "GeoIP City", "GeoIP Latitude","GeoIP Longitude"])
     visualization: table-view
-    start: 7d
-    width: 6
-    title: IP Summary
-    type: query
-  95326074-9d63-449f-8ef1-571d0228c0cc:
-    x: 6
-    y: 0
-    height: 5
-    queryString: |-
-      | test(?IP != "*")
-      | #event_simpleName=NetworkConnectIP4
-      | RemoteAddressIP4 = ?IP
-      | $"crowdstrike/fltr-core:zComputerName"()
-      | groupBy([RemoteAddressIP4, ComputerName], function=[
-          { count(ContextTimeStamp, as="Total Connections", distinct=true) },
-          { selectLast(ContextTimeStamp) | rename(ContextTimeStamp, as=LastLookup) },
-          { select(ContextTimeStamp) | head(1) | rename(ContextTimeStamp, as=FirstLookup) }
-        ], limit=max)
-      | sort(ComputerName, limit=20000)
-      | LastLookup := LastLookup*1000
-      | FirstLookup := FirstLookup*1000
-      | LastLookup := formatTime(field=LastLookup, format="%Y/%m/%d %H:%M:%S")
-      | FirstLookup := formatTime(field=FirstLookup, format="%Y/%m/%d %H:%M:%S")
-      | table([RemoteAddressIP4, ComputerName, FirstLookup, LastLookup, "Total Connections"], limit=1000)
-    visualization: table-view
-    start: 7d
-    width: 6
-    title: IP Lookup Details - Must Specify IP Value
-    type: query
-  8054b661-43f3-4906-9849-d9bb9dcef35b:
-    x: 0
-    y: 5
-    height: 5
-    queryString: |2-
-        #event_simpleName=ProcessRollup2
-      | ImageFileName=*
-      | aid=*
-      | join(max=10000, field=[TargetProcessId], key=ContextProcessId, include=[_count], limit=100000, mode=inner, query={
-          #event_simpleName=NetworkConnectIP4
-        | groupBy([RemoteAddressIP4], function=[
-          { count(RemoteAddressIP4, distinct=true) | _count > 0 },
-          { selectLast(ContextProcessId) }
-        ], limit=max)
-      })
-      | groupby([ImageFileName], function=[sum(_count, as="Total IPs"), { tail(1) | selectLast(aid) }], limit=max)
-      | "Total IPs" > 0
-      | sort("Total IPs", order=descending, limit=100)
-      | table([ImageFileName, aid, "Total IPs"], limit=1000)
-    visualization: table-view
+    end: now
     start: 7d
     width: 12
-    title: Processes and IPs
+    title: IP Address Details
     type: query
-  44459588-5c91-4155-be3d-6d6f09704236:
-    x: 6
-    y: 10
-    height: 5
+  7a1cbfd0-0b17-4209-bb4c-222440bc3fc7:
+    x: 0
+    y: 6
+    height: 3
     queryString: |-
-      /*
-       * This query finds the IP Connections for a given host
-       */
-      | #event_simpleName=NetworkConnectIP4
-      | RemoteAddressIP4=?IP
-      | $"crowdstrike/fltr-core:zComputerName"()
-      | ComputerName=?ComputerName
-      | groupby([ComputerName, RemoteAddressIP4], limit=max)
-      | top(ComputerName, sum=_count)
-      | rename(_sum, as="Total Connections")
+      test(?remoteIP != "*")
+      | #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+      | RemoteAddressIP4=?remoteIP
+      | timeChart(RemoteAddressIP4, function=count(aid))
+    end: now
+    start: 7d
+    width: 4
+    options:
+      trend-value: abs
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 100
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 50
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: threshold
+      sparkline-zero: false
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: IP Connection History
+    type: query
+  35f930f6-6912-43ba-92fb-5053cfeb3ce8:
+    x: 7
+    y: 6
+    height: 3
+    queryString: |-
+      test(?remoteIP != "*")
+      | #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+      | RemoteAddressIP4=?remoteIP
+      | groupBy([#event_simpleName])
+      | rename(field="#event_simpleName", as="Event Types")
+      | rename(field="_count", as="Connection Count")
+      | table(["Event Types", "Connection Count"], limit=1000)
     visualization: table-view
+    end: now
+    start: 7d
+    width: 5
+    title: Connection Count
+    type: query
+  2cfeb736-169d-4196-9221-009638d90788:
+    x: 0
+    y: 9
+    height: 4
+    queryString: |-
+      test(?remoteIP != "*")
+      | #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+      | RemoteAddressIP4=?remoteIP
+      | ipLocation(RemoteAddressIP4)
+      | worldMap(lat=RemoteAddressIP4.lat, lon=RemoteAddressIP4.lon)
+    visualization: world-map
+    end: now
     start: 7d
     width: 6
-    title: IP Connections by Host
+    title: IP Location (GeoIP)
+    type: query
+  6cf32add-97e7-4ee2-93e6-5047565bdb3a:
+    x: 6
+    y: 9
+    height: 4
+    queryString: |-
+      test(?remoteIP != "*")
+      | #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+      | RemoteAddressIP4=?remoteIP
+      | top([aid], limit=10)
+      | $"crowdstrike/fltr-core:zComputerName"()
+      | rename(field="_count", as="Connections")
+      | rename(field="aid", as="Agent ID")
+      | rename(field="ComputerName", as="Hostname")
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 6
+    title: Top 10 Endpoints
+    type: query
+  3006a86a-55fa-410f-9894-0cba54713539:
+    x: 0
+    y: 13
+    height: 6
+    queryString: |-
+      test(?remoteIP != "*")
+      | #event_simpleName=ProcessRollup2 OR (#event_simpleName=NetworkConnectIP4 RemoteAddressIP4=?remoteIP)
+      | falconPID:=TargetProcessId
+      | falconPID:=ContextProcessId
+      | selfJoinFilter([aid, falconPID], where=[{#event_simpleName=ProcessRollup2}, {#event_simpleName=NetworkConnectIP4}], prefilter=true)
+      | regex("^.+(\\\|\/)(?<FileName>.+)$", field=ImageFileName, strict=false)
+      | groupBy([aid, falconPID], function=([min(ProcessStartTime, as=ProcessStartTime), count(#event_simpleName, distinct=true, as=eventCount), collect([ParentBaseFileName, FileName, CommandLine, RemoteAddressIP4])]))
+      | eventCount>1
+      | format("%,.100s", field=CommandLine, as=shortCommandLine)
+      | $"crowdstrike/fltr-core:zComputerName"()
+      | ProcessStartTime:=ProcessStartTime*1000
+      | formatTime(format="%c", field=ProcessStartTime, as="timestamp")
+      | table([timestamp, aid, ComputerName, ParentBaseFileName, FileName, RemoteAddressIP4, shortCommandLine], limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Process Executions
+    type: query
+  a2517488-3941-4ec0-8356-c33e45066e23:
+    x: 4
+    y: 6
+    height: 3
+    queryString: |-
+      test(?remoteIP != "*")
+      | #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+      | RemoteAddressIP4=?remoteIP
+      | count(aid, as="Total Connections")
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 100
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 50
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Total Connections
+    type: query
+  9e608f5a-e3da-4828-bec4-2e3603ce5ea4:
+    x: 0
+    y: 2
+    height: 4
+    queryString: |-
+      test(?remoteIP != "*")
+      | #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+      | RemoteAddressIP4=?remoteIP
+      | timeChart(#event_simpleName, function=count(aid))
+      //| rename(field="#event_simpleName", as="Event Types")
+      //| rename(field="_count", as="Connection Count")
+    end: now
+    start: 7d
+    width: 12
+    options:
+      legendPosition: bottom
+      lastBucketBehavior: exclude
+      legendLabelOverflow: truncate
+      legend: true
+      showDataPoints: true
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Connection Count Over Time
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  remoteIP:
+    label: IP Address
+    order: 50
+    type: text
+    defaultValue: '*'

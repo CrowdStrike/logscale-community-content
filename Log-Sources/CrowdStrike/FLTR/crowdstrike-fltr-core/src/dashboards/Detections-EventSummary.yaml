@@ -72,7 +72,7 @@ widgets:
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | UserName!="N/A"
-      | groupBy([UserName], function=([count(DetectId, distinct=true, as="Detection Count"), max(Severity, as=maxSev)]))
+      | groupBy(UserName, function=[count(DetectId, distinct=true, as="Detection Count"), max(Severity, as=maxSev)])
       | sort(["Detection Count", UserName], order=desc, limit=5)
       | maxSev match {
           1 => maxSev := "Informational" ;
@@ -81,9 +81,8 @@ widgets:
           4 => maxSev := "High" ;
           5 => maxSev := "Critical" ;
       }
-      | rename("UserName",as="Username")
       | rename("maxSev",as="Max Severity")
-      | table(["Username", "Max Severity", "Detection Count"], limit=1000)
+      | table(["UserName", "Max Severity", "Detection Count"], limit=1000)
     visualization: table-view
     start: 7d
     width: 4
