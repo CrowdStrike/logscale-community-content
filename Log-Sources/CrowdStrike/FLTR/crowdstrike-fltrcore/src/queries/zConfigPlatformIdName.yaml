@@ -1,0 +1,38 @@
+name: zConfigPlatformIdName
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Returns the human-readable name of ConfigPlatformId values.
+  //
+  // To call this function if installed from the crowdstrike/fltr-core package:
+  // $"crowdstrike/fltr-core:zConfigPlatformIdName"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"zConfigPlatformIdName"()
+  
+  | regex("\d+\.(?<ConfigPlatformId>\d+)\.\d+\.\d+", field=ConfigBuild, strict=false)
+  | case {
+      ConfigPlatformId = 1 | ConfigPlatformIdName := "Windows x86";
+      ConfigPlatformId = 2 | ConfigPlatformIdName := "Windows x64";
+      ConfigPlatformId = 3 | ConfigPlatformIdName := "Windows";
+      ConfigPlatformId = 4 | ConfigPlatformIdName := "Mac";
+      ConfigPlatformId = 8 |  ConfigPlatformIdName := "Linux";
+      ConfigPlatformId = 16 | ConfigPlatformIdName := "Android";
+      ConfigPlatformId = 32 | ConfigPlatformIdName := "iOS";
+      ConfigPlatformId = 64 | ConfigPlatformIdName := "zlinux s390";
+      ConfigPlatformId = 128 | ConfigPlatformIdName := "Linux Arm64";
+      ConfigPlatformId = 256 | ConfigPlatformIdName := "Lumos" ;
+      ConfigPlatformId = 512 | ConfigPlatformIdName := "Win Arm64" ;
+      ConfigPlatformId = 1024 | ConfigPlatformIdName := "Kubernetes 64" ;
+      ConfigPlatformId = 2048 | ConfigPlatformIdName := "PPC-64" ;
+      ConfigPlatformId = 4096 | ConfigPlatformIdName := "PPC-64LE" ;
+      * ; 
+  }

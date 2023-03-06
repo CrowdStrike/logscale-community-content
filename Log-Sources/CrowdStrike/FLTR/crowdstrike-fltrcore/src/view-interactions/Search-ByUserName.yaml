@@ -1,0 +1,17 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.1.0
+interaction:
+  conditions:
+  - argument: ''
+    fieldName: UserName
+    operator: present
+  name: Search - By UserName
+  titleTemplate: ''
+  useWidgetTimeWindow: true
+  dashboardReference:
+    name: Search - By UserName
+    packageSpecifier: crowdstrike/fltr-core
+    repoOrViewName:
+  arguments:
+    UserName: '{{fields.UserName}}'
+  openInNewTab: true
+  type: dashboardlink

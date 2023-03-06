@@ -1,0 +1,17 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.1.0
+interaction:
+  conditions:
+  - argument: ''
+    fieldName: RemoteAddressIP4
+    operator: present
+  name: Search - By IP Address
+  titleTemplate: ''
+  useWidgetTimeWindow: true
+  dashboardReference:
+    name: Search - By IP Address
+    packageSpecifier: crowdstrike/fltr-core
+    repoOrViewName: 
+  arguments:
+    remoteIP: '{{fields.RemoteAddressIP4}}'
+  openInNewTab: true
+  type: dashboardlink

@@ -1,0 +1,35 @@
+name: zLogonTypeName
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Returns the human-readable name of LogonType values.
+  //
+  // To call this function if installed from the crowdstrike/fltr-core package:
+  // $"crowdstrike/fltr-core:zLogonTypeName"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"zLogonTypeName"()
+
+  | LogonType match {
+      "2"  => LogonTypeName:="Interactive" ;
+      "3"  => LogonTypeName:="Network" ;
+      "4"  => LogonTypeName:="Batch" ;
+      "5"  => LogonTypeName:="Service" ;
+      "6"  => LogonTypeName:="Proxy" ;
+      "7"  => LogonTypeName:="Unlock" ;
+      "8"  => LogonTypeName:="Network Cleartext" ;
+      "9"  => LogonTypeName:="New Credential" ;
+      "10" => LogonTypeName:="Remote Interactive" ;
+      "11" => LogonTypeName:="Cached Interactive" ;
+      "12" => LogonTypeName:="Cached Remote Interactive" ;
+      "13" => LogonTypeName:="Cached Unlock" ;
+      * => * ;
+    }

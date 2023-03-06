@@ -1,0 +1,97 @@
+name: Inventory - Installed Software
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  113efc94-d946-46d2-a71a-8f711966a016:
+    x: 8
+    y: 0
+    height: 5
+    queryString: |-
+      #kind=Secondary
+      | SecondaryEventType=appinfo
+      | CompanyName=?CompanyName ProductName=?ProductName
+      | top(ProductVersion, as="Count")
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 4
+    title: Product Version
+    type: query
+  3a61cc6d-732d-4682-9a21-d9184ad3800d:
+    x: 4
+    y: 0
+    height: 5
+    queryString: |-
+      #kind=Secondary
+      | SecondaryEventType=appinfo
+      | CompanyName=?CompanyName ProductName=?ProductName
+      | top(ProductName, as="Count")
+    end: now
+    start: 7d
+    width: 4
+    options:
+      series:
+        _count:
+          color: '#c53030'
+          title: Count
+    visualization: bar-chart
+    title: Product Name
+    type: query
+  56543e9f-e23c-46c6-8922-9e3671a8721d:
+    x: 0
+    y: 5
+    height: 8
+    queryString: |-
+      #kind=Secondary
+      | SecondaryEventType=appinfo
+      | CompanyName=?CompanyName ProductName=?ProductName
+      | groupBy([CompanyName, FileDescription, FileName, FileVersion, ProductName, ProductVersion], limit=max)
+      | rename(_count, as="Count")
+      | sort([CompanyName, ProductName, FileVersion], order=asc, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Software Inventory
+    type: query
+  7dee5761-06a8-441a-9c12-28fba9b57cc6:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #kind=Secondary
+      | SecondaryEventType=appinfo
+      | CompanyName=?CompanyName
+      | top(CompanyName, as="Count")
+    visualization: bar-chart
+    end: now
+    start: 7d
+    width: 4
+    title: Software Vendor
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  CompanyName:
+    label: CompanyName
+    query: '#kind=Secondary | SecondaryEventType=appinfo | CompanyName=?CompanyName
+      | groupBy(CompanyName, limit=max)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: CompanyName
+  ProductName:
+    label: ProductName
+    query: '#kind=Secondary | SecondaryEventType=appinfo | CompanyName=?CompanyName
+      | groupBy(ProductName, limit=max)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: ProductName
