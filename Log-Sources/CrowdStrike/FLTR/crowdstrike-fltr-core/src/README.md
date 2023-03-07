@@ -31,7 +31,7 @@ Revert the settings after the file has been generated:
 This package is supported by CrowdStrike. For any assistance with installing or using the package please contact us via the [support portal](https://www.crowdstrike.com/products/observability-and-log-management/support/), or by email at logscalesupport@crowdstrike.com.
 
 # Changelog
-Version 1.3.2
+Version 1.3.3
 - Initial public release. 
 
 # Package Contents
