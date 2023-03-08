@@ -21,6 +21,7 @@ widgets:
 
       // Create a timechart of the events based on count.
       | timechart()
+    end: now
     start: 7d
     width: 6
     options:
@@ -28,6 +29,7 @@ widgets:
       imputation: none
     visualization: time-chart
     title: Time Chart of Total AD Password Changes
+    isLive: true
     type: query
   646c31ae-32c7-4705-a35e-8819c680a6fb:
     x: 0
@@ -54,9 +56,11 @@ widgets:
       // Rename variables for display purposes
       | Total:=rename(_count)
     visualization: bar-chart
+    end: now
     start: 7d
     width: 6
     title: Top AD User Names with the Most Change Events
+    isLive: true
     type: query
   b57c04a3-c936-4546-8444-5bb54234ecde:
     x: 6
@@ -79,9 +83,11 @@ widgets:
       // Display the list of account names and their domain.
       | groupBy(SamAccountName, function=collect([@timestamp, AccountDomain]))
     visualization: table-view
+    end: now
     start: 7d
     width: 6
     title: AD Account Creations by Username
+    isLive: true
     type: query
   bdf9c834-5bbd-437b-94ef-59c22bb5a60b:
     x: 6
@@ -102,9 +108,11 @@ widgets:
       // Rename variables for display purposes
       | Total:=rename(_count)
     visualization: table-view
+    end: now
     start: 7d
     width: 6
     title: Top SSO Authentication Failures by Username
+    isLive: true
     type: query
   5e3c289f-8aaf-49d4-8fcc-2d63d7807527:
     x: 0
@@ -131,9 +139,11 @@ widgets:
       // Rename variables for display purposes
       | Total:=rename(_count)
     visualization: bar-chart
+    end: now
     start: 7d
     width: 6
     title: Top AD Account Lockouts by Username
+    isLive: true
     type: query
   7c6e62fb-4163-4d2a-876b-d464f8c1fb49:
     x: 6
@@ -160,9 +170,11 @@ widgets:
       // Rename variables for display purposes
       | Total:=rename(_count)
     visualization: bar-chart
+    end: now
     start: 7d
     width: 6
     title: Top AD Password Changes by Username
+    isLive: true
     type: query
   e4c9304d-466d-4a8d-9222-5ee848e91c92:
     x: 0
@@ -189,9 +201,11 @@ widgets:
       // Rename variables for display purposes
       | Total:=rename(_count)
     visualization: table-view
+    end: now
     start: 7d
     width: 6
     title: Top AD Authentication Failures by Username
+    isLive: true
     type: query
   67abdb32-5172-41fb-867d-a13247db618b:
     x: 6
@@ -208,6 +222,7 @@ widgets:
 
       // Create a timechart of the events based on count.
       | timechart()
+    end: now
     start: 7d
     width: 6
     options:
@@ -215,10 +230,12 @@ widgets:
       imputation: none
     visualization: time-chart
     title: Time Chart of Active Directory Account Changes
+    isLive: true
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.4.0
+$schema: https://schemas.humio.com/dashboard/v0.8.0
 parameters:
   AccountDomain:
+    isMultiParam: false
     label: Account Domain
     query: AccountDomain=* | groupBy(AccountDomain)
     timeInterval: 1d
