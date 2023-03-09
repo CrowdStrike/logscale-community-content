@@ -2,10 +2,10 @@ These are packages used by the LogScale SE team during POVs. They are not meant 
 
 - **[standalone-content](standalone-content)**: individual FLTR dashboards, queries, alerts, etc.
 
-- **[crowdstrike-fltr-core](crowdstrike-fltr-core)**: content package for Falcon telemetry, aka FDR.
+- **[crowdstrike-fltrcore](crowdstrike-fltrcore)**: content package for Falcon telemetry, aka FDR.
 
-- **[crowdstrike-fltr-parser](crowdstrike-fltr-parser)**: a standalone parser for Falcon telemetry, aka FDR. You likely do not need this. 
+- **[crowdstrike-fltrparser](crowdstrike-fltrparser)**: a standalone parser for Falcon telemetry, aka FDR. You likely do not need this. 
 
-- **[crowdstrike-fltr-identityprotection](crowdstrike-fltr-identityprotection)**: queries and dashboards for Falcon Identity Protection in LogScale. 
+- **[crowdstrike-fltridentityprotection](crowdstrike-fltridentityprotection)**: queries and dashboards for Falcon Identity Protection in LogScale. 
 
-- **[crowdstrike-fltr-devicecontrol](crowdstrike-fltr-devicecontrol)**: dashboards for Falcon Device Control in LogScale. 
+- **[crowdstrike-fltrdevicecontrol](crowdstrike-fltrdevicecontrol)**: dashboards for Falcon Device Control in LogScale. 

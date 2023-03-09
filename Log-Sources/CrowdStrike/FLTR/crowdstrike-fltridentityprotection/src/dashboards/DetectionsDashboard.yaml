@@ -26,7 +26,7 @@ widgets:
       //        * }
       // | Severity != Info
     end: now
-    start: 1y
+    start: 7d
     width: 3
     options:
       default: {}
@@ -78,7 +78,7 @@ widgets:
       | Total:=rename(_count)
     visualization: table-view
     end: now
-    start: 30d
+    start: 7d
     width: 6
     title: Detections by name
     isLive: false
@@ -131,7 +131,7 @@ widgets:
       | Detections:=rename(_count)
     visualization: table-view
     end: now
-    start: 30d
+    start: 7d
     width: 6
     title: Source users most involved in detections
     isLive: false
@@ -223,7 +223,7 @@ widgets:
 
       | timeChart(Severity)
     end: now
-    start: 30d
+    start: 7d
     width: 6
     options:
       connect-points: false

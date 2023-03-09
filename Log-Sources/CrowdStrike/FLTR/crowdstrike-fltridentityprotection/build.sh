@@ -9,6 +9,9 @@ ARCHIVE=$PACKAGENAME--${VERSION}.zip
 # Delete anything that might already be here
 rm -f $ARCHIVE
 
+# Remove DS_Store files.
+find . -name .DS_Store -exec rm -f {} \;
+
 # Create a new zip archive
 (
   cd src
@@ -19,7 +22,9 @@ rm -f $ARCHIVE
 	queries \
 	parsers \
 	dashboards \
+        data \
 	scheduled-searches \
+        view-interactions \
 	README.md
 )
 
