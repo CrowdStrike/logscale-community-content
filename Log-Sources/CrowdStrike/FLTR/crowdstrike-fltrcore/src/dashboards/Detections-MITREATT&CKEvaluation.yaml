@@ -11,7 +11,7 @@ widgets:
     y: 0
     height: 8
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | Tactic!=/^custom/i
@@ -34,7 +34,7 @@ widgets:
     y: 37
     height: 8
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | top([FileName, Tactic, Technique], limit=25)
@@ -49,7 +49,7 @@ widgets:
     y: 21
     height: 4
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
       | groupBy([Tactic], function=count(AgentIdString, as="Detection Count"), limit=max)
     start: 7d
@@ -64,7 +64,7 @@ widgets:
     y: 29
     height: 8
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | top([ComputerName, Technique], limit=25)
@@ -79,7 +79,7 @@ widgets:
     y: 21
     height: 8
     queryString: |-
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | groupBy([Tactic, Technique, Severity], function=count(AgentIdString, as="detectCount"), limit=max)
@@ -98,7 +98,7 @@ widgets:
     y: 25
     height: 4
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
       | groupBy(Technique, function=count(AgentIdString, as="Detection Count"), limit=max)
     start: 7d
@@ -114,7 +114,7 @@ widgets:
     y: 29
     height: 8
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | top([ComputerName, Tactic], limit=25)
@@ -129,7 +129,7 @@ widgets:
     y: 8
     height: 6
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | Tactic!=/(^custom|machine\slearning)/i
@@ -154,7 +154,7 @@ widgets:
     y: 37
     height: 8
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | top([Tactic, Technique], limit=25)
       | rename("_count", as="Detection Count")
@@ -168,7 +168,7 @@ widgets:
     y: 14
     height: 7
     queryString: |
-      #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | Tactic!=/custom\s.*/i

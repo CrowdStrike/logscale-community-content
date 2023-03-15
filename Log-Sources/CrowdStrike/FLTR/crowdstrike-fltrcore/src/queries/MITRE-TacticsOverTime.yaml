@@ -13,7 +13,7 @@ timeInterval:
 queryString: |-
   // These events don't have an #event_simpleName tag.
   // Excluding the tag is almost as fast, i.e. "everything without this tag".
-  #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+  #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
 
   // Find MITRE events and ignore any custom tactics.
   | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/custom\s.*/i Tactic!=""

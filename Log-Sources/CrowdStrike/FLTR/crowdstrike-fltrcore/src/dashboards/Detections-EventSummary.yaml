@@ -13,7 +13,7 @@ widgets:
       correlates with the configured prevention policy for the target endpoint.
     height: 4
     queryString: |
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent 
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
@@ -35,7 +35,7 @@ widgets:
       contain multiple behaviors).'
     height: 4
     queryString: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | count(AgentIdString,  as="Total Behaviors")
@@ -68,7 +68,7 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | UserName!="N/A"
@@ -94,7 +94,7 @@ widgets:
     description: Falcon action taken by detection severity.
     height: 4
     queryString: |
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
@@ -116,7 +116,7 @@ widgets:
     y: 8
     height: 4
     queryString: |+
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | top(["MachineDomain"], limit=5)
@@ -135,7 +135,7 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | LocalIP=/(?<endpointSubnet>\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}/i
@@ -155,7 +155,7 @@ widgets:
     description: Unique Falcon Agent ID values with endpoint detections.
     height: 4
     queryString: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | count(AgentIdString, distinct=true, as="Total Endpoints")
@@ -191,7 +191,7 @@ widgets:
       setting been enabled. '
     height: 4
     queryString: |+
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | PatternDispositionDescription=/would\shave/i
@@ -210,7 +210,7 @@ widgets:
     y: 12
     height: 5
     queryString: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | DetectId=/\S+\:(?<aid>\S+)\:(?<detectID>\S+)$/i
@@ -243,7 +243,7 @@ widgets:
     description: Total number of unique endpoint detections.
     height: 4
     queryString: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | count(DetectId, distinct=true, as="Total Detections")
@@ -277,7 +277,7 @@ widgets:
     description: Detection count by maximum severity.
     height: 4
     queryString: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | groupBy([DetectId], function=(max(Severity, as=Severity)), limit=max)
@@ -317,7 +317,7 @@ parameters:
   ComputerName:
     label: Hostname
     query: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | groupBy(ComputerName)
@@ -330,7 +330,7 @@ parameters:
   MachineDomain:
     label: Domain
     query: |-
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
       | groupBy(MachineDomain)

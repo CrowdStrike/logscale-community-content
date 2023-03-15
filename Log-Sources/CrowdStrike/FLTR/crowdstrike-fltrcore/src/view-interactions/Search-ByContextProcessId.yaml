@@ -1,0 +1,17 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.1.0
+interaction:
+  conditions:
+  - argument: ''
+    fieldName: ContextProcessId
+    operator: present
+  name: Search - By ContextProcessId
+  titleTemplate: ''
+  useWidgetTimeWindow: true
+  dashboardReference:
+    name: Search - By Process Context
+    packageSpecifier: crowdstrike/fltr-core
+    repoOrViewName: 
+  arguments:
+    ProcessId: '{{fields.ContextProcessId}}'
+  openInNewTab: true
+  type: dashboardlink

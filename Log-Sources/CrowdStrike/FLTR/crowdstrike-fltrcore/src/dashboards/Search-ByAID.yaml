@@ -12,7 +12,7 @@ widgets:
     height: 6
     queryString: |-
       test(?aid != "*")
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i Tactic!=""
       | AgentIdString=?aid #cid=?cid
       | Tactic=* Technique=*
@@ -178,7 +178,7 @@ widgets:
     height: 4
     queryString: |-
       test(?aid != "*")
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | AgentIdString=?aid CustomerIdString=?cid
       | groupby([UserName, FileName, DetectName, DetectDescription, SeverityName], function=[count(as="Total Detections")], limit=max)
@@ -252,7 +252,7 @@ widgets:
     height: 6
     queryString: |-
       test(?aid != "*")
-      | #event_simpleName!=* OR #event_simpleName=Event_DetectionSummaryEvent
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | AgentIdString=?aid #cid=?cid
       | sankey(target=Tactic, source=Technique)

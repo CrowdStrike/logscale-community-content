@@ -11,7 +11,7 @@ widgets:
     y: 0
     height: 9
     queryString: |-
-      #event_simpleName!=* OR #event_simpleName=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
 
       | case {
