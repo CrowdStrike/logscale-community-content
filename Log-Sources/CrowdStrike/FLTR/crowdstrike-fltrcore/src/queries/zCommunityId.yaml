@@ -1,0 +1,40 @@
+name: zCommunityId
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // Function for looking up the Community ID from a NetworkConnectIP event.
+  //
+  // To call this function in a query if you have it saved as part of a package, e.g. crowdstrike/fltr-core:
+  // $"crowdstrike/fltr-core:zCommunityId"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"zCommunityId"()
+  
+  // Enrich NetworkConnectIP events with the Community ID.
+  | case {
+      #event_simpleName=NetworkConnectIP4
+        | CommunityId:=communityId(
+            proto=Protocol,
+            sourceip=LocalAddressIP4,
+            destinationip=RemoteAddressIP4,
+            sourceport=LocalPort,
+            destinationport=RemotePort
+          ) ;
+      #event_simpleName=NetworkConnectIP6
+        | CommunityId:=communityId(
+            proto=Protocol,
+            sourceip=LocalAddressIP6,
+            destinationip=RemoteAddressIP6,
+            sourceport=LocalPort,
+            destinationport=RemotePort
+          ) ;
+      * ;
+    }

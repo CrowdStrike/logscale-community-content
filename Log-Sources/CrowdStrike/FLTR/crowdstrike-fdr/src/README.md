@@ -2,7 +2,7 @@
 
 This package provides a parser for FLTR.
 
-# !Important Notice!
+# Breaking Changes
 
 - This will uninstall the previous `crowdstrike/fdr` package contents except for the parser. 
 - This will not impact queries or dashboards that have been saved locally.
@@ -11,7 +11,7 @@ This package provides a parser for FLTR.
 
 # Install
 
-This package is meant to be installed in the repo for FLTR. It works for both FDR and Data Connector. 
+This package is meant to be installed in the repo for FLTR. It works for both FDR and Data Connector. Additional packages just as `crowdstrike/fltr-core` should be installed in a view linked to that repo. 
 
 # Changelog
 
