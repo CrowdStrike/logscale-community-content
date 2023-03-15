@@ -28,10 +28,17 @@ Revert the settings after the file has been generated:
 3. Click *Save scheduled search*.
 
 ## Support
+
 This package is supported by CrowdStrike. For any assistance with installing or using the package please contact us via the [support portal](https://www.crowdstrike.com/products/observability-and-log-management/support/), or by email at logscalesupport@crowdstrike.com.
 
 # Changelog
-Version 1.3.3
+
+`1.3.4`
+- Added a user function to calculate the CommunityId.
+- Added Event Interations for ContextProcessId and TargetProcessId.
+- Dashboard updates for a future release of the FLTR parser. 
+
+`1.3.3`
 - Initial public release. 
 
 # Package Contents
