@@ -11,7 +11,7 @@ widgets:
     y: 0
     height: 3
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | Severity >= "80" and Severity <= "100"
       | count(Severity)
@@ -40,7 +40,7 @@ widgets:
     y: 0
     height: 3
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | Severity >= "20" and Severity <= "39"
       | count(Severity)
@@ -69,7 +69,7 @@ widgets:
     y: 7
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | top(DetectName)
 
@@ -88,7 +88,7 @@ widgets:
     y: 11
     height: 4
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
 
       | Tactic=*
@@ -122,7 +122,7 @@ widgets:
     y: 15
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | top(SourceAccountName)
 
@@ -141,7 +141,7 @@ widgets:
     y: 0
     height: 3
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | Severity >= "40" and Severity <= "59"
       | count(Severity)
@@ -170,7 +170,7 @@ widgets:
     y: 11
     height: 4
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       //|
       | groupBy([Tactic, Technique], function=stats([count(AgentIdString, as="detectCount")]))
@@ -189,7 +189,7 @@ widgets:
     y: 15
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | Endpoints:= rename(SourceEndpointHostName)
       | top(Endpoints)
@@ -208,7 +208,7 @@ widgets:
     y: 7
     height: 4
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
 
       // Severity mapping - numeric to label (from Event Data Dictionary)
@@ -237,7 +237,7 @@ widgets:
     y: 0
     height: 3
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | Severity >= "60" and Severity <= "79"
       | count(Severity)
@@ -266,7 +266,7 @@ widgets:
     y: 3
     height: 4
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent
       | ExternalApiType="Event_IdpDetectionSummaryEvent"
       | case {
               Severity >= "0" and Severity <= "19"  | Severity := "Info" ;

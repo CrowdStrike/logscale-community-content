@@ -6,7 +6,7 @@ https://www.crowdstrike.com/products/identity-protection/falcon-identity-threat-
 
 ## Changelog
 
-0.1.4:
+`0.1.5`
 - Search optimizations in the dashboards.
 
 ## Package Contents
