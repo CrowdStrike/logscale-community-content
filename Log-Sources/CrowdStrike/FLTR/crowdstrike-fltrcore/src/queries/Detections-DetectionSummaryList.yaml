@@ -9,7 +9,7 @@ timeInterval:
 queryString: |-
   // These events don't have an #event_simpleName tag.
   // Excluding the tag is almost as fast, i.e. "everything without this tag".
-  #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+  #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
 
   // Find the detection events.
   | ExternalApiType=Event_DetectionSummaryEvent

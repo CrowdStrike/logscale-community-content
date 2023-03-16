@@ -11,7 +11,7 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | timechart(function=count(as="Total Detections"))
@@ -29,7 +29,7 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | sankey(target=Tactic, source=Technique)
@@ -45,7 +45,7 @@ widgets:
     y: 20
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
@@ -61,7 +61,7 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | top(Tactic, as="Top Tactics")
@@ -78,7 +78,7 @@ widgets:
     y: 20
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | $"crowdstrike/fltr-core:zUserName"()
@@ -93,7 +93,7 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | top(Technique, as="Top Techniques")
@@ -109,7 +109,7 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | sankey(target=Technique, source=SeverityName)
@@ -125,7 +125,7 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | top(SeverityName, as="Top Severities")
@@ -141,7 +141,7 @@ widgets:
     y: 20
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | top(DetectDescription, as="Top Detections")
@@ -155,7 +155,7 @@ widgets:
     y: 12
     height: 8
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       |sankey(target=FileName, source=ParentImageFileName)
@@ -171,7 +171,7 @@ widgets:
     y: 12
     height: 8
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | sankey(target=ParentImageFileName, source=GrandparentImageFileName)
@@ -187,7 +187,7 @@ widgets:
     y: 24
     height: 7
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | SeverityName=?Severity Technique=?Technique Tactic=?Tactic
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -214,7 +214,7 @@ parameters:
     defaultValue: '*'
   Tactic:
     label: Tactic
-    query: '#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent| ExternalApiType=Event_DetectionSummaryEvent | groupBy(Tactic,
+    query: '#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent| ExternalApiType=Event_DetectionSummaryEvent | groupBy(Tactic,
       limit=100)'
     timeInterval: 7d
     useDashboardTimeIfSet: true
@@ -224,7 +224,7 @@ parameters:
     valueField: Tactic
   Technique:
     label: Technique
-    query: '#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent| ExternalApiType=Event_DetectionSummaryEvent | groupBy(Technique,
+    query: '#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent| ExternalApiType=Event_DetectionSummaryEvent | groupBy(Technique,
       limit=100) | sort(limit=100)'
     timeInterval: 7d
     useDashboardTimeIfSet: true
