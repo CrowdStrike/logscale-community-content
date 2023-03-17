@@ -1,0 +1,54 @@
+name: Processes - Outbound Connections From a Process Name
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Isolate the query down to specific event criteria.
+  // You can change the "ImageFileName" and "RemotePort" as needed.
+  (#event_simpleName=ProcessRollup2 event_platform="Win" ImageFileName=/(\\outlook\.exe)/i)
+  OR (#event_simpleName=NetworkConnectIP4 RemotePort=* event_platform="Win")
+
+  // Exclude anything that isn't routable.
+  | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+
+  // Alias both types of PIDs to a single field name.
+  | falconPID:=ContextProcessId
+  | falconPID:=TargetProcessId
+
+  // Perform a join between the two events based on the aid and falconPID from above.
+  | selfJoinFilter([aid, falconPID], where=[{#event_simpleName=ProcessRollup2}, {#event_simpleName=NetworkConnectIP4}], prefilter=false)
+
+  // Match the protocol numeric value to the name.
+  | match(file="crowdstrike/fltr-core/protocol-number-to-name.csv", column=protocolnumber, field=Protocol, include=protocolname, strict=false)
+
+  // Find the ComputerName from the aid.
+  | $"crowdstrike/fltr-core:zComputerName"()
+
+  // Format into a single result using fixed widths.
+  | Source:=format("%-33s %s", field=[aid, ComputerName])
+
+  // Group the results, grab a count, and find the first and last event.
+  | groupBy([RemoteAddressIP4, RemotePort, protocolname], function=[collect([Source, ImageFileName]), count(aid, as=connectionCount), min(ContextTimeStamp, as=firstSeen), max(ContextTimeStamp, as=lastSeen)], limit=max)
+
+  // Look up the ASN and GeoIP information.
+  | asn(RemoteAddressIP4)
+  | ipLocation(RemoteAddressIP4)
+
+  // Do an IOC lookup on the remote IP.
+  | ioc:lookup(RemoteAddressIP4, type="ip_address", confidenceThreshold=unverified)
+  | case {
+      ioc.detected!=true | ioc.detected:=false ;
+      * ;
+    }
+
+  // Calculate the first and last event times.
+  | timeDeltaDays:=((lastSeen-firstSeen)/60/60/24) | round("timeDeltaDays")
+  | firstSeen:=firstSeen*1000 | formatTime(format="%F %T", field=firstSeen, as="firstSeen")
+  | lastSeen:=lastSeen*1000   | formatTime(format="%F %T", field=lastSeen, as="lastSeen")
+
+  // Sort the results.
+  | table([Source, RemoteAddressIP4, RemotePort, protocolname, RemoteAddressIP4.asn, RemoteAddressIP4.org, RemoteAddressIP4.country, ioc.detected, firstSeen, lastSeen, timeDeltaDays, connectionCount], sortby=connectionCount, limit=1000)
