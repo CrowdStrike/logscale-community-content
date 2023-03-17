@@ -11,7 +11,7 @@ widgets:
     y: 0
     height: 4
     queryString: |
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -43,7 +43,7 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -73,7 +73,7 @@ widgets:
     y: 20
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
@@ -102,7 +102,7 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -133,7 +133,7 @@ widgets:
     y: 20
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -161,7 +161,7 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -191,7 +191,7 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -221,7 +221,7 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -251,7 +251,7 @@ widgets:
     y: 20
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -279,7 +279,7 @@ widgets:
     y: 12
     height: 8
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -309,7 +309,7 @@ widgets:
     y: 12
     height: 8
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -339,7 +339,7 @@ widgets:
     y: 24
     height: 7
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName=Event_DetectionSummaryEvent
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       // Add the ComputerName.
       | $"crowdstrike/fltr-core:zComputerName"()
