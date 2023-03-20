@@ -38,6 +38,9 @@ queryString: |-
   | asn(RemoteAddressIP4)
   | ipLocation(RemoteAddressIP4)
 
+  // Uncomment this line if you'd like to exclude common providers. 
+  //| RemoteAddressIP4.org!=/(MICROSOFT|AMAZON|AKAMAI|EDGECAST|GOOGLE)/i
+
   // Do an IOC lookup on the remote IP.
   | ioc:lookup(RemoteAddressIP4, type="ip_address", confidenceThreshold=unverified)
   | case {
