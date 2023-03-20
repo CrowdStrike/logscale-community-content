@@ -306,8 +306,8 @@ widgets:
         Critical:
           color: '#FC3896'
       legendLabelOverflow: truncate
-      legend: false
-      maxLegendRows: 1
+      legend: true
+      maxLegendRows: 5
       withLegendTitle: false
     visualization: pie-chart
     title: Detections by Max Severity
