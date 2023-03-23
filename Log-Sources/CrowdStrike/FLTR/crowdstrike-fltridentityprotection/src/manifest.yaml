@@ -1,5 +1,5 @@
 author:
-  name: CrowdStrike LogScale Field Engineering Team
+  name: CrowdStrike
 name: crowdstrike/fltr-identityprotection
 description: This package contains dashboards and saved searches that highlight Falcon
   Identity Protection detections and telemetry.
