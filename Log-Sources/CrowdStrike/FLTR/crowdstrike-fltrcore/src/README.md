@@ -34,9 +34,11 @@ This package is supported by CrowdStrike. For any assistance with installing or 
 # Changelog
 
 `1.3.4`
-- Added a user function to calculate the CommunityId.
+- Added a `zCommunityId` user function to calculate the Community Id.
 - Added Event Interations for ContextProcessId and TargetProcessId.
+- Added a `Processes - Outbound Connections From a Process Name` query that is based on CVE-2023-23397.
 - Dashboard updates for a future release of the FLTR parser. 
+- Minor dashboard fix where the legend was missing. 
 
 `1.3.3`
 - Initial public release. 
