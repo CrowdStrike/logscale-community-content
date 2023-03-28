@@ -1,0 +1,46 @@
+name: msdnslog
+tests:
+- ''
+- 3/14/2023 1:13:10 AM 132C PACKET  0000021CB3FCF990 UDP Rcv 205.251.192.27  fa7e
+  R Q [2384 A    NXDOMAIN] A      (4)wpad(9)us-west-2(13)ec2-utilities(9)amazonaws(3)com(0)
+- 3/9/2023 4:41:01 PM 1330 PACKET  0000021CB37DB980 UDP Rcv ::1             2640   Q
+  [0001   D   NOERROR] SOA    (4)DC01(4)acme(5)local(0)
+- 3/14/2023 12:43:31 AM 132C PACKET  0000021CB44C8080 UDP Snd ::1             afca
+  R Q [8385 A DR NXDOMAIN] A      .wpad.acme.local.
+- 3/9/2023 4:41:01 PM 1330 PACKET  0000021CB37DB980 UDP Snd ::1             2640 R
+  Q [8085 A DR  NOERROR] SOA    (4)DC01(4)acme(5)local(0)
+- 3/9/2023 4:41:01 PM 1330 PACKET  0000021CB55169D0 UDP Snd ::1             cc41 R
+  Q [8085 A DR  NOERROR] NS     (4)acme(5)local(0)
+- 3/9/2023 4:41:01 PM 0EC8 PACKET  0000021CBA248030 TCP Rcv 172.17.0.36     663d   Q
+  [0000       NOERROR] TKEY   (9)1452-ms-7(10)37-40303c5(36)b2bc2e02-be00-11ed-0d83-0ab68a36abe9(0)
+- 3/9/2023 4:41:01 PM 1330 PACKET  0000021CB37DB980 UDP Snd ::1             2640 R
+  Q [8085 A DR  NOERROR] SOA    (4)DC01(4)acme(5)local(0)
+- 12/19/2023 4:50:43 PM 1330 PACKET  0000021CB56F50B0 UDP Rcv 205.251.192.14  a994   Q
+  [2084 A     NOERROR] A      (5)cloud(2)us(5)humio(3)com(0)
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |+
+  // The purpose of this parser is to parse the MS AD DNS log file on disk. It might be a useful to use this as a sample to "LogEverything"
+
+  // QUERY_Response is a blank or an R. Need to convert blanks into something easily to understand. Maybe a csv lookup file from the header.
+
+  // Drop emptylines
+  case {
+    @rawstring="" | dropEvent();
+    *
+  }|
+
+  // Clean up the domain name. One code that can improve this would be to replace the leading and trailing periods after the cleanup.
+  replace("\((.*?)\)", with=".")|
+
+  //REGEX Code - The DNS log format has data separated by spaces.
+  /^(?<timestamp>[^\s]+\s[^\s]+\s[^\s]+)\s+(?<threadid>[^\s]+)\s+(?<context>[^\s]+)\s+(?<packetid>[^\s]+)\s+(?<protocol>[^\s]+)\s+(?<direction>[^\s]+)\s+(?<srcipaddress>[^\s]+)\s+(?<xid>([A-Za-z0-9]+))\s(?<query_response>([R|\s]))\s(?<opcode>[^\s]+)\s\[(?<flagshex>[^\s]+)\s(?<flagscharcodes>([A|\s][T|\s][D|\s][R|\s]))\s+(?<responsecode>(\w+))\]\s(?<questype>(\w+))\s+\.(?<fqdn>(.+(?=.$)))/|
+
+  // Convert the timestamp to unix time (as required by Falcon LogScale's @timestamp field)
+  // Manually add a timezone in this example
+  @timestamp := parseTimestamp("M/d/yyyy h:mm:ss a", field=timestamp, timezone="America/Chicago") |
+
+  // Here is an example of a few fields that we might not need in LogScale. We will drop the fields.
+  drop([timestamp, threadid, xid, timestamp, flagshex])|
+
+tagFields: []
