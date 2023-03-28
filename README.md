@@ -10,7 +10,7 @@ Welcome to the LogScale Community Content Repository.
 This repository contains Community and Field contributed content for LogScale which includes:
  - Complete Packages
  - Queries
- - Dashbaords
+ - Dashboards
  - Alerts
  - Lookup Files
  
@@ -39,7 +39,7 @@ The wiki contains the following guides and tutorials:
 
 - **[Hunting and Investigations](https://github.com/CrowdStrike/logscale-community-content/wiki/Hunting-and-Investigations)**: ever wondered how to hunt through Falcon telemetry data, aka LTR, aka FDR? This is likely the best place to start. 
 
-- **[Event Forwarding Playground](https://github.com/CrowdStrike/logscale-community-content/wiki/Hunting-and-Investigations)**: a self-contained docker environment made available for the purposes of learning how to setup Event Forwarding in LogScale. 
+- **[Event Forwarding Playground](https://github.com/CrowdStrike/logscale-community-content/wiki/Event-Forwarding-Playground)**: a self-contained docker environment made available for the purposes of learning how to setup Event Forwarding in LogScale. 
 
 # Documentation and Support
 LogScale Community Content is a community-driven open source project. As such, it carries no formal support, expressed or implied.
