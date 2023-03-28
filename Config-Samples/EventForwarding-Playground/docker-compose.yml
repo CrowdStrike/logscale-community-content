@@ -1,0 +1,27 @@
+---
+version: '2'
+services:
+  
+
+  humio:
+    image: humio/humio:1.80.0--SNAPSHOT--build-391628--SHA-a3ced5b82d6800fbf0c760c25361a30c1fe9886a
+    container_name: humio
+    environment:
+      HUMIO_JVM_ARGS: '-Xss2M'
+      ENABLE_EVENT_FORWARDING: 'TRUE'
+      ENABLE_SCHEDULED_SEARCHES: 'TRUE'
+      AUTHENTICATION_METHOD: 'single-user'
+      SINGLE_USER_PASSWORD: 'Secret123'
+    #volumes:
+    #  - /Users/alatham/Humio/Docker/mounts/data:/data
+    #  - /Users/alatham/Humio/Docker/mounts/data-kafka-data:/data/kafka-data
+    #  - /Users/alatham/Humio/Docker/:/etc/humio:ro
+    ports:
+      - "8080:8080"
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8080"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  
