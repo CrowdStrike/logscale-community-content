@@ -1,0 +1,154 @@
+name: Windows T1087.001 CQF
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  8d2d47e3-6d18-4224-bab1-1175fd856e84:
+    x: 0
+    y: 9
+    height: 6
+    queryString: |-
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
+      | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | default(value="none", field=[netFlag])
+      | netCommand=?netCommand netFlag=?netFlag
+      | timeChart(netCommand, span=1d)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      gradient: false
+      horizontalPlotLineLabel: ''
+      connect-points: false
+      yAxisScale: linear
+      regression: false
+      show-utc: false
+      imputation: none
+      yAxisUnit: ''
+      series: {}
+      yAxisTitle: Executions
+      stacking: none
+    visualization: time-chart
+    title: Command Time Chart
+    isLive: false
+    type: query
+  232acc67-0c7a-44d7-bdc8-706407ec1cf8:
+    x: 0
+    y: 15
+    height: 7
+    queryString: |-
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
+      | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | default(value="none", field=[netFlag])
+      | netCommand=?netCommand netFlag=?netFlag
+      | rootURL := "https://falcon.crowdstrike.com/"
+      | format("[Process Explorer](%sinvestigate/process-explorer/%s/%s)", field=["rootURL", "aid", "TargetProcessId"], as="Process Explorer")
+      | select([ProcessStartTime, aid, FileName, netCommand, netFlag, netArguments, "Process Explorer"])
+      | ProcessStartTime := ProcessStartTime*1000 | formatTime(format="%F %T.%L", field="ProcessStartTime", as="ProcessStartTime")
+    visualization: table-view
+    end: '2023-04-07T12:22:31.45Z'
+    start: '2023-03-31T12:22:31.45Z'
+    width: 12
+    title: Windows T1087.001 Process List
+    isLive: false
+    type: query
+  4db4619a-6ba9-4096-bf0c-4d1470996fdc:
+    x: 0
+    y: 3
+    height: 6
+    queryString: |-
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
+      | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | default(value="none", field=[netFlag])
+      | netCommand=?netCommand netFlag=?netFlag
+      | sankey(source="netCommand", target="netFlag", weight=count(aid))
+    visualization: sankey
+    end: '2023-04-07T13:50:09.135Z'
+    start: '2023-03-31T13:50:09.135Z'
+    width: 7
+    title: Command to Flag Sankey
+    isLive: false
+    type: query
+  note-1680876869204-0:
+    x: 0
+    y: 0
+    height: 3
+    text: |-
+      Adversaries may attempt to get a listing of local system accounts. This information can help adversaries determine which local accounts exist on a system to aid in follow-on behavior.
+
+      Commands such as `net user` and `net localgroup` of the Net utility can list local users and groups.
+
+      [ATT&CK](https://attack.mitre.org/techniques/T1087/001/)
+    width: 12
+    title: 'ATT&CK - T1087.001 - Discovery - Local Accounts '
+    type: note
+  691e94e2-23dd-4b17-8f7d-b93fb5d12d93:
+    x: 7
+    y: 3
+    height: 6
+    queryString: |-
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
+      | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | default(value="none", field=[netFlag])
+      | netCommand=?netCommand netFlag=?netFlag
+      | groupBy([netCommand])
+    end: '2023-04-07T13:50:09.135Z'
+    start: '2023-03-31T13:50:09.135Z'
+    width: 5
+    options:
+      legend: false
+    visualization: pie-chart
+    title: Command Frequency
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  netCommand:
+    isMultiParam: false
+    label: Command
+    order: 50
+    values:
+    - '*'
+    - accounts
+    - computer
+    - config
+    - continue
+    - file
+    - group
+    - help
+    - helpmsg
+    - localgroup
+    - name
+    - pause
+    - print
+    - send
+    - session
+    - share
+    - start
+    - statistics
+    - stop
+    - time
+    - use
+    - user
+    - view
+    type: list
+    defaultValue: '*'
+  netFlag:
+    isMultiParam: false
+    label: Flag
+    query: '#event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\net1?\.exe/i
+      | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
+      | lower("netArguments") | lower("netCommand") | regex("(?<netFlag>\/\w+)(\s+|\:|$)",
+      field=netArguments, strict=false) | lower("netFlag")   | groupBy([netFlag])'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: netFlag
