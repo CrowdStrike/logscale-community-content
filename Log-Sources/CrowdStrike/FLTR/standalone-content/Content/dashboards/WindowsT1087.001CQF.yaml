@@ -12,8 +12,9 @@ widgets:
     queryString: |-
       #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
       | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
-      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false, repeat=true)
       | default(value="none", field=[netFlag])
+      | netFlag := lower("netFlag") | netCommand := lower("netCommand")
       | netCommand=?netCommand netFlag=?netFlag
       | timeChart(netCommand, span=1d)
     end: now
@@ -42,11 +43,13 @@ widgets:
     queryString: |-
       #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
       | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
-      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false, repeat=true)
       | default(value="none", field=[netFlag])
+      | netFlag := lower("netFlag") | netCommand := lower("netCommand")
       | netCommand=?netCommand netFlag=?netFlag
       | rootURL := "https://falcon.crowdstrike.com/"
       | format("[Process Explorer](%sinvestigate/process-explorer/%s/%s)", field=["rootURL", "aid", "TargetProcessId"], as="Process Explorer")
+      | groupBy([ProcessStartTime, aid, FileName, netCommand, netArguments], function=collect([netFlag, "Process Explorer"]))
       | select([ProcessStartTime, aid, FileName, netCommand, netFlag, netArguments, "Process Explorer"])
       | ProcessStartTime := ProcessStartTime*1000 | formatTime(format="%F %T.%L", field="ProcessStartTime", as="ProcessStartTime")
     visualization: table-view
@@ -63,8 +66,9 @@ widgets:
     queryString: |-
       #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
       | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
-      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false, repeat=true)
       | default(value="none", field=[netFlag])
+      | netFlag := lower("netFlag") | netCommand := lower("netCommand")
       | netCommand=?netCommand netFlag=?netFlag
       | sankey(source="netCommand", target="netFlag", weight=count(aid))
     visualization: sankey
@@ -94,15 +98,16 @@ widgets:
     queryString: |-
       #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
       | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
-      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false)
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false, repeat=true)
       | default(value="none", field=[netFlag])
+      | netFlag := lower("netFlag") | netCommand := lower("netCommand")
       | netCommand=?netCommand netFlag=?netFlag
       | groupBy([netCommand])
     end: '2023-04-07T13:50:09.135Z'
     start: '2023-03-31T13:50:09.135Z'
     width: 5
     options:
-      legend: false
+      legend: true
     visualization: pie-chart
     title: Command Frequency
     isLive: false
@@ -142,10 +147,11 @@ parameters:
   netFlag:
     isMultiParam: false
     label: Flag
-    query: '#event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\net1?\.exe/i
+    query: '#event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\(?<FileName>net1?\.exe)/i
       | CommandLine=/\s+(?<netCommand>(accounts|computer|config|continue|file|group|help|helpmsg|localgroup|name|pause|print|send|session|share|start|statistics|stop|time|use|user|view))\s+(?<netArguments>.+)/i
-      | lower("netArguments") | lower("netCommand") | regex("(?<netFlag>\/\w+)(\s+|\:|$)",
-      field=netArguments, strict=false) | lower("netFlag")   | groupBy([netFlag])'
+      | regex("(?<netFlag>\/\w+)(\s+|\:|$)", field=netArguments, strict=false, repeat=true)
+      | default(value="none", field=[netFlag]) | netFlag := lower("netFlag") | netCommand
+      := lower("netCommand") | groupBy(netFlag)'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
