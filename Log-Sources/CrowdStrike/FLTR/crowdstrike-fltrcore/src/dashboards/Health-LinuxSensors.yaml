@@ -216,15 +216,26 @@ widgets:
           0 => isInRFM:="0" ;
         }
       | case {
-          isInUserMode=1 AND isInRFM=1 | Status := "User Mode Enabled" ;
-          isInUserMode=0 AND isInRFM=0 | Status := "Kernel Mode Enabled" ;
-          isInUserMode=0 AND isInRFM=1 | Status := "RFM Enabled" ;
+          isInUserMode=1 AND isInRFM=1 | Status := "User Mode" ;
+          isInUserMode=0 AND isInRFM=0 | Status := "Kernel Mode" ;
+          isInUserMode=0 AND isInRFM=1 | Status := "RFM" ;
         * }
-      | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
       | groupBy("Status", function=(count(aid, as="Count")), limit=max)
-    visualization: table-view
+    end: now
     start: 7d
     width: 3
+    options:
+      innerRadius: 40
+      maxLegendRows: 2
+      series:
+        Kernel Mode:
+          color: '#008000'
+        RFM:
+          color: '#FF0000'
+        User Mode:
+          color: '#FFFF00'
+      withLegendTitle: false
+    visualization: pie-chart
     title: Linux Sensor Status
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.4.0

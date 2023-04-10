@@ -4,9 +4,13 @@ This package contains dashboards and saved searches that highlight Falcon Identi
 
 https://www.crowdstrike.com/products/identity-protection/falcon-identity-threat-detection/
 
+## Installation
+
+Installing the package will automatically deploy the Falcon Identity Protection dashboards and saved searches. This is meant to be installed in a **view** of the Falcon telemetry data, *not* the repo. 
+
 ## Changelog
 
-`0.1.5`
+Version 0.1.5
 - Search optimizations in the dashboards.
 
 ## Package Contents
@@ -29,6 +33,6 @@ This package assumes the following:
 - CrowdStrike FDR parser has been installed.
 - CrowdStrike Falcon Identity Protection is being sent to LogScale.
 
-## Installation
+## Support
 
-Installing the package will automatically deploy the Falcon Identity Protection dashboards and saved searches. This is meant to be installed in a **view** of the Falcon telemetry data, *not* the repo. 
+This package is supported by CrowdStrike. For any assistance with installing or using the package please contact us via the [support portal](https://www.crowdstrike.com/products/observability-and-log-management/support/), or by email at logscalesupport@crowdstrike.com.
