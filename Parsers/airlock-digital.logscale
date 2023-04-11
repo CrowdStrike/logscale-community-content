@@ -1,0 +1,1 @@
+parseJson() | parseTimestamp("dd/MM/yyyy hh:mm:ss a", field=datetime,timezone="UTC")

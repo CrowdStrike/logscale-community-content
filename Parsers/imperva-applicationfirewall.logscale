@@ -1,0 +1,1 @@
+parseCEF(@rawstring) | time := formatTime("%Y/%m/%d %H:%M:%S", field=cef.ext.start, timezone=Z)

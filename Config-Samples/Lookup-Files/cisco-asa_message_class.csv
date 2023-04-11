@@ -1,0 +1,102 @@
+cisco_messageClass,cisco_className,cisco_classDefinition
+*,*,*
+109,auth,User Authentication
+113,auth,User Authentication
+110,bridge,Transparent Firewall
+220,bridge,Transparent Firewall
+717,ca,PKI Certification Authority
+111,config,Command Interface
+112,config,Command Interface
+208,config,Command Interface
+308,config,Command Interface
+734,dap,Dynamic Access Policies
+719,email,E-mail Proxy
+101,ha,High Availability (Failover)
+102,ha,High Availability (Failover)
+103,ha,High Availability (Failover)
+104,ha,High Availability (Failover)
+210,ha,High Availability (Failover)
+311,ha,High Availability (Failover)
+709,ha,High Availability (Failover)
+209,ip,IP Stack
+215,ip,IP Stack
+313,ip,IP Stack
+317,ip,IP Stack
+408,ip,IP Stack
+735,ipaa,IP Address Assignment
+400,ips,Intrusion Protection Service
+401,ips,Intrusion Protection Service
+415,ips,Intrusion Protection Service
+319,np,Network Processor
+725,npssl,NP SSL
+318,ospf,OSPF Routing
+409,ospf,OSPF Routing
+503,ospf,OSPF Routing
+613,ospf,OSPF Routing
+107,rip,RIP Routing
+312,rip,RIP Routing
+321,rm,Resource Manager
+106,session,User Session
+108,session,User Session
+201,session,User Session
+202,session,User Session
+204,session,User Session
+302,session,User Session
+303,session,User Session
+304,session,User Session
+305,session,User Session
+314,session,User Session
+405,session,User Session
+406,session,User Session
+407,session,User Session
+500,session,User Session
+502,session,User Session
+607,session,User Session
+608,session,User Session
+609,session,User Session
+616,session,User Session
+620,session,User Session
+703,session,User Session
+710,session,User Session
+212,snmp,SNMP
+199,sys,System
+211,sys,System
+214,sys,System
+216,sys,System
+306,sys,System
+307,sys,System
+315,sys,System
+414,sys,System
+604,sys,System
+605,sys,System
+606,sys,System
+610,sys,System
+612,sys,System
+614,sys,System
+615,sys,System
+701,sys,System
+711,sys,System
+213,vpdn,PPTP and L2TP Sessions
+403,vpdn,PPTP and L2TP Sessions
+603,vpdn,PPTP and L2TP Sessions
+316,vpn,IKE and IPSec
+320,vpn,IKE and IPSec
+402,vpn,IKE and IPSec
+404,vpn,IKE and IPSec
+501,vpn,IKE and IPSec
+602,vpn,IKE and IPSec
+702,vpn,IKE and IPSec
+713,vpn,IKE and IPSec
+714,vpn,IKE and IPSec
+715,vpn,IKE and IPSec
+611,vpnc,VPN Client
+720,vpnfo,VPN Failover
+718,vpnlb,VPN Load Balancing
+716,webvpn,Web-based VPN
+305,xlate,NAT and PAT
+722,svc,SSL VPN Client
+750,ikev2,IKEv2 Toolkit
+751,ikev2,IKEv2 Toolkit
+733,td,Threat Detection
+721,webfo,Web-based Failover
+752,ikev2,IKEv2 Toolkit
