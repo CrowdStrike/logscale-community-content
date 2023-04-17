@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Processes - Linux Command Execution
+
   // Find all Linux process events.
   #event_simpleName=ProcessRollup2 event_platform=Lin
 

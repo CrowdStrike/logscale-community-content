@@ -1,0 +1,64 @@
+name: The Basics - 07 - Regular Expressions
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 9
+    height: 5
+    queryString: |-
+      #event_simpleName=ProcessRollup2
+      | event_platform=Win
+      | ImageFileName=/\\(?<systemFolder>(System32|SysWow64))\\/i
+      | groupBy([systemFolder, ImageFileName], limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 6
+    text: "If you love regular expressions, you’re going to really love LogScale.\
+      \ Regular expressions can be invoked almost anywhere by encasing your regular\
+      \ expression in forward slashes. A quick example might be:\n\n```\n#event_simpleName=ProcessRollup2\
+      \ \n| event_platform=Win\n| ImageFileName=/\\\\(System32|SysWow64)\\\\/i\n```\n\
+      \nThe following looks for process execution events with an `ImageFileName` field\
+      \ that includes one of the following two values (with case insensitivity enabled):\
+      \ `\\System32\\` or `\\SysWow64\\`\n\nA few important things to note:\n\n  1.\
+      \ A starting and trailing wildcard is assumed. You don’t need to add `.*` to\
+      \ the beginning or or the end of your regex. If you want a literal string-beginning\
+      \ or string-ending, denote that with a `^` or `$` respectively (e.g. `/^powershell\\\
+      .exe$/i`). \n\n  2. You can make your regex case insensitive by adding an `i`\
+      \ at the end of the statement outside of the trailing forward slash.\n\nYou’\
+      re free to include field extractions in-line as well using named capture groups,\
+      \ e.g. `(?<systemFolder>(System32|SysWow64))`. In the example below we'll create\
+      \ and display the named capture group `systemFolder`."
+    width: 12
+    title: Regular Expressions
+    type: note
+  note-1681138041272-0:
+    x: 0
+    y: 6
+    height: 3
+    text: "````\n#event_simpleName=ProcessRollup2 \n| event_platform=Win \n| ImageFileName=/\\\
+      \\(?<systemFolder>(System32|SysWow64))\\\\/i\n| groupBy([systemFolder, ImageFileName],\
+      \ limit=100)\n````"
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  topLevelDomain:
+    isMultiParam: false
+    label: topLevelDomain
+    order: 50
+    type: text
+    defaultValue: google.com

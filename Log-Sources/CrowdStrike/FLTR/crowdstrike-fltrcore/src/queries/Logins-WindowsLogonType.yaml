@@ -12,6 +12,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Logins - Windows LogonType
+
   // Search for UserLogon events from Windows. Also add a UserName input box.
   #event_simpleName=UserLogon event_platform=Win ?UserName
 

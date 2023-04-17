@@ -1,0 +1,36 @@
+name: LOLBins - Msiexec - Executions with Remote Destination
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // LOLBins - Msiexec - Executions with Remote Destination
+  // https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/
+
+  // Start with msiexec.exe process with any HTTP requests in the command line.
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win ImageFileName=/msiexec.exe/i CommandLine=/http/i
+
+  // Regex pattern looking for /i or /x on the command line, followed by a path that starts with http(s).
+  | CommandLine=/[-/][ix]\s*(?<URL>(?:\"https?:[^\"]*?\")|(?:https?:[^ ]*?(\\s|$)))/i
+
+  // Create a link back to ProcessExplorer.
+  | $crowdstrike/fltr-core:zUrlFalconPid()
+
+  // Get the ComputerName.
+  | $crowdstrike/fltr-core:zComputerName()
+
+  // Format the aid and ComputerName together.
+  | SensorName:=format(format="%s -> %s", field=[aid, ComputerName])
+
+  // Stack the data for each URL.
+  | groupBy(URL, function=[collect("Process Explorer"), collect(SensorName), count(aid, distinct=true, as=HostCount), count(as=EventCount)], limit=max)
+
+  // and filter for URLs we've seen on less than 5 hosts
+  | HostCount < 5

@@ -1,0 +1,338 @@
+name: The Basics - 19 - Helpful Query Examples
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  a8d1f272-a416-4189-99ee-ce9f5f3d3d72:
+    x: 0
+    y: 24
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon
+      | groupBy(UserName, function=(count(aid, as=totalLogons)), limit=100)
+      | test(totalLogons > 25)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Use test to do field evaluations example
+    isLive: false
+    type: query
+  6c03f9a4-94fa-4ac0-95c6-c74958a4dbed:
+    x: 0
+    y: 28
+    height: 3
+    text: |
+      Using a built-in geoip database and the function worldmap to map all SSH connections.
+
+      ```
+      #event_simpleName=UserLogon event_platform=Lin LogonType="10"
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/32", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(RemoteAddressIP4)
+      | worldMap(lat=RemoteAddressIP4.lat, lon=RemoteAddressIP4.lon, magnitude=count(RemoteAddressIP4))
+      ```
+    width: 12
+    title: Place longitude and latitude on a world map
+    type: note
+  b1e6f441-bf36-4a55-8724-dcc3cb26feba:
+    x: 0
+    y: 39
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.1/32", "169.254.0.0/16", "0.0.0.0/32"])
+      | select([UserName, RemoteAddressIP4, ClientComputerName, @rawstring])
+      | sort(RemoteAddressIP4)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Omit RFC-1819 addresses from search result example
+    isLive: false
+    type: query
+  25ac0a68-ef45-4f21-94b2-ef9c6645d8cc:
+    x: 0
+    y: 14
+    height: 3
+    text: |
+      Set a default field value. Similar to `fillnull` in Event Search. If the field `GrandParentBaseFilename` is blank, set it to the value “Unknown.”
+
+      ```
+      #event_simpleName=ProcessRollup2
+      | default(field=GrandParentBaseFileName, value="Unknown")
+      | select([GrandParentBaseFileName, ParentBaseFileName, ImageFileName])
+      ```
+    width: 12
+    title: Set a default field value
+    type: note
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |-
+      #event_simpleName=ProcessRollup2
+      | format("%,.50s", field=CommandLine, as=shortCmdLine)
+      | select([shortCmdLine, CommandLine])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Trim field string length example
+    isLive: false
+    type: query
+  8500c6f3-8dc3-4c61-bb87-79d9e2d1febf:
+    x: 0
+    y: 50
+    height: 3
+    text: "Query a single field for multiple values using the in function. \n\n```\n\
+      #event_simpleName=UserLogon\n| in(LogonType, values=[\"2\",\"10\"])\n| select([@timestmap,\
+      \ UserSid, UserName, LogonType, ClientComputerName])\n```\n"
+    width: 12
+    title: Query field for multiple values within
+    type: note
+  bf3af892-4aea-4761-9b9d-b4b211659150:
+    x: 0
+    y: 43
+    height: 3
+    text: |
+      Create a process lineage one-liner that includes grandparent, parent, and target processes using format:
+
+      ```
+      #event_simpleName=ProcessRollup2
+      | default(field=GrandParentBaseFileName, value="Unknown")
+      | format(format="%s > %s > %s", field=[GrandParentBaseFileName,  ParentBaseFileName, FileName], as="processLineage")
+      | select([aid, TargetProcessId, processLineage])
+      ```
+    width: 12
+    title: Create concatenated, formatted fields
+    type: note
+  d2174f04-2619-494c-9ef9-d09e6372ed3d:
+    x: 0
+    y: 74
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogonFailed2 event_platform=Win
+      | SubStatus_hex := format(field=SubStatus, "0x%X")
+      | select([@timestamp, aid, UserName, LogonType, SubStatus, SubStatus_hex])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Convert decimal values to hexadecimal values example
+    isLive: false
+    type: query
+  a16f25c9-94e9-4498-a035-c685a67c7add:
+    x: 0
+    y: 71
+    height: 3
+    text: |
+      ```
+      #event_simpleName=UserLogonFailed2 event_platform=Win
+      | SubStatus_hex := format(field=SubStatus, "0x%X")
+      | select([@timestamp, aid, UserName, LogonType, SubStatus, SubStatus_hex])
+      ```
+    width: 12
+    title: Convert decimal values to hexadecimal values
+    type: note
+  a278aedd-129e-4efe-bf18-ae5fac761105:
+    x: 0
+    y: 53
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon
+      | in(LogonType, values=["2","10"])
+      | select([@timestmap, UserSid, UserName, LogonType, ClientComputerName])
+      | ClientComputerName = *
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Query field for multiple values within example
+    isLive: false
+    type: query
+  0b295586-2d5e-4784-b6b5-b00ca4c8b4ca:
+    x: 0
+    y: 7
+    height: 3
+    text: "Calculate the average password age, in days, of Admin and Standard user\
+      \ accounts and then round those values to a whole number: \n\n```\n#event_simpleName=UserLogon\n\
+      | groupBy(UserIsAdmin, function=(avg(PasswordLastSet, as=avgPswdAge)), limit=100)\n\
+      | AvgPaswdAgeDays := now() - (avgPswdAge*1000)\n| AvgPaswdAgeDays := AvgPaswdAgeDays/1000/60/60/24\n\
+      | format(\"%,.0f\",field=[\"AvgPaswdAgeDays\"], as=\"PasswordLastSetDaysRounded\"\
+      )\n```\n"
+    width: 12
+    title: Format a number to two decimal places
+    type: note
+  e568f655-dd5e-4144-af8c-2e8e2e4e50cf:
+    x: 0
+    y: 64
+    height: 3
+    text: |
+      Note that the specified lookup table must exist under “Files.” In this instance, we’ll check for common ports and create a new field with their associated protocol.
+
+      ```
+      #event_simpleName=NetworkListenIP4
+      | match(file="crowdstrike/fltr-tutorial/service-names-port-numbers.csv", field=LocalPort, include=ServiceName, ignoreCase=true, strict=false)
+      | select([@timestamp, aid, LocalPort, ServiceName, RemoteAddressIP4])
+      ```
+    width: 12
+    title: Use match to query a lookup table
+    type: note
+  87e1ec2b-4d1a-4952-8783-00fc35b356b0:
+    x: 0
+    y: 21
+    height: 3
+    text: |
+      Similar to where in Event Search, check one field value against another. In this example, see if a username has completed more than 25 logons in a given search window:
+
+      ```
+      #event_simpleName=UserLogon
+      | groupBy(UserName, function=(count(aid, as=totalLogons)), limit=100)
+      | test(totalLogons > 25)
+      ```
+    width: 12
+    title: Use test to do field evaluations
+    type: note
+  1ca709a8-4ef3-4b32-9646-0a665af58875:
+    x: 0
+    y: 31
+    height: 5
+    queryString: |-
+      #event_simpleName=UserLogon event_platform=Win LogonType="10"
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/32", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(RemoteAddressIP4)
+      | worldMap(lat=RemoteAddressIP4.lat, lon=RemoteAddressIP4.lon, magnitude=count(RemoteAddressIP4))
+    visualization: world-map
+    end: now
+    start: 1d
+    width: 12
+    title: Place longitude and latitude on a world map example
+    isLive: false
+    type: query
+  73fbf5ee-5c51-4792-ad31-beba3130aa01:
+    x: 0
+    y: 57
+    height: 3
+    text: |
+      Take the fields `UID` and `UserSid` and make them a new field named userIdentifier.
+
+      ```
+      #event_simpleName=ProcessRollup2
+      | concat([UID, UserSid], as="userIdentifier")
+      | select([@timestamp, aid, userIdentifier, ImageFileName])
+      ```
+    width: 12
+    title: Concatenate two fields into a new, single field
+    type: note
+  f5ea4579-c7a3-42a9-9ad7-be85e5923ab6:
+    x: 0
+    y: 67
+    height: 4
+    queryString: |-
+      #event_simpleName=NetworkListenIP4
+      | match(file="crowdstrike/fltr-tutorial/service-names-port-numbers.csv", field=LocalPort, include=ServiceName, ignoreCase=true, strict=false)
+      | select([@timestamp, aid, LocalPort, ServiceName, RemoteAddressIP4])
+      | sort(ServiceName)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Use match to query a lookup table example
+    isLive: false
+    type: query
+  391d116c-60f2-47da-924f-f7425f5a6b6a:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      #event_simpleName=ProcessRollup2
+      | default(field=GrandParentBaseFileName, value="Unknown")
+      | select([GrandParentBaseFileName, ParentBaseFileName, ImageFileName])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Set a default field value example
+    isLive: false
+    type: query
+  efeb7179-87d7-4550-9db9-cd7eb0fb7e2c:
+    x: 0
+    y: 60
+    height: 4
+    queryString: |-
+      #event_simpleName=ProcessRollup2
+      | concat([UID, UserSid], as="userIdentifier")
+      | select([@timestamp, aid, userIdentifier, ImageFileName])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Concatenate two fields into a new, single field example
+    isLive: false
+    type: query
+  f7555ea7-6a5b-4015-b4ff-2ff0ae3fec35:
+    x: 0
+    y: 46
+    height: 4
+    queryString: |-
+      #event_simpleName=ProcessRollup2
+      | default(field=GrandParentBaseFileName, value="Unknown")
+      | format(format="%s > %s > %s", field=[GrandParentBaseFileName,  ParentBaseFileName, FileName], as="processLineage")
+      | select([aid, TargetProcessId, processLineage])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Create concatenated, formatted fields example
+    isLive: false
+    type: query
+  956d1813-1ec3-4e37-87c7-aac2b0b0ea25:
+    x: 0
+    y: 10
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon
+      | groupBy(UserIsAdmin, function=(avg(PasswordLastSet, as=avgPswdAge)), limit=100)
+      | AvgPaswdAgeDays := now() - (avgPswdAge*1000)
+      | AvgPaswdAgeDays := AvgPaswdAgeDays/1000/60/60/24
+      | format("%,.2f",field=["AvgPaswdAgeDays"], as="PasswordLastSetDaysRounded")
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Format a number to two decimal places example
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 3
+    text: "Trim a field to be shorter. Only show the first 50 characters of the field\
+      \ `CommandLine`: \n\n```\n#event_simpleName=ProcessRollup2\n| format(\"%,.50s\"\
+      , field=CommandLine, as=shortCmdLine)\n| select([shortCmdLine, CommandLine])\n\
+      ```\n"
+    width: 12
+    title: Trim field string length
+    type: note
+  43795559-3764-48f3-b582-22e3b48b9d14:
+    x: 0
+    y: 36
+    height: 3
+    text: "Omit internal IP addresses when keying in on remote IP addresses. \n\n\
+      ```\n#event_simpleName=UserLogon \n| !cidr(RemoteAddressIP4, subnet=[\"224.0.0.0/4\"\
+      , \"10.0.0.0/8\", \"172.16.0.0/12\", \"192.168.0.0/16\", \"127.0.0.1/32\", \"\
+      169.254.0.0/16\", \"0.0.0.0/32\"])\n```\n"
+    width: 12
+    title: Omit RFC-1819 addresses from search result
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  topLevelDomain:
+    isMultiParam: false
+    label: Top Level Domain
+    order: 50
+    type: text
+    defaultValue: '*'

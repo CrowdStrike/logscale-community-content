@@ -1,0 +1,37 @@
+name: LOLBins - Regsrv32 - Uncommon Command Lines
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // LOLBins - Regsrv32 - Uncommon Command Lines
+  // https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/
+
+  // Start with regsvr32.exe process.
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win ImageFileName=/regsvr32.exe/i
+
+  // Extract the DLLPath, DLLFolder, and DLLFile.
+  | CommandLine=/(?<DLLPath>(?:\"(?:[^\"]*\.dll)\"|(?:[^ ]*\\.dll))(?:\\s|$))/i
+  | DLLPath=/(?<DLLFolder>[^\"]*[\\\/])?(?<DLLFile>[^\"]+\\.dll)/i
+
+  // Look for suspicious paths in the DLL folder using the regex below. If found, set SuspiciousPath to 1.
+  | case {
+      DLLFolder=/\\\\(temp|programdata|music|pictures|downloads|public)\\\\|(^\\\\\\\\)/i | SuspiciousPath:=1 ;
+      * | SuspiciousPath:=0 ;
+    }
+
+  // Get the ComputerName.
+  | $crowdstrike/fltr-core:zComputerName()
+
+  // Format the aid and ComputerName together.
+  | SensorName:=format(format="%s -> %s", field=[aid, ComputerName])
+
+  // For each SuspiciousPath and DLLFile pair, collect the DLLFolder, CommandLine, and parent process name, counting the number of events and unique hosts.
+  | groupBy([SuspiciousPath, DLLFile], function=[collect([DLLFolder, CommandLine, ParentBaseFileName]), collect(SensorName), count(aid, distinct=true, as=HostCount), count(as=EventCount)], limit=max)
+
+  // Filter for SuspiciousPath and DLLFile pairs seen on less than 5 hosts.
+  | HostCount < 5

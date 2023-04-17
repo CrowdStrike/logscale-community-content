@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Processes - Score Risky Processes
+
   // Get all Windows ProcessRollup2 Events.
   #event_simpleName=ProcessRollup2 event_platform=Win
 

@@ -1,0 +1,80 @@
+name: The Basics - 05 - Timestamps
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 12
+    height: 5
+    queryString: |-
+      // Get all ProcessRollup2 events
+      #event_simpleName=ProcessRollup2
+      // Account for microseconds or remove decimal point in timestamp
+      | myTimeStamp := myTimeStamp * 1000
+      // Convert ProcessStartTime to proper epoch format
+      | ProcessStartTime := ProcessStartTime * 1000
+      // Convert epoch Time to Human Time
+      | HumanTime := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
+      | table([aid, #event_simpleName, ProcessStartTime, HumanTime], limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 8
+    text: "One very important thing to note is that LogScale functions expect epoch\
+      \ timestamps that include milliseconds and DO NOT account for them with a decimal\
+      \ point. As an example, the following is a valid epoch timestamp in LogScale:\n\
+      \n````\n1674233057235\n````\n\nThis is an important distinction as Event Search\
+      \ expects epoch time stamps that DO include a decimal point for microseconds\
+      \ or have microseconds omitted altogether. An example in Event Search:\n\n````\n\
+      1674233057.235 or 1674233057\n````\n\nAn easy rule is: epoch time stamps should\
+      \ have 13 digits and no decimal places. If they have only 10 digits, or contain\
+      \ 10 digits before the decimal point, you can simply multiply the target timestamp\
+      \ field by 1000. \n\n````\n// Account for microseconds or remove decimal point\
+      \ in timestamp\n| myTimeStamp := myTimeStamp * 1000\n````\n\nOnce in the appropriate\
+      \ epoch format, timestamps can be converted using `formatTime` following the\
+      \ [instructions here](https://library.humio.com/falcon-logscale/functions-formattime.html).\
+      \ A quick example would be:\n\n````\n// Convert ProcessStartTime to proper epoch\
+      \ format\n| ProcessStartTime := ProcessStartTime * 1000\n// Convert epoch Time\
+      \ to Human Time\n| HumanTime := formatTime(\"%Y-%m-%d %H:%M:%S\", field=ProcessStartTime,\
+      \ locale=en_US, timezone=Z)\n````"
+    width: 12
+    title: Handling Timestamps
+    type: note
+  note-1681158261454-0:
+    x: 0
+    y: 8
+    height: 4
+    text: |-
+      ```
+      // Get all ProcessRollup2 events
+      #event_simpleName=ProcessRollup2
+      // Account for microseconds or remove decimal point in timestamp
+      | myTimeStamp := myTimeStamp * 1000
+      // Convert ProcessStartTime to proper epoch format
+      | ProcessStartTime := ProcessStartTime * 1000
+      // Convert epoch Time to Human Time
+      | HumanTime := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
+      | table([aid, #event_simpleName, ProcessStartTime, HumanTime], limit=100)
+      ```
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  topLevelDomain:
+    isMultiParam: false
+    label: topLevelDomain
+    order: 50
+    type: text
+    defaultValue: google.com

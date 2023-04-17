@@ -1,0 +1,32 @@
+name: The Basics - 01 - Primer
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  note-1679932060615-0:
+    x: 2
+    y: 0
+    height: 7
+    text: "The LogScale query language is extremely powerful. It's largely based on\
+      \ open standards and the language of mathematics, and balances simplicity and\
+      \ functionality to help users quickly find what they need, fast.\n\nIn this\
+      \ tutorial, we’ll use Falcon telemetry data to learn LogScale. The content and\
+      \ concepts we will cover, however, can be adapted and reused with any dataset\
+      \ that LogScale happens to be ingesting, e.g. first-party, third-party, etc.\n\
+      \nWe will start with the very basics and build on the queries as we go.\n\n\
+      Additional resources are available as references:\n\n- [Official documentation](https://library.humio.com/falcon-logscale/writing-queries.html):\
+      \ documentation on the query language.\n\n- [LogScale Query Primer](https://github.com/CrowdStrike/logscale-community-content/wiki/LogScale-Query-Primer):\
+      \ a comprehensive guide on using the LogScale query language. \n\n- [LogScale\
+      \ Query Building Blocks](https://github.com/CrowdStrike/logscale-community-content/wiki/LogScale-Query-Building-Blocks):\
+      \ this is a list of common questions we've seen in the field.\n\n- [LogScale\
+      \ Function Addendum](https://github.com/CrowdStrike/logscale-community-content/wiki/LogScale-Function-Addendum):\
+      \ these are examples of using a few of the common functions within LogScale.\
+      \ \n\n- [FLTR Hunting and Investigations](https://github.com/CrowdStrike/logscale-community-content/wiki/FLTR-Hunting-and-Investigations):\
+      \ threat hunting guide for Falcon data. \n\nOnward!"
+    width: 8
+    title: Welcome to LogScale!
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0

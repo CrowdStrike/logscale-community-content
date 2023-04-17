@@ -1,0 +1,17 @@
+name: UserIsAdmin
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  end: 1679758466584
+  isLive: false
+  start: 1679672066584
+queryString: |-
+  | case {
+       UserIsAdmin=1 | UserIsAdmin_Readable := "True" ;
+       UserIsAdmin=0 | UserIsAdmin_Readable := "False" ;
+    * }

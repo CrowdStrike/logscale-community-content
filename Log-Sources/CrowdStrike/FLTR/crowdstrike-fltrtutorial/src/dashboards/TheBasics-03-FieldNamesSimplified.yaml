@@ -1,0 +1,46 @@
+name: The Basics - 03 - Field Names Simplified
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  25da6d7e-0885-447b-9e56-840feeaf7b3e:
+    x: 0
+    y: 6
+    height: 6
+    queryString: |-
+      // this query is quite advanced and not something you need to understand now
+      groupBy(#event_simpleName, function=fieldset())
+      | availableFields := rename(field)
+      | groupBy([#event_simpleName], function=([{sort(order=desc, availableFields) | collect([availableFields])}]))
+    visualization: table-view
+    end: now
+    start: 1h
+    width: 12
+    title: Sample of Available Field Names
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 6
+    text: "When viewing Falcon data in Event Search, many fields end with the string\
+      \ `_decimal` and `_readable`. Examples would be `ProcessStartTime_decimal`,\
+      \ `TargetProcessId_decimal`, `UserSid_readable`, etc. \n\nDid you know that\
+      \ the sensor doesn’t actually send this data? It was a design decision made\
+      \ over 10 years ago. These strings are appended to the target field after the\
+      \ event reaches the CrowdStrike Security Cloud. In an attempt to fend off carpal\
+      \ tunnel, and keep things tidy, we’re doing away with these now-extraneous bits.\
+      \ If you have searches that include `_decimal` or `_readable` field names in\
+      \ Event Search, you can just omit those dangling modifiers when using LogScale.\
+      \ \n\nA quick example in Event Search:\n````\nevent_simpleName=ProcessRollup2\
+      \ event_platform=win UserSid_readable=\"S-1-5-18\" ImageSubsystem_decimal=2\n\
+      ````\nChanges to the following in LogSale:\n````\n#event_simpleName=ProcessRollup2\
+      \ event_platform=Win UserSid=\"S-1-5-18\" ImageSubsystem=2\n````\nSee below\
+      \ for a list of available field names by event name.\n\n"
+    width: 12
+    title: Field Names Simplified
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0

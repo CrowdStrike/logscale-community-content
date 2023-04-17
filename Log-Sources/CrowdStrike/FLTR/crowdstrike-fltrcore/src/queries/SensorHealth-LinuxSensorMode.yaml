@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Sensor Health - Linux Sensor Mode
+
   // Narrow the search to specific events on Linux.
   #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
   | event_platform=Lin

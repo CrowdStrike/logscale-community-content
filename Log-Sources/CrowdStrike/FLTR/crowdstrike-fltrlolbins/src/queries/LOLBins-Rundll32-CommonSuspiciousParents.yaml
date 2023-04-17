@@ -1,0 +1,33 @@
+name: LOLBins - Rundll32 - Common Suspicious Parents
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // LOLBins - Rundll32 - Common Suspicious Parents
+  // https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/
+
+  // Start with rundll32 process.
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win ImageFileName=/rundll32.exe/i
+
+  // Look for parents that spawned rundll32, below list are common starting points in successful intrustions.
+  | ParentBaseFileName=/(winword\.exe|powerpnt\.exe|excel\.exe|outlook\.exe|mshta\.exe|cscript\.exe|wscript\.exe)/i
+
+  // Exclude some common false positives.
+  | @rawstring!=/(PrintUI\.DLL|PhotoViewer\.DLL|MonitorPrintJobStatus|CheckDevice)/i
+
+  // Create a link back to ProcessExplorer.
+  | $crowdstrike/fltr-core:zUrlFalconPid()
+
+  // Get the ComputerName.
+  | $crowdstrike/fltr-core:zComputerName()
+
+  // Format the aid and ComputerName together.
+  | SensorName:=format(format="%s -> %s", field=[aid, ComputerName])
+
+  // For each command line and parent process pair, collect the unique host count and total event count.
+  | groupBy([CommandLine, ParentBaseFileName], function=[collect(SensorName), collect("Process Explorer"), count(aid, distinct=true, as=HostCount), count(as=EventCount)], limit=max)

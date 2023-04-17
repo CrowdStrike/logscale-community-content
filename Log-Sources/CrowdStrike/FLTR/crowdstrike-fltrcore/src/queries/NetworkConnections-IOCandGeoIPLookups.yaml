@@ -7,6 +7,9 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Network Connections - IOC and GeoIP Lookups
+
+  // First look for the NetworkConnect events. 
   #event_simpleName = NetworkConnectIP4
 
   // Check the local address first.

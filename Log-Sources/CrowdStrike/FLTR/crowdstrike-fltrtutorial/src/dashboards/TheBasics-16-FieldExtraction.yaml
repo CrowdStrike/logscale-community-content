@@ -1,0 +1,131 @@
+name: The Basics - 16 - Field Extraction
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  b44561e0-b807-4eaa-aca7-99b8a5fd103a:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      #event_simpleName=ProcessRollup2 ImageFileName=/\\(?<fileName>\w{3}\.\w{3}$)/i
+      | select([fileName, ImageFileName, @rawstring])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: 'Output #2'
+    isLive: false
+    type: query
+  a9455560-df7f-4250-b779-75562e7e9997:
+    x: 0
+    y: 19
+    height: 4
+    text: |+
+      We can also use non-strict field extractions like so:
+
+      ```
+      #event_simpleName=ProcessRollup2 ImageFileName=/\\(?<fileName>\w+\.\w+$)/i
+      | regex("(?<fourLetterFileName>^\w{4})\.exe", field=fileName, strict=false)
+      | groupBy([fileName, fourLetterFileName], limit=100)
+      | fourLetterFileName = *
+      ```
+
+      The above looks for file names that contain four characters. If that does not match, that field is left blank.
+
+    width: 12
+    title: 'Using Regular Expression Field Extraction #3'
+    type: note
+  495b42b9-f401-4768-be9e-149dd42c9e74:
+    x: 0
+    y: 12
+    height: 3
+    text: |
+      By default, when using regular expression extractions, they are strict. Meaning if the data being searched does not match, it will be omitted. A quick example would be:
+
+      ```
+      #event_simpleName=ProcessRollup2 ImageFileName=/\\(?<fileName>\w{3}\.\w{3}$)/i
+      ```
+
+      What this looks for is a file with a name that is three characters long and has an extension that is three characters long. If that condition is not matched, data is not returned:
+    width: 12
+    title: 'Using Regular Expression Field Extraction #2'
+    type: note
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      // Get InstalledApplication events for Google Chrome
+      #event_simpleName=InstalledApplication AppName="Google Chrome"
+      // Get latest AppVersion for each system
+      | groupBy(aid, function=([selectLast([AppVendor, AppName, AppVersion, InstallDate])]))
+      // Use regex to break AppVersion field into components
+      | AppVersion = /(?<majorVersion>\d+)\.(?<minorVersion>\d+)\.(?<buildNumber>\d+)\.(?<subBuildNumber>\d+)$/i
+      // Evaluate builds that need to be patched
+      | case {
+          majorVersion>=110 | needsPatch := "No" ;
+          majorVersion>=109 AND buildNumber >= 5414 | needsPatch := "No" ;
+          majorVersion<=109 AND buildNumber < 5414 | needsPatch := "Yes" ;
+          majorVersion<=108 | needsPatch := "Yes" ;
+          * ;
+        }
+      // Check for needed update  and Organize Output
+      | needsPatch = "Yes"
+      | select([aid, InstallDate, needsPatch, AppVendor, AppName, AppVersion, InstallDate])
+      // Convert timestamp
+      | InstallDate := InstallDate *1000
+      | InstallDate := formatTime("%Y-%m-%d", field=InstallDate, locale=en_US, timezone=Z)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  6a880366-cd45-4466-8e31-62620c446a57:
+    x: 0
+    y: 23
+    height: 4
+    queryString: |-
+      #event_simpleName=ProcessRollup2 ImageFileName=/\\(?<fileName>\w+\.\w+$)/i
+      | regex("(?<fourLetterFileName>^\w{4})\.exe", field=fileName, strict=false)
+      | groupBy([fileName, fourLetterFileName], limit=100)
+      | fourLetterFileName = *
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: 'Output #3'
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 8
+    text: "Regular expressions are an EXTREMELY powerful search tool and a core capability\
+      \ of LogScale. As mentioned in a previous section, regex can be invoked almost\
+      \ anywhere in LogScale using the query language. Below is a quick example of\
+      \ how to use a regular expression field extraction, combined with a case statement,\
+      \ to evaluate an application version. We’re looking for Chrome versions at or\
+      \ below 109 and a build version under 5414. \n\n```\n// Get InstalledApplication\
+      \ events for Google Chrome\n#event_simpleName=InstalledApplication AppName=\"\
+      Google Chrome\"\n// Get latest AppVersion for each system\n| groupBy(aid, function=([selectLast([AppVendor,\
+      \ AppName, AppVersion, InstallDate])]))\n// Use regex to break AppVersion field\
+      \ into components\n| AppVersion = /(?<majorVersion>\\d+)\\.(?<minorVersion>\\\
+      d+)\\.(?<buildNumber>\\d+)\\.(?<subBuildNumber>\\d+)$/i\n// Evaluate builds\
+      \ that need to be patched\n| case {\n    majorVersion>=110 | needsPatch := \"\
+      No\" ;\n    majorVersion>=109 AND buildNumber >= 5414 | needsPatch := \"No\"\
+      \ ;\n    majorVersion<=109 AND buildNumber < 5414 | needsPatch := \"Yes\" ;\n\
+      \    majorVersion<=108 | needsPatch := \"Yes\" ;\n    * ; \n  }\n// Check for\
+      \ needed update  and Organize Output\n| needsPatch = \"Yes\"\n| select([aid,\
+      \ InstallDate, needsPatch, AppVendor, AppName, AppVersion, InstallDate])\n//\
+      \ Convert timestamp\n| InstallDate := InstallDate *1000\n| InstallDate := formatTime(\"\
+      %Y-%m-%d\", field=InstallDate, locale=en_US, timezone=Z)\n```"
+    width: 12
+    title: Using Regular Expression Field Extraction
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0

@@ -1,0 +1,61 @@
+name: The Basics - 02 - Event Tags
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 8
+    height: 5
+    queryString: |-
+      #event_simpleName=ProcessRollup2
+      | table([#event_simpleName, #cid, @rawstring], limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 5
+    text: "Falcon LogScale has the ability to apply \"tags\" to events. In doing so,\
+      \ it allows LogScale to quickly and efficiently include or exclude large collections\
+      \ of events as you search. The application of tags to telemetry is all done\
+      \ for you transparently when dealing with Falcon data. The reason we’re mentioning\
+      \ it is: one very important field, `event_simpleName`, is tagged in LogScale.\
+      \ Because of this, when you specify an `event_simpleName` value in your LogScale\
+      \ syntax, you need to put a `#` (hash or pound) in front of that field. That’\
+      s it. \n\nWe'll start the query like this in LogScale:\n\n```\n#event_simpleName=ProcessRollup2\n\
+      ```\n\nThe same concept applies to the field `cid`:\n\n```\n#event_simpleName=ProcessRollup2\
+      \ #cid=123456789012345678901234\n```\n\nIf you forget, or want to know what\
+      \ other events are tagged, you can just look in the LogScale sidebar for anything\
+      \ starting with `#`. \n"
+    width: 12
+    title: Event Tags
+    type: note
+  note-1680726760987-0:
+    x: 0
+    y: 5
+    height: 3
+    text: |-
+      ```
+      #event_simpleName=ProcessRollup2
+      | table([#event_simpleName, #cid, @rawstring], limit=100)
+      ```
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  topLevelDomain:
+    isMultiParam: false
+    label: topLevelDomain
+    order: 50
+    type: text
+    defaultValue: google.com

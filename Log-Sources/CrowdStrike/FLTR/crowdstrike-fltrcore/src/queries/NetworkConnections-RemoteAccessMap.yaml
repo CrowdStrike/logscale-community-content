@@ -10,6 +10,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Network Connections - Remote Access Map
+
   // Grab remote network connection events.
   #event_simpleName=NetworkConnectIP4
 

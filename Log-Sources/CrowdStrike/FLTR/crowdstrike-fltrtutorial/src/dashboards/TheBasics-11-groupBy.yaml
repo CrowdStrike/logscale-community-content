@@ -1,0 +1,99 @@
+name: The Basics - 11 - groupBy
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  51215bd0-5c57-46de-b952-0a1104fdd56b:
+    x: 0
+    y: 15
+    height: 10
+    text: "Note in the search above, I’ve added the Event Search syntax I want to\
+      \ translate to my search and quickly commented it out. This is optional, but\
+      \ makes the translation of queries you already have a little easier. \n\n```\n\
+      | groupBy(SHA256HashData, function=([count(aid, distinct=true, as=uniqueEndpoints),\
+      \ count(aid, as=totalExecutions), collect(CommandLine)]), limit=max)\n```\n\n\
+      Note the use of the square brackets after invoking function. This is because\
+      \ we want to use multiple aggregations in this `groupBy`. \n\nIf you wanted\
+      \ to `groupBy` multiple fields, you would also use square brackets. As an example:\n\
+      \n```\n| groupBy([SHA256HashData, FileName], function=([count(aid, distinct=true,\
+      \ as=uniqueEndpoints), count(aid, as=totalExecutions), collect(CommandLine)]),\
+      \ limit=max)\n```\n\nThe same principle would be applied if we wanted to collect\
+      \ multiple fields.\n\n```\n| groupBy([SHA256HashData, FileName], function=([count(aid,\
+      \ distinct=true, as=uniqueEndpoints), count(aid, as=totalExecutions), collect([CommandLine,\
+      \ UserSid])]), limit=max)\n```\n\nNote how:\n\n```\ncollect(CommandLine)\n```\n\
+      \nBecomes:\n\n```\ncollect([CommandLine, UserSid])\n```\n\nThis takes a little\
+      \ practice, but once mastered the syntax is logical and very easy to interpret.\
+      \ To assist, LogScale will insert a closing parenthesis or closing square bracket\
+      \ when you open one.\n"
+    width: 12
+    title: 'Format Query Output with groupBy #2'
+    type: note
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 10
+    height: 5
+    queryString: |-
+      //event_simpleName=ProcessRollup2 event_platform=Win FileName=powershell.exe
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\powershell\.exe/i
+      // | stats dc(aid) as uniqueEndpoints, count(aid) as totalExecutions, values(CommandLine) as commandLines by SHA256HashData
+      | groupBy(SHA256HashData, function=([count(aid, distinct=true, as=uniqueEndpoints), count(aid, as=totalExecutions), collect(CommandLine)]), limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 7
+    text: |-
+      One of the more powerful aggregate functions in LogScale is the use of `groupBy`. The function `groupBy` is akin to `stats` in Event Search. One thing to keep in mind when using `groupBy` is the use of parentheses and square brackets. To invoke an aggregate function, you open with parentheses. To perform that aggregation on multiple fields, you encase your conditions in square brackets.
+
+      An example of an aggregation in Event Search might look like this:
+
+      ```
+      event_simpleName=ProcessRollup2 event_platform=Win FileName=powershell.exe
+      | stats dc(aid) as uniqueEndpoints, count(aid) as totalExecutions, values(CommandLine) as commandLines by SHA256HashData
+      ```
+
+      In LogScale, that query would look like this:
+
+      ```
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\powershell\.exe/i
+      | groupBy(SHA256HashData, function=([count(aid, distinct=true, as=uniqueEndpoints), count(aid, as=totalExecutions), collect(CommandLine)]), limit=100)
+      ```
+
+      It is also important to include `limit`, as seen above. The default limit is 20,000 aggregate results. You can have it default to the maximum limit by specifying `limit=max` in the query. For example:
+
+      ```
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\powershell\.exe/i
+      | groupBy(SHA256HashData, function=([count(aid, distinct=true, as=uniqueEndpoints), count(aid, as=totalExecutions), collect(CommandLine)]), limit=max)
+      ```
+    width: 12
+    title: Format Query Output with groupBy
+    type: note
+  note-1681139059355-0:
+    x: 0
+    y: 7
+    height: 3
+    text: |-
+      ````
+      #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\powershell\.exe/i
+      | groupBy(SHA256HashData, function=([count(aid, distinct=true, as=uniqueEndpoints), count(aid, as=totalExecutions), collect(CommandLine)]), limit=100)
+      ````
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  topLevelDomain:
+    isMultiParam: false
+    label: topLevelDomain
+    order: 50
+    type: text
+    defaultValue: google.com

@@ -11,6 +11,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Processes - Connections to Suspicious Countries
+
   // Grab all of the ProcessRollup2 events.
   #event_simpleName=ProcessRollup2
 

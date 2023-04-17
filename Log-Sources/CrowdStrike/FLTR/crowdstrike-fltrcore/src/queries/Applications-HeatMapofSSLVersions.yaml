@@ -13,6 +13,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Applications - Heat Map of SSL Versions
+
   // Find anything using an application with OpenSSL.
   #event_simpleName=InstalledApplication openssl
 

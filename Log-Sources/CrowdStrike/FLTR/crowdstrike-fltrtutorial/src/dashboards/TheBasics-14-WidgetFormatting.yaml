@@ -1,0 +1,79 @@
+name: The Basics - 14 - Widget Formatting
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  22dffb89-801d-406d-90a3-06c58cf2d6a5:
+    x: 0
+    y: 12
+    height: 6
+    queryString: |-
+      #event_simpleName!=*
+      EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy(SeverityName, limit=100)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      series:
+        Informational:
+          color: '#0e25d8'
+        Medium:
+          color: '#F98501'
+        High:
+          color: '#FF0000'
+        Low:
+          color: '#009912'
+        Critical:
+          color: '#F302f7'
+    visualization: pie-chart
+    title: 'Output #2'
+    isLive: false
+    type: query
+  65dd8cca-1a43-40f2-941f-5883fbaa633b:
+    x: 0
+    y: 10
+    height: 2
+    text: "By clicking the paintbrush in the middle left, we can change view, color,\
+      \ and series options for our chart.\n\nWhen you select a visualization, the\
+      \ format pane will automatically adjust to include all available options. Please\
+      \ pick better colors than I did. \n\n"
+    width: 12
+    title: 'Customizing Visualizations Using the Format Pane #2'
+    type: note
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 4
+    height: 6
+    queryString: |-
+      #event_simpleName!=*
+      EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy(SeverityName, limit=100)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 4
+    text: |-
+      After creating a visualization, you can customize its appearance using the format pane on the right hand side of the screen. It’s identified by a paintbrush icon.
+
+      Let’s create a quick pie chart:
+
+      ```
+      #event_simpleName!=*
+      EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | groupBy(SeverityName, limit=100)
+      ```
+    width: 12
+    title: Customizing Visualizations Using the Format Pane
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0

@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Logins - Successful Login Map
+
   // Identify all UserLogon events.
   #event_simpleName=UserLogon LogonType=10
 

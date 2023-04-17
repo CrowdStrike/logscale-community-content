@@ -10,6 +10,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // PowerShell - Hidden Window Flags
+
   // This query finds the Command Prompt or Powershell commands run from hidden windows.
 
   // Filter on the events necessary for the query

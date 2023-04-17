@@ -13,6 +13,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // PowerShell - Decode Encoded Commands
+
   // Grab all PowerShell execution events.
   #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\powershell(_ise)?\.exe/i
 

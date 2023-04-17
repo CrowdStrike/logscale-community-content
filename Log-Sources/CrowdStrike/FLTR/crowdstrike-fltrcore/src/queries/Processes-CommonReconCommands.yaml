@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Processes - Common Recon Commands
+
   // Search the process rollup events.
   #event_simpleName=ProcessRollup2
 

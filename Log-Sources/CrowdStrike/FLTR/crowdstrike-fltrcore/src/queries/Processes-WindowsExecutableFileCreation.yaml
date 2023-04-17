@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Processes - Windows Executable File Creation
+
   // Initial filter to only deal with the events we need in the remainder of the query.
   // This is optimised to make best use of the tags in the repo.
   #event_simpleName=/(ExecutableWritten$|PeFileWritten$|^SuspiciousEseFileWritten$|^ProcessRollup2$)/

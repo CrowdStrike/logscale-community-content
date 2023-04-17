@@ -1,0 +1,91 @@
+name: The Basics - 18 - Hyperlinks
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 19
+    height: 4
+    queryString: |
+      #event_simpleName=PeFileWritten
+      | TargetFileName=/\\Downloads\\/
+      | TargetFileName=/(?<FilePath>.+\\)(?<FileName>.+$)/i
+      // Virus Total
+      | format("[Virus Total](https://www.virustotal.com/gui/file/%s)", field=[SHA256HashData], as="VT")
+      // Hybrid Analysis
+      | format("[Hybrid Analysis](https://www.hybrid-analysis.com/search?query=%s)", field=[SHA256HashData], as="HA")
+      // RTR
+      | format("[RTR Link](https://falcon.crowdstrike.com/activity/real-time-response/console?start=hosts&aid=%s=f)", field=[aid], as="RTR")
+      | groupBy([aid, FileName], function=collect([FileName, FilePath, VT, HA, RTR]))
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 14
+    text: "When creating dashboards or saved searches, the ability to create hyperlinks\
+      \ using fields from the search results can come in handy. For this, we’ll use\
+      \ the function `format`. As an example, let’s say we want to: search for executable\
+      \ files written to a system’s \"Downloads\" folder, create a list, and include\
+      \ a hyperlink to VirusTotal and Hybrid Analysis. \n\nFirst, let’s get the data\
+      \ we need and do some simple regex extractions:\n\n```\n#event_simpleName=PeFileWritten\n\
+      | TargetFileName=/\\\\Downloads\\\\/\n| TargetFileName=/(?<FilePath>.+\\\\)(?<FileName>.+$)/i\n\
+      ```\n\nNow, we’ll use our format command to create hyperlinks and organize with\
+      \ `groupBy`:\n\n```\n#event_simpleName=PeFileWritten\n| TargetFileName=/\\\\\
+      Downloads\\\\/\n| TargetFileName=/(?<FilePath>.+\\\\)(?<FileName>.+$)/i\n//\
+      \ Virus Total\n| format(\"[Virus Total](https://www.virustotal.com/gui/file/%s)\"\
+      , field=[SHA256HashData], as=\"VT\")\n// Hybrid Analysis\n| format(\"[Hybrid\
+      \ Analysis](https://www.hybrid-analysis.com/search?query=%s)\", field=[SHA256HashData],\
+      \ as=\"HA\")\n| groupBy([aid, FileName], function=collect([FileName, FilePath,\
+      \ VT, HA]), limit=100)\n```\n\nIf you click the \"Virus Total\" or \"Hybrid\
+      \ Analysis\" link, it will direct you to the appropriate website with the correct\
+      \ data included for the given SHA256. \n\nWe can break this down a bit more.\
+      \ What we’re doing is, colloquially, called dorking. Meaning: the URL format\
+      \ for VirusTotal and Hybrid Analysis is known. If we create a URL, and include\
+      \ some data from our search results, we can hard link to external information.\
+      \ For Hybrid Analysis, the format of the URL is:\n\n```\nwww.hybrid-analysis.com/search?query=SHA256VALUE\n\
+      ```\n\nThe query section is dynamic, but we have the SHA256 value or the files\
+      \ we’re interested in in our query results. So, using format, we can dork, this\
+      \ hyperlink:\n\n```\n| format(\"[Hybrid Analysis](https://www.hybrid-analysis.com/search?query=%s)\"\
+      , field=[SHA256HashData], as=\"HA\")\n```\n\nThe text between the braces is\
+      \ what the hyperlink name will be. The text in the `as` statement will be the\
+      \ column title in the aggregate output. You could use this link any time you\
+      \ have a SHA256 value in LogScale. \n\nYou could also, as an example, use an\
+      \ Agent ID value to make a one-click RTR link:\n\n```\n// RTR\n| format(\"[RTR\
+      \ Link](https://falcon.crowdstrike.com/activity/real-time-response/console?start=hosts&aid=%s=f)\"\
+      , field=[aid], as=\"RTR\")\n```\n\nIf you have other third-party or internal\
+      \ tooling or resources, make sure to check if the associated URLs are standardized\
+      \ and dorkable."
+    width: 12
+    title: Adding Hyperlinks to Search
+    type: note
+  note-1681139963497-0:
+    x: 0
+    y: 14
+    height: 5
+    text: |-
+      ````
+      #event_simpleName=PeFileWritten
+      | TargetFileName=/\\Downloads\\/
+      | TargetFileName=/(?<FilePath>.+\\)(?<FileName>.+$)/i
+      // Virus Total
+      | format("[Virus Total](https://www.virustotal.com/gui/file/%s)", field=[SHA256HashData], as="VT")
+      // Hybrid Analysis
+      | format("[Hybrid Analysis](https://www.hybrid-analysis.com/search?query=%s)", field=[SHA256HashData], as="HA")
+      // RTR
+      | format("[RTR Link](https://falcon.crowdstrike.com/activity/real-time-response/console?start=hosts&aid=%s=f)", field=[aid], as="RTR")
+      | groupBy([aid, FileName], function=collect([FileName, FilePath, VT, HA, RTR]), limit=100)
+      ````
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0

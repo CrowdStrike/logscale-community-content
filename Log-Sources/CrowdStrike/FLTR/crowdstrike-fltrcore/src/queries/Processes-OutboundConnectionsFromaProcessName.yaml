@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // Processes - Outbound Connections From a Process Name
+
   // Isolate the query down to specific event criteria.
   // You can change the "ImageFileName" and "RemotePort" as needed.
   (#event_simpleName=ProcessRollup2 event_platform="Win" ImageFileName=/(\\outlook\.exe)/i)

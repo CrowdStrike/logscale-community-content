@@ -1,0 +1,118 @@
+name: The Basics - 17 - Query Building 101
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  4d656d51-77cc-4dca-8315-cb3b7d4d09ff:
+    x: 0
+    y: 35
+    height: 6
+    queryString: |-
+      #event_simpleName=ProcessRollup2 event_platform=Win
+      | ImageFileName=/\\powershell(_ise)?\.exe/i
+      | CommandLine=/\-(?<encodedFlagUsed>e(nc|ncodedcommand|ncoded)?)\s+/i
+      // | UserSid="S-1-5-18"
+      | groupBy(encodedFlagUsed, function=[count(aid, as=executionCount)], limit=100)
+    visualization: bar-chart
+    end: now
+    start: 1d
+    width: 12
+    title: 'Output #2'
+    isLive: false
+    type: query
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 27
+    height: 4
+    queryString: |-
+      #event_simpleName=ProcessRollup2 event_platform=Win
+      | ImageFileName=/\\powershell(_ise)?\.exe/i
+      | CommandLine=/\-(?<encodedFlagUsed>e(nc|ncodedcommand|ncoded)?)\s+/i
+      // | UserSid="S-1-5-18"
+      | format("%,.50s", field=CommandLine, as=CommandLine)
+      | groupBy([encodedFlagUsed, CommandLine], function=(count(aid, as=executionCount)), limit=100)
+      | test(executionCount < 10)
+      | sort(executionCount, order=asc)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  8e83b905-aed7-47cb-9011-7b909fe0d4e0:
+    x: 0
+    y: 31
+    height: 4
+    text: "\nNote in the output above I’ve trimmed the command line string using format\
+      \ to only include the first 50 characters to make things more readable. That\
+      \ line is as follows:\n\n```\n| format(\"%,.50s\", field=CommandLine, as=CommandLine)\n\
+      ```\n\nAnd now we have a complete query! \n\nIf we wanted to do some visualization,\
+      \ we could change our parameters a bit to look for outliers:\n\nBased on this\
+      \ data, the use of the flags `enc` and `encodedCommand` (with that spelling)\
+      \ are not common in my environment. A hunting query, scheduled alert, or Custom\
+      \ IOA could be beneficial.\n"
+    width: 12
+    title: Query Building 101 - Part 2
+    type: note
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 27
+    text: "Now that we have documented some useful capabilities, let’s go over the\
+      \ basics of building a query. \n\nFirst rule, if you can start you query using\
+      \ any field that is demarcated with a pound sign `#`, do it! This allows LogScale\
+      \ to efficiently and ruthlessly discard large swaths of events that you are\
+      \ not interested in. The field used most often is `#event_simpleName`.\n\nIn\
+      \ the example below, we’ll look for any PowerShell execution on a Windows system\
+      \ that includes flags for an encoded command line and is being run by the system\
+      \ user. \n\nOkay, so the first step is we need all Windows process execution\
+      \ events. The easiest and quickest way to get all those events and narrow the\
+      \ dataset is as follows:\n\n```\n#event_simpleName=ProcessRollup2 \n| event_platform=Win\n\
+      ```\n\nNext, we’ll look for all PowerShell executions:\n\n```\n#event_simpleName=ProcessRollup2\n\
+      | event_platform=Win\n| ImageFileName=/\\\\powershell(_ise)?\\.exe/i\n```\n\n\
+      In this instance, I’m using a regex function on the field `ImageFileName` to\
+      \ look for the strings `powershell.exe` or `powershell_ise.exe`. The letter\
+      \ `i` outside of the trailing forward slash indicates that it should ignore\
+      \ case sensitivity. \n\nNow, we want to find command line flags that are indicative\
+      \ of an encoded command being run. Since there are a few options, we’ll use\
+      \ regex to account for the different permutations of the target flag.\n\n```\n\
+      #event_simpleName=ProcessRollup2 \n| event_platform=Win\n| ImageFileName=/\\\
+      \\powershell(_ise)?\\.exe/i\n| CommandLine=/\\-e(nc|ncodedcommand|ncoded)?\\\
+      s+/i\n```\n\nWe need to capture the following flags (no pun intended):\n````\n\
+      -e\n-enc\n-encodedcommand\n-encoded\n````\n\nUsing regex, we can make a single\
+      \ statement that accounts for all of these.\n\nIf we wanted to get really fancy,\
+      \ we could pair this regex search with a string extraction to put the encoded\
+      \ command flag that was used in its own field. As an example:\n\n```\n#event_simpleName=ProcessRollup2\
+      \ \n| event_platform=Win\n| ImageFileName=/\\\\powershell(_ise)?\\.exe/i\n|\
+      \ CommandLine=/\\-(?<encodedFlagUsed>e(nc|ncodedcommand|ncoded)?)\\s+/i\n```\n\
+      \nThis performs the same search previously used, however, it now stores the\
+      \ flag value in a field named `encodedFlagUsed`.\n\nPer our search requirements,\
+      \ next is making sure this is being run by the system user:\n\n```\n#event_simpleName=ProcessRollup2\
+      \ \n| event_platform=Win\n| ImageFileName=/\\\\powershell(_ise)?\\.exe/i\n|\
+      \ CommandLine=/\\-(?<encodedFlagUsed>e(nc|ncodedcommand|ncoded)?)\\s+/i\n| UserSid=\"\
+      S-1-5-18\"\n```\n\nFinally, we will organize the output using `groupBy` to look\
+      \ for the least common command line variations and put them in ascending order\
+      \ of that count:\n\n```\n#event_simpleName=ProcessRollup2\n| event_platform=Win\n\
+      | ImageFileName=/\\\\powershell(_ise)?\\.exe/i\n| CommandLine=/\\-(?<encodedFlagUsed>e(nc|ncodedcommand|ncoded)?)\\\
+      s+/i\n| UserSid=\"S-1-5-18\"\n| groupBy([encodedFlagUsed, CommandLine], function=(count(aid,\
+      \ as=executionCount)), limit=100)\n| sort(executionCount, order=asc)\n```\n\n\
+      Note, if you wanted to expand this to all users — not just the system user —\
+      \ you could delete or comment out the fourth line in the query like so:\n\n\
+      ```\n#event_simpleName=ProcessRollup2 \n| event_platform=Win\n| ImageFileName=/\\\
+      \\powershell(_ise)?\\.exe/i\n| CommandLine=/\\-(?<encodedFlagUsed>e(nc|ncodedcommand|ncoded)?)\\\
+      s+/i\n// | UserSid=\"S-1-5-18\"\n| groupBy([encodedFlagUsed, CommandLine], function=(count(aid,\
+      \ as=executionCount)), limit=100)\n| sort(executionCount, order=asc)\n```\n\n\
+      You could also add a threshold, if desired with the test command:\n\n```\n#event_simpleName=ProcessRollup2\
+      \ \n| event_platform=Win\n| ImageFileName=/\\\\powershell(_ise)?\\.exe/i\n|\
+      \ CommandLine=/\\-(?<encodedFlagUsed>e(nc|ncodedcommand|ncoded)?)\\s+/i\n//|\
+      \ UserSid=\"S-1-5-18\"\n| groupBy([encodedFlagUsed, CommandLine], function=(count(aid,\
+      \ as=executionCount)), limit=100)\n| test(executionCount < 10)\n| sort(executionCount,\
+      \ order=asc)\n```"
+    width: 12
+    title: Query Building 101
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0

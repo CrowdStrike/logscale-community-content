@@ -1,0 +1,37 @@
+name: LOLBins - MSBuild - MSBuild Executions with Logger
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // LOLBins - MSBuild - MSBuild Executions with Logger
+  // https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/
+
+  // Look for any msbuild executions with the logger or -logger option.
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win ImageFileName=/msbuild.exe/i CommandLine=/\/(logger:|-logger:)/i
+
+  // extract the Logger and LoggerPath fields
+  | CommandLine=/logger:\s*((?<Logger>.*?),)?(?<LoggerPath>(\".*?\.\w{3,}\"|.+?\.\w{3,}(\s|$|;)))/i
+
+  // Format the Logger and LoggerPath fields.
+  | format("%s-", field=[Logger], as=Logger)
+  | format("%s %s", field=[LoggerPath, CommandLine], as=LoggerPath)
+
+  // Get the ComputerName.
+  | $crowdstrike/fltr-core:zComputerName()
+
+  // Format the aid and ComputerName together.
+  | SensorName:=format(format="%s -> %s", field=[aid, ComputerName])
+
+  // For each Logger + LoggerPath combination, collect a sample of 4 CommandLine strings. the limit=4 can be removed for the all the CommandLine strings.
+  | groupBy([Logger, LoggerPath], function=[collect(CommandLine, limit=4), collect(SensorName), count(aid, distinct=true, as=HostCount), count(as=EventCount)], limit=max)
+
+  // find rare combinations that have occured on < 5 hosts
+  | HostCount < 5

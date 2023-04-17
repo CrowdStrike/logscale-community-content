@@ -1,0 +1,40 @@
+name: LOLBins - Mshta - Suspicious Mshta File Execution
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // LOLBins - Mshta - Suspicious Mshta File Execution
+  // https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/
+
+  // Start with mshta.exe process.
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win ImageFileName=/mshta.exe/i
+
+  // Excluding any executions with inline script functionality.
+  | CommandLine!=/mshta(?:\.exe)?\"?(?:\s+-Embedding|$)/
+  | CommandLine=/mshta(?:\.exe)?\"?\s+\"?(?<HtaPath>(?:.*?\.hta|(?=\").*?(?=\")|.*?(?=(?:\s|$))))/i
+
+  // Extract the HtaFolder.
+  | HtaPath=/(?<HtaFolder>.*)(\\\\|\/)/i
+
+  // Extract the HtaFile.
+  | HtaPath=/(.*(\\\\|\/))?(?<HtaFile>.*)$/i
+
+  // Replace the empty string if field is not found.
+  | default(field=[HtaFile, HtaFolder, HtaPath], value="-", replaceEmpty=true)
+
+  // Get the ComputerName.
+  | $crowdstrike/fltr-core:zComputerName()
+
+  // Format the aid and ComputerName together.
+  | SensorName:=format(format="%s -> %s", field=[aid, ComputerName])
+
+  // For each HtaPath, collect the HtaFile, HtaFolder and calculate the unique host count and total event count.
+  | groupBy([HtaPath], function=[collect([HtaFile, HtaFolder]), collect(SensorName), count(aid, distinct=true, as=HostCount), count(as=EventCount)], limit=max)
+
+  // Filter executions that we've seen on less than 15 distinct hosts.
+  | HostCount < 15

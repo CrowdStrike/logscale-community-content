@@ -1,0 +1,33 @@
+name: LOLBins - Certutil - Suspicious Encoding / Decoding
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // LOLBins - Certutil - Suspicious Encoding / Decoding
+  // https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/
+
+  // Look for any certutil executions leveraging the base64 related functionality via the decode/encode command line options.
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win ImageFileName=/certutil.exe/i CommandLine=/(-encode|-decode|\/encode|\/decode)/i
+
+  // Create dynamic fields from CommandLine.
+  | CommandLine=/(?<Operation>\w+code)\s+(?<InputFile>\".*?\"|.*?)\s+(?<OutputFile>\".*?\"|.*?)($|\s)/i
+
+  // Get the ComputerName.
+  | $crowdstrike/fltr-core:zComputerName()
+
+  // Format the aid and ComputerName together.
+  | SensorName:=format(format="%s -> %s", field=[aid, ComputerName])
+
+  // For each Operation, InputFile, and OutputFile combination, collect the parent process and event count.
+  | groupBy([Operation, InputFile, OutputFile], function=[collect(ParentBaseFileName), collect(SensorName), count(as=EventCount)], limit=max)
+
+  // Sort the results.
+  | sort(EventCount, order=asc, limit=20000)

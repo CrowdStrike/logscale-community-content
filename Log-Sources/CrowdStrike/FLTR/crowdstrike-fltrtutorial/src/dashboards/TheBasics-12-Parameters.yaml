@@ -1,0 +1,80 @@
+name: The Basics - 12 - Parameters
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      // Get all DNS Request events
+      #event_simpleName=DnsRequest
+      // Use regex to determine top level domain
+      | DomainName=/\.?(?<topLevelDomain>\w+\.\w+$)/i
+      // Create search box for top level domain
+      | topLevelDomain=?topLevelDomain
+      // Count number of domain variations by top level domain
+      | groupBy(topLevelDomain, function=(count(DomainName, distinct=true, as=domainVariations)), limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 8
+    text: "Another unique feature of LogScale is the ability to include editable text\
+      \ boxes in query syntax. When combined with Saved Queries, this becomes a quick\
+      \ and easy way to reuse queries when the target of a search - like usernames,\
+      \ hostnames, or Agent ID values - change, but the query needs to stay the same.\
+      \ Here is an example:\n\n```\n// Get all DNS Request events\n#event_simpleName=DnsRequest\n\
+      // Use regex to determine top level domain\n| DomainName=/\\.?(?<topLevelDomain>\\\
+      w+\\.\\w+$)/i\n// Create search box for top level domain\n| topLevelDomain=?topLevelDomain\n\
+      // Count number of domain variations by top level domain\n| groupBy(topLevelDomain,\
+      \ function=(count(DomainName, distinct=true, as=domainVariations)), limit=100)\n\
+      ```\n\nThere is now an editable text box that will modify the search. It will\
+      \ default to a wild card, but analysts can enter criteria in here that will\
+      \ dynamically modify the search.\n\nNotice in dashboards this box is moved to\
+      \ the top of the dashboard. But click the box below to see this reflected in\
+      \ a search. \n\nMultiple dynamic search boxes can be added to queries as desired.\
+      \ The format is:\n\n```\nFieldToSearch=?nameOfTextBox\n```\n\nNote that `nameOfTextBox`\
+      \ can be changed to any string, but can not include spaces in this view (they\
+      \ can be edited in Dashboards). \n\nAlso note how the output below has been\
+      \ filtered to only `google.com` domains based on the string we have in the parameter\
+      \ at the top of the dashboard. "
+    width: 12
+    title: Creating Dynamic Text Boxes in Queries
+    type: note
+  note-1681159428779-0:
+    x: 0
+    y: 8
+    height: 4
+    text: |-
+      ```
+      // Get all DNS Request events
+      #event_simpleName=DnsRequest
+      // Use regex to determine top level domain
+      | DomainName=/\.?(?<topLevelDomain>\w+\.\w+$)/i
+      // Create search box for top level domain
+      | topLevelDomain=?topLevelDomain
+      // Count number of domain variations by top level domain
+      | groupBy(topLevelDomain, function=(count(DomainName, distinct=true, as=domainVariations)), limit=100)
+      ```
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  topLevelDomain:
+    isMultiParam: false
+    label: topLevelDomain
+    order: 50
+    type: text
+    defaultValue: google.com

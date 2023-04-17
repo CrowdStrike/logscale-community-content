@@ -1,0 +1,66 @@
+name: The Basics - 09 - Functions
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 10
+    height: 5
+    queryString: |-
+      #event_simpleName=UserLogon
+      | $crowdstrike/fltr-tutorial:UserIsAdmin()
+      | table([aid, UserName, UserSid, UserIsAdmin, UserIsAdmin_Readable], limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 7
+    text: "In LogScale, users have the ability to save queries for fast and easy future\
+      \ reference. One extremely powerful capability LogScale also has is the ability\
+      \ to use saved queries as functions in new queries. Let’s use the example `case`\
+      \ statement from above.\n\nWe will run that `case` statement by itself and save\
+      \ it as a \"Saved Query\" with the name `UserIsAdmin`.\n\n```\n| case {\n  \
+      \  UserIsAdmin=1 | UserIsAdmin_Readable := \"True\" ;\n    UserIsAdmin=0 | UserIsAdmin_Readable\
+      \ := \"False\" ;\n    * ; \n  }\n```\n\nWe can then invoke it in line:\n\n```\n\
+      #event_simpleName=UserLogon\n| $UserIsAdmin()\n| table([aid, UserName, UserSid,\
+      \ UserIsAdmin, UserIsAdmin_Readable], limit=100)\n```\n\nTo be clear, Saved\
+      \ Queries can be complete queries with formatted output that you want to reference\
+      \ or parts of queries that you wish to invoke as functions. They are extremely\
+      \ flexible and powerful. \n\nLogScale's `case` statement transforms are good\
+      \ examples of queries that you might want to reference later as a function.\
+      \ A large list of `case` statement transforms, for those interested, can be\
+      \ found on CrowdStrike’s GitHub page [here](https://github.com/CrowdStrike/logscale-community-content/tree/main/Log-Sources/CrowdStrike/FLTR/standalone-content/Content/transforms)."
+    width: 12
+    title: Leveraging Saved Queries as Functions
+    type: note
+  note-1681138110546-0:
+    x: 0
+    y: 7
+    height: 3
+    text: |-
+      ````
+      #event_simpleName=UserLogon
+      | $UserIsAdmin()
+      | table([aid, UserName, UserSid, UserIsAdmin, UserIsAdmin_Readable], limit=100)
+      ````
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
+parameters:
+  topLevelDomain:
+    isMultiParam: false
+    label: topLevelDomain
+    order: 50
+    type: text
+    defaultValue: google.com

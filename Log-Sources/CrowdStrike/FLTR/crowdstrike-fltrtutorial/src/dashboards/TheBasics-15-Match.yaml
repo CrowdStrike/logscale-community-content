@@ -1,0 +1,60 @@
+name: The Basics - 15 - Match
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 11
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon event_platform=Win
+      | UserIsAdmin match {
+         1 => UserIsAdmin := "True" ;
+         0 => UserIsAdmin := "False" ;
+      }
+      | select([@timestamp, UserName, UID, LogonType, UserIsAdmin])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 7
+    text: "Using the `match` function can be interchangeable with the `case` function,\
+      \ however, if you know the target field exists there are some performance advantages\
+      \ with using `match`. An example query using `match` might look like this:\n\
+      \n```\n#event_simpleName=UserLogon event_platform=Win\n| UserIsAdmin match {\n\
+      \    1 => UserIsAdmin := \"True\" ;\n    0 => UserIsAdmin := \"False\" ;\n \
+      \ }\n| select([@timestamp, UserName, UID, LogonType, UserIsAdmin])\n```\n\n\
+      Since the field `UserIsAdmin` will always be in the event `UserLogon`, using\
+      \ match can help improve the performance of large queries. \n\nThe format is:\
+      \ \n\n```\n| targetField match {\n    value1 => targetField := \"substitution1\"\
+      \ ;\n    value2 => targetField := \"substitution2\" ;\n  }\n"
+    width: 12
+    title: Using Match Statements
+    type: note
+  note-1681139301790-0:
+    x: 0
+    y: 7
+    height: 4
+    text: |-
+      ````
+      #event_simpleName=UserLogon event_platform=Win
+      | UserIsAdmin match {
+          1 => UserIsAdmin := "True" ;
+          0 => UserIsAdmin := "False" ;
+        }
+      | select([@timestamp, UserName, UID, LogonType, UserIsAdmin])
+      ````
+    width: 12
+    title: Query
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0

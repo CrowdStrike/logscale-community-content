@@ -1,0 +1,35 @@
+name: LOLBins - WMIC - Rare WMIC Commands
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // LOLBins - WMIC - Rare WMIC Commands
+  // https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/
+
+  #event_simpleName=ProcessRollup2
+  | event_platform=Win ImageFileName=/wmic.exe/i
+
+  // Fill a null value if there is no ParentBaseFileName.
+  | default(field=[ParentBaseFileName], "-")
+
+  // Create the ConcatenatedEvent from the parent process and command line fields.
+  | format("%s - %s",field=[ParentBaseFileName, CommandLine],as=ConcatenatedEvent)
+
+  // Get the ComputerName.
+  | $crowdstrike/fltr-core:zComputerName()
+
+  // Format the aid and ComputerName together.
+  | SensorName:=format(format="%s -> %s", field=[aid, ComputerName])
+
+  // For each CommandLine, collect the RemoteHosts, ComputerNames, while calculating the unique host count, remote host count, and the total event count
+  | groupBy(ConcatenatedEvent, function=[collect([ParentBaseFileName, CommandLine]), collect(SensorName), count(aid, distinct=true, as=HostCount), count(as=EventCount)], limit=max)
+
+  // Sort the results.
+  | sort([HostCount, EventCount], order=asc, limit=20000)
+
+  // Find rare combinations that have occured on < 5 hosts.
+  | HostCount < 5

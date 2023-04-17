@@ -7,6 +7,8 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
+  // DNS - Suspicious Requests
+  
   // Find the suspicious DNS event types.
   #event_simpleName=SuspiciousDnsRequest
 

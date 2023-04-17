@@ -1,0 +1,63 @@
+name: The Basics - 13 - Visualizations
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  43f44dff-a36c-4f41-9a91-72acd071d5b2:
+    x: 0
+    y: 13
+    height: 6
+    queryString: |-
+      #event_simpleName!=*
+      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | sankey(source="Tactic", target="Technique", weight=count(AgentIdString))
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 12
+    title: 'Output #2'
+    isLive: false
+    type: query
+  7bd30e18-c111-45f9-b399-9054d9c798eb:
+    x: 0
+    y: 9
+    height: 4
+    text: "LogScale will only allow you to select compatible widgets. \n\nThe desired\
+      \ visualization widget can also be specified in the query itself. As an example:\n\
+      \n```\n#event_simpleName!=*\n| EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent\n\
+      | sankey(source=\"Tactic\", target=\"Technique\", weight=count(AgentIdString))\n\
+      ```\n\nThe “Save” button can be leveraged to add any query or widget to a custom\
+      \ dashboard.\n"
+    width: 12
+    title: 'Using Widget Visualizations #2'
+    type: note
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 3
+    height: 6
+    queryString: |-
+      #event_simpleName=OsVersionInfo
+      | groupBy(ProductName, limit=100)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 0
+    height: 3
+    text: "Visualizing aggregated data with widgets can add additional context and\
+      \ assist in the creation of custom dashboards. When running a simple query,\
+      \ like this:\n\n```\n#event_simpleName=OsVersionInfo\n| groupBy(ProductName,\
+      \ limit=100)\n```\n\nSelecting the desired widget from the drop down is all\
+      \ that’s required. \n"
+    width: 12
+    title: Using Widget Visualizations
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.9.0
