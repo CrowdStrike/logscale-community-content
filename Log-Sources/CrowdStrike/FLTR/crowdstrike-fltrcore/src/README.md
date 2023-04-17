@@ -29,6 +29,12 @@ Revert the settings after the file has been generated:
 
 ## Changelog
 
+Version 1.3.5
+- Added the query name as a comment at the beginning of each query. 
+- Dashboard fixes where groupBy value links were incorrect due to field renaming.
+- Interactions for file hashes. 
+- Query optimizations in a few places where the `default()` function is used. 
+
 Version 1.3.4
 - Added a `zCommunityId` user function to calculate the Community Id.
 - Added Event Interations for ContextProcessId and TargetProcessId.
