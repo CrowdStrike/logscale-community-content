@@ -36,5 +36,43 @@ queryString: |-
             sourceport=LocalPort,
             destinationport=RemotePort
           ) ;
+      // Reversed due to how the event is logged.
+      #event_simpleName=NetworkReceiveAcceptIP4 IcmpType!=*
+        | CommunityId:=communityId(
+            proto=Protocol,
+            sourceip=RemoteAddressIP4,
+            destinationip=LocalAddressIP4,
+            sourceport=RemotePort,
+            destinationport=LocalPort
+          ) ;
+      // Reversed due to how the event is logged.
+      #event_simpleName=NetworkReceiveAcceptIP4 IcmpType=*
+        | CommunityId:=communityId(
+            proto=Protocol,
+            sourceip=RemoteAddressIP4,
+            destinationip=LocalAddressIP4,
+            sourceport=IcmpType,
+            destinationport=LocalPort
+          ) ;
+      // Querying for this array is specific to a pivot detection.
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent NetworkAccesses[2].AccessTimestamp=*
+        | CommunityId:=communityId(
+            proto=NetworkAccesses[2].Protocol,
+            sourceip=NetworkAccesses[2].LocalAddress,
+            destinationip=NetworkAccesses[2].RemoteAddress,
+            sourceport=NetworkAccesses[2].LocalPort,
+            destinationport=NetworkAccesses[2].RemotePort
+          );
+      // Querying for NOT this array is the default filter.
+      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent NetworkAccesses[2].AccessTimestamp!=*
+        | CommunityId:=communityId(
+            proto=NetworkAccesses[0].Protocol,
+            sourceip=NetworkAccesses[0].LocalAddress,
+            destinationip=NetworkAccesses[0].RemoteAddress,
+            sourceport=NetworkAccesses[0].LocalPort,
+            destinationport=NetworkAccesses[0].RemotePort
+          );
       * ;
     }

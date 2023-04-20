@@ -34,6 +34,7 @@ Version 1.3.5
 - Dashboard fixes where groupBy value links were incorrect due to field renaming.
 - Interactions for file hashes. 
 - Query optimizations in a few places where the `default()` function is used. 
+- Added additional optimizations to `zCommunityId`, which now includes detection events. 
 
 Version 1.3.4
 - Added a `zCommunityId` user function to calculate the Community Id.
