@@ -106,7 +106,7 @@ widgets:
       | #event_simpleName=ProcessRollup2
       | aid=?aid
       | join(
-          {#event_simpleName="DnsRequest"},
+          {#event_simpleName="DnsRequest" DomainName=?DomainName},
           field=TargetProcessId, key=ContextProcessId,
           include=[DomainName], limit=100000
         )
