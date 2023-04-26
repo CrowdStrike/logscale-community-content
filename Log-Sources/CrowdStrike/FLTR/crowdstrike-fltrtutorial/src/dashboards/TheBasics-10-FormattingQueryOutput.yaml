@@ -1,0 +1,86 @@
+name: The Basics - 10 - Formatting Query Output
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  7f04188b-1bd8-4859-b9e6-be949891b34f:
+    x: 0
+    y: 11
+    height: 5
+    queryString: |-
+      // Get all user logon events for Windows.
+      #event_simpleName=UserLogon event_platform=Win
+      // Invoke saved query to enrich UserIsAdmin field
+      | $crowdstrike/fltr-tutorial:UserIsAdmin()
+      // Use select to output in tabular format
+      | select([@timestamp, aid, ClientComputerName, UserName, LogonType, UserIsAdmin_Readable])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Output
+    isLive: false
+    type: query
+  note-1676650898761-1:
+    x: 0
+    y: 3
+    height: 4
+    text: "In LogScale, using the `select` function is akin to using table in Event\
+      \ Search. After you have a fully formed query, and want to organize output into\
+      \ a tabular format, an example is below:\n\n    // Get all user logon events\
+      \ for Windows.\n    #event_simpleName=UserLogon event_platform=Win\n    // Invoke\
+      \ saved query to enrich UserIsAdmin field\n    | $UserIsAdmin()\n    // Use\
+      \ select to output in tabular format\n    | select([@timestamp, aid, ClientComputerName,\
+      \ UserName, LogonType, UserIsAdmin_Readable])\n\nThe function `table` still\
+      \ exists in LogScale, however, `select` is more efficient if you only need to\
+      \ return the latest 200 results. "
+    width: 12
+    title: Format Query Output with Select
+    type: note
+  note-1681138682637-0:
+    x: 0
+    y: 7
+    height: 4
+    text: "````\n// Get all user logon events for User SID S-1-5-21-1423588362-1685263640-2499213259-1001\n\
+      #event_simpleName=UserLogon event_platform=Win UserSid=\"S-1-5-21-1423588362-1685263640-2499213259-1001\"\
+      \n// Invoke saved query to enrich UserIsAdmin field if the query is saved locally.\
+      \ \n//| $UserIsAdmin()\n// Invoke saved query to enrich UserIsAdmin field if\
+      \ the query is part of a package.\n$crowdstrike/fltr-tutorial:UserIsAdmin()\n\
+      // Use select to output in tabular format\n| select([@timestamp, aid, ClientComputerName,\
+      \ UserName, LogonType, UserIsAdmin_Readable])\n````"
+    width: 12
+    title: Query
+    type: note
+  note-1682344778935-0:
+    x: 0
+    y: 0
+    height: 3
+    text: "There are generally 3 different ways to format the output:\n\n- `table()`:\
+      \ [documentation](https://library.humio.com/falcon-logscale/functions-table.html).\
+      \ The `table()` function has lots of options for output, e.g. fields, limits,\
+      \ how the output is sorted, etc. \n\n- `select()`: [documentation](https://library.humio.com/falcon-logscale/functions-select.html).\
+      \ You can think of `select()` as a stripped-down version of `table()`. It doesn't\
+      \ have a lot of parameters, but is extremely efficient when used in a query. Keep\
+      \ in mind that `select()` will limit the UI output to the latest 200 events.\
+      \ This only applies on the UI output of the query, and does not have the same\
+      \ limit when used in the middle of a query or during an export. \n\n- Event\
+      \ List: [documentation](https://library.humio.com/falcon-logscale/searching-data.html).\
+      \ \"Event List\" isn't a function like `table()` or `select()`. Instead, it's\
+      \ the default output if you *don't* use `table()` or `select()` in your query.\
+      \ It has a lot of UI options for formatting the output, all the way down to\
+      \ the column-level. These options must be configured in the UI and can't be\
+      \ formatted directly in the query. Saving the query will also save the Event\
+      \ List options that you have specified. \n\n"
+    width: 12
+    title: Query Output Options
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.7.0
+parameters:
+  topLevelDomain:
+    defaultValue: google.com
+    label: topLevelDomain
+    order: 50
+    type: text

@@ -9,7 +9,7 @@ widgets:
   note-1679932060615-0:
     x: 2
     y: 0
-    height: 7
+    height: 8
     text: "The LogScale query language is extremely powerful. It's largely based on\
       \ open standards and the language of mathematics, and balances simplicity and\
       \ functionality to help users quickly find what they need, fast.\n\nIn this\
@@ -17,7 +17,15 @@ widgets:
       \ concepts we will cover, however, can be adapted and reused with any dataset\
       \ that LogScale happens to be ingesting, e.g. first-party, third-party, etc.\n\
       \nWe will start with the very basics and build on the queries as we go.\n\n\
-      Additional resources are available as references:\n\n- [Official documentation](https://library.humio.com/falcon-logscale/writing-queries.html):\
+      Hints on using the tutorial:\n\n- You can navigate between the dashboards by\
+      \ clicking on the word *Dashboards* in the upper-left corner. It is the link\
+      \ text right below the Falcon icon. Clicking on this link will take you back\
+      \ to the overview page showing all of the tutorial chapters. \n\n- You can display\
+      \ the \"source\" for every dashboard chapter. Simply click on the *edit* pencil\
+      \ icon near the upper-right corner, then click *Show queries* in the middle\
+      \ near the top of the page. Click *Discard changes* in the upper-right when\
+      \ you're done. \n\nAdditional resources are available as references:\n\n- [Official\
+      \ documentation](https://library.humio.com/falcon-logscale/writing-queries.html):\
       \ documentation on the query language.\n\n- [LogScale Query Primer](https://github.com/CrowdStrike/logscale-community-content/wiki/LogScale-Query-Primer):\
       \ a comprehensive guide on using the LogScale query language. \n\n- [LogScale\
       \ Query Building Blocks](https://github.com/CrowdStrike/logscale-community-content/wiki/LogScale-Query-Building-Blocks):\
@@ -29,4 +37,4 @@ widgets:
     width: 8
     title: Welcome to LogScale!
     type: note
-$schema: https://schemas.humio.com/dashboard/v0.9.0
+$schema: https://schemas.humio.com/dashboard/v0.7.0
