@@ -1,6 +1,6 @@
 # CrowdStrike FLTR Tutorial
 
-This package contains a dashboard-based tutorial for using FLTR. 
+This package contains a dashboard-based tutorial for using FLTR. Each dashboard teaches a specific lesson for helping you get the most out of FLTR.
 
 ## Important
 
@@ -9,8 +9,8 @@ This package should be installed in a *view* linked to your FLTR repo. It is not
 ## Installation
 
 1. Create a view linked to your FLTR repository, e.g. `customerName-fltr-tutorial`.
-2. Install this package in that view. 
-3. Go to the Dashboard section to begin the tutorial. 
+2. Install this package in that view.
+3. Go to the Dashboard section to begin the tutorial.
 
 ## Changelog
 
