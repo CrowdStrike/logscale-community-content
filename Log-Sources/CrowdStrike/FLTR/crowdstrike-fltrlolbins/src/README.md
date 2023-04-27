@@ -1,6 +1,6 @@
-# CrowdStrike FLTR LOLbins Queries
+# CrowdStrike FLTR LOLbins
 
-This is a set of queries based on "8 LOLBins Every Threat Hunter Should Know" by CrowdStrike Falcon OverWatch Elite. 
+This package contains a set of queries based on the ["8 LOLBins Every Threat Hunter Should Know"]("https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/") whitepaper by CrowdStrike Falcon OverWatch Elite.
 
 ## Important
 
@@ -9,20 +9,18 @@ This package must be installed in the same view as the `crowdstrike/fltr-core` p
 ## Installation
 
 1. Ensure the `crowdstrike/fltr-core` is already installed in the view.
-2. Install the `crowdstrike/fltr-lolbins` package in the same view.  
+2. Install the `crowdstrike/fltr-lolbins` package in the same view.
 
 ## Changelog
 
-Version 0.4.0
-- Initial public release. 
+Version 0.6.0
+- Initial public release.
 
 ## Package Contents
 
 ### Queries
 
-This package provides set of queries based on the "8 LOLBins Every Threat Hunter Should Know" by CrowdStrike Falcon OverWatch Elite. The whitepaper can be found here:
-
-[https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/](https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/)
+This package provides a set of queries based on the ["8 LOLBins Every Threat Hunter Should Know"]("https://www.crowdstrike.com/resources/white-papers/8-lolbins-every-threat-hunter-should-know/") whitepaper by CrowdStrike Falcon OverWatch Elite.
 
 ## Use Case
 
