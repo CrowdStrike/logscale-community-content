@@ -13,6 +13,9 @@ This package must be installed in the same view as the `crowdstrike/fltr-core` p
 
 ## Changelog
 
+Version 0.6.1
+- Fixes to output format. 
+
 Version 0.6.0
 - Initial public release.
 

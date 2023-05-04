@@ -1,9 +1,8 @@
 name: LOLBins - MSBuild - MSBuild Executions with Logger
 visualization:
-  options:
-    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
-    newestAtBottom: 'true'
-    showOnlyFirstLine: 'false'
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.2.0
   type: list-view
 $schema: https://schemas.humio.com/query/v0.1.0
 timeInterval:

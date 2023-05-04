@@ -1,11 +1,8 @@
 name: LOLBins - Msiexec - Suspicious DLL Execution
 visualization:
-  options:
-    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
-    newestAtBottom: 'true'
-    showOnlyFirstLine: 'false'
-  type: list-view
-$schema: https://schemas.humio.com/query/v0.1.0
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.2.0
 timeInterval:
   isLive: false
   start: 7d
