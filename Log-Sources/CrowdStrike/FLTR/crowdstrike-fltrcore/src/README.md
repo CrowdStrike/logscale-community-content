@@ -30,7 +30,6 @@ Revert the settings after the file has been generated:
 ## Changelog
 
 Version 1.3.6
-- 
 - Enabled "Require user input before searching" for most of the dashboards. You can use `*` as an input if needed. 
 - Enabled interactions for all dashboards where applicable. Clickable widgets!
 - Added a new query to search for applications making outbound connections to a specific port. 
