@@ -4,11 +4,11 @@ interaction:
   - argument: ''
     fieldName: aid
     operator: present
-  name: Search - By AID
+  name: Search - By AgentId
   titleTemplate: ''
   useWidgetTimeWindow: true
   dashboardReference:
-    name: Search - By AID
+    name: Search - By AgentId
     packageSpecifier: crowdstrike/fltr-core
     repoOrViewName: 
   arguments:

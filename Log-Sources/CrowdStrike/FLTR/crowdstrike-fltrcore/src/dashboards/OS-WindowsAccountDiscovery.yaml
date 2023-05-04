@@ -1,4 +1,4 @@
-name: Windows - Account Discovery
+name: OS - Windows Account Discovery
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -19,83 +19,147 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
       | $"crowdstrike/fltr-core:zUrlFalconPid"()
       | $"crowdstrike/fltr-core:zUrlFalconAid"()
-      | ProcessStartTime := ProcessStartTime*1000
-      | "Endpoint Time (UTC)" := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
+      | ProcessStartTime:=ProcessStartTime*1000
+      | "Endpoint Time (UTC)":=formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
       | table(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"], limit=1000)
     visualization: table-view
+    end: now
     start: 7d
     width: 12
     title: '[T1087.002] Account Discovery - Domain Account'
+    isLive: false
     type: query
   6c05019a-bd3d-4daf-b0a1-78ced95f9c0c:
     x: 0
-    y: 5
     height: 6
     queryString: |-
       #event_simpleName=ProcessRollup2
       | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
-      | netFileName := lower("netFileName")
-      | netFlag := lower(netFlag)
+      | netFileName:=lower("netFileName")
+      | netFlag:=lower(netFlag)
       | timeChart(netFlag, function=count(aid))
+    end: now
     start: 7d
     width: 12
+    y: 5
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName=ProcessRollup2
+        | event_platform=Win
+        | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
+        | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
+        | netFileName:=lower("netFileName")
+        | netFlag:=lower(netFlag)
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments: {}
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       lastBucketBehavior: exclude
       showDataPoints: true
       connect-points: false
-      plotType: area
       show-utc: false
       imputation: none
     visualization: time-chart
     title: Windows Net Flag Usage by Week
+    isLive: false
     type: query
   fe1ed478-f8e9-4d4f-a5ca-c66bf033fe7f:
     x: 0
-    y: 0
     height: 5
     queryString: |-
       #event_simpleName=ProcessRollup2
       | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
-      | netFileName := lower("netFileName")
-      | netFlag := lower(netFlag)
+      | netFileName:=lower("netFileName")
+      | netFlag:=lower(netFlag)
       | groupBy([netFileName, netFlag], limit=max)
+    end: now
     start: 7d
     width: 6
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Net
+      titleTemplate: 'Search by netFileName: {{ fields.netFileName }}, netFlag: {{
+        fields.netFlag }}'
+      queryString: |-
+        #event_simpleName=ProcessRollup2
+        | event_platform=Win
+        | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
+        | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
+        | netFileName:=lower("netFileName")
+        | netFlag:=lower(netFlag)
+        | netFlag=?netFlag netFileName=?netFileName
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        netFileName: '["{{ fields.netFileName }}"]'
+        netFlag: '["{{ fields.netFlag }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       legendTitle: Count
-      xAxisTitle: Net File
       colorPalette: monoMagenta
-      yAxisTitle: Net Flag
       legendLocation: right
       includeHistogram: false
       reversePalette: false
     visualization: heat-map
     title: Windows net Usage by Flag
+    isLive: false
     type: query
   308f8a54-685b-482b-9b2c-5df054795562:
     x: 6
-    y: 0
     height: 5
     queryString: |-
       #event_simpleName=ProcessRollup2
       | event_platform=Win
       | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
       | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
-      | netFileName := lower("netFileName")
-      | netFlag := lower(netFlag)
-      | sankey(source="netFileName",target="netFlag", weight=count(aid))
+      | netFileName:=lower("netFileName")
+      | netFlag:=lower(netFlag)
+      | sankey(source="netFileName", target="netFlag", weight=count(aid))
+    end: now
     start: 7d
     width: 6
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Net
+      titleTemplate: 'Search by netFileName: {{ fields.source }}, netFlag: {{ fields.target
+        }}'
+      queryString: |-
+        #event_simpleName=ProcessRollup2
+        | event_platform=Win
+        | ImageFileName=/\\(?<netFileName>net1?\.exe$)/i
+        | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
+        | netFileName:=lower("netFileName")
+        | netFlag:=lower(netFlag)
+        | netFlag=?netFlag netFileName=?netFileName
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        netFileName: '["{{ fields.source }}"]'
+        netFlag: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       series: {}
       showAxes: true
       stackSortOrder: ascending
     visualization: sankey
     title: Windows net Usage by Flag (Sankey)
+    isLive: false
     type: query
   c4da8bb7-fb9a-4a1e-bb9e-28e34f4974a5:
     x: 0
@@ -110,14 +174,16 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
       | $"crowdstrike/fltr-core:zUrlFalconPid"()
       | $"crowdstrike/fltr-core:zUrlFalconAid"()
-      | ProcessStartTime := ProcessStartTime*1000
-      | "Endpoint Time (UTC)" := formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
+      | ProcessStartTime:=ProcessStartTime*1000
+      | "Endpoint Time (UTC)":=formatTime("%Y-%m-%d %H:%M:%S", field=ProcessStartTime, locale=en_US, timezone=Z)
       | table(["Endpoint Time (UTC)", aid, ComputerName, "Host Search", UserSid, "User Search", netFileName, netFlag, CommandLine, "Process Explorer", "Graph Explorer", "Spotlight", "RTR"], limit=1000)
       | drop(["aid", UserSid])
 
     visualization: table-view
+    end: now
     start: 7d
     width: 12
     title: '[T1087.001] Account Discovery - Local Account'
+    isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.4.0
+$schema: https://schemas.humio.com/dashboard/v0.10.0

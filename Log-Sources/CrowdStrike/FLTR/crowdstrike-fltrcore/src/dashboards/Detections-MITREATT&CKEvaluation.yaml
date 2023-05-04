@@ -8,9 +8,8 @@ sharedTimeInterval:
 widgets:
   baa9257c-cb56-42b2-b274-ca2b87a6466f:
     x: 0
-    y: 0
     height: 8
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
@@ -19,64 +18,110 @@ widgets:
       | Tactic=*
       | Technique=*
       | groupBy([Tactic, Technique], function=count(AgentIdString, as="Detection Count"), limit=max)
+    end: now
     start: 7d
     width: 12
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Tactic and Technique
+      titleTemplate: 'Search by Tactic: {{ fields.Tactic }}, Technique: {{ fields.Technique
+        }}'
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent
+        | ExternalApiType=Event_DetectionSummaryEvent
+        | Tactic!=/^custom/i
+        | Tactic!=""
+        | Tactic=?Tactic
+        | Technique=?Technique
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        Tactic: '["{{ fields.Tactic }}"]'
+        Technique: '["{{ fields.Technique }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       colorPalette: greenRed
-      labelAngle: 8
+      labelAngle: 45
       legendLocation: right
       reversePalette: false
     visualization: heat-map
     title: Heatmap by Tactic and Technique
+    isLive: false
     type: query
   bfc606a1-aeef-4f6d-ac28-ceab769362e2:
     x: 0
     y: 37
     height: 8
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | top([FileName, Tactic, Technique], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
+    end: now
     start: 7d
     width: 7
     title: Top 25 Triggering Files by Tactic and Technique
+    isLive: false
     type: query
   3b9031e9-7af8-40e2-a383-99910583a45f:
     x: 8
-    y: 21
     height: 4
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
-      | groupBy([Tactic], function=count(AgentIdString, as="Detection Count"), limit=max)
+      | groupBy(Tactic, function=count(AgentIdString, as="Detection Count"), limit=max)
+    end: now
     start: 7d
     width: 4
+    y: 21
+    interactions:
+    - conditions: null
+      name: Search by Tactic
+      titleTemplate: Search by Tactic {{ fields.Tactic }}
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
+        | Tactic=?Tactic
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        Tactic: '["{{ fields.Tactic }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
-      legend: false
+      legend: true
+      maxLegendRows: 2
+      withLegendTitle: false
     visualization: pie-chart
     title: Tactic Distribution
+    isLive: false
     type: query
   ba90b7af-f5a6-4985-b0a9-8f6668a26bc4:
     x: 6
     y: 29
     height: 8
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | top([ComputerName, Technique], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
+    end: now
     start: 7d
     width: 6
     title: Top 25 Endpoints by Technique
+    isLive: false
     type: query
   a56865c4-1395-4386-8d1e-abee0487915d:
     x: 0
-    y: 21
     height: 8
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
@@ -84,51 +129,92 @@ widgets:
       | ExternalApiType=Event_DetectionSummaryEvent
       | groupBy([Tactic, Technique, Severity], function=count(AgentIdString, as="detectCount"), limit=max)
       | sankey(source="Tactic", target="Technique", weight=sum(Severity))
+    end: now
     start: 7d
     width: 8
+    y: 21
+    interactions:
+    - conditions: null
+      name: Search by Tactic and Technique
+      titleTemplate: 'Search by Tactic: {{ fields.source }}, Technique: {{ fields.target
+        }}'
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent
+        | ExternalApiType=Event_DetectionSummaryEvent
+        | Tactic=?Tactic Technique=?Technique
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        Tactic: '["{{ fields.source }}"]'
+        Technique: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       series: {}
       stackSortOrder: descending
       stackSortType: total
     visualization: sankey
     title: Tactic to Technique - Weighted by Severity
+    isLive: false
     type: query
   903e41d3-5ac0-4309-981d-8826aef63226:
     x: 8
-    y: 25
     height: 4
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
       | groupBy(Technique, function=count(AgentIdString, as="Detection Count"), limit=max)
+    end: now
     start: 7d
     width: 4
+    y: 25
+    interactions:
+    - conditions: null
+      name: Search by Technique
+      titleTemplate: 'Search by Technique: {{ fields.Technique }}'
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
+        | Technique=?Technique
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        Technique: '["{{ fields.Technique }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
-      legend: false
+      legend: true
+      maxLegendRows: 2
       series: {}
+      withLegendTitle: false
     visualization: pie-chart
     title: Technique Distribution
+    isLive: false
     type: query
   3b138d0d-94ba-4936-97e7-0150b78c0185:
     x: 0
     y: 29
     height: 8
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | top([ComputerName, Tactic], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
+    end: now
     start: 7d
     width: 6
     title: Top 25 Endpoints by Tactic
+    isLive: false
     type: query
   fe06f999-8152-47c4-be9d-9df57ad2b55d:
     x: 0
-    y: 8
     height: 6
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
@@ -137,8 +223,31 @@ widgets:
       | Technique=*
       | groupBy([Tactic, Technique], function=count(AgentIdString, as="detectCount"), limit=max)
       | rename("detectCount",as="Detection Count")
+    end: now
     start: 7d
     width: 12
+    y: 8
+    interactions:
+    - conditions: null
+      name: Search by Tactic and Technique
+      titleTemplate: 'Search by Tactic: {{ fields.Tactic }}, Technique: {{ fields.Technique
+        }}'
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent
+        | ExternalApiType=Event_DetectionSummaryEvent
+        | Tactic!=/(^custom|machine\slearning)/i
+        | Tactic!=""
+        | Tactic=?Tactic
+        | Technique=?Technique
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        Tactic: '["{{ fields.Tactic }}"]'
+        Technique: '["{{ fields.Technique }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       series: {}
       valuesOnBars: true
@@ -148,41 +257,65 @@ widgets:
       inputDataFormat: long
     visualization: bar-chart
     title: Tactic and Technique - Stacked
+    isLive: false
     type: query
   dd56053e-7391-47b3-be86-c87aa6ed7256:
     x: 7
     y: 37
     height: 8
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | top([Tactic, Technique], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
+    end: now
     start: 7d
     width: 5
     title: Top 25 Tactic and Technique Combinations
+    isLive: false
     type: query
   36a81859-72fd-436f-bc75-710e9d076fea:
     x: 0
-    y: 14
     height: 7
-    queryString: |
+    queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
       | Tactic!=/custom\s.*/i
       | Tactic!=""
       | groupBy([Tactic, @timestamp], function=count(AgentIdString, as="Detection Count"), limit=max)
-      | bucket(field="Tactic")
+      | bucket(field="Tactic", buckets=50)
+    end: now
     start: 7d
     width: 12
+    y: 14
+    interactions:
+    - conditions: null
+      name: Search by Tactic
+      titleTemplate: 'Search by Tactic: {{ fields.Tactic }}'
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent
+        | ExternalApiType=Event_DetectionSummaryEvent
+        | Tactic!=/custom\s.*/i
+        | Tactic!=""
+        | Tactic=?Tactic
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        Tactic: '["{{ fields.Tactic }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
-      colorPalette: monoPeach
-      labelAngle: 13
       legendTitle: Detection Count
-      xAxisTitle: Time
+      withXAxisTitle: false
+      labelAngle: 13
+      xAxisTitle: Date
+      colorPalette: monoPeach
     visualization: heat-map
     title: Tactic by Time
+    isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.4.0
+$schema: https://schemas.humio.com/dashboard/v0.10.0

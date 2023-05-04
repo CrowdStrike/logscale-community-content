@@ -11,33 +11,33 @@ widgets:
     y: 13
     height: 5
     queryString: |-
-      test(?DomainName != "*")
-      | #event_simpleName="DnsRequest"
+      #event_simpleName="DnsRequest"
       | DomainName=?DomainName
       | $"crowdstrike/fltr-core:zComputerName"()
       | groupBy(DomainName, function=[
-          {selectLast([ContextTimeStamp, ComputerName]) | rename(ContextTimeStamp, as=LastLookup) | rename(ComputerName, as=LastLookupBy)},
-          {select([ContextTimeStamp, ComputerName]) | head(1) | rename(ContextTimeStamp, as=FirstLookup) | rename(ComputerName, as=FirstLookupBy) | drop(@timestamp)},
+          {selectLast([ContextTimeStamp, ComputerName]) | LastLookup:=rename(ContextTimeStamp) | LastLookupBy:=rename(ComputerName)},
+          {select([ContextTimeStamp, ComputerName]) | head(1) | FirstLookup:=rename(ContextTimeStamp) | FirstLookupBy:=rename(ComputerName) | drop(@timestamp)},
           {count(ComputerName, as=NumberOfHosts, distinct=true)}
         ], limit=max)
-      | LastLookup := LastLookup * 1000
-      | FirstLookup := FirstLookup * 1000
-      | LastLookup := formatTime(field=LastLookup, format="%Y-%m-%d %H:%M:%S")
-      | FirstLookup := formatTime(field=FirstLookup, format="%Y-%m-%d %H:%M:%S")
+      | LastLookup:=LastLookup*1000
+      | FirstLookup:=FirstLookup*1000
+      | LastLookup:=formatTime(field=LastLookup, format="%Y-%m-%d %H:%M:%S")
+      | FirstLookup:=formatTime(field=FirstLookup, format="%Y-%m-%d %H:%M:%S")
       | table([DomainName, NumberOfHosts, FirstLookup, FirstLookupBy, LastLookup, LastLookupBy], sortby=NumberOfHosts, limit=1000)
       | rename(NumberOfHosts, as="Total Hosts")
     visualization: table-view
+    end: now
     start: 7d
     width: 12
     title: DnsRequest Events by Lookup Time
+    isLive: false
     type: query
   56b1dcbc-8082-4f11-87c5-f950ecaa30b0:
     x: 5
     y: 8
     height: 5
     queryString: |-
-      test(?DomainName != "*")
-      | #event_simpleName=DnsRequest
+      #event_simpleName=DnsRequest
       | aid=?aid
       | DomainName=?DomainName
       | $"crowdstrike/fltr-core:zComputerName"()
@@ -46,9 +46,11 @@ widgets:
       | table([aid, ComputerName, DomainName], limit=1000)
       | sort(limit=1000)
     visualization: table-view
+    end: now
     start: 7d
     width: 7
     title: DnsRequest Events
+    isLive: false
     type: query
   note-1674500024017-0:
     x: 0
@@ -65,50 +67,70 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      test(?DomainName != "*")
-      | #event_simpleName=DnsRequest
+      #event_simpleName=DnsRequest
       | $"crowdstrike/fltr-core:zComputerName"()
       | DomainName=?DomainName
       | groupBy([aid, ComputerName, DomainName], function=count(as="Total Requests"), limit=max)
       | sort("Total Requests", limit=1000)
     visualization: table-view
+    end: now
     start: 7d
     width: 7
-    title: DnsRequest Events by AID
+    title: DnsRequest Events by AgentId
+    isLive: false
     type: query
   fc995786-0ac0-4d33-87eb-1c2c6f1f36f1:
     x: 0
-    y: 4
     height: 4
     queryString: |-
-      test(?DomainName != "*")
+      #event_simpleName="DnsRequest"
       | aid=?aid
-      | #event_simpleName="DnsRequest"
       | DomainName=?DomainName
       | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName=?ComputerName
       | timeChart(DomainName, limit=10)
       | rename(_count, as="Total Requests")
+    end: now
     start: 1d
     width: 12
+    y: 4
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName="DnsRequest"
+        | aid=?aid
+        | DomainName=?DomainName
+        | $"crowdstrike/fltr-core:zComputerName"():
+        | ComputerName=?ComputerName
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        DomainName: '["{{ parameters.DomainName }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       connect-points: false
       imputation: none
     visualization: time-chart
     title: Top DnsRequest Events by DomainName
+    isLive: false
     type: query
   3c0a32a0-e8aa-46c3-a9fb-5c28856871df:
     x: 0
     y: 18
     height: 5
     queryString: |-
-      test(?DomainName != "*")
-      | #event_simpleName=ProcessRollup2
+      #event_simpleName=ProcessRollup2
       | aid=?aid
       | join(
           {#event_simpleName="DnsRequest" DomainName=?DomainName},
           field=TargetProcessId, key=ContextProcessId,
-          include=[DomainName], limit=100000
+          include=[DomainName], limit=200000
         )
       // Extract the filename.
       | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
@@ -122,30 +144,57 @@ widgets:
       // Present the results.
       | table([aid, ComputerName, DomainName, FileName, ParentProcessId, ProcessStartTime, ImageFileName, MD5HashData, SHA256HashData], limit=1000)
     visualization: table-view
+    end: now
     start: 7d
     width: 12
     title: Process Details for Domain
+    isLive: false
     type: query
   c08bff9a-048a-4267-9b50-8685ca4a243b:
     x: 0
-    y: 8
     height: 5
     queryString: |-
-      test(?DomainName != "*")
+      #event_simpleName="DnsRequest"
       | aid=?aid
-      | #event_simpleName="DnsRequest"
       | DomainName=?DomainName
       | $"crowdstrike/fltr-core:zComputerName"()
       | ComputerName=?ComputerName
       | timeChart(function=count())
       | rename(_count, as="Total Requests")
+    end: now
     start: 7d
     width: 5
+    y: 8
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName="DnsRequest"
+        | aid=?aid
+        | DomainName=?DomainName
+        | $"crowdstrike/fltr-core:zComputerName"()
+        | ComputerName=?ComputerName
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        DomainName: '["{{ parameters.DomainName }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       connect-points: false
       imputation: none
       legend: false
     visualization: time-chart
     title: Total DnsRequest Events Over Time
+    isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.4.0
+$schema: https://schemas.humio.com/dashboard/v0.10.0
+parameters:
+  DomainName:
+    label: DomainName
+    order: 50
+    type: text

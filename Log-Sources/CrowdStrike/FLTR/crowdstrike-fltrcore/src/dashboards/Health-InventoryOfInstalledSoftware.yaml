@@ -1,4 +1,4 @@
-name: Inventory - Installed Software
+name: Health - Inventory of Installed Software
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -8,7 +8,6 @@ sharedTimeInterval:
 widgets:
   113efc94-d946-46d2-a71a-8f711966a016:
     x: 8
-    y: 0
     height: 5
     queryString: |-
       #kind=Secondary
@@ -19,11 +18,30 @@ widgets:
     end: now
     start: 7d
     width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Version
+      titleTemplate: 'Search by Version: {{ fields.ProductVersion }}'
+      queryString: |-
+        #kind=Secondary
+        | SecondaryEventType=appinfo
+        | CompanyName=?CompanyName ProductName=?ProductName
+        | ProductVersion=?ProductVersion
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        CompanyName: '["{{ parameters.CompanyName }}"]'
+        ProductName: '["{{ parameters.ProductName }}"]'
+        ProductVersion: '["{{ fields.ProductVersion }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     title: Product Version
+    isLive: false
     type: query
   3a61cc6d-732d-4682-9a21-d9184ad3800d:
     x: 4
-    y: 0
     height: 5
     queryString: |-
       #kind=Secondary
@@ -33,6 +51,23 @@ widgets:
     end: now
     start: 7d
     width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Product
+      titleTemplate: 'Search by Product: {{ fields.ProductName }}'
+      queryString: |-
+        #kind=Secondary
+        | SecondaryEventType=appinfo
+        | CompanyName=?CompanyName ProductName=?ProductName
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        CompanyName: '["{{ parameters.CompanyName }}"]'
+        ProductName: '["{{ fields.ProductName }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       series:
         _count:
@@ -40,6 +75,7 @@ widgets:
           title: Count
     visualization: bar-chart
     title: Product Name
+    isLive: false
     type: query
   56543e9f-e23c-46c6-8922-9e3671a8721d:
     x: 0
@@ -57,26 +93,43 @@ widgets:
     start: 7d
     width: 12
     title: Software Inventory
+    isLive: false
     type: query
   7dee5761-06a8-441a-9c12-28fba9b57cc6:
     x: 0
-    y: 0
     height: 5
     queryString: |-
       #kind=Secondary
       | SecondaryEventType=appinfo
-      | CompanyName=?CompanyName
+      | CompanyName=?CompanyName ProductName=?ProductName
       | top(CompanyName, as="Count")
     visualization: bar-chart
     end: now
     start: 7d
     width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Vendor
+      titleTemplate: 'Search by Vendor: {{ fields.CompanyName }}'
+      queryString: |-
+        #kind=Secondary
+        | SecondaryEventType=appinfo
+        | CompanyName=?CompanyName ProductName=?ProductName
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        CompanyName: '["{{ fields.CompanyName }}"]'
+        ProductName: '["{{ parameters.ProductName }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     title: Software Vendor
+    isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.4.0
+$schema: https://schemas.humio.com/dashboard/v0.10.0
 parameters:
   CompanyName:
-    label: CompanyName
     query: '#kind=Secondary | SecondaryEventType=appinfo | CompanyName=?CompanyName
       | groupBy(CompanyName, limit=max)'
     timeInterval: 7d
@@ -86,7 +139,6 @@ parameters:
     order: 50
     valueField: CompanyName
   ProductName:
-    label: ProductName
     query: '#kind=Secondary | SecondaryEventType=appinfo | CompanyName=?CompanyName
       | groupBy(ProductName, limit=max)'
     timeInterval: 7d

@@ -29,6 +29,15 @@ Revert the settings after the file has been generated:
 
 ## Changelog
 
+Version 1.3.6
+- 
+- Enabled "Require user input before searching" for most of the dashboards. You can use `*` as an input if needed. 
+- Enabled interactions for all dashboards where applicable. Clickable widgets!
+- Added a new query to search for applications making outbound connections to a specific port. 
+- Renamed titles with "AID" to "AgentId" for consistency.
+- Renamed "Inventory" and "File Vantage" dashboards for consistency. 
+- Renamed the "Windows" dashboards to put them under the "OS" category. 
+
 Version 1.3.5
 - Added the query name as a comment at the beginning of each query. 
 - Dashboard fixes where groupBy value links were incorrect due to field renaming.

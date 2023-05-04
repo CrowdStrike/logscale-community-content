@@ -1,4 +1,4 @@
-name: Detections - By Alert Type
+name: Detections - By AgentId
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -9,12 +9,24 @@ widgets:
   2060d750-1c73-4632-a976-4293cf494fe9:
     x: 0
     height: 4
-    queryString: |-
+    queryString: |
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | timechart(function=count(as="Total Detections"))
     end: now
     start: 7d
@@ -27,15 +39,27 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | ExternalApiType=Event_DetectionSummaryEvent
+        // Add the ComputerName.
+        | $"crowdstrike/fltr-core:zComputerName"()
+
+        // Check inputs and make ComputerName case-insensitive.
+        | inputComputerName:=?ComputerName
+        | case {
+            test(?ComputerName=="*")
+              | ComputerName=?ComputerName ;
+            test(?ComputerName=="")
+              | ComputerName=* ;
+            test(lower(inputComputerName)==lower(ComputerName)) ;
+          }
 
         // Check the remaining inputs.
-        | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+        | AgentIdString=?aid CustomerIdString=?cid
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
-        SeverityName: '["{{ parameters.SeverityName }}"]'
-        Tactic: '["{{ parameters.Tactic }}"]'
-        Technique: '["{{ parameters.Technique }}"]'
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        aid: '["{{ parameters.aid }}"]'
+        cid: '["{{ parameters.cid }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -53,9 +77,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | sankey(target=Tactic, source=Technique)
     end: now
     start: 7d
@@ -69,14 +105,28 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | ExternalApiType=Event_DetectionSummaryEvent
+        // Add the ComputerName.
+        | $"crowdstrike/fltr-core:zComputerName"()
+
+        // Check inputs and make ComputerName case-insensitive.
+        | inputComputerName:=?ComputerName
+        | case {
+            test(?ComputerName=="*")
+              | ComputerName=?ComputerName ;
+            test(?ComputerName=="")
+              | ComputerName=* ;
+            test(lower(inputComputerName)==lower(ComputerName)) ;
+          }
 
         // Check the remaining inputs.
-        | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
-        | sankey(target=Tactic, source=Technique)
+        | AgentIdString=?aid CustomerIdString=?cid
+        | Technique=?Technique Tactic=?Tactic
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
-        SeverityName: '["{{ parameters.SeverityName }}"]'
+        aid: '["{{ parameters.aid }}"]'
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        cid: '["{{ parameters.cid }}"]'
         Tactic: '["{{ fields.target }}"]'
         Technique: '["{{ fields.source }}"]'
       openInNewTab: true
@@ -96,9 +146,21 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | top(ComputerName, as="Top Hosts")
     visualization: table-view
     end: now
@@ -113,9 +175,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | top(Tactic, as="Top Tactics")
     end: now
     start: 7d
@@ -128,15 +202,29 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | ExternalApiType=Event_DetectionSummaryEvent
+        // Add the ComputerName.
+        | $"crowdstrike/fltr-core:zComputerName"()
+
+        // Check inputs and make ComputerName case-insensitive.
+        | inputComputerName:=?ComputerName
+        | case {
+            test(?ComputerName=="*")
+              | ComputerName=?ComputerName ;
+            test(?ComputerName=="")
+              | ComputerName=* ;
+            test(lower(inputComputerName)==lower(ComputerName)) ;
+          }
 
         // Check the remaining inputs.
-        | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+        | AgentIdString=?aid CustomerIdString=?cid
+        | Tactic=?Tactic
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
-        SeverityName: '["{{ parameters.SeverityName }}"]'
+        ComputerName: '["{{ parameters.ComputerName }}"]'
         Tactic: '["{{ fields.Tactic }}"]'
-        Technique: '["{{ parameters.Technique }}"]'
+        aid: '["{{ parameters.aid }}"]'
+        cid: '["{{ parameters.cid }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -156,9 +244,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | top(UserName, as="Top Users")
     visualization: table-view
     end: now
@@ -173,9 +273,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | top(Technique, as="Top Techniques")
     end: now
     start: 7d
@@ -188,15 +300,29 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | ExternalApiType=Event_DetectionSummaryEvent
+        // Add the ComputerName.
+        | $"crowdstrike/fltr-core:zComputerName"()
+
+        // Check inputs and make ComputerName case-insensitive.
+        | inputComputerName:=?ComputerName
+        | case {
+            test(?ComputerName=="*")
+              | ComputerName=?ComputerName ;
+            test(?ComputerName=="")
+              | ComputerName=* ;
+            test(lower(inputComputerName)==lower(ComputerName)) ;
+          }
 
         // Check the remaining inputs.
-        | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+        | AgentIdString=?aid CustomerIdString=?cid
+        | Technique=?Technique
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
-        SeverityName: '["{{ parameters.SeverityName }}"]'
-        Tactic: '["{{ parameters.Tactic }}"]'
+        ComputerName: '["{{ parameters.ComputerName }}"]'
         Technique: '["{{ fields.Technique }}"]'
+        aid: '["{{ parameters.aid }}"]'
+        cid: '["{{ parameters.cid }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -215,9 +341,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | sankey(target=Technique, source=SeverityName)
     end: now
     start: 7d
@@ -231,14 +369,29 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | ExternalApiType=Event_DetectionSummaryEvent
+        // Add the ComputerName.
+        | $"crowdstrike/fltr-core:zComputerName"()
+
+        // Check inputs and make ComputerName case-insensitive.
+        | inputComputerName:=?ComputerName
+        | case {
+            test(?ComputerName=="*")
+              | ComputerName=?ComputerName ;
+            test(?ComputerName=="")
+              | ComputerName=* ;
+            test(lower(inputComputerName)==lower(ComputerName)) ;
+          }
 
         // Check the remaining inputs.
-        | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+        | AgentIdString=?aid CustomerIdString=?cid
+        | SeverityName=?SeverityName Technique=?Technique
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
         SeverityName: '["{{ fields.source }}"]'
-        Tactic: '["{{ parameters.Tactic }}"]'
+        aid: '["{{ parameters.aid }}"]'
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        cid: '["{{ parameters.cid }}"]'
         Technique: '["{{ fields.target }}"]'
       openInNewTab: true
       isLive: false
@@ -255,9 +408,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | top(SeverityName, as="Top Severities")
     end: now
     start: 7d
@@ -267,18 +432,21 @@ widgets:
     - conditions: null
       name: Search by Severity
       titleTemplate: 'Search for Severity: {{ fields.SeverityName }}'
-      queryString: |-
-        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
-        | ExternalApiType=Event_DetectionSummaryEvent
-
-        // Check the remaining inputs.
-        | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent\n\
+        | ExternalApiType=Event_DetectionSummaryEvent\n// Add the ComputerName.\n\
+        | $\"crowdstrike/fltr-core:zComputerName\"()\n\n// Check inputs and make ComputerName\
+        \ case-insensitive.\n| inputComputerName:=?ComputerName\n| case {\n    test(?ComputerName==\"\
+        *\")\n      | ComputerName=?ComputerName ;\n    test(?ComputerName==\"\")\n\
+        \      | ComputerName=* ;\n    test(lower(inputComputerName)==lower(ComputerName))\
+        \ ;\n  }\n\n// Check the remaining inputs.\n| AgentIdString=?aid CustomerIdString=?cid\
+        \ \n| SeverityName=?SeverityName"
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
+        ComputerName: '["{{ parameters.ComputerName }}"]'
         SeverityName: '["{{ fields.SeverityName }}"]'
-        Tactic: '["{{ parameters.Tactic }}"]'
-        Technique: '["{{ parameters.Technique }}"]'
+        aid: '["{{ parameters.aid }}"]'
+        cid: '["{{ parameters.cid }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -295,9 +463,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | top(DetectName, as="Top Detections")
     visualization: table-view
     end: now
@@ -312,9 +492,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | sankey(target=FileName, source=ParentImageFileName)
     end: now
     start: 7d
@@ -347,7 +539,7 @@ widgets:
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
-        aid: '["*"]'
+        aid: '["{{ parameters.aid }}"]'
         ParentImageFileName: '["{{ fields.source }}"]'
         ComputerName: '["{{ parameters.ComputerName }}"]'
         cid: '["{{ parameters.cid }}"]'
@@ -367,9 +559,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       | sankey(target=ParentImageFileName, source=GrandparentImageFileName)
     end: now
     start: 7d
@@ -422,9 +626,21 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
+      // Add the ComputerName.
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Check inputs and make ComputerName case-insensitive.
+      | inputComputerName:=?ComputerName
+      | case {
+          test(?ComputerName=="*")
+            | ComputerName=?ComputerName ;
+          test(?ComputerName=="")
+            | ComputerName=* ;
+          test(lower(inputComputerName)==lower(ComputerName)) ;
+        }
 
       // Check the remaining inputs.
-      | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
+      | AgentIdString=?aid CustomerIdString=?cid
       // Add the UserName.
       | $"crowdstrike/fltr-core:zUserName"()
     end: now
@@ -442,7 +658,7 @@ widgets:
         repoOrViewName:
       arguments:
         aid: '["{{ fields.AgentIdString }}"]'
-        cid: '["{{ fields.#cid }}"]'
+        cid: '["{{ parameters.cid }}"]'
       openInNewTab: true
       type: dashboardlink
     - conditions: null
@@ -451,17 +667,27 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | ExternalApiType=Event_DetectionSummaryEvent
+        // Add the ComputerName.
+        | $"crowdstrike/fltr-core:zComputerName"()
+
+        // Check inputs and make ComputerName case-insensitive.
+        | inputComputerName:=?ComputerName
+        | case {
+            test(?ComputerName=="*")
+              | ComputerName=?ComputerName ;
+            test(?ComputerName=="")
+              | ComputerName=* ;
+            test(lower(inputComputerName)==lower(ComputerName)) ;
+          }
 
         // Check the remaining inputs.
-        | SeverityName=?SeverityName Technique=?Technique Tactic=?Tactic
-        | AgentIdString=?AgentIdString
+        | AgentIdString=?aid CustomerIdString=?cid
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
-        AgentIdString: '["{{ fields.AgentIdString }}"]'
-        SeverityName: '["{{ parameters.SeverityName }}"]'
-        Tactic: '["{{ parameters.Tactic }}"]'
-        Technique: '["{{ parameters.Technique }}"]'
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        aid: '["{{ fields.AgentIdString }}"]'
+        cid: '["{{ parameters.cid }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -474,34 +700,3 @@ widgets:
     isLive: false
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.10.0
-parameters:
-  SeverityName:
-    label: SeverityName
-    query: '#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent         |
-      ExternalApiType=Event_DetectionSummaryEvent | groupBy(SeverityName, limit=max)'
-    timeInterval: 7d
-    useDashboardTimeIfSet: true
-    type: query
-    defaultValue: '*'
-    order: 50
-    valueField: SeverityName
-  Tactic:
-    label: Tactic
-    query: '#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent         |
-      ExternalApiType=Event_DetectionSummaryEvent | groupBy(Tactic, limit=max)'
-    timeInterval: 7d
-    useDashboardTimeIfSet: true
-    type: query
-    defaultValue: '*'
-    order: 50
-    valueField: Tactic
-  Technique:
-    label: Technique
-    query: '#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent         |
-      ExternalApiType=Event_DetectionSummaryEvent | groupBy(Technique, limit=max)'
-    timeInterval: 7d
-    useDashboardTimeIfSet: true
-    type: query
-    defaultValue: '*'
-    order: 50
-    valueField: Technique

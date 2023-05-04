@@ -1,0 +1,64 @@
+name: Network Connections - Application Connections to a Remote Port
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.2.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Network Connections - Application Connections to a Remote Port
+
+  // You will need to input a port number into the "RemotePort" user input field. 
+  // The "aid" field can also be populated to speed up the query. 
+
+  // Validate the RemotePort value.
+  inputRemotePort:=?RemotePort
+  | test(inputRemotePort>=0)
+  | test(inputRemotePort<=65535)
+  | test(inputRemotePort!="*")
+
+  // Find the specific event types. 
+  | (#event_simpleName=ProcessRollup2 event_platform=Win aid=?aid) OR (#event_simpleName=NetworkConnectIP4 RemotePort=?RemotePort event_platform=Win aid=?aid)
+
+  // Rename the ProcessId to be used in a selfJoinFilter. 
+  | #event_simpleName match {
+      ProcessRollup2 => pid:=TargetProcessId;
+      NetworkConnectIP4 => pid:=ContextProcessId;
+    }
+
+  // Join the events from above. Change the port to match the one above. 
+  | selfJoinFilter([aid, pid], where=[
+      {#event_simpleName=NetworkConnectIP4 event_platform=Win RemotePort=?RemotePort aid=?aid}, 
+      {#event_simpleName=ProcessRollup2 event_platform=Win}
+    ], prefilter=true)
+
+  // Group by the aid and pid to combine the query results. 
+  | groupBy([aid, pid], function=[ 
+      {#event_simpleName=ProcessRollup2 event_platform=Win | selectlast([ImageFileName, UserSid])},
+      {#event_simpleName=NetworkConnectIP4 event_platform=Win | groupBy([RemoteAddressIP4, RemotePort], limit=max)}
+    ], limit=max)
+
+  // Add the ComputerName.
+  | $"crowdstrike/fltr-core:zComputerName"()
+
+  // Extract FileName from the ImageFileName.
+  | regex(regex="(?<FileName>[^\\\]+)$", field=ImageFileName)
+
+  | case {
+      // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
+      !cidr(LocalAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+        | ipLocation(RemoteAddressIP4)
+        | asn(RemoteAddressIP4) ;
+      * ;
+    }
+
+  // Set default values to keep the output consistent. 
+  | default(field=[RemoteAddressIP4.country, RemoteAddressIP4.city, RemoteAddressIP4.org], value="N/A")
+
+  // Format the values into a single string to keep everything aligned. 
+  | remoteIpPort:=format("%s:%s", field=[RemoteAddressIP4, RemotePort])
+  | ConnectionDetails:=format("%-21s -> %-2s %-18s %-32s", field=[remoteIpPort, RemoteAddressIP4.country, RemoteAddressIP4.city, RemoteAddressIP4.org])
+
+  // Group everything by aid and collect the necessary fields. 
+  | groupBy([aid, ComputerName], function=groupby(FileName, function=collect(ConnectionDetails, limit=1000), limit=max), limit=max)

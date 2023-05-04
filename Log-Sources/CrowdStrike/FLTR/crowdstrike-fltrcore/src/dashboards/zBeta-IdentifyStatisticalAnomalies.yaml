@@ -1,4 +1,4 @@
-name: Beta - Identify Statistical Anomalies
+name: zBeta - Identify Statistical Anomalies
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -49,9 +49,11 @@ widgets:
       | Observed:=rename(observedRequests)
       | UpperLimit:=rename(ulimit)
     visualization: table-view
+    end: now
     start: 30d
     width: 6
     title: Calculate Statistical Deviations
+    isLive: false
     type: query
   note-1671638791955-0:
     x: 0
@@ -81,26 +83,24 @@ widgets:
     width: 6
     title: Instructions
     type: note
-$schema: https://schemas.humio.com/dashboard/v0.4.0
+$schema: https://schemas.humio.com/dashboard/v0.10.0
 parameters:
   AnomalyFactor:
     label: Anomaly Factor
     order: 1
+    type: list
     values:
     - '1'
     - '2'
     - '3'
     - '4'
     - '5'
-    type: list
-    defaultValue: '3'
   EventSimpleName:
     label: Event Name
     query: top(#event_simpleName)
     timeInterval: 1h
     useDashboardTimeIfSet: false
     type: query
-    defaultValue: UserLogonFailed2
     order: 1
     valueField: '#event_simpleName'
   GroupByValue:
@@ -110,12 +110,12 @@ parameters:
     timeInterval: 1h
     useDashboardTimeIfSet: false
     type: query
-    defaultValue: UserName
     order: 50
     valueField: field
   RollingAverageDays:
     label: Rolling Average
     order: 50
+    type: list
     values:
     - 4d
     - 8d
@@ -123,5 +123,3 @@ parameters:
     - 6d
     - 5d
     - 7d
-    type: list
-    defaultValue: 7d

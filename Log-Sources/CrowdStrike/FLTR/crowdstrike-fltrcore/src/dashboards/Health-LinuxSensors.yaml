@@ -28,13 +28,14 @@ widgets:
       #event_simpleName=UserLogon
       | event_platform=Lin LogonType=10
       | ipLocation(RemoteAddressIP4)
-      | format(format="%s, %s", field=[RemoteAddressIP4.country, RemoteAddressIP4.city], as="Location")
+      | Location:=format(format="%s, %s", field=[RemoteAddressIP4.country, RemoteAddressIP4.city])
       | case {
-           Location="null, null" | Location := "-" ;
-        * }
+          Location="null, null" | Location:="-" ;
+          * ;
+        }
       | $"crowdstrike/fltr-core:zComputerName"()
       | groupBy(["RemoteAddressIP4"], function=([count(aid, as="Connection Count"), collect([Location, ComputerName, LocalAddressIP4, aid], limit=10000)]), limit=10)
-      | rename("RemoteAddressIP4",as="Destination SSH")
+      | "Destination SSH":=rename("RemoteAddressIP4")
       | table([aid, ComputerName, Location, LocalAddressIP4, "Destination SSH", "Connection Count"], sortby="Connection Count", limit=1000)
     visualization: table-view
     start: 7d
@@ -46,9 +47,9 @@ widgets:
     y: 0
     height: 3
     queryString: |-
-      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      #event_simpleName=/^(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)$/
       | event_platform=Lin
-      | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]))
+      | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]), limit=max)
       | ConfigStateData match {
           /1400000000c4/ => isInUserMode:="1" ;
           *              => isInUserMode:="0" ;
@@ -105,13 +106,13 @@ widgets:
           0 => isInRFM:="0" ;
         }
       | case {
-          isInUserMode=1 AND isInRFM=1 | Status := "User Mode" ;
-          isInUserMode=0 AND isInRFM=0 | Status := "Kernel Mode" ;
-          isInUserMode=0 AND isInRFM=1 | Status := "RFM" ;
+          isInUserMode=1 isInRFM=1 | Status:="User Mode" ;
+          isInUserMode=0 isInRFM=0 | Status:="Kernel Mode" ;
+          isInUserMode=0 isInRFM=1 | Status:="RFM" ;
           * ;
         }
       | $"crowdstrike/fltr-core:zUrlFalconAid"()
-      | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
+      | OSVersionString=/^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
       | table([aid, hostName, aip.country, kernelVersion, AgentVersion, Status, "Host Management"], limit=1000)
     visualization: table-view
     start: 7d
@@ -126,7 +127,7 @@ widgets:
       #event_simpleName=OsVersionInfo
       | event_platform=Lin
       | groupBy([cid, aid], function=([selectLast([OSVersionString])]), limit=max)
-      | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
+      | OSVersionString=/^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
       | kernelVersion=/(?<kernelBranch>\d+\.\d+)\./
       | groupBy("kernelBranch", limit=max)
     start: 7d
@@ -150,9 +151,11 @@ widgets:
       | event_platform=Lin UID=0
       | $"crowdstrike/fltr-core:zComputerName"()
       | case {
-           LogonType=2  | LogonType := "Interactive" ;
-           LogonType=10 | LogonType := "SSH" ;
-        * }| groupBy([aid, ComputerName], function=([count(aid, as="Logon Count"), collect(LogonType, limit=1000)]), limit=max)
+          LogonType=2  | LogonType:="Interactive" ;
+          LogonType=10 | LogonType:="SSH" ;
+          * ;
+        }
+      | groupBy([aid, ComputerName], function=([count(aid, as="Logon Count"), collect(LogonType, limit=1000)]), limit=max)
     visualization: table-view
     start: 7d
     width: 4
@@ -163,7 +166,7 @@ widgets:
     y: 0
     height: 3
     queryString: |-
-      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      #event_simpleName=/^(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)$/
       | event_platform=Lin
       | count(aid, distinct=true)
     start: 7d
@@ -179,7 +182,7 @@ widgets:
     y: 0
     height: 3
     queryString: |-
-      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      #event_simpleName=/6(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)$/
       | event_platform=Lin
       | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]), limit=max)
       | ConfigStateData match {
@@ -190,7 +193,7 @@ widgets:
           2 => isInRFM:="1" ;
           0 => isInRFM:="0" ;
         }
-      | isInRFM=1 AND isInUserMode=1
+      | isInRFM=1 isInUserMode=1
       | count(aid, distinct=true)
     start: 7d
     width: 3
@@ -204,9 +207,9 @@ widgets:
     y: 0
     height: 3
     queryString: |-
-      #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/
+      #event_simpleName=/^(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)$/
       | event_platform=Lin
-      | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]))
+      | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]), limit=max)
       | ConfigStateData match {
           /1400000000c4/ => isInUserMode:="1" ;
           *              => isInUserMode:="0" ;
@@ -216,10 +219,11 @@ widgets:
           0 => isInRFM:="0" ;
         }
       | case {
-          isInUserMode=1 AND isInRFM=1 | Status := "User Mode" ;
-          isInUserMode=0 AND isInRFM=0 | Status := "Kernel Mode" ;
-          isInUserMode=0 AND isInRFM=1 | Status := "RFM" ;
-        * }
+          isInUserMode=1 isInRFM=1 | Status:="User Mode" ;
+          isInUserMode=0 isInRFM=0 | Status:="Kernel Mode" ;
+          isInUserMode=0 isInRFM=1 | Status:="RFM" ;
+          * 
+        }
       | groupBy("Status", function=(count(aid, as="Count")), limit=max)
     end: now
     start: 7d

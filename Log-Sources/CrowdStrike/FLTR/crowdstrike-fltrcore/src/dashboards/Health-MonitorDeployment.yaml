@@ -13,26 +13,41 @@ widgets:
     queryString: |-
       #event_simpleName=SensorHeartbeat
       | worldMap(ip=aip)
+    end: now
     start: 7d
     width: 6
     options:
-      magnitudeMode: opacity
-      opacityMode: opacity
-      projection: mercator
       autoRotate: false
+      magnitudeMode: opacity
       norm: true
+      opacityMode: opacity
     visualization: world-map
     title: Active Sensors
+    isLive: false
     type: query
   8a5df5f5-f52e-4b80-ae79-aa83b5562ba6:
     x: 0
-    y: 5
     height: 5
     queryString: |-
       #event_simpleName=SensorHeartbeat
       | timechart(function=count(field=aid, distinct=true, as="Total"))
+    end: now
     start: 7d
     width: 6
+    y: 5
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName=SensorHeartbeat
+        | timechart(function=count(field=aid, distinct=true, as="Total"))
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments: {}
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       connect-points: false
       imputation: none
@@ -43,19 +58,33 @@ widgets:
           title: Count
     visualization: time-chart
     title: Total Sensors
+    isLive: false
     type: query
   c9130210-486d-4416-be70-aa574329388c:
     x: 3
-    y: 0
     height: 5
     queryString: |-
       #event_simpleName=SensorHeartbeat
       | groupBy(event_platform, function=count(field=aid, distinct=true), limit=max)
+    end: now
     start: 7d
     width: 3
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Platform
+      titleTemplate: 'Search by Platform: {{ fields.event_platform }}'
+      queryString: |-
+        #event_simpleName=SensorHeartbeat
+        event_platform=?event_platform
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        event_platform: '["{{ fields.event_platform }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
-      innerRadius: 60
-      legendLabelOverflow: full
       series:
         Android:
           color: '#22C3C2'
@@ -68,9 +97,13 @@ widgets:
         iOS:
           color: '#ff936f'
           title: iOS
+      legendLabelOverflow: full
+      maxLegendRows: 2
       withLegendTitle: false
+      innerRadius: 60
     visualization: pie-chart
     title: Sensors by Platform
+    isLive: false
     type: query
   f1d728ce-098e-4864-94a6-19fedfa91329:
     x: 0
@@ -81,8 +114,10 @@ widgets:
       | groupBy(event_platform, function=count(field=aid, distinct=true, as="Total"), limit=max)
       | sort(Total, limit=25)
     visualization: table-view
+    end: now
     start: 7d
     width: 3
     title: Sensors by Platform
+    isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.4.0
+$schema: https://schemas.humio.com/dashboard/v0.10.0
