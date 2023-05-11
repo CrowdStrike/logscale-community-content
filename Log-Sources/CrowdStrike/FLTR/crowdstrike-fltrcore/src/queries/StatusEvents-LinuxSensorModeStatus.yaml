@@ -1,4 +1,4 @@
-name: Sensor Health - Linux Sensor Mode
+name: Status Events - Linux Sensor Mode Status
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Sensor Health - Linux Sensor Mode
+  // Status Events - Linux Sensor Mode Status
 
   // Narrow the search to specific events on Linux.
   #event_simpleName=/(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)/

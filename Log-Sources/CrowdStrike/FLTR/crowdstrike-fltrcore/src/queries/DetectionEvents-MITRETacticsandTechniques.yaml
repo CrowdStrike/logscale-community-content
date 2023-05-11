@@ -1,4 +1,4 @@
-name: MITRE - Heatmap by Tactic and Technique
+name: Detection Events - MITRE Tactics and Techniques
 visualization:
   options:
     colorPalette: greenRed
@@ -9,7 +9,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // MITRE - Heatmap by Tactic and Technique
+  // Detection Events - MITRE Tactics and Techniques
 
   // These events don't have an #event_simpleName tag.
   // Excluding the tag is almost as fast, i.e. "everything without this tag".

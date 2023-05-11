@@ -133,7 +133,7 @@ widgets:
       | falconPID:=ContextProcessId
       | selfJoinFilter([aid, falconPID], where=[{#event_simpleName=ProcessRollup2}, {#event_simpleName=NetworkConnectIP4}], prefilter=true)
       | regex("^.+(\\\|\/)(?<FileName>.+)$", field=ImageFileName, strict=false)
-      | groupBy([aid, falconPID], function=([min(ProcessStartTime, as=ProcessStartTime), count(#event_simpleName, distinct=true, as=eventCount), collect([ParentBaseFileName, FileName, CommandLine, RemoteAddressIP4], limit=10000)]), limit=max)
+      | groupBy([aid, falconPID], function=([min(ProcessStartTime, as=ProcessStartTime), count(#event_simpleName, distinct=true, as=eventCount), collect([ParentBaseFileName, FileName, CommandLine, RemoteAddressIP4], limit=100)]), limit=max)
       | eventCount>1
       | shortCommandLine:=format("%,.100s", field=CommandLine)
       | $"crowdstrike/fltr-core:zComputerName"()

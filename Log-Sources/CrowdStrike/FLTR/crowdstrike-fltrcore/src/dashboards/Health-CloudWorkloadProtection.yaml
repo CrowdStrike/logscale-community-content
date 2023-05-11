@@ -44,7 +44,7 @@ widgets:
       #kind=Primary #event_simpleName!=*
       | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent
       | "Detection Type":=format("%-18s %s", field=[severity, detectionName])
-      | groupBy(resourceName, function=[collect(["Detection Type", clusterName], limit=10000), count(as="Total Events")], limit=max)
+      | groupBy(resourceName, function=[collect(["Detection Type", clusterName], limit=100), count(as="Total Events")], limit=max)
       | sort("Total Events", limit=10000)
     visualization: table-view
     end: now
@@ -118,7 +118,7 @@ widgets:
       titleTemplate: 'Search by Kernel: {{ fields.kernelBranch }}'
       queryString: |-
         #event_simpleName=PodInfo
-        | join({#event_simpleName=OsVersionInfo}, field=aid, include=OSVersionString, limit=100000)
+        | join({#event_simpleName=OsVersionInfo}, field=aid, include=OSVersionString, limit=200000)
         | groupBy(aid, function=selectLast(OSVersionString), limit=max)
         | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
         | kernelVersion=/(?<kernelBranch>\d+\.\d+)\./

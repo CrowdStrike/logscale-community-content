@@ -1,4 +1,4 @@
-name: Processes - Score Risky Processes
+name: Process Events - Score Risky Processes
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Processes - Score Risky Processes
+  // Process Events - Score Risky Processes
 
   // Get all Windows ProcessRollup2 Events.
   #event_simpleName=ProcessRollup2 event_platform=Win
@@ -49,7 +49,7 @@ queryString: |-
   | format(format="Score: %s\t|\t%s -> %s", field=[behaviorWeight, FileName, CommandLine], as="executionDetails")
 
   // Group and organize output.
-  | groupby([cid, aid, dayBucket], function=[count(FileName, distinct=true, as="fileCount"), sum(behaviorWeight, as="totalScore"), collect(executionDetails)], limit=max)
+  | groupby([cid, aid, dayBucket], function=[count(FileName, distinct=true, as="fileCount"), sum(behaviorWeight, as="totalScore"), collect(executionDetails, limit=100)], limit=max)
 
   // Add the ComputerName
   | $"crowdstrike/fltr-core:zComputerName"()

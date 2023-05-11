@@ -1,4 +1,4 @@
-name: Logins - Windows LogonType
+name: Logon Events - Windows LogonType
 visualization:
   options:
     series: {}
@@ -12,7 +12,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Logins - Windows LogonType
+  // Logon Events - Windows LogonType
 
   // Search for UserLogon events from Windows. Also add a UserName input box.
   #event_simpleName=UserLogon event_platform=Win ?UserName

@@ -1,4 +1,4 @@
-name: Network Connections - IOC and GeoIP Lookups
+name: Network Events - Remote IP IOC and GeoIP Lookups
 $schema: https://schemas.humio.com/query/v0.1.0
 visualization:
   options: {}
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Network Connections - IOC and GeoIP Lookups
+  //Network Events - Remote IP IOC and GeoIP Lookups
 
   // First look for the NetworkConnect events. 
   #event_simpleName=NetworkConnectIP4

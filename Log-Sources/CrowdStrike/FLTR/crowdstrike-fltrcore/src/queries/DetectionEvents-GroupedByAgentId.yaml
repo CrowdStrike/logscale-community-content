@@ -1,4 +1,4 @@
-name: Detections - Grouped By AID
+name: Detection Events - Grouped By AgentId
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Detections - Grouped By AID
+  // Detection Events - Grouped By AgentId
   
   // These events don't have an #event_simpleName tag.
   // Excluding the tag is almost as fast, i.e. "everything without this tag".
@@ -26,7 +26,7 @@ queryString: |-
   | DetectName!=/(custom|overwatch)/i
 
   // Group the results by aid.
-  | groupBy([aid, ComputerName], function=[collect(DetectName), count(as="TotalHits")], limit=max)
+  | groupBy([aid, ComputerName], function=[collect(DetectName, limit=100), count(as="TotalHits")], limit=max)
 
   // Sort by the number of hits.
   | sort(TotalHits, limit=1000)

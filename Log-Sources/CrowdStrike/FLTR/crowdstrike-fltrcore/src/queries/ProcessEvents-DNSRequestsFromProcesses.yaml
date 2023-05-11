@@ -1,4 +1,4 @@
-name: Processes - DNS Requests 
+name: Process Events - DNS Requests From Processes
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Processes - DNS Requests
+  // Process Events - DNS Requests From Processes
 
   // Grab all of the ProcessRollup2 events.
   #event_simpleName=ProcessRollup2
@@ -16,7 +16,7 @@ queryString: |-
   | join(
       { #event_simpleName=DnsRequest }, 
       field=TargetProcessId, key=ContextProcessId, 
-      include=[DomainName], limit=100000
+      include=[DomainName], limit=200000
     )
 
   // Filter out non-DNS names.
@@ -42,7 +42,7 @@ queryString: |-
     }
 
   // Group the results, sort by the ones with IOCs first.
-  | groupBy([aid, FileName], function=collect([ComputerName, DomainName, IOC, iocMatch], limit=10000), limit=max)
+  | groupBy([aid, FileName], function=collect([ComputerName, DomainName, IOC, iocMatch], limit=100), limit=max)
   | sort(iocMatch, limit=10000)
 
   // Remove the iocMatch field since we don't need it anymore.

@@ -1,4 +1,4 @@
-name: Applications - Find SSL Versions
+name: Installed Application Events - Find SSL Versions
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Applications - Find SSL Versions
+  // Installed Application Events - Find SSL Versions
   
   // Find anything where OpenSSL is installed. Requires Discover or Spotlight.
   #event_simpleName=InstalledApplication openssl
@@ -22,4 +22,4 @@ queryString: |-
   | $"crowdstrike/fltr-core:zComputerName"()
 
   // Group by aid and collect the string from above.
-  | groupBy(aid, function=collect([opensslDetails, ComputerName], limit=10000), limit=max)
+  | groupBy(aid, function=collect([opensslDetails, ComputerName], limit=100), limit=max)

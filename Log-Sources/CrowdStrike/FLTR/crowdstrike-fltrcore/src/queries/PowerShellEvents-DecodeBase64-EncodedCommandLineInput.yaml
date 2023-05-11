@@ -1,4 +1,4 @@
-name: PowerShell - Decode Encoded Commands
+name: PowerShell Events - Decode Base64-Encoded CommandLine Input
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"ParentBaseFileName","format":"text","header":"File
@@ -13,7 +13,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // PowerShell - Decode Encoded Commands
+  // PowerShell Events - Decode Base64-Encoded CommandLine Input
 
   // Grab all PowerShell execution events.
   #event_simpleName=ProcessRollup2 event_platform=Win ImageFileName=/\\powershell(_ise)?\.exe/i
@@ -35,4 +35,4 @@ queryString: |-
   | decodedCommand=?decodedCommand
 
   // Uncomment the next line to include detection types.
-  // | join({#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent ExternalApiType="Event_DetectionSummaryEvent"}, field=aid, key=AgentIdString, include=[DetectName, Tactic, Technique], limit=100000)
+  // | join({#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent ExternalApiType="Event_DetectionSummaryEvent"}, field=aid, key=AgentIdString, include=[DetectName, Tactic, Technique], limit=200000)

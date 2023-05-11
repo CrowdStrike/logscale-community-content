@@ -1,4 +1,4 @@
-name: Network Connections - Remote Access Map
+name: Network Events - Connections to Common Remote Access Ports
 visualization:
   options:
     autoRotate: true
@@ -10,13 +10,13 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Network Connections - Remote Access Map
+  // Network Events - Connections to Common Remote Access Ports
 
   // Grab remote network connection events.
   #event_simpleName=NetworkConnectIP4
 
   // Look at these specific ports.
-  | in(RemotePort, values=["21", "22", "3389", "5900", "5901"])
+  | RemotePort=/^(21|22|3389|5900|5901)$/
 
-  // Convert to a pew-pew map.
+  // Convert to a world map.
   | worldMap(ip=RemoteAddressIP4)

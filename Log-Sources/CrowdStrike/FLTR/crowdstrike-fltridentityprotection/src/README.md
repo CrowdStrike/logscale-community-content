@@ -1,6 +1,6 @@
 # CrowdStrike Falcon Identity Protection
 
-This package contains dashboards and saved searches that highlight Falcon Identity Protection detections as well as telemetry events. Learn more about [CrowdStrike Falcon Identity Protection here](https://www.crowdstrike.com/products/identity-protection/falcon-identity-threat-detection/).
+This package contains dashboards and saved searches for Falcon Identity Protection events. Learn more about [CrowdStrike Falcon Identity Protection here](https://www.crowdstrike.com/products/identity-protection/falcon-identity-threat-detection/). 
 
 ## Changelog
 
@@ -25,7 +25,7 @@ CrowdStrike
  
 ## Dependencies
 
-This package assumes that CrowdStrike Falcon data is being ingested into LogScale with the CrowdStrike FDR parser.
+You must have a subscription for Falcon Identity Protection in order to receive those event types. This package assumes that CrowdStrike Falcon data is being ingested into LogScale and parsed with the CrowdStrike FDR parser. 
 
 ## Support
 

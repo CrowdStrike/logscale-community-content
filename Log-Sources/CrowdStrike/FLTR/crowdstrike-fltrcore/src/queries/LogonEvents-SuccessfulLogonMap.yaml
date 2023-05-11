@@ -1,4 +1,4 @@
-name: Logins - Successful Login Map
+name: Logon Events - Successful Logon Map
 visualization:
   options: {}
   type: world-map
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Logins - Successful Login Map
+  // Logon Events - Successful Logon Map
 
   // Identify all UserLogon events.
   #event_simpleName=UserLogon LogonType=10

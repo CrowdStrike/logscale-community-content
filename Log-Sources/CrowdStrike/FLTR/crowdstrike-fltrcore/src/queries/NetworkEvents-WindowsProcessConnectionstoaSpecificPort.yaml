@@ -1,4 +1,4 @@
-name: Network Connections - Application Connections to a Remote Port
+name: Network Events - Windows Process Connections to a Specific Port
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Network Connections - Application Connections to a Remote Port
+  // Network Events - Windows Process Connections to a Specific Port
 
   // You will need to input a port number into the "RemotePort" user input field. 
   // The "aid" field can also be populated to speed up the query. 
@@ -61,4 +61,4 @@ queryString: |-
   | ConnectionDetails:=format("%-21s -> %-2s %-18s %-32s", field=[remoteIpPort, RemoteAddressIP4.country, RemoteAddressIP4.city, RemoteAddressIP4.org])
 
   // Group everything by aid and collect the necessary fields. 
-  | groupBy([aid, ComputerName], function=groupby(FileName, function=collect(ConnectionDetails, limit=1000), limit=max), limit=max)
+  | groupBy([aid, ComputerName], function=groupby(FileName, function=collect(ConnectionDetails, limit=100), limit=max), limit=max)

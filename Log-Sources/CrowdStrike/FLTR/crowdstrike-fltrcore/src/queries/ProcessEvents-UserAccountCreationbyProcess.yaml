@@ -1,0 +1,25 @@
+name: Process Events - User Account Creation by Process
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // Process Events - User Account Creation by Process
+
+  // Filter on the process events.
+  #event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2
+
+  // Join the results with the UserAccountCreated events.
+  | join({#event_simpleName=UserAccountCreated}, key=RpcClientProcessId, field=TargetProcessId, include=[UserName], limit=200000)
+
+  // Add the ComputerName.
+  | $"crowdstrike/fltr-core:zComputerName"()
+
+  // Format a string to include details.
+  | UserDetails:=format("%-18s -> %s", field=[UserName, CommandLine])
+
+  // Format the output.
+  | groupBy([aid, ComputerName], function=collect(UserDetails, limit=100), limit=max)

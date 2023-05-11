@@ -1,4 +1,4 @@
-name: Logins - Failed Logins by AID
+name: Logon Events - Failed Logins by AID
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Logins - Failed Logins by AID
+  // Logon Events - Failed Logons by AID
 
   // Find all of the login failure events.
   #event_simpleName=UserLogonFailed*
@@ -16,4 +16,4 @@ queryString: |-
   | $"crowdstrike/fltr-core:zComputerName"()
 
   // Group it by the ComputerName, collect related data, add the total count.
-  | groupBy(aid, function=[collect([ComputerName, UserName], limit=10000), count(as="Total Failed Logins")], limit=max)
+  | groupBy(aid, function=[collect([ComputerName, UserName], limit=100), count(as="Total Failed Logins")], limit=max)

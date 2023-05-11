@@ -1,4 +1,4 @@
-name: MITRE - Tactics Over Time
+name: Detection Events - MITRE Tactics Over Time
 visualization:
   options:
     colorPalette: greenRed
@@ -11,7 +11,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // MITRE - Tactics Over Time
+  // Detection Events - MITRE Tactics Over Time
 
   // These events don't have an #event_simpleName tag.
   // Excluding the tag is almost as fast, i.e. "everything without this tag".

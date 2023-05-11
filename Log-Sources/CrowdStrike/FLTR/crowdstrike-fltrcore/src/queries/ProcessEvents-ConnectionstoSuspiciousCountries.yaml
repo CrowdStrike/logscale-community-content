@@ -1,4 +1,4 @@
-name: Processes - Connections to Suspicious Countries
+name: Process Events - Connections to Suspicious Countries
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"aid","format":"text","width":256},{"type":"field","fieldName":"ComputerName","format":"text","width":168},{"type":"field","fieldName":"FileName","format":"text","width":168},{"type":"field","fieldName":"RemoteIP","format":"text","width":128},{"type":"field","fieldName":"Country","format":"text","width":84},{"type":"link","openInNewBrowserTab":true,"style":"link","hrefTemplate":"{{fields[\"Process
@@ -11,7 +11,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Processes - Connections to Suspicious Countries
+  // Process Events - Connections to Suspicious Countries
 
   // Grab all of the ProcessRollup2 events.
   #event_simpleName=ProcessRollup2
@@ -23,7 +23,7 @@ queryString: |-
   | join(
       { #event_simpleName=NetworkConnectIP4 | ipLocation(RemoteAddressIP4) | RemoteAddressIP4.country=/CN|RU/ }, 
       field=TargetProcessId, key=ContextProcessId, 
-      include=[RemoteAddressIP4, RemoteAddressIP4.country], limit=100000
+      include=[RemoteAddressIP4, RemoteAddressIP4.country], limit=200000
     )
 
   // Regex to extract the FileName.

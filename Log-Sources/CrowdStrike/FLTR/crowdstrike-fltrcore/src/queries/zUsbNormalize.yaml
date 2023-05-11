@@ -1,0 +1,68 @@
+name: zUsbNormalize
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+    newestAtBottom: 'false'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.2.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  // This function normalizes USB events into human-readable names.
+  // You generally want to run this near the end of the query for performance reasons.
+  //
+  // To call this function in a query if you have it saved as part of a package, e.g. crowdstrike/fltr-core:
+  // $"crowdstrike/fltr-core:zUsbNormalize"()
+  //
+  // To call this function in a query if you have it saved locally:
+  // $"zUsbNormalize"()
+
+  // Set a default value for events missing one.
+  | default(field=[DeviceManufacturer, DeviceSerialNumber], value="N/A")
+
+  // Create new values based on existing names.
+  | DeviceFullName:=format("%s - %s (S/N: %s)", field=[DeviceManufacturer, DeviceProduct, DeviceSerialNumber])
+  | CombinedID:=format("%s_%s_%s", field=[DeviceManufacturer, DeviceProduct, DeviceSerialNumber])
+
+  // Translate the DcPolicyMatchMethod value.
+  | DcPolicyMatchMethod match {
+      1 => MatchMethod:="Device Class" ;
+      2 => MatchMethod:="Device Class VID" ;
+      3 => MatchMethod:="Device Class VID PID" ;
+      4 => MatchMethod:="Device Class VID PID Serial" ;
+      5 => MatchMethod:="Device Class Subclass Protocol" ;
+      6 => MatchMethod:="Any Class VID" ;
+      7 => MatchMethod:="Any Class VID PID" ;
+      8 => MatchMethod:="Any Class PID Serial" ;
+      * => * ;
+    }
+
+  // Translate the DeviceUsbClass value.
+  | DeviceUsbClass match {
+      0   => DeviceClass:="Human Interface Device" ; //00h
+      1   => DeviceClass:="Audio" ; //01h
+      2   => DeviceClass:="Communications and CDC Control" ; //02h
+      3   => DeviceClass:="Human Interface Device" ; //03h
+      5   => DeviceClass:="Physical" ; //05h
+      6   => DeviceClass:="Image" ; //06h
+      7   => DeviceClass:="Printer" ; //07h
+      8   => DeviceClass:="Mass Storage" ; //08h
+      9   => DeviceClass:="Hub" ; //09h
+      10  => DeviceClass:="CDC-Date" ; //0Ah
+      11  => DeviceClass:="Smart Card" ; //0Bh
+      13  => DeviceClass:="Content Security" ; //0Dh
+      14  => DeviceClass:="Video" ; //0Eh
+      15  => DeviceClass:="Personal Healthcare" ; //0Fh
+      16  => DeviceClass:="Audio/Video Devices" ; //10h
+      17  => DeviceClass:="Billboard Device Class" ; //11h
+      18  => DeviceClass:="USB Type-C Bridge Class" ; //12h
+      60  => DeviceClass:="I3C Device Class" ; //3Ch
+      84  => DeviceClass:="Diagnostic Device" ; //DCh
+      224 => DeviceClass:="Wireless Controller" ; //E0h
+      239 => DeviceClass:="Miscellaneous" ; //EFh
+      254 => DeviceClass:="Application Specific" ; //FEh
+      255 => DeviceClass:="Vendor Specific" ; //FFh
+      *   => DeviceClass:="UNDEFINED" ;
+    }

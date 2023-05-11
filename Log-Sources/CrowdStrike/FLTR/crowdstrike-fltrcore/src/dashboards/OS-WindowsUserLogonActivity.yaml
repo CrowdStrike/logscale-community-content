@@ -166,7 +166,7 @@ widgets:
       | event_platform=Win UserSid=/^S\-1\-5\-21\-.*/
       | UserIsAdmin=?UserIsAdmin UserName=?UserName LogonType=?LogonType
       | lowercase("UserName")
-      | groupby(UserSid, function=([count(UserName, distinct=true), collect(UserName, limit=1000)]), limit=max)
+      | groupby(UserSid, function=([count(UserName, distinct=true), collect(UserName, limit=100)]), limit=max)
       | _count>1
       | count(UserSid)
     end: now

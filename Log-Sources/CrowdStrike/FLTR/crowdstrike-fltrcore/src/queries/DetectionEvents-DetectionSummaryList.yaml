@@ -1,4 +1,4 @@
-name: Detections - Detection Summary List
+name: Detection Events - Detection Summary List
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Detections - Detection Summary List
+  // Detection Events - Detection Summary List
 
   // These events don't have an #event_simpleName tag.
   // Excluding the tag is almost as fast, i.e. "everything without this tag".

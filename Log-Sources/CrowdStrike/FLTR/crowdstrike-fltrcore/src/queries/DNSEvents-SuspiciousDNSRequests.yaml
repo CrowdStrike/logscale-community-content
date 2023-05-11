@@ -1,4 +1,4 @@
-name: DNS - Suspicious Requests
+name: DNS Events - Suspicious DNS Requests
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // DNS - Suspicious Requests
+  // DNS Events - Suspicious DNS Requests
   
   // Find the suspicious DNS event types.
   #event_simpleName=SuspiciousDnsRequest
@@ -17,5 +17,5 @@ queryString: |-
   | $"crowdstrike/fltr-core:zUserName"()
 
   // Group by the ComputerName and collect the rest.
-  | groupBy(aid, function=collect([ComputerName, UserName, DomainName], limit=10000), limit=max) 
+  | groupBy(aid, function=collect([ComputerName, UserName, DomainName], limit=100), limit=max) 
   

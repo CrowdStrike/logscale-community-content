@@ -1,4 +1,4 @@
-name: PowerShell - Hidden Window Flags
+name: PowerShell Events - ShowWindowFlags Disabled
 visualization:
   options:
     columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"ComputerName","format":"text","width":132},{"type":"field","fieldName":"UserName","format":"text","width":164},{"type":"field","fieldName":"CommandLine","format":"text","width":1708}]'
@@ -10,7 +10,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // PowerShell - Hidden Window Flags
+  // PowerShell Events - ShowWindowFlags Disabled
 
   // This query finds the Command Prompt or Powershell commands run from hidden windows.
 

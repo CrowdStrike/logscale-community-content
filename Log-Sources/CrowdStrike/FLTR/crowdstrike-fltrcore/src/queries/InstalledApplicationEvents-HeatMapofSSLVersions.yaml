@@ -1,4 +1,4 @@
-name: Applications - Heat Map of SSL Versions
+name: Installed Application Events - Heat Map of SSL Versions
 visualization:
   options:
     labelAngle: 37
@@ -13,7 +13,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Applications - Heat Map of SSL Versions
+  // Installed Application Events - Heat Map of SSL Versions
 
   // Find anything using an application with OpenSSL.
   #event_simpleName=InstalledApplication openssl

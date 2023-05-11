@@ -1,4 +1,4 @@
-name: Processes - Low Port Binding
+name: Process Events - Identify Low Port Bindings
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 7d
 queryString: |-
-  // Processes - Low Port Binding
+  // Process Events - Identify Low Port Bindings
 
   // Grab the process events.
   #event_simpleName=ProcessRollup2
@@ -17,7 +17,7 @@ queryString: |-
   | join(
       { #event_simpleName=NetworkListenIP4 LocalPort<1024 LocalPort!=0 }, 
       field=TargetProcessId, key=ContextProcessId, 
-      include=[LocalAddressIP4, LocalPort], limit=100000
+      include=[LocalAddressIP4, LocalPort], limit=200000
     )
 
   // Shorten the full path to just the file name.
@@ -29,6 +29,9 @@ queryString: |-
   // Add the ComputerName.
   | $"crowdstrike/fltr-core:zComputerName"()
 
+  // Create a string from the values.
+  | ListenerDetails:=format("%-18s -> %s:%s", field=[FileName, LocalAddressIP4, LocalPort])
+
   // Group by unique combinations of values.
-  | groupBy([aid, ComputerName, FileName, LocalAddressIP4, LocalPort], limit=max) 
+  | groupBy([aid, ComputerName], function=collect(ListenerDetails, limit=100), limit=max) 
   | drop("_count")

@@ -54,7 +54,7 @@ widgets:
       | test(lower(FileName)==lower(inputFileName))
       | $"crowdstrike/fltr-core:zComputerName"()
       | ShortCommandLine:=format("%.64s...", field=CommandLine)
-      | groupBy([aid, TargetProcessId], function=collect([ComputerName, ImageFileName, ShortCommandLine], limit=1000), limit=max)
+      | groupBy([aid, TargetProcessId], function=collect([ComputerName, ImageFileName, ShortCommandLine], limit=100), limit=max)
     visualization: table-view
     end: now
     start: 7d
