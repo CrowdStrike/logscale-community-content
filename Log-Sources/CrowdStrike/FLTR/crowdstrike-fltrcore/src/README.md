@@ -35,7 +35,7 @@ Version 1.3.6
 - Renamed titles with "AID" to "AgentId" for consistency.
 - Renamed "Inventory" and "File Vantage" dashboards for consistency. 
 - Renamed the "Windows" dashboards to put them under the "OS" category. 
-- Renamed a large number of saved queries to make the descripton more accurate. 
+- Renamed a large number of saved queries to make the description more accurate. 
 - Added a `zUsbNormalize()` user function to normalize USB events to human-readable names. 
 - Added new queries from other internal packages. 
 
@@ -48,7 +48,7 @@ Version 1.3.5
 
 Version 1.3.4
 - Added a `zCommunityId` user function to calculate the Community Id.
-- Added Event Interations for ContextProcessId and TargetProcessId.
+- Added Event Interactions for ContextProcessId and TargetProcessId.
 - Added a `Processes - Outbound Connections From a Process Name` query that is based on CVE-2023-23397.
 - Dashboard updates for a future release of the FLTR parser. 
 - Minor dashboard fix where the legend was missing. 
