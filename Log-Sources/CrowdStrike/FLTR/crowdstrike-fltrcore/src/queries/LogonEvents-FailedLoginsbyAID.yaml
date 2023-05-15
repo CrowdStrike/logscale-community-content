@@ -16,4 +16,4 @@ queryString: |-
   | $"crowdstrike/fltr-core:zComputerName"()
 
   // Group it by the ComputerName, collect related data, add the total count.
-  | groupBy(aid, function=[collect([ComputerName, UserName], limit=100), count(as="Total Failed Logins")], limit=max)
+  | groupBy(aid, function=[collect([ComputerName, UserName], limit=1000), count(as="Total Failed Logins")], limit=max)

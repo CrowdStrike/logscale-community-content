@@ -46,7 +46,7 @@ queryString: |-
 
   // Groupby the aid and processid, which should be a unique combination
   // Collect all the other interesting field values for each group
-  | groupBy([aid, ProcessId], function=[count(as=Count), collect([ComputerName, #event_simpleName, ParentFileName, ChildFileName, "Process Explorer", "Graph Explorer"], limit=100)], limit=max)
+  | groupBy([aid, ProcessId], function=[count(as=Count), collect([ComputerName, #event_simpleName, ParentFileName, ChildFileName, "Process Explorer", "Graph Explorer"], limit=1000)], limit=max)
 
   // This should filter any false positives, if the group only has a single entry then only a single event was found etc
   | Count>3

@@ -22,5 +22,5 @@ queryString: |-
   | $"crowdstrike/fltr-core:zComputerName"()
 
   // Group it by ComputerName and ImageFileName, then grab all of the CommandLine entries for those groups.
-  | groupBy([aid, ImageFileName], function=collect([ComputerName, CommandLine], limit=100), limit=max)
+  | groupBy([aid, ImageFileName], function=collect([ComputerName, CommandLine], limit=1000), limit=max)
   | table([aid, ComputerName, ImageFileName, CommandLine], limit=1000)

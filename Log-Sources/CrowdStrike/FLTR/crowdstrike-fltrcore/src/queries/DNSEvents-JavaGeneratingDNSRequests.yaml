@@ -25,4 +25,4 @@ queryString: |-
   | ConnectionDetails:=format("%-36s -> %s", field=[DomainName, CommandLine])
 
   // Format the output.
-  | groupBy([aid, ComputerName], function=collect(ConnectionDetails, limit=100), limit=max)
+  | groupBy([aid, ComputerName], function=collect(ConnectionDetails, limit=1000), limit=max)

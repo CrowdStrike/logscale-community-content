@@ -45,7 +45,7 @@ widgets:
       // Add the date the spike occurred.
       | Time := formatTime("%Y-%m-%d", field=_bucket, locale=en_US, timezone=Z)
 
-      | groupBy(?GroupByValue, function=[collect([Time, observedRequests, ulimit], limit=100)], limit=max)
+      | groupBy(?GroupByValue, function=[collect([Time, observedRequests, ulimit], limit=1000)], limit=max)
       | Observed:=rename(observedRequests)
       | UpperLimit:=rename(ulimit)
     visualization: table-view

@@ -22,4 +22,4 @@ queryString: |-
   | UserDetails:=format("%-18s -> %s", field=[UserName, CommandLine])
 
   // Format the output.
-  | groupBy([aid, ComputerName], function=collect(UserDetails, limit=100), limit=max)
+  | groupBy([aid, ComputerName], function=collect(UserDetails, limit=1000), limit=max)

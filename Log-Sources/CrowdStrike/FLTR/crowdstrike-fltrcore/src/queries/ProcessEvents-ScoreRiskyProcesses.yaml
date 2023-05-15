@@ -49,7 +49,7 @@ queryString: |-
   | format(format="Score: %s\t|\t%s -> %s", field=[behaviorWeight, FileName, CommandLine], as="executionDetails")
 
   // Group and organize output.
-  | groupby([cid, aid, dayBucket], function=[count(FileName, distinct=true, as="fileCount"), sum(behaviorWeight, as="totalScore"), collect(executionDetails, limit=100)], limit=max)
+  | groupby([cid, aid, dayBucket], function=[count(FileName, distinct=true, as="fileCount"), sum(behaviorWeight, as="totalScore"), collect(executionDetails, limit=1000)], limit=max)
 
   // Add the ComputerName
   | $"crowdstrike/fltr-core:zComputerName"()

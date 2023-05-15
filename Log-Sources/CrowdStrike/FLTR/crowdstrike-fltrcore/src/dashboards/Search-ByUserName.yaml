@@ -22,7 +22,7 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Create a chart of the top associated hosts.
-      | groupBy(aid, function=[collect([ComputerName, #event_simpleName], limit=100), count(as="Total Events")], limit=max)
+      | groupBy(aid, function=[collect([ComputerName, #event_simpleName], limit=1000), count(as="Total Events")], limit=max)
       | "Distinct Events":=rename(#event_simpleName)
       | sort("Total Events", limit=1000)
       | table([aid, ComputerName, "Distinct Events", "Total Events"], limit=1000)
@@ -52,7 +52,7 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Group the results.
-      | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=100), count(as="Total Events")], limit=max)
+      | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=1000), count(as="Total Events")], limit=max)
       | sort("Total Events", limit=1000)
     visualization: table-view
     end: now
@@ -151,7 +151,7 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Group the results.
-      | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=100), count(as="Total Events")], limit=max)
+      | groupBy(aid, function=[collect([ComputerName, LogonTypeName], limit=1000), count(as="Total Events")], limit=max)
       | sort("Total Events", limit=1000)
     visualization: table-view
     end: now

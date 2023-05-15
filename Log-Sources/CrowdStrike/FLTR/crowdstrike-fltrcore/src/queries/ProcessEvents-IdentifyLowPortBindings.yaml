@@ -33,5 +33,5 @@ queryString: |-
   | ListenerDetails:=format("%-18s -> %s:%s", field=[FileName, LocalAddressIP4, LocalPort])
 
   // Group by unique combinations of values.
-  | groupBy([aid, ComputerName], function=collect(ListenerDetails, limit=100), limit=max) 
+  | groupBy([aid, ComputerName], function=collect(ListenerDetails, limit=1000), limit=max) 
   | drop("_count")

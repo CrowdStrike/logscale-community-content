@@ -17,5 +17,5 @@ queryString: |-
   | $"crowdstrike/fltr-core:zUserName"()
 
   // Group by the ComputerName and collect the rest.
-  | groupBy(aid, function=collect([ComputerName, UserName, DomainName], limit=100), limit=max) 
+  | groupBy(aid, function=collect([ComputerName, UserName, DomainName], limit=1000), limit=max) 
   

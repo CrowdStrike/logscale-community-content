@@ -396,7 +396,7 @@ parameters:
       | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
-      | groupBy(ComputerName)
+      | groupBy(ComputerName, limit=100)
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -408,7 +408,7 @@ parameters:
       | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
       | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
-      | groupBy(MachineDomain)
+      | groupBy(MachineDomain, limit=100)
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query

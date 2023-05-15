@@ -28,7 +28,7 @@ queryString: |-
   | $"crowdstrike/fltr-core:zUrlFalconPid"()
 
   // Group by the aid and ParentProcessID.
-  | groupBy([aid, ParentProcessId], function=[collect([ComputerName, UserName, ParentProcessId, ParentBaseFileName, FileName, CommandLine], limit=100), count(FileName, as="FileNameCount"), count(CommandLine, as="CommandLineCount"), selectLast("Process Explorer")], limit=max)
+  | groupBy([aid, ParentProcessId], function=[collect([ComputerName, UserName, ParentProcessId, ParentBaseFileName, FileName, CommandLine], limit=1000), count(FileName, as="FileNameCount"), count(CommandLine, as="CommandLineCount"), selectLast("Process Explorer")], limit=max)
 
   // Look for multiple commands being run in a row, then drop the fields.
   | FileNameCount > 1 OR CommandLineCount > 1

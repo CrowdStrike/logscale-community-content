@@ -34,7 +34,7 @@ widgets:
           * ;
         }
       | $"crowdstrike/fltr-core:zComputerName"()
-      | groupBy(["RemoteAddressIP4"], function=([count(aid, as="Connection Count"), collect([Location, ComputerName, LocalAddressIP4, aid], limit=100)]), limit=10)
+      | groupBy(["RemoteAddressIP4"], function=([count(aid, as="Connection Count"), collect([Location, ComputerName, LocalAddressIP4, aid], limit=1000)]), limit=10)
       | "Destination SSH":=rename("RemoteAddressIP4")
       | table([aid, ComputerName, Location, LocalAddressIP4, "Destination SSH", "Connection Count"], sortby="Connection Count", limit=1000)
     visualization: table-view
@@ -155,7 +155,7 @@ widgets:
           LogonType=10 | LogonType:="SSH" ;
           * ;
         }
-      | groupBy([aid, ComputerName], function=([count(aid, as="Logon Count"), collect(LogonType, limit=100)]), limit=max)
+      | groupBy([aid, ComputerName], function=([count(aid, as="Logon Count"), collect(LogonType, limit=1000)]), limit=max)
     visualization: table-view
     start: 7d
     width: 4

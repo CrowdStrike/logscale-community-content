@@ -34,7 +34,7 @@ queryString: |-
   | Source:=format("%-33s %s", field=[aid, ComputerName])
 
   // Group the results, grab a count, and find the first and last event.
-  | groupBy([RemoteAddressIP4, RemotePort, protocolname], function=[collect([Source, ImageFileName], limit=100), count(aid, as=connectionCount), min(ContextTimeStamp, as=firstSeen), max(ContextTimeStamp, as=lastSeen)], limit=max)
+  | groupBy([RemoteAddressIP4, RemotePort, protocolname], function=[collect([Source, ImageFileName], limit=1000), count(aid, as=connectionCount), min(ContextTimeStamp, as=firstSeen), max(ContextTimeStamp, as=lastSeen)], limit=max)
 
   // Look up the ASN and GeoIP information.
   | asn(RemoteAddressIP4)

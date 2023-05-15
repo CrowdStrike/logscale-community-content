@@ -44,7 +44,7 @@ widgets:
       #kind=Primary #event_simpleName!=*
       | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent
       | "Detection Type":=format("%-18s %s", field=[severity, detectionName])
-      | groupBy(resourceName, function=[collect(["Detection Type", clusterName], limit=100), count(as="Total Events")], limit=max)
+      | groupBy(resourceName, function=[collect(["Detection Type", clusterName], limit=1000), count(as="Total Events")], limit=max)
       | sort("Total Events", limit=10000)
     visualization: table-view
     end: now

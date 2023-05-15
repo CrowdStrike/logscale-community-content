@@ -29,4 +29,4 @@ queryString: |-
   | AttachmentDetails:=format("%-20s %-13s -> %s", field=[TimeString, AppFileName, AttachmentName])
 
   // Format the output.
-  | groupBy([aid, ComputerName], function=collect(AttachmentDetails, limit=100), limit=max)
+  | groupBy([aid, ComputerName], function=collect(AttachmentDetails, limit=1000), limit=max)
