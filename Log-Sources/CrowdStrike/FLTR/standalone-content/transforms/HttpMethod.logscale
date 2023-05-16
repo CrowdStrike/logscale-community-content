@@ -1,3 +1,4 @@
+// Transform to convert HttpMethod decimal to human-readable value.
 | HttpMethod match {
     0 => HttpMethod := "HTTP_METHOD_UNKNOWN" ;
     1 => HttpMethod := "HTTP_METHOD_GET" ;
