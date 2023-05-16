@@ -1,0 +1,12 @@
+| HttpMethod match {
+    0 => HttpMethod := "HTTP_METHOD_UNKNOWN" ;
+    1 => HttpMethod := "HTTP_METHOD_GET" ;
+    2 => HttpMethod := "HTTP_METHOD_HEAD" ;
+    3 => HttpMethod := "HTTP_METHOD_POST" ;
+    4 => HttpMethod := "HTTP_METHOD_PUT" ;
+    5 => HttpMethod := "HTTP_METHOD_DELETE" ;
+    6 => HttpMethod := "HTTP_METHOD_OPTIONS" ;
+    7 => HttpMethod := "HTTP_METHOD_CONNECT" ;
+    8 => HttpMethod := "HTTP_METHOD_TRACE" ;
+    9 => HttpMethod := "HTTP_METHOD_PATCH" ;
+}
