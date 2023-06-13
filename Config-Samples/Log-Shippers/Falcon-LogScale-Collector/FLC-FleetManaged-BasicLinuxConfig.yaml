@@ -5,6 +5,8 @@
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
 
+dataDirectory: /var/lib/humio-log-collector
+
 sources:
   # Collect local files.
   var_log:
@@ -41,8 +43,8 @@ sinks:
     type: humio
     # Replace with your specified ingest token.
     token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-    # Replace with your "standard endpoint" API URL: https://library.humio.com/reference/endpoints/
-    url: https://cloud.us.humio.com
+    # Replace with your ingest URL. 
+    url: https://XXX.YYY.ZZZ
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
     ## The TLS option can be uncommented if you're using a self-signed certificate.
