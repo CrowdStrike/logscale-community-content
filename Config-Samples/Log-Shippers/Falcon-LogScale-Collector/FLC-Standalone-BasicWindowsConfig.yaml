@@ -4,20 +4,8 @@
 ## Lines can be uncommented by removing the #. You should not need to change the number of spaces after that.
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
-
-## This section can be found on your LogScale instance.
-## Main page -> Fleet Management -> LogScale Collector Download
-fleetManagement:
-  token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-  ## Change the URL if needed to reflect your LogScale URL.
-  url: https://cloud.us.humio.com
-  ## Keep this option as "none" unless you actually need a proxy.
-  proxy: none
-  ## The TLS option can be uncommented if you're using a self-signed certificate. 
-  #tls:
-    #insecure: true
  
-dataDirectory: C:\ProgramData\CrowdStrike\Humio Log Collector\
+dataDirectory: C:\ProgramData\LogScale Collector
  
 sources:
   windows_events:
@@ -40,8 +28,8 @@ sinks:
   logscale:
     type: humio
     token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-    ## Change the URL if needed to reflect your LogScale URL.    
-    url: https://cloud.us.humio.com
+    ## Change to the LogScale ingest URL.    
+    url: https://XXX.YYY.ZZZ
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
     ## The TLS option can be uncommented if you're using a self-signed certificate.
