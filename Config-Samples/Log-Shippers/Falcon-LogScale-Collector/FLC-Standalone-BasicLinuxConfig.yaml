@@ -11,7 +11,7 @@ sources:
   # Collect local files.
   var_log:
     type: file
-    include: /var/log/*
+    include: /var/log/*.log
     exclude: /var/log/*.gz
     sink: logscale
     ## You can manually specify a parser to be used here.
