@@ -28,7 +28,7 @@ sinks:
   logscale:
     type: humio
     token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
-    ## Change to the LogScale ingest URL.    
+    ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.   
     url: https://XXX.YYY.ZZZ
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
