@@ -42,3 +42,8 @@ sinks:
     #maxBatchSize: 16777216
       #compression: gzip
       #compressionLevel: 9
+    ## Uncomment if you want to use disk for event queue storage instead of memory.
+    #queue:
+      #type: disk
+      #fullAction: pause
+      #maxLimitInMB: 4096
