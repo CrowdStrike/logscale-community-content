@@ -5,7 +5,8 @@
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
 
-dataDirectory: /var/lib/humio-log-collector
+## Uncomment if you need to manually set the directory. 
+#dataDirectory: /var/lib/humio-log-collector
 
 sources:
   # Collect local files.
