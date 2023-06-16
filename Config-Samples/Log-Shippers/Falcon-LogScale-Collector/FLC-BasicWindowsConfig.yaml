@@ -4,8 +4,9 @@
 ## Lines can be uncommented by removing the #. You should not need to change the number of spaces after that.
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
- 
-dataDirectory: C:\ProgramData\LogScale Collector
+
+## Uncomment if you need to manually set the directory. 
+#dataDirectory: C:\ProgramData\LogScale Collector
  
 sources:
   windows_events:
