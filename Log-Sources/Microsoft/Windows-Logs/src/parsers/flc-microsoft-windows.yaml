@@ -1,0 +1,17 @@
+name: flc-microsoft-windows
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  // Add the meta tags.
+  | parser_version:="0.1.2"
+  | vendor:="Microsoft"
+  | product:="Windows"
+
+  // Call the initial KV parser.
+  | kvParse()
+  // Parse the timestamp.
+  | findTimestamp(field=@collect.timestamp, timezone="UTC")
+tagFields:
+- windows.Channel
+- windows.EventID

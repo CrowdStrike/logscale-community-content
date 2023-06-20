@@ -1,0 +1,271 @@
+name: Active Directory Domain Services Audit - Details
+updateFrequency: never
+timeSelector:
+  defaultTimeJumpInMs: 30000
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 3d
+widgets:
+  0cf3db0a-f30f-4766-860d-1ca89f043cc3:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="5137" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      decimal-places: 2
+      color-method: threshold
+      use-colorised-thresholds: true
+      value-format: raw
+      default:
+        bg: inherit
+        txt: rgb(34 197 94)
+    visualization: single-value
+    title: Directory Services Created
+    isLive: true
+    type: query
+  6af689b6-cb3d-4407-b404-94a91442fde1:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      #windows.EventID="5136" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: 1
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      decimal-places: 2
+      color-method: threshold
+      use-colorised-thresholds: true
+      value-format: raw
+      default:
+        bg: inherit
+        txt: rgb(34 197 94)
+    visualization: single-value
+    title: Directory Services Modified
+    isLive: true
+    type: query
+  dd81fb47-fd4f-46c1-a0dc-6ec650b62a78:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #windows.EventID="5141" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: 1
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      decimal-places: 2
+      color-method: threshold
+      text-color: '#ff0000'
+      use-colorised-thresholds: true
+      value-format: raw
+      default:
+        bg: inherit
+        txt: rgb(34 197 94)
+    visualization: single-value
+    title: Directory Services Deleted
+    isLive: true
+    type: query
+  3640ae45-20fa-46a0-8a6a-cd8a817fbc48:
+    x: 4
+    y: 16
+    height: 4
+    queryString: |-
+      // Base query to find directory services that meet the requirement
+      #windows.EventID="5138"
+      // renames
+      |rename("host.hostname",as="Hostname")|rename("event.action",as="Event Action")|rename("winlog.event_data.DSName",as="Domain Name")|rename("winlog.event_data.SubjectUserName", as="User Name")| rename("winlog.event_data.SubjectUserSid", as="User SID")| rename("host.ip", as="IP Address")
+      // output in table format
+      | select([@timestamp,"Hostname", "Event Action","Domain Name","User Name","User SID","IP Address","event.outcome"])
+    end: now
+    start: 24h
+    width: 8
+    visualization: table-view
+    title: AD DS - DS Recovered Details
+    isLive: true
+    type: query
+  df1828a5-8bc7-4d5f-b52c-b36848876716:
+    x: 4
+    y: 12
+    height: 4
+    queryString: |-
+      // Base query to find directory services that meet the requirement
+      #windows.EventID="5139"
+      // renames
+      | rename("@collect.host",as="Hostname")|rename("event.action",as="Event Action")|rename("winlog.event_data.DSName",as="Domain Name")|rename("winlog.event_data.SubjectUserName", as="User Name")| rename("winlog.event_data.SubjectUserSid", as="User SID")| rename("host.ip", as="IP Address")
+      // output in table format
+      | select([@timestamp,"Hostname", "Event Action","Domain Name","User Name","User SID","IP Address","event.outcome"])
+    end: now
+    start: 24h
+    width: 8
+    visualization: table-view
+    title: AD DS - DS Moved Details
+    isLive: true
+    type: query
+  532a2f34-39bd-4207-bf7a-4c5ea1473b3a:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      // Base query to find directory services that meet the requirement
+      #windows.EventID="5137"
+      // renames
+      | rename("@collect.host",as="Hostname")|rename("event.action",as="Event Action")|rename("winlog.event_data.DSName",as="Domain Name")|rename("winlog.event_data.SubjectUserName", as="User Name")| rename("winlog.event_data.SubjectUserSid", as="User SID")| rename("host.ip", as="IP Address")
+      // output in table format
+      | select([@timestamp,"Hostname", "Event Action","Domain Name","User Name","User SID","IP Address","event.outcome"])
+    end: now
+    start: 24h
+    width: 8
+    visualization: table-view
+    title: AD DS - DS Created Details
+    isLive: true
+    type: query
+  24108764-f2b8-4cd3-97da-37ce1f538608:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      // Base query to find directory services that meet the requirement
+      #windows.EventID="5136"
+      // renames
+      | rename("@collect.host",as="Hostname")|rename("event.action",as="Event Action")|rename("winlog.event_data.DSName",as="Domain Name")|rename("winlog.event_data.SubjectUserName", as="User Name")| rename("winlog.event_data.SubjectUserSid", as="User SID")| rename("host.ip", as="IP Address")
+      // output in table format
+      | select([@timestamp,"Hostname", "Event Action","Domain Name","User Name","User SID","IP Address","event.outcome"])
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 8
+    title: AD DS - Modification Details
+    isLive: true
+    type: query
+  2f6a18f1-b74f-48a7-ab0a-f7622db8fd95:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      #windows.EventID="5139" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      decimal-places: 2
+      color-method: static
+      use-colorised-thresholds: false
+      value-format: raw
+      default:
+        bg: inherit
+        txt: rgb(34 197 94)
+    visualization: single-value
+    title: Directory Services Moved
+    isLive: true
+    type: query
+  dbd644c8-fb7c-417d-a901-a0f2c6e4e84f:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      #windows.EventID="5138" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      decimal-places: 2
+      color-method: static
+      use-colorised-thresholds: false
+      value-format: raw
+      default:
+        bg: inherit
+        txt: rgb(34 197 94)
+    visualization: single-value
+    title: Directory Services Recovered
+    isLive: true
+    type: query
+  2e4e1e51-751a-4ecd-97fe-7ada5292fb10:
+    x: 4
+    y: 8
+    height: 4
+    queryString: |-
+      // Base query to find directory services that meet the requirement
+      #windows.EventID="5141"
+      // renames
+      | rename("@collect.host",as="Hostname")|rename("event.action",as="Event Action")|rename("winlog.event_data.DSName",as="Domain Name")|rename("winlog.event_data.SubjectUserName", as="User Name")| rename("winlog.event_data.SubjectUserSid", as="User SID")| rename("host.ip", as="IP Address")
+      // output in table format
+      | select([@timestamp,"Hostname", "Event Action","Domain Name","User Name","User SID","IP Address","event.outcome"])
+    end: now
+    start: 24h
+    width: 8
+    visualization: table-view
+    title: AD DS - DS Deleted Details
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0

@@ -16,10 +16,13 @@ queryString: |-
   #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
 
   // Grab the detection summary events and ignore anything custom.
-  | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i
+  | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+  | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
 
   // These fields must exist.
   | Tactic=* AND Technique=*
 
   // Top Tactic and Technique, and then do a count against them.
-  | groupBy([Tactic, Technique], function=count(AgentIdString, as="Detection Count"), limit=max)
+  | groupBy([Tactic, Technique, Severity], function=count(AgentIdString, as="Weight"), limit=max)
+  | Weight:=Weight*Severity
+  | drop(Severity)

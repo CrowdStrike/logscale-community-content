@@ -29,6 +29,9 @@ Revert the settings after the file has been generated:
 
 ## Changelog
 
+Version 1.3.7
+- Changed the MITRE content to weight the values around severity. 
+
 Version 1.3.6
 - Enabled "Require user input before searching" for most of the dashboards. You can use `*` as an input if needed. 
 - Enabled interactions for all dashboards where applicable. Clickable widgets!

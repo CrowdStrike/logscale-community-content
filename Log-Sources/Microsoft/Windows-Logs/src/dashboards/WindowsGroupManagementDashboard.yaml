@@ -1,0 +1,217 @@
+name: Windows Group Management Dashboard
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 3d
+widgets:
+  6dd17ce0-f73e-4899-8174-cb8c542e0404:
+    x: 6
+    y: 5
+    height: 5
+    queryString: |-
+      #windows.EventID=/^(4729|4733)$/
+      | windows.EventData.MemberName=/^CN=(?<UserRemoved>(([^,]+)))/
+      | windows.EventData.TargetUserName=?groupRemovedFrom windows.EventData.SubjectUserName=?accountResponsible UserRemoved=?AccountRemoved
+      | rename("windows.EventData.MemberName", as="Member Name")
+      | rename("windows.EventData.SubjectUserName", as="User Responsible")
+      | rename("windows.EventData.TargetUserName", as="Group Removed From")
+      | select(["@timestamp","Account Responsible","Account Removed", "Group Removed From","Member Name"])
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 6
+    title: Users Removed from Groups
+    isLive: false
+    type: query
+  53fdbd7c-45aa-45cb-9908-ff9d6f2b8375:
+    x: 0
+    y: 5
+    height: 5
+    queryString: |-
+      #windows.EventID=/^(4728|4732)$/
+      | windows.EventData.MemberName=/^CN=(?<UserAdded>(([^,]+)))/
+      | rename("windows.EventData.MemberName", as="Member Name")
+      | rename("windows.EventData.SubjectUserName", as="User Responsible")
+      | rename("windows.EventData.TargetUserName", as="Group Added To")
+      | windows.EventData.TargetUserName=?groupAddedTo  windows.EventData.SubjectUserName=?accountResponsible UserAdded=?AccountAdded
+      | select(["@timestamp","Account Responsible","Account Added", "Group Added To","Member Name"])
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 6
+    title: Users Added to Groups
+    isLive: false
+    type: query
+  fc367163-90e3-4f93-a9dc-df0fa547d125:
+    x: 8
+    y: 10
+    height: 4
+    queryString: |-
+      #windows.EventID=/^(4729|4733)$/
+      | timeChart()
+    end: now
+    start: 30d
+    width: 4
+    options:
+      trend-value: abs
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 10
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 5
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: threshold
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      sparkline-type: gradient
+    visualization: single-value
+    title: Group Removed Trend
+    isLive: false
+    type: query
+  a2cdf833-5964-4625-9e45-17cac5bf230e:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #windows.EventID=/^(4729|4733|4728|4732)$/
+      | case {
+          #windows.EventID="4729" | GroupManagement := "AccountRemoved";
+          #windows.EventID="4733" | GroupManagement := "AccountRemoved";
+          #windows.EventID="4728" | GroupManagement := "AccountAdded";
+          #windows.EventID="4732" | GroupManagement := "AccountAdded";
+          *;
+      }
+      | timechart("GroupManagement")
+    end: now
+    start: 30d
+    width: 12
+    options:
+      colorPalette: monoPeach
+    visualization: heat-map
+    title: Group Management Heatmap Trend
+    isLive: false
+    type: query
+  da6eb9aa-9cbf-4aac-b050-7c04c01537c6:
+    x: 4
+    y: 10
+    height: 4
+    queryString: |-
+      #windows.EventID=/^(4729|4733|4728|4732)$/
+      | case {
+          #windows.EventID="4729" | GroupManagement := "AccountRemoved";
+          #windows.EventID="4733" | GroupManagement := "AccountRemoved";
+          #windows.EventID="4728" | GroupManagement := "AccountAdded";
+          #windows.EventID="4732" | GroupManagement := "AccountAdded";
+          *;
+      }
+      |timechart("GroupManagement")
+    end: now
+    start: 30d
+    width: 4
+    options:
+      showDataPoints: true
+      connect-points: false
+      show-utc: false
+      imputation: none
+      regression: false
+      regressionType: exp
+    visualization: time-chart
+    title: Group Adds / Removed Timeline
+    isLive: false
+    type: query
+  5a900622-ef21-48d3-a657-b336a6a25302:
+    x: 0
+    y: 10
+    height: 4
+    queryString: |-
+      #windows.EventID=/^(4728|4732)$/
+      | timeChart()
+    end: now
+    start: 30d
+    width: 4
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 15
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 7
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 5
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Group Add Trend
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  groupAddedTo:
+    label: Group Added To
+    query: |-
+      #windows.EventID=/^(4625|4771|4768|4769|4776|4740|4767)$/ | groupBy("windows.EventData.TargetUserName", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.TargetUserName
+  AccountAdded:
+    label: Account Added
+    query: |-
+      #windows.EventID=/^(4729|4733)$/ | windows.EventData.MemberName=/^CN=(?<UserAdded>(([^,]+)))/ | select([UserAdded])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserAdded
+  groupRemovedFrom:
+    label: Group Removed From
+    query: |-
+      #windows.EventID=/^(4624|4648|4672|4781|4726|4722|4634)$/ | groupBy("windows.EventData.TargetUserName", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.TargetUserName
+  AccountRemoved:
+    label: Account Removed
+    query: |-
+      #windows.EventID=/^(4729|4733)$/ | windows.EventData.MemberName=/^CN=(?<UserRemoved>(([^,]+)))/ | select([UserRemoved])
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserRemoved
+  accountResponsible:
+    label: Account Responsible
+    query: |-
+      #windows.EventID=/^(4625|4771|4768|4769|4776|4740|4767)$/ | groupBy("windows.EventData.SubjectUserName", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.SubjectUserName

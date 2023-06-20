@@ -1,0 +1,394 @@
+name: Account Activity Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 3d
+widgets:
+  af76d1b9-7d05-4326-9049-9d889dcc151c:
+    x: 8
+    y: 12
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="10"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Remote Interactive User Logons
+    isLive: false
+    type: query
+  dd3dfbfa-c865-487d-8b38-9b274ba516fe:
+    x: 4
+    y: 24
+    height: 4
+    queryString: |-
+      #windows.EventID="4722"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: User Account Enabled
+    isLive: false
+    type: query
+  ef9ee2ee-aaf1-4fc3-af6f-ea67600dcfc9:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="7"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Unlock User Logons
+    isLive: false
+    type: query
+  9f4933f2-cb07-4796-838a-279adb9b1486:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="4726"
+      | windows.EventData.SubjectUserName=?accountResponsible windows.EventData.TargetUserName=?AccountName
+      | rename(windows.EventData.SubjectUserName, as="Account Deleted") |rename(windows.EventData.TargetUserName, as="Account Responsible")
+      | select(["@timestamp", "Account Deleted", "Account Responsible"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Account Deletions Table
+    isLive: false
+    type: query
+  53ec0dc0-00b5-4667-9417-59695b915259:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID=/^(4720|4726)$/
+      | case{#windows.EventID="4720" | type:="Creations"; #windows.EventID="4726" | type:="Deletions";*}
+      | timeChart(function=count(), series=type)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Account Creations and Deleteions
+    isLive: false
+    type: query
+  92378ade-d6eb-4db7-b25b-771071d830d0:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 7d
+    width: 4
+    options:
+      color-method: threshold
+      default: {}
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Successful Logons
+    isLive: false
+    type: query
+  a9788ff5-4a26-489c-9a14-8850748264e0:
+    x: 4
+    y: 16
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="11"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Cached Interactive User Logons
+    isLive: false
+    type: query
+  c295e21f-7373-4ae8-8178-f595ee4519d3:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="4720"
+      | default(field=["Account Responsible", "Account Created"], value="N/A")
+      | windows.EventData.SubjectUserName=?accountResponsible windows.EventData.TargetUserName=?AccountName
+      | rename(windows.EventData.SubjectUserName, as="Account Created") |rename(windows.EventData.TargetUserName, as="Account Responsible")
+      | select(["@timestamp", "Account Created", "Account Responsible"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Account Creations Table
+    isLive: false
+    type: query
+  5b1776fc-e95d-4ff8-9f36-5567fe109979:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="2"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Interactive User Logons
+    isLive: false
+    type: query
+  fcb6dddb-0209-4b8e-af05-aefe33e730c2:
+    x: 0
+    y: 24
+    height: 4
+    queryString: |-
+      #windows.EventID="4726"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: User Account Deleted
+    isLive: false
+    type: query
+  f3cb9e87-ab8e-4024-b947-ac8d0ab02c9b:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="8"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Network Clear Text User Logons
+    isLive: false
+    type: query
+  6b15a923-cd22-4239-bc61-5505126d9f51:
+    x: 4
+    y: 12
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="9"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: New Credentials User Logons
+    isLive: false
+    type: query
+  3fe70606-a392-4e4f-8740-a2c41590fd6a:
+    x: 8
+    y: 20
+    height: 4
+    queryString: |-
+      #windows.EventID="4634"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Logoff Event
+    isLive: false
+    type: query
+  383c6dda-5055-4bcc-9d76-1aec445740d9:
+    x: 4
+    y: 20
+    height: 4
+    queryString: |-
+      #windows.EventID="4672"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Logon with Special Privileges
+    isLive: false
+    type: query
+  73335331-a46c-4220-95ac-43e399644d74:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |-
+      #windows.EventID="4648"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Account Login with Explicit Credentials
+    isLive: false
+    type: query
+  849a48c9-a0a2-4929-bd0b-668d08f40e36:
+    x: 8
+    y: 16
+    height: 4
+    queryString: |-
+      #windows.EventID="4781"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Account Name Changed
+    isLive: false
+    type: query
+  e36df4b1-a695-43b2-b6d5-d11e4e469f45:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624"
+      | windows.EventData.TargetUserName=?AccountName
+      | rename("windows.EventData.LogonType",as="Logon Type")
+      | groupBy("Logon Type", function=count(), limit=max)
+      | sort("Logon Type", order=asc)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Successful logon by type
+    isLive: false
+    type: query
+  7cbc414c-2915-4c98-8d1f-8064484afcc3:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="4"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Batch User Logons
+    isLive: false
+    type: query
+  1ba870e5-4629-471c-bb01-3d0104137848:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="3"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Network User Logons
+    isLive: false
+    type: query
+  e6611661-3ee0-42ed-9422-2b5b051bb5aa:
+    x: 4
+    y: 8
+    height: 4
+    queryString: |-
+      // https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/basic-audit-logon-events
+      #windows.EventID="4624" windows.EventData.LogonType="5"
+      | windows.EventData.TargetUserName=?AccountName
+      | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Service User Logons
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  AccountName:
+    label: Account Name
+    query: |-
+      #windows.EventID=/^(4720|4726|4624|4648|4672|4781|4726|4722|4634)$/ | groupBy("windows.EventData.TargetUserName", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.TargetUserName
+  accountResponsible:
+    label: accountResponsible
+    query: |-
+      #windows.EventID=/^(4720|4726)$/ | groupBy("windows.EventData.SubjectUserName", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.SubjectUserName

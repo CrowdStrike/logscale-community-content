@@ -1,0 +1,119 @@
+name: Remote Desktop Login Activity
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 3d
+widgets:
+  01e9af17-3583-43bd-b575-9a43e30ee63b:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10
+      | @collect.host=?hostname windows.EventData.TargetUserName=?username windows.EventData.IpAddress=?IpAddress windows.EventData.TargetDomainName=?targetDomain
+      | rename("@collect.host",as="Hostname") |rename("windows.EventData.TargetUserName", as="Account Name")| rename("windows.EventData.IpAddress", as="Source IP Address")| rename("windows.EventData.TargetDomainName", as="Target Domain")
+      | select(["@timestamp", "Hostname","Account Name","Source IP Address","Target Domain"])
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 4
+    title: Remote Desktop Login Events
+    isLive: false
+    type: query
+  6e5ffd30-e5ce-421c-a175-07d791595d1d:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10
+      | groupBy(windows.EventData.TargetUserName, function=(top(windows.EventData.SubjectUserName)), limit=max)
+      | sankey(source=windows.EventData.TargetUserName, target=windows.EventData.SubjectUserName)
+    visualization: sankey
+    end: now
+    start: 7d
+    width: 4
+    title: Top Source to Target Mappings
+    isLive: false
+    type: query
+  e024fae4-0771-497a-b120-70e8ed45752a:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10 | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Remote Desktop Login Count
+    isLive: false
+    type: query
+  eff85a5b-5a2c-40a6-89de-18e4e93b965c:
+    x: 2
+    y: 4
+    height: 6
+    queryString: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10 | worldmap(ip="windows.EventData.IpAddress")
+    end: now
+    start: 24h
+    width: 8
+    options:
+      magnitudeMode: opacity
+      maxOpacity: 64
+      autoRotate: false
+      norm: true
+      opacity: 64
+      maxSize: 18
+      opacityMode: opacity
+      zLevel: 0
+    visualization: world-map
+    title: Source Location
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  IpAddress:
+    label: Source IP Address
+    query: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10 | groupBy("windows.EventData.IpAddress", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.IpAddress
+  hostname:
+    label: Host Name
+    query: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10 | groupBy("@collect.host", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: '@collect.host'
+  targetDomain:
+    label: Target Domain Name
+    query: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10 | groupBy("windows.EventData.TargetDomainName", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.TargetDomainName
+  username:
+    label: Account Name
+    query: |-
+      #windows.EventID="4624" windows.EventData.LogonType=10 | groupBy("windows.EventData.TargetUserName", limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: windows.EventData.TargetUserName

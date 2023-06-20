@@ -1,0 +1,1062 @@
+name: Search - Host Details
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  72fe901c-360f-4efb-ae75-8afd946652de:
+    x: 0
+    y: 28
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=AsepKeyUpdate
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName));
+          test(?aid!="*") 
+            | aid=?aid;
+        }
+      | count(RegObjectName, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique ASEP Keys Updated
+    isLive: false
+    type: query
+  3ee569a9-539b-4468-b323-cb464e83f83d:
+    x: 0
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=CommandHistory*
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName));
+          test(?aid!="*") 
+            | aid=?aid;
+        }
+      | replace("¶", with="\n", field=CommandHistory)
+      | table([@timestamp, ApplicationName, CommandCount, CommandHistory], limit=1000)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    y: 49
+    interactions:
+    - conditions: null
+      name: Search By Application Name
+      titleTemplate: null
+      queryString: |-
+        #cid=?cid
+        | #event_simpleName=CommandHistory*
+        | aid=?aid
+        | ApplicationName=?ApplicationName
+        | replace("¶", with="\n", field=CommandHistory)
+      useWidgetTimeWindow: true
+      repoOrViewName: zz-FLTR-Tutorial
+      arguments:
+        ApplicationName: '["{{ fields.ApplicationName }}"]'
+        aid: '["{{ parameters.aid }}"]'
+        cid: '["{{ parameters.cid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Command History
+    isLive: false
+    type: query
+  1ee78f6d-5f26-4561-a21e-03d82027395c:
+    x: 0
+    y: 85
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=FirewallSetRule
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName));
+          test(?aid!="*") 
+            | aid=?aid;
+        }
+      | tail(1000)
+      | regex("App=(?<App>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("Action=(?<Action>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("Active=(?<Active>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("Profile=(?<Profile>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("Protocol=(?<Protocol>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("Dir=(?<Dir>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("LPort=(?<LPort>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("RPort=(?<RPort>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("Desc=(?<Description>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("Name=(?<Name>(.*?))\|", field=FirewallRule, strict=false)
+      | regex("(?<FileName>[^\\\]+$)", field=App, strict=false)
+      | Protocol match {
+          "1"  => Protocol:="ICMP" ;
+          "6"  => Protocol:="TCP" ;
+          "17" => Protocol:="UDP" ;
+          "58" => Protocol:="IPv6-ICMP" ;
+          * => * ;
+        }
+      | groupBy([@timestamp, RpcClientProcessId, Name, Protocol, ComputerName, App, Direction, Profile, LPort, RPort, FileName, Direction], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Firewall Rules Set
+    isLive: false
+    type: query
+  4dfa0cb8-9f33-4ac7-b320-bea00f78bf03:
+    x: 3
+    y: 31
+    height: 3
+    queryString: |-
+      #cid=?cid
+      #event_simpleName=BrowserInjectedThread
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | count(TargetThreadId, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique Browser-Injected Threads
+    isLive: false
+    type: query
+  3751426d-87f7-45ec-85dc-652e16eef774:
+    x: 0
+    y: 38
+    height: 7
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=ProcessRollup2
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | ParentBaseFileName!=""
+      | sankey(source=ParentBaseFileName, target=ImageFileName)
+    visualization: sankey
+    end: now
+    start: 24h
+    width: 12
+    title: Parent to Child Processes
+    isLive: false
+    type: query
+  a850727a-2ad5-44fc-bc74-860b965d08df:
+    x: 0
+    y: 21
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=/^(NetworkConnectIP4|NetworkReceiveAcceptIP4|LocalIpAddressIP4)$/
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | LocalAddressIP4=*
+      | groupBy(PhysicalAddress, function=[collect([LocalAddressIP4, aip, InterfaceAlias], limit=100)], limit=max)
+    visualization: table-view
+    end: now
+    start: 30d
+    width: 12
+    title: Local and External IPs
+    isLive: false
+    type: query
+  839cfe15-2ea3-4b6d-99ea-475841a43324:
+    x: 0
+    y: 73
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=*FileWritten* 
+      | IsOnRemovableDisk=1
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        } 
+      | tail(1000)
+      | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
+      | groupBy([@timestamp, ContextProcessId, FileName, LocalAddressIP4, TargetFileName, Size], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Files Written to Removable Media
+    isLive: false
+    type: query
+  c2e9e2e0-7380-4b57-acd8-6a8f5dbfc9d7:
+    x: 0
+    y: 5
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=/^(AgentOnline|FirmwareImageAnalyzed|FirmwareImageCheck)$/
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | groupBy([aid, ComputerName, SystemManufacturer, BiosReleaseDate, BiosVersion, SHA256HashData], limit=1000)
+      | drop([_count])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 8
+    title: BIOS Information
+    isLive: false
+    type: query
+  f63f3740-a1ca-4401-a128-17fd0853170f:
+    x: 0
+    y: 31
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=DLLInjections
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | count(TargetThreadId, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique DLL Injections
+    isLive: false
+    type: query
+  397f4539-7af1-4bda-9ab2-904f14282f29:
+    x: 0
+    y: 89
+    height: 5
+    queryString: |-
+      #cid = ?cid
+      | #event_simpleName=/^(ProcessRollup2|NetworkConnectIP4)$/
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | #event_simpleName match {
+          ProcessRollup2    => pid:=TargetProcessId ;
+          NetworkConnectIP4 => pid:=ContextProcessId ;
+          * => * ;
+        }
+      | groupBy([aid, pid], function=
+          [
+            // Extract the path of the process
+            { #event_simpleName=ProcessRollup2 | selectLast([@timestamp, ImageFileName, CommandLine]) },
+            // Extract the domain name
+            { #event_simpleName=NetworkConnectIP4 | groupBy([RemoteAddressIP4, RemotePort, LocalPort], limit=max) | drop(_count) }
+          ], limit=max)
+      | RemoteAddressIP4=*
+      | ImageFileName= /(\/|\\)(?<FileName>\w*\.?\w*)$/i
+      | groupBy([@timestamp, RemoteAddressIP4, LocalPort, RemotePort, pid, FileName, CommandLine], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 12
+    title: Network Connections
+    isLive: false
+    type: query
+  264d9137-a41c-497f-964a-22fb4594f49f:
+    x: 0
+    y: 57
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=/^(ProcessRollup2|SyntheticProcessRollup2)$/ 
+      ImageFileName=/\\powershell(_ise)?\.exe/i
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | tail(1000)
+      | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
+      | groupBy([@timestamp, ComputerName, UserSid, ParentProcessId, RawProcessId, TargetProcessId, CommandLine, aid], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Powershell Activities
+    isLive: false
+    type: query
+  837ddeec-f4c0-4076-8a01-96ebf7748f02:
+    x: 9
+    y: 31
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=JavaInjectedThread
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | count(TargetThreadId, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Java Injected Threads
+    isLive: false
+    type: query
+  fbb84b70-9e0d-42b3-ad1a-86e67a28dcb1:
+    x: 8
+    y: 5
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=/^(LocalIpAddressIP4|LocalIpAddressIP6)$/
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+      }
+      | MAC=* OR PhysicalAddress=*
+      | case {
+          MAC=* 
+            | MacAddress:=MAC ; 
+          * ;
+        }
+      | case {
+          PhysicalAddress=* 
+            | MacAddress:=PhysicalAddress ; 
+          * ;
+        }
+      | groupBy(MacAddress, function=[collect(LocalAddressIP4, limit=100)], limit=1000)
+      | drop([_count])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: MAC Address
+    isLive: false
+    type: query
+  538450b2-4613-4ea4-895b-2e28fc4572a0:
+    x: 0
+    y: 94
+    height: 5
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=/^(ProcessRollup2|DnsRequest|SuspiciousDnsRequest)$/ 
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | #event_simpleName match {
+          ProcessRollup2 => pid:=TargetProcessId ;
+          DnsRequest     => pid:=ContextProcessId ;
+          * => *;
+        }
+      | groupBy([aid, pid], function=
+          [
+            // Extract the path of the process
+            { #event_simpleName=ProcessRollup2 | selectLast([@timestamp, ImageFileName, CommandLine]) },
+            // Extract the domain name
+            { #event_simpleName=DnsRequest | groupBy(DomainName, limit=max) | drop(_count) }
+          ], limit=max)
+      | DomainName=*
+      | ImageFileName=/(\/|\\)(?<FileName>\w*\.?\w*)$/i
+      | groupBy([@timestamp, DomainName, pid, FileName, CommandLine], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 12
+    title: DNS Requests
+    isLive: false
+    type: query
+  8bd1a02b-e8d9-471a-9f50-5bc4ec8bf499:
+    x: 0
+    y: 81
+    height: 4
+    queryString: |-
+      #cid = ?cid
+      | #event_simpleName=ScheduledTaskRegistered
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | tail(1000)
+      | TaskExecCommand=/(\/|\\)(?<FileName>\w*\.?\w*)$/i
+      | replace("\\\\u000d\\\\u000a", with="", field=TaskXml)
+      | regex("\<Triggers\>\s*\<(?<TaskTrigger>[^>]*)\>", field=TaskXml, strict=false)
+      | groupBy([@timestamp, UserName, TaskName, TaskTrigger, TaskExecCommand, TaskExecArguments, FileName], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Scheduled Tasks Registered
+    isLive: false
+    type: query
+  77f1ac26-d80d-4341-bddc-54d1d7c57956:
+    x: 0
+    y: 2
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #kind=Secondary
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | $"crowdstrike/fltr-core:zUrlFalconAid"()
+      | ipLocation(field=aip, as=aip)
+      | groupBy(aid, function=collect([ComputerName, RTR, aip, aip.city, aip.country, ProductType, Version, BiosManufacturer, BiosVersion, ChassisManufacturer, SystemManufacturer, SystemProductName, MachineDomain, AgentVersion, aid, #cid], limit=100), limit=1000)
+      | drop(_count)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Host Info
+    isLive: false
+    type: query
+  5f749741-884b-42c8-9167-e8f525a7feb3:
+    x: 0
+    y: 0
+    height: 2
+    queryString: |-
+      #cid=?cid
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | $"crowdstrike/fltr-core:zUrlFalconAid"()
+      | head(1)
+      | rename(field="RTR", as="Real Time Response")
+      | replace("\[RTR\]", with="\[Real Time Response\]", field="Real Time Response")
+      | table(["Real Time Response", "User Search", "Zero Trust Assessment", "Spotlight", "Host Management", "Host Search"], limit=10)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Falcon Links
+    isLive: false
+    type: query
+  6b1bb259-4afe-4d27-8890-719cf4595dba:
+    x: 0
+    y: 65
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=NewScriptWritten
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | tail(1000)
+      | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
+      | groupBy([@timestamp, ContextProcessId, FileName, LocalAddressIP4, TargetFileName, size], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Scripts Written
+    isLive: false
+    type: query
+  2e05450c-fce6-421c-825e-03937a5f5cf3:
+    x: 0
+    y: 8
+    height: 3
+    queryString: |+
+      #cid=?cid
+      | #event_simpleName=InstanceMetadata
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | kvParse(field=InstanceMetadata, separator=":")
+      | groupBy([aid, ComputerName, privateIp, accountId, instanceId, instanceType, imageId, availabilityZone], limit=1000)
+      | drop([_count])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Cloud Instance Info
+    isLive: false
+    type: query
+  cb108339-286f-4345-8fed-cce3d5b05318:
+    x: 0
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | (#event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2) aid=?aid
+      | ImageFileName=/(\/|\\)(?<FileName>\w*\.?\w*)$/i
+      | rename(field=ImageFileName, as=OriginalFileName) 
+      | rename(field=CommandLine, as=OriginalCommandLine)
+      | tail(1000)
+      | $"crowdstrike/fltr-core:zUrlFalconPid"()
+      | groupBy([@timestamp, ComputerName, FileName, OriginalCommandLine, TargetProcessId, MD5HashData, ParentBaseFileName, ParentProcessId, aid], function=collect(["Process Explorer"]), limit=1000)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    y: 34
+    interactions:
+    - conditions: null
+      name: Search - By Process Context
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Search - By Process Context
+        packageSpecifier: crowdstrike/fltr-core
+        repoOrViewName: null
+      arguments:
+        ProcessId: '["{{ fields.TargetProcessId }}"]'
+        aid: '["{{ fields.aid }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    title: Processes Executions
+    isLive: false
+    type: query
+  6fe43da3-e40f-4454-819f-6741d5f0faf4:
+    x: 0
+    y: 77
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2 
+      | ImageFileName=/reg.exe/i
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | tail(1000)
+      | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
+      | groupBy([@timestamp, UserSid, FileName, CommandLine, ParentBaseFileName], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Manual Registry Additions
+    isLive: false
+    type: query
+  df473744-13a0-423c-9ffd-2631b70009e0:
+    x: 9
+    y: 28
+    height: 3
+    queryString: |-
+      #cid = ?cid
+      | #event_simpleName=InjectedThread
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | count(TargetThreadId, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique Injected Threads
+    isLive: false
+    type: query
+  ae383461-369d-4fbd-acdd-d77e6dbbb3f8:
+    x: 0
+    y: 53
+    height: 4
+    queryString: |-
+      #cid = ?cid
+      | #event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2
+      | CommandLine=* ImageFileName=*
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | tail(1000)
+      | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
+      | match(file="recon_apps.csv", field=FileName, include=FileName, ignoreCase=true, strict=true)
+      | groupBy([@timestamp, UserSid, FileName, TargetProcessId, CommandLine, aid], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Admin Tools
+    isLive: false
+    type: query
+  48724dc6-31fc-4df5-9e4d-9b3f94150861:
+    x: 3
+    y: 28
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=AsepValueUpdate
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | count(RegValueName, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Uniqe ASEP Values Updated
+    isLive: false
+    type: query
+  430d57e9-b25b-420c-8e1b-21fc2046c6a3:
+    x: 0
+    y: 99
+    height: 4
+    queryString: |
+      #cid=?cid
+      | #event_simpleName=ProcessRollup2 OR #event_simpleName=NetworkListenIP4
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      // We essentially want to join the ContextProcessId of the network events
+      // with the TargetProcessId of the ProcessEvents, so we create a new
+      // field 'pid' on which we can do a groupby.
+      | #event_simpleName match {
+          ProcessRollup2   => pid:=TargetProcessId ;
+          NetworkListenIP4 => pid:=ContextProcessId ;
+        }
+      // Group by the agent ID and for each group, group by the 'pid' field.
+      | groupBy("aid", function=[
+          { groupBy("pid", function=[
+              // Extract the ImageFileName field.
+              { #event_simpleName="ProcessRollup2" | selectLast([ImageFileName, CommandLine, TargetProcessId, MD5HashData]) },
+              // Extract up to 200 rows of the LocalAddressIP4 and LocalPort fields.
+              { #event_simpleName="NetworkListenIP4" | table([LocalAddressIP4, LocalPort], limit=200) }
+            ], limit=200)
+          }
+        ], limit=max)
+      | $"crowdstrike/fltr-core:zComputerName"()
+      // Filter off results that do not have the below fields.
+      | LocalAddressIP4=* AND LocalPort=* AND ImageFileName=*
+      | ImageFileName=/(\/|\\)(?<FileName>\w*\.?\w*)$/i
+      // Present the results.
+      | groupBy([aid, ComputerName, LocalPort, TargetProcessId, FileName, CommandLine, MD5HashData], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Network Listening
+    isLive: false
+    type: query
+  ae0c6647-8e97-4c26-ac39-6cda26c134c5:
+    x: 0
+    y: 11
+    height: 5
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | groupBy([FileName, DetectName, Severity, SeverityName, ComputerName, UserName, MD5String, SHA256String], function=[count(as=DetectionCount)], limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Detection History
+    isLive: false
+    type: query
+  8a2df0ba-ce56-43bc-97f2-c0a7baed6585:
+    x: 0
+    y: 24
+    height: 4
+    queryString: |-
+      #event_simpleName=UserLogon OR #event_simpleName=UserLogoff
+      | #cid=?cid
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | $"crowdstrike/fltr-core:zLogonTypeName"()
+      | groupBy([@timestamp, UserName, LogonDomain, LogonTypeName, UserIsAdmin, LogonTime, LogoffTime], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: User Logons
+    isLive: false
+    type: query
+  ebb59fca-00f1-4a10-8f74-fd8beef15699:
+    x: 0
+    y: 16
+    height: 5
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+      | ExternalApiType=Event_DetectionSummaryEvent
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | format("[Detection Link](%s)", field=["FalconHostLink"], as="DetectionLink")
+      | groupBy([@timestamp, DetectId], function=[collect([DetectionLink, FileName, DetectName, Severity, SeverityName, ComputerName, UserName, MD5String, SHA256String], limit=100)], limit=1000)
+      | drop(DetectId)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Detections Links
+    isLive: false
+    type: query
+  b89d56ee-7e80-4f51-a1a9-b8c6cf92939a:
+    x: 6
+    y: 28
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=PeFileWritten
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | count(TargetFileName, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique Executables Written
+    isLive: false
+    type: query
+  d4bdcf4e-1bae-4e22-8c56-df691144979c:
+    x: 6
+    y: 31
+    height: 3
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=InjectedThreadFromUnsignedModule
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | count(TargetThreadId, distinct=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Injected Threads From Unsigned Modules
+    isLive: false
+    type: query
+  f7bef121-2b4b-4aa0-991a-2cc8037ad50f:
+    x: 0
+    y: 61
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=/^(RarFileWritten|SevenZipFileWritten|ZipFileWritten)$/
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | tail(1000)
+      | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
+      | groupBy([@timestamp, ContextProcessId, FileName, LocalAddressIP4, TargetFileName, size], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Rar / Zip File Written
+    isLive: false
+    type: query
+  e7f4e318-8380-4448-b30b-af7182a2483f:
+    x: 0
+    y: 69
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=/^(ExecutableDeleted|NewExecutableRenamed|NewExecutableWritten|PeFileWritten)$/
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
+      | tail(200)
+      | #event_simpleName match {
+          "ExecutableDeleted"     => Action:="Deleted" ;
+          "NewExecutableRenamed"  => Action:="Renamed" ;
+          "NewExecutableWritten"  => Action:="Added" ;
+          "PeFileWritten"         => Action:="Added" ;
+        }
+      | tail(1000)
+      | groupBy([@timestamp, ContextProcessId, FileName, LocalAddressIP4, TargetFileName, Action], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Executable Activities
+    isLive: false
+    type: query
+  2296f7d9-25e0-4dd4-8b60-25c00bdb46a1:
+    x: 7
+    y: 103
+    height: 5
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=NetworkConnectIP4
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | worldMap(ip=RemoteAddressIP4)
+    visualization: world-map
+    end: now
+    start: 24h
+    width: 5
+    title: Network Connection Destinations
+    isLive: false
+    type: query
+  a469227a-2755-4855-8927-6cd1ad919ebc:
+    x: 0
+    y: 103
+    height: 5
+    queryString: |
+      #cid=?cid
+      | #event_simpleName=NetworkConnectIP4
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(field=RemoteAddressIP4, as=RemoteAddressIP4)
+      | ioc:lookup(RemoteAddressIP4, type=ip_address, confidenceThreshold=unverified)
+      | IOC:=rename(ioc[0].labels)
+      // Assign a value for IOC matches to make sorting easier at the end.
+      | case {
+          IOC=* 
+            | iocMatch:=1 ;
+          *     
+            | iocMatch:=0 
+            | IOC:="NoMatchFound" ;
+        }
+      | groupBy([RemoteAddressIP4.country, RemoteAddressIP4.city, RemotePort, IOC], function=[collect([RemoteAddressIP4], limit=100), count()], limit=1000)
+      | rename(_count, as="count")
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 7
+    title: External Network Connections
+    isLive: false
+    type: query
+  c8acd142-3e62-4f0a-acf4-e780a72bdd6b:
+    x: 0
+    y: 45
+    height: 4
+    queryString: |-
+      #cid=?cid
+      | #event_simpleName=ServiceStarted
+      | case {
+          test(?HostName!="*") 
+            | $"crowdstrike/fltr-core:zComputerName"() 
+            | inputComputerName:=?HostName 
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
+          test(?aid!="*") 
+            | aid=?aid ;
+        }
+      | tail(1000)
+      | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
+      | groupBy([@timestamp, ComputerName, UserName, TargetProcessId, ServiceDisplayName, CommandLine, SHA256HashData, aid], limit=1000)
+      | drop(_count)
+      | sort(@timestamp, limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Running Services (started during selected time range)
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0

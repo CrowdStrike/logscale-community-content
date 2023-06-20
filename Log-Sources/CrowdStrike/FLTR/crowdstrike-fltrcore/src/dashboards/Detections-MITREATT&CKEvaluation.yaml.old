@@ -13,10 +13,11 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
-      | groupBy([Tactic, Technique, Severity], function=count(AgentIdString, as="Weight"), limit=max)
-      | Weight:=Weight*Severity
-      | drop(Severity)
+      | Tactic!=/^custom/i
+      | Tactic!=""
+      | Tactic=*
+      | Technique=*
+      | groupBy([Tactic, Technique], function=count(AgentIdString, as="Detection Count"), limit=max)
     end: now
     start: 7d
     width: 12
@@ -35,7 +36,7 @@ widgets:
         | Tactic=?Tactic
         | Technique=?Technique
       useWidgetTimeWindow: true
-      repoOrViewName: null
+      repoOrViewName:
       arguments:
         Tactic: '["{{ fields.Tactic }}"]'
         Technique: '["{{ fields.Technique }}"]'
@@ -53,34 +54,32 @@ widgets:
     type: query
   bfc606a1-aeef-4f6d-ac28-ceab769362e2:
     x: 0
-    y: 42
-    height: 7
+    y: 37
+    height: 8
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
       | top([FileName, Tactic, Technique], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
     end: now
     start: 7d
-    width: 6
+    width: 7
     title: Top 25 Triggering Files by Tactic and Technique
     isLive: false
     type: query
   3b9031e9-7af8-40e2-a383-99910583a45f:
-    x: 0
-    height: 5
+    x: 8
+    height: 4
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
-      | groupBy(Tactic, function=count(AgentIdString, as="DetectionCount"), limit=max)
+      | groupBy(Tactic, function=count(AgentIdString, as="Detection Count"), limit=max)
     end: now
     start: 7d
-    width: 6
-    y: 29
+    width: 4
+    y: 21
     interactions:
     - conditions: null
       name: Search by Tactic
@@ -90,7 +89,7 @@ widgets:
         | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
         | Tactic=?Tactic
       useWidgetTimeWindow: true
-      repoOrViewName: null
+      repoOrViewName:
       arguments:
         Tactic: '["{{ fields.Tactic }}"]'
       openInNewTab: true
@@ -106,13 +105,12 @@ widgets:
     type: query
   ba90b7af-f5a6-4985-b0a9-8f6668a26bc4:
     x: 6
-    y: 34
+    y: 29
     height: 8
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
       | top([ComputerName, Technique], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
@@ -127,16 +125,13 @@ widgets:
     height: 8
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
-      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+      | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
-      | groupBy([Tactic, Technique, Severity], function=count(AgentIdString, as="Weight"), limit=max)
-      | Weight:=Weight*Severity
-      | drop(Severity)
-      | sankey(source="Tactic", target="Technique", weight=sum(Weight))
+      | groupBy([Tactic, Technique, Severity], function=count(AgentIdString, as="detectCount"), limit=max)
+      | sankey(source="Tactic", target="Technique", weight=sum(Severity))
     end: now
     start: 7d
-    width: 12
+    width: 8
     y: 21
     interactions:
     - conditions: null
@@ -149,7 +144,7 @@ widgets:
         | ExternalApiType=Event_DetectionSummaryEvent
         | Tactic=?Tactic Technique=?Technique
       useWidgetTimeWindow: true
-      repoOrViewName: null
+      repoOrViewName:
       arguments:
         Tactic: '["{{ fields.source }}"]'
         Technique: '["{{ fields.target }}"]'
@@ -165,17 +160,16 @@ widgets:
     isLive: false
     type: query
   903e41d3-5ac0-4309-981d-8826aef63226:
-    x: 6
-    height: 5
+    x: 8
+    height: 4
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
-      | groupBy(Technique, function=count(AgentIdString, as="DetectionCount"), limit=max)
+      | groupBy(Technique, function=count(AgentIdString, as="Detection Count"), limit=max)
     end: now
     start: 7d
-    width: 6
-    y: 29
+    width: 4
+    y: 25
     interactions:
     - conditions: null
       name: Search by Technique
@@ -185,7 +179,7 @@ widgets:
         | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
         | Technique=?Technique
       useWidgetTimeWindow: true
-      repoOrViewName: null
+      repoOrViewName:
       arguments:
         Technique: '["{{ fields.Technique }}"]'
       openInNewTab: true
@@ -202,13 +196,12 @@ widgets:
     type: query
   3b138d0d-94ba-4936-97e7-0150b78c0185:
     x: 0
-    y: 34
+    y: 29
     height: 8
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
       | top([ComputerName, Tactic], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
@@ -225,10 +218,11 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
-      | groupBy([Tactic, Technique], function=count(AgentIdString, as="Weight"), limit=max)
-      | Weight:=Weight*Severity
-      | drop(Severity)
+      | Tactic!=/(^custom|machine\slearning)/i
+      | Tactic!=""
+      | Technique=*
+      | groupBy([Tactic, Technique], function=count(AgentIdString, as="detectCount"), limit=max)
+      | rename("detectCount",as="Detection Count")
     end: now
     start: 7d
     width: 12
@@ -247,7 +241,7 @@ widgets:
         | Tactic=?Tactic
         | Technique=?Technique
       useWidgetTimeWindow: true
-      repoOrViewName: null
+      repoOrViewName:
       arguments:
         Tactic: '["{{ fields.Tactic }}"]'
         Technique: '["{{ fields.Technique }}"]'
@@ -266,19 +260,18 @@ widgets:
     isLive: false
     type: query
   dd56053e-7391-47b3-be86-c87aa6ed7256:
-    x: 6
-    y: 42
-    height: 7
+    x: 7
+    y: 37
+    height: 8
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
       | top([Tactic, Technique], limit=25)
       | rename("_count", as="Detection Count")
     visualization: table-view
     end: now
     start: 7d
-    width: 6
+    width: 5
     title: Top 25 Tactic and Technique Combinations
     isLive: false
     type: query
@@ -289,9 +282,10 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | Tactic!=/(^custom|machine\slearning)/i Tactic!="" Technique=*
-      | groupBy([Tactic, @timestamp], function=count(AgentIdString, as="DetectionCount"), limit=max)
-      | bucket(field="Tactic", buckets=42, limit=50)
+      | Tactic!=/custom\s.*/i
+      | Tactic!=""
+      | groupBy([Tactic, @timestamp], function=count(AgentIdString, as="Detection Count"), limit=max)
+      | bucket(field="Tactic", buckets=50)
     end: now
     start: 7d
     width: 12
@@ -308,19 +302,20 @@ widgets:
         | Tactic!=""
         | Tactic=?Tactic
       useWidgetTimeWindow: true
-      repoOrViewName: null
+      repoOrViewName:
       arguments:
         Tactic: '["{{ fields.Tactic }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
     options:
-      colorPalette: monoPeach
-      labelAngle: 13
       legendTitle: Detection Count
       withXAxisTitle: false
+      labelAngle: 13
+      xAxisTitle: Date
+      colorPalette: monoPeach
     visualization: heat-map
     title: Tactic by Time
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.11.0
+$schema: https://schemas.humio.com/dashboard/v0.10.0

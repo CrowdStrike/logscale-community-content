@@ -1,0 +1,93 @@
+name: Active Directory Domain Services Audit
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 3d
+widgets:
+  2f6a18f1-b74f-48a7-ab0a-f7622db8fd95:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      #windows.EventID="5139" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Directory Service Moved
+    isLive: true
+    type: query
+  0cf3db0a-f30f-4766-860d-1ca89f043cc3:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="5137" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: threshold
+      default: {}
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Directory Service Created
+    isLive: true
+    type: query
+  6af689b6-cb3d-4407-b404-94a91442fde1:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="5136" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: threshold
+      default: {}
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Directory Service Modified
+    isLive: true
+    type: query
+  dd81fb47-fd4f-46c1-a0dc-6ec650b62a78:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      #windows.EventID="5141" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: threshold
+      default: {}
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Directory Service Deleted
+    isLive: true
+    type: query
+  dbd644c8-fb7c-417d-a901-a0f2c6e4e84f:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      #windows.EventID="5138" | count()
+    end: now
+    start: 24h
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Directory Service Recovered
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0

@@ -1,0 +1,9 @@
+author:
+  name: microsoft-windows
+name: microsoft-windows/windows-logs
+description: This package serves as a basis to monitor and audit Windows Logs
+version: 0.1.3
+minHumioVersion: 1.84.0
+type: application
+$schema: https://schemas.humio.com/manifest/v2.0.0
+licenseUrl: https://www.apache.org/licenses/LICENSE-2.0

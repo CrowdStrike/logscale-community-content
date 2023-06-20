@@ -1,0 +1,126 @@
+name: Windows Event Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 3d
+widgets:
+  7e46aace-035c-4b02-8192-f0fd46691874:
+    x: 6
+    y: 16
+    height: 4
+    queryString: |-
+      #windows.EventID="1100"
+      | count()
+    end: now
+    start: 24h
+    width: 6
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Event Log Service Shutdown
+    isLive: false
+    type: query
+  2cbba26c-938e-490a-910d-5093aef70d17:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      #windows.EventID="1102"
+      | count()
+    end: now
+    start: 24h
+    width: 6
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Event Log Cleared
+    isLive: false
+    type: query
+  d2b6f340-f08f-4b3a-b01f-4ce81566938d:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #windows.EventID=*
+      | match(file="microsoft-windows/windows-logs/win_event_codes.ascii.csv", column=EventID, field=#windows.EventID, include=["Description"], strict=false)
+      | top([#windows.EventID, Description], limit=10)
+      | sort(_count)
+      | rename(_count, as=Count)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 8
+    title: Top 10 Event IDs
+    isLive: false
+    type: query
+  d3924e30-7e83-49ad-8095-5b55d06cde3b:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      #windows.EventID=/^(4624|4625)$/
+      | case{#windows.EventID="4624" | type:="successful"; #windows.EventID="4625" | type:="unsuccessful";*}
+      | timeChart(function=count(), series=type)
+    visualization: heat-map
+    end: now
+    start: 1d
+    width: 12
+    title: Successful and Unsuccessful Logons
+    isLive: false
+    type: query
+  be9de471-6e6f-4c25-8723-a97608c0d0da:
+    x: 4
+    y: 5
+    height: 7
+    queryString: |-
+      #windows.Channel=*
+      | timeChart(#windows.Channel)
+    end: now
+    start: 1d
+    width: 8
+    options:
+      series: {}
+      showDataPoints: true
+      connect-points: false
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Channel Trends
+    isLive: false
+    type: query
+  b078405d-d8e8-4147-809c-075790439d8d:
+    x: 8
+    y: 0
+    height: 5
+    queryString: |-
+      #windows.EventID=*
+      | timeChart()
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Count
+    isLive: false
+    type: query
+  15e11bfd-79a9-4ce8-841d-2faa5ffd7f8f:
+    x: 0
+    y: 5
+    height: 7
+    queryString: |-
+      #windows.Channel=*
+      | groupBy(#windows.Channel, limit=max)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Event Channels
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0

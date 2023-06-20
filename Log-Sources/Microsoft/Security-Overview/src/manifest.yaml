@@ -1,0 +1,16 @@
+$schema: https://schemas.humio.com/manifest/v2.0.0
+licenseUrl: https://www.apache.org/licenses/LICENSE-2.0
+
+name: crowdstrike-lcc/microsoft-windows
+
+description: |
+    Overview Package for Windows Security Logs.
+
+author:
+  name: LogScale Community Content
+
+contributors:
+
+version: 0.2.0
+minHumioVersion: 1.20.0
+type: application
