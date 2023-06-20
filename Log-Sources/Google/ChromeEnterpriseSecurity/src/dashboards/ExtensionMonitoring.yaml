@@ -1,0 +1,110 @@
+name: Extension Monitoring
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  4ff53cad-45fd-46dc-9458-da51de63749e:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      event="browserExtensionInstallEvent"
+      |match(file="google/chrome-enterprise-security-events/chrome_extensions_blocklist.csv", field="extension_id")
+      |extension_id=?{extension_id="*"}
+      |extension_name=?{extension_name="*"}
+      |rename(extension_id, as="Extension ID")
+      |rename(extension_name, as="Extension Name")
+      |rename(device_id, as="Device ID")
+      |rename(device_user, as="Device User")
+      |rename(os_platform, as="OS Platform")
+      |select([extension_name, "Extension ID", "@timestamp", "Device User", "Device ID", "OS Platform"])
+    visualization: table-view
+    end: now
+    start: 30d
+    width: 8
+    title: Recent Blocklisted Extension Installations
+    isLive: false
+    type: query
+  8bd742b5-f630-4c20-aa52-78a0cee75b18:
+    x: 0
+    height: 4
+    queryString: |-
+      event="browserExtensionInstallEvent"
+      |groupby([extension_id, extension_name], function=count(as=Count)) | sort(Count, order=asc)
+      |extension_id=?{extension_id="*"}
+      |extension_name=?{extension_name="*"}
+      |rename(extension_id, as="Extension ID")
+      |rename(extension_name, as="Extension Name")
+      |select(["Extension Name", "Extension ID", "Count"])
+    visualization: table-view
+    end: now
+    start: 30d
+    width: 7
+    y: 4
+    interactions:
+    - conditions: null
+      name: Open in Chrome Web Store
+      titleTemplate: null
+      urlTemplate: https://chrome.google.com/webstore/detail/{{ fields["Extension
+        ID"] }}
+      openInNewTab: true
+      type: customlink
+    title: Least Installed Extensions over the last 30 Days
+    isLive: false
+    type: query
+  e3f2f92a-b0c0-43ec-af58-41c24aea7c09:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      event="browserExtensionInstallEvent"
+      |extension_id=?{extension_id="*"}
+      |extension_name=?{extension_name="*"}
+      |sort(ExtensionCount, limit=10, order=asc)
+      |rename(extension_id, as="Extension ID")
+      |rename(extension_name, as="Extension Name")
+      |rename(device_id, as="Device ID")
+      |rename(profile_user, as="Profile User")
+      |select(["@timestamp", "Device ID", "Profile User", "Extension Name", "Extension ID"])
+    visualization: table-view
+    end: now
+    start: 30d
+    width: 12
+    title: Recent Extension Intallations
+    isLive: false
+    type: query
+  note-1682614813345-0:
+    x: 8
+    y: 8
+    height: 4
+    text: |-
+      Extension Blocklist can be added in the Files tab with the file name "chrome_extensions_blocklist.csv" and column header "extension_id".
+
+      The query is matching the unique ID of the extension from the Chrome web store. The ID can be found in the URL of the extension in the Chrome web store.
+
+      Eg: "kchfmpdcejfkipopnolndinkeoipnoia" for "User-Agent Switcher"
+    width: 4
+    title: Note for Extension Blocklist
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  extension_id:
+    label: Extension ID
+    query: groupBy("extension_id")
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: extension_id
+  extension_name:
+    label: Extension Name
+    query: groupBy("extension_name")
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: extension_name

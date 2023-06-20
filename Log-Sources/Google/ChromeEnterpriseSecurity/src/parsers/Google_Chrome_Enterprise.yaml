@@ -1,0 +1,100 @@
+name: Google_Chrome_Enterprise
+tests:
+- |-
+  {
+      "event": "badNavigationEvent",
+      "time": "1683569779.791",
+      "reason": "MALWARE",
+      "result": "EVENT_RESULT_WARNED",
+      "device_name": "CrowdStrikeLogScaleTestDevice",
+      "device_user": "WINMEMBERSVR02\\Administrator",
+      "profile_user": "*****@gmail.com",
+      "url": "https://testsafebrowsing.appspot.com/s/malware_in_iframe.html",
+      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
+      "os_platform": "Windows",
+      "os_version": "10.0.14393.5125",
+      "browser_version": "113.0.5672.63",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+      "client_type": "CHROME_BROWSER",
+      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
+  }
+- |-
+  {
+      "event": "browserCrashEvent",
+      "time": "1685569750",
+      "reason": "BROWSER_CRASH",
+      "result": "DETECTED",
+      "device_name": "CrowdStrikeLogScaleTestDevice",
+      "device_user": "dan",
+      "device_id": "VDnb7S8X9rnz2bXgAdU55QWDVEY",
+      "os_platform": "Linux",
+      "os_version": "5.19.0-41-generic",
+      "browser_version": "114.0.5735.90",
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+      "client_type": "CHROME_BROWSER",
+      "browser_channel": "stable",
+      "report_id": "",
+      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
+  }
+- |-
+  {
+      "event": "browserExtensionInstallEvent",
+      "time": "1685808934.323",
+      "device_name": "CrowdStrikeLogScaleTestDevice",
+      "device_user": "tester@doesnotexist.com",
+      "profile_user": "tester@doesnotexist.com",
+      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
+      "os_platform": "ChromeOS",
+      "os_version": "15393.48.0",
+      "browser_version": "113.0.5672.114",
+      "user_agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+      "client_type": "CHROME_OS_DEVICE",
+      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38",
+      "extension_name": "TestExtension",
+      "extension_id": "doesnotexist",
+      "extension_description": "TestExtension"
+  }
+- |-
+  {
+      "event": "CHROME_OS_LOGIN_EVENT",
+      "time": "1685808932.28",
+      "reason": "CHROMEOS_AFFILIATED_LOGIN",
+      "device_name": "CrowdStrikeLogScaleTestDevice",
+      "device_user": "tester@doesnotexist.com",
+      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
+      "os_platform": "ChromeOS",
+      "os_version": "15393.48.0",
+      "browser_version": "113.0.5672.114",
+      "user_agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+      "client_type": "CHROME_OS_DEVICE",
+      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
+  }
+- |-
+  {
+      "event": "CHROME_OS_LOGIN_FAILURE_EVENT",
+      "time": "1685808926.314",
+      "reason": "CHROMEOS_AFFILIATED_LOGIN",
+      "device_name": "CrowdStrikeLogScaleTestDevice",
+      "device_user": "tester@doesnotexist.com",
+      "trigger_type": "AUTHENTICATION_ERROR",
+      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
+      "os_platform": "ChromeOS",
+      "os_version": "15393.48.0",
+      "browser_version": "113.0.5672.114",
+      "user_agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
+      "client_type": "CHROME_OS_DEVICE",
+      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
+  }
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  #Parser_version:="0.1.0"
+  | #Vendor:="Google"
+  | #Product:="Chrome Enterprise"
+
+  | parseJson()
+  | parseTimestamp(unixTimeSeconds, field=time)
+tagFields:
+- Parser_version
+- Vendor
+- Product
