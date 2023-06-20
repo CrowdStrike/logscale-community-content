@@ -15,7 +15,7 @@ The main focus of these dashboards are data coming from Security Logs, however a
 
 ## Release Notes
 
-v0.1.0 
+v0.2.0 
 - Initial creation
 
 

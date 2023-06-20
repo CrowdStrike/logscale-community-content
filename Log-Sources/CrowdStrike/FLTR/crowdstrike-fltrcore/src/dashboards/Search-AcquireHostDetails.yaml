@@ -1,4 +1,4 @@
-name: Search - Host Details
+name: Search - Acquire Host Details
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -17,9 +17,9 @@ widgets:
           test(?HostName!="*") 
             | $"crowdstrike/fltr-core:zComputerName"() 
             | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName));
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
           test(?aid!="*") 
-            | aid=?aid;
+            | aid=?aid ;
         }
       | count(RegObjectName, distinct=true)
     end: now
@@ -38,14 +38,14 @@ widgets:
     height: 4
     queryString: |-
       #cid=?cid
-      | #event_simpleName=CommandHistory*
+      | #event_simpleName=CommandHistory
       | case {
           test(?HostName!="*") 
             | $"crowdstrike/fltr-core:zComputerName"() 
             | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName));
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
           test(?aid!="*") 
-            | aid=?aid;
+            | aid=?aid ;
         }
       | replace("¶", with="\n", field=CommandHistory)
       | table([@timestamp, ApplicationName, CommandCount, CommandHistory], limit=1000)
@@ -61,7 +61,7 @@ widgets:
       titleTemplate: null
       queryString: |-
         #cid=?cid
-        | #event_simpleName=CommandHistory*
+        | #event_simpleName=CommandHistory
         | aid=?aid
         | ApplicationName=?ApplicationName
         | replace("¶", with="\n", field=CommandHistory)
@@ -88,9 +88,9 @@ widgets:
           test(?HostName!="*") 
             | $"crowdstrike/fltr-core:zComputerName"() 
             | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName));
+            | test(lower(inputComputerName)==lower(ComputerName)) ;
           test(?aid!="*") 
-            | aid=?aid;
+            | aid=?aid ;
         }
       | tail(1000)
       | regex("App=(?<App>(.*?))\|", field=FirewallRule, strict=false)
@@ -795,7 +795,7 @@ widgets:
             | inputComputerName:=?HostName 
             | test(lower(inputComputerName)==lower(ComputerName)) ;
           test(?aid!="*") 
-            | aid=?aid ;
+            | aid=?aid OR AgentIdString=?aid;
         }
       | groupBy([FileName, DetectName, Severity, SeverityName, ComputerName, UserName, MD5String, SHA256String], function=[count(as=DetectionCount)], limit=1000)
     visualization: table-view
@@ -845,7 +845,7 @@ widgets:
             | inputComputerName:=?HostName 
             | test(lower(inputComputerName)==lower(ComputerName)) ;
           test(?aid!="*") 
-            | aid=?aid ;
+            | aid=?aid OR AgentIdString=?aid;
         }
       | format("[Detection Link](%s)", field=["FalconHostLink"], as="DetectionLink")
       | groupBy([@timestamp, DetectId], function=[collect([DetectionLink, FileName, DetectName, Severity, SeverityName, ComputerName, UserName, MD5String, SHA256String], limit=100)], limit=1000)

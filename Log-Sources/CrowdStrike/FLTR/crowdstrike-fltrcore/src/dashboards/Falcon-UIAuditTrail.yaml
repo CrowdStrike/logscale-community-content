@@ -1,0 +1,529 @@
+name: Falcon - UI Audit Trail
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  32b9f7a2-34a4-4079-9de6-c633a5e8582b:
+    x: 0
+    height: 5
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Do an IP location on the field, otherwise set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country], value="N/A")
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Display the output.
+      | groupBy([UserId, OperationName], function=count(OperationName), limit=max)
+      | _count > 4
+    end: now
+    start: 7d
+    width: 12
+    y: 9
+    interactions:
+    - conditions: null
+      name: Users and Operations
+      titleTemplate: '{{ fields.UserId }}, {{ fields.OperationName }}'
+      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| UserId=?UserId\n| OperationName=?OperationName\n\
+        | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
+        \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
+        %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        OperationName: '["{{fields.OperationName}}"]'
+        UserId: '["{{fields.UserId}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      withXAxisTitle: false
+      labelAngle: 30
+      colorPalette: monoBlue
+      xLabelLimit: 127
+      withLegendTitle: true
+      yLabelLimit: 128
+      labelAlign: right
+      withYAxisTitle: false
+    visualization: heat-map
+    title: Users and Operations
+    isLive: false
+    type: query
+  1ae8426a-2cb0-436d-a246-3f68a570a59b:
+    x: 0
+    height: 4
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Do an IP location on the field, otherwise set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country], value="N/A")
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Display the output.
+      | sankey(source="UserId", target="OperationName", weight=count(OperationName, distinct=true))
+    end: now
+    start: 7d
+    width: 6
+    y: 14
+    interactions:
+    - conditions: null
+      name: UserId to OperationName
+      titleTemplate: '{{ fields.source }}, {{ fields.target }}'
+      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| UserId=?UserId\n| OperationName=?OperationName\n\
+        | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
+        \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
+        %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        OperationName: '["{{ fields.target }}"]'
+        UserId: '["{{ fields.source }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      labelLimit: 156
+      series: {}
+      showAxes: false
+      stackSortOrder: descending
+    visualization: sankey
+    title: UserId -> OperationName
+    isLive: false
+    type: query
+  7554da72-346b-404e-b51f-54b468187f2b:
+    x: 0
+    height: 5
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Do an IP location on the field, otherwise set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country], value="N/A")
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Display the output.
+      | top(UserId, limit=5)
+    end: now
+    start: 7d
+    width: 4
+    y: 4
+    interactions:
+    - conditions: null
+      name: UserId
+      titleTemplate: '{{ fields.UserId }}'
+      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| UserId=?UserId\n| ipLocation(UserIp)\n\
+        | default(field=[UserIp, UserIp.city, UserIp.country], value=\"N/A\") \n|\
+        \ UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"%Y-%m-%d %H:%M:%S.%L\"\
+        , field=UTCTimestamp, locale=en_US, timezone=Z)"
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        UserId: '["{{fields.UserId}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      maxSeriesCount: 50
+      series: {}
+    visualization: pie-chart
+    title: Top Users by Activity
+    isLive: false
+    type: query
+  838750e8-1a25-48e6-80cd-ac13644cf905:
+    x: 0
+    y: 18
+    height: 6
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Grab additional values.
+      | join(
+          { #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent UserActivityAuditEvent | OperationName=detection_update },
+            field=DetectId, key=Attributes.detection_id, mode=left, include=["Attributes.new_state", "Attributes.assigned_to_uid"],
+          limit=100000
+        )
+
+      // Rename fields.
+      | AssignedTo:=rename(Attributes.assigned_to_uid)
+      | NewState:=rename(Attributes.new_state)
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country, AssignedTo, NewState], value="N/A", replaceEmpty=true)
+
+      // Display the output.
+      | table([TimeUTC, UserId, ServiceName, OperationName, UserIp, UserIp.city, UserIp.country, DetectId, AssignedTo, NewState], limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Audit Details
+    isLive: false
+    type: query
+  41b72c02-0f47-464f-b665-b33ca0a18df3:
+    x: 4
+    height: 5
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Do an IP location on the field, otherwise set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country], value="N/A")
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Display the output.
+      | top(OperationName, limit=5)
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 4
+    y: 4
+    interactions:
+    - conditions: null
+      name: OperationName
+      titleTemplate: '{{ fields.OperationName }}'
+      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| OperationName=?OperationName\n\
+        | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
+        \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
+        %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        OperationName: '["{{fields.OperationName}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top Operations
+    isLive: false
+    type: query
+  edaddcdb-78df-4156-be95-391d13aa3c2f:
+    x: 0
+    height: 4
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Do an IP location on the field, otherwise set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country], value="N/A")
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Display the output.
+      | timeChart(UserId, function=count(), limit=10)
+    end: now
+    start: 7d
+    width: 12
+    y: 0
+    interactions:
+    - conditions: null
+      name: UserId
+      titleTemplate: '{{ fields.UserId }}'
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+        | ExternalApiType=Event_UserActivityAuditEvent
+        | UserId=?UserId
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        UserId: '["{{fields.UserId}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      interpolation: step-after
+      legendLabelOverflow: truncate
+      showDataPoints: false
+      connect-points: true
+      regression: false
+      show-utc: false
+      imputation: lerp
+    visualization: time-chart
+    title: User Activity
+    isLive: false
+    type: query
+  72f12e9a-951e-4c36-b977-56a40f96853c:
+    x: 8
+    height: 5
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Do an IP location on the field, otherwise set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country], value="N/A")
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Display the output.
+      | top(ServiceName, limit=5)
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 4
+    y: 4
+    interactions:
+    - conditions: null
+      name: ServiceName
+      titleTemplate: '{{ fields.ServiceName }}'
+      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| ServiceName=?ServiceName\n\
+        | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
+        \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
+        %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        ServiceName: '["{{fields.ServiceName}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top Services
+    isLive: false
+    type: query
+  507b0dbb-9b58-4930-a831-f106933d70a0:
+    x: 6
+    height: 4
+    queryString: |-
+      // Search for audit events.
+      #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent
+
+      // Only apply the input if the value exists.
+      | case {
+            UserId=* | UserId=?UserId ;
+          }
+      | case {
+            CustomerIdString=* | CustomerIdString=?CustomerIdString ;
+          }
+      | case {
+            ServiceName=* | ServiceName=?ServiceName ;
+          }
+      | case {
+            OperationName=* | OperationName=?OperationName ;
+          }
+
+      // Do an IP location on the field, otherwise set default values.
+      | ipLocation(UserIp)
+      | default(field=[UserIp, UserIp.city, UserIp.country], value="N/A")
+
+      // Convert and format the timestamp.
+      | UTCTimestamp:=UTCTimestamp*1000
+      | TimeUTC:=formatTime("%Y-%m-%d %H:%M:%S.%L", field=UTCTimestamp, locale=en_US, timezone=Z)
+
+      // Display the output.
+      | sankey(source="OperationName", target="ServiceName", weight=count(ServiceName, distinct=true))
+    end: now
+    start: 7d
+    width: 6
+    y: 14
+    interactions:
+    - conditions: null
+      name: OperationName and ServiceName
+      titleTemplate: '{{ fields.source }}, {{ fields.target }}'
+      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| OperationName=?OperationName\n\
+        | ServiceName=?ServiceName\n| ipLocation(UserIp)\n| default(field=[UserIp,\
+        \ UserIp.city, UserIp.country], value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n\
+        | TimeUTC:=formatTime(\"%Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US,\
+        \ timezone=Z)"
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        OperationName: '["{{ fields.source }}"]'
+        ServiceName: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      labelLimit: 156
+      series: {}
+      showAxes: false
+      stackSortOrder: descending
+    visualization: sankey
+    title: OperationName -> ServiceName
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  CustomerIdString:
+    label: CustomerIdString
+    query: '#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent | CustomerIdString=*'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: CustomerIdString
+  OperationName:
+    label: OperationName
+    query: '#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent | OperationName=*'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: OperationName
+  ServiceName:
+    label: ServiceName
+    query: '#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent | ServiceName=*'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: ServiceName
+  UserId:
+    label: UserId
+    query: '#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
+      | ExternalApiType=Event_UserActivityAuditEvent | UserId=*'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserId

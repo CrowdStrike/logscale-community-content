@@ -30,7 +30,9 @@ Revert the settings after the file has been generated:
 ## Changelog
 
 Version 1.3.7
-- Changed the MITRE content to weight the values around severity. 
+- Changed the MITRE content to weight the values around severity.
+- Added "Search - Acquire Host Details" to the dashboards and interactions. 
+- Added "Falcon - UI Audit Trail" to monitor your Falcon logs from FLTR. 
 
 Version 1.3.6
 - Enabled "Require user input before searching" for most of the dashboards. You can use `*` as an input if needed. 
