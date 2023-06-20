@@ -8,24 +8,13 @@ This package should be installed in a *view* linked to your FLTR repo. It is not
 
 If both packages are mistakenly installed in the FLTR repo, go to `Alerts -> Scheduled Searches -> FDR aidmaster Scheduled Search` and **uncheck** `Enable scheduled search` followed by `Save Scheduled Search`. Otherwise both packages will be attempting to generate the same file. You only need the `FLTR aidmaster Generation` scheduled search running. 
 
-## Installation
+## Setup Instructions
 
-Prior to installation, please uninstall any related versions of this package that did not originate from the Marketplace.
+Detailed setup instructions with screenshots can be found here:
 
-This package will generate an `fdr_aidmaster.csv` mapping file every 3 hours. You may receive a query error about the file not being found prior to the initial generation. To force the generation of this file before the 3 hour window:
+https://github.com/CrowdStrike/logscale-community-content/wiki/FLTR-Setup-and-Configuration
 
-1. Go to both *Alerts -> Scheduled Searches -> FLTR aidmaster Generation* scheduled search.
-2. Change the *Search schedule* to `* * * * *` and click *Save scheduled search*.
-3. Wait approximately 1-2 minutes.
-4. Click on *Alerts -> Scheduled Searches*. This should now show a *Last Triggered* time for the *FLTR aidmaster Generation* scheduled search. This means the file has been generated.
-
-**Do not skip these next steps**. 
-
-Revert the settings after the file has been generated:
-
-1. Go back to the *FLTR aidmaster Generation* scheduled search in *Alerts -> Scheduled Searches*.
-2. Change the *Search schedule* back to the original value of `H */3 * * *`.
-3. Click *Save scheduled search*.
+It is highly recommended that you follow these steps after installing this package. 
 
 ## Changelog
 
