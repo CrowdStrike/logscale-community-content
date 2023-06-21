@@ -32,7 +32,7 @@ Here's a quick summary of the various folders in this repository contaiming LogS
 
 # Wiki
 
-The wiki [can be found here](wiki). It contains various tutorials and guides for LogScale and FLTR.
+The wiki [can be found here](https://github.com/CrowdStrike/logscale-community-content/wiki). It contains various tutorials and guides for LogScale and FLTR.
 
 # Documentation and Support
 LogScale Community Content is a community-driven open source project. As such, it carries no formal support, expressed or implied.
