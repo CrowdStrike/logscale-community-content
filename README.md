@@ -25,24 +25,14 @@ Here's a quick summary of the various folders in this repository contaiming LogS
 - **[Log-Sources](Log-Sources)**: 
   - Complete packages grouped by vendor and application.
   - Queries, dashboards, alerts, etc. grouped by vendor and application
-
 - **[Config-Samples](Config-Samples)**: 
   - These folders contain quick starts, configuration examples, and other useful artifacts.
-
 - **[Parsers](Parsers)**:
   - Standalone parsers beyond what is in the LogScale Marketplace. 
 
 # Wiki
 
-The wiki contains the following guides and tutorials:
-
-- **[Foundational Building Blocks](https://github.com/CrowdStrike/logscale-community-content/wiki/Foundational-Building-Blocks)**: this is a list of common questions we've seen in the field. If you've ever wondered how to accomplish X to get to Y, this is likely the place to start. 
- 
-- **[Function Samples](https://github.com/CrowdStrike/logscale-community-content/wiki/Function-Samples)**: these are examples of using a few of the common functions within LogScale. The full function documentation [can be found here](https://library.humio.com/falcon-logscale/functions.html). 
-
-- **[Hunting and Investigations](https://github.com/CrowdStrike/logscale-community-content/wiki/Hunting-and-Investigations)**: ever wondered how to hunt through Falcon telemetry data, aka LTR, aka FDR? This is likely the best place to start. 
-
-- **[Event Forwarding Playground](https://github.com/CrowdStrike/logscale-community-content/wiki/Event-Forwarding-Playground)**: a self-contained docker environment made available for the purposes of learning how to setup Event Forwarding in LogScale. 
+The wiki [can be found here](wiki). It contains various tutorials and guides for LogScale and FLTR.
 
 # Documentation and Support
 LogScale Community Content is a community-driven open source project. As such, it carries no formal support, expressed or implied.
@@ -56,15 +46,10 @@ Is something going wrong? GitHub Issues are used to report bugs and errors. You 
 There are *many* ways you can contribute to the LogScale Community Content repository.
 
 - _Add new vendor content_ by opening a pull request. More details on this process can be found in the Log-Sources folder: [Log-Sources](Log-Sources).
-
 - _Add new samples_ by opening a pull request. More details on this process can be found in the Configuration Sample folder: [Config-Samples](Config-Samples).
-
 - _Review pull requests_ by going through the queue of [open pull requests on GitHub](https://github.com/CrowdStrike/logscale-community-content/pulls) and providing feedback to the authors.
-
 - _Documenting, blogging, or creating videos_, of how you've used LogScale Community Content. This type of content is *invaluable* and helps our community grow. Open a pull request for inclusion in the [LogScale Community Content Wiki](https://github.com/CrowdStrike/logscale-community-content/wiki) section of this page.
-
 - _Fix a bug or implement a new feature_. Check out our [open issues on GitHub](https://github.com/CrowdStrike/logscale-community-content/issues) for inspiration.
-
 - _Providing feedback_ by opening a [GitHub ticket](https://github.com/CrowdStrike/logscale-community-content/issues). Even a fly-by "hey, this worked..." is appreciated and helps validate approaches. Ideas on improving the project are most welcome.
 
 To get started, review the [Code of Conduct](https://github.com/CrowdStrike/logscale-community-content/blob/main/CODE_OF_CONDUCT.md) for community guidelines, and the [contribution guide](https://github.com/CrowdStrike/logscale-community-content/blob/main/CONTRIBUTING.md) for more detail regarding contributing to the LogScale Community Content repository.
