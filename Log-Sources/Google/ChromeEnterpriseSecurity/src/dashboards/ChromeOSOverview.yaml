@@ -1,0 +1,206 @@
+name: ChromeOS Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  02f110e4-5123-49b2-9c68-655c6cbef0a7:
+    x: 0
+    y: 5
+    height: 4
+    queryString: |-
+      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_AFFILIATED_LOGIN"
+      |device_name=?{device_name="*"} device_user=?{device_user="*"}
+      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      |select(["@timestamp", "Device Name", "Device User"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Recent User Logons
+    isLive: false
+    type: query
+  868657f3-916d-403d-872d-53570b1e9836:
+    x: 0
+    backgroundColor: '#000000'
+    y: 9
+    height: 1
+    text: ''
+    width: 12
+    title: USB Drive Usage
+    type: note
+  1860990e-61b1-419a-b58a-fe0700307ff9:
+    x: 4
+    y: 5
+    height: 4
+    queryString: |-
+      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_UNAFFILIATED_LOGIN"
+      |device_name=?{device_name="*"}
+      |rename(device_name, as="Device Name")
+      |select(["@timestamp", "Device Name"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Recent Non-Company User Logons
+    isLive: false
+    type: query
+  ba729cbe-6051-4c08-84ca-34322a0e17ca:
+    x: 8
+    y: 5
+    height: 4
+    queryString: |-
+      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_GUEST_SESSION_LOGIN"
+      |device_name=?{device_name="*"}
+      |rename(device_name, as="Device Name")
+      |select(["@timestamp", "Device Name"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Recent Guest Account Logons
+    isLive: false
+    type: query
+  note-1682722156349-1:
+    x: 0
+    backgroundColor: '#000000'
+    y: 0
+    height: 1
+    text: ''
+    width: 12
+    title: Logons
+    type: note
+  8e74d6c8-b7c3-45cd-a039-c169a6304f71:
+    x: 0
+    y: 1
+    height: 4
+    queryString: |-
+      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_AFFILIATED_LOGIN"
+      |device_name=?{device_name="*"} device_user=?{device_user="*"}
+      |timeChart(function=count())
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: User Logons
+    isLive: false
+    type: query
+  756778d9-2192-48b3-a799-4a9b67df2e18:
+    x: 0
+    backgroundColor: '#000000'
+    y: 14
+    height: 1
+    text: ''
+    width: 12
+    title: Chrome Remote Desktop Usage
+    type: note
+  1c1e0fd3-65d2-47dd-9dc4-f8dec3209348:
+    x: 0
+    y: 10
+    height: 4
+    queryString: |-
+      client_type="CHROME_OS_DEVICE" event="CHROMEOS_PERIPHERAL_ADDED"
+      |device_name=?{device_name="*"} device_user=?{device_user="*"}
+      |event_detail=/vendor:\s(?<VendorName>.*?).*product:\s(?<ProductDetail>.*?drive|storage)/i
+      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      |select(["@timestamp", "Device Name", "Device User", "VendorName", "ProductDetail"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 8
+    title: USB Drive Connected
+    isLive: false
+    type: query
+  8f8a915f-55ff-4ce2-b640-1952c52404dd:
+    x: 6
+    y: 15
+    height: 4
+    queryString: |-
+      event = "CHROME_OS_CRD_CLIENT_CONNECTED"
+      |device_name=?{device_name="*"} device_user=?{device_user="*"}
+      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      |select(["@timestamp", "Device Name", "Device User"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 6
+    title: Client Connected
+    isLive: false
+    type: query
+  1f5d8087-506c-41e2-b435-ff13bff5b12d:
+    x: 8
+    y: 1
+    height: 4
+    queryString: |-
+      event=CHROME_OS_LOGIN_EVENT reason=CHROMEOS_GUEST_SESSION_LOGIN
+      |device_name=?{device_name="*"}
+      |timeChart(function=count())
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Guest Account Logons
+    isLive: false
+    type: query
+  26184962-8e5b-448a-89fb-d60b526b19aa:
+    x: 4
+    y: 1
+    height: 4
+    queryString: |-
+      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_UNAFFILIATED_LOGIN"
+      |device_name=?{device_name="*"}
+      |timeChart(function=count())
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+      sparkline-zero: false
+      text-color: '#fff700'
+    visualization: single-value
+    title: Non-Company User Logons
+    isLive: false
+    type: query
+  774bd525-71de-4005-b138-290ac580081c:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      event = "CHROME_OS_CRD_HOST_STARTED"
+      |device_name=?{device_name="*"} device_user=?{device_user="*"}
+      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      |select(["@timestamp", "Device Name", "Device User"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 6
+    title: Host Connection Started
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  device_name:
+    label: Device Name
+    query: in(event, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
+      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: device_name
+  device_user:
+    label: Device User
+    query: in(event, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
+      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: device_name

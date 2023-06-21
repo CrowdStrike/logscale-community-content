@@ -1,0 +1,96 @@
+name: Event Information
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  09633019-569e-4656-b009-fa400210ac8a:
+    x: 0
+    y: 0
+    height: 8
+    queryString: |-
+      client_type = ?{client_type="*"}
+      |event = ?{event="*"}
+      |os_platform = ?{os_platform="*"}
+      |reason = ?{reason="*"}
+      |select(["@timestamp","device_id","device_name","device_user","client_type","event","content_name","content_type","browser_version","os_platform","os_version","reason","result","trigger_type","url"])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Events
+    isLive: false
+    type: query
+  91a8bcca-d9c6-40af-9f67-1cce7db9b1f8:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      reason=?{reason="*"}
+      |timeChart("reason",limit=10)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Security Events by Reason Timechart
+    isLive: false
+    type: query
+  f908ce5e-62c8-4a72-95d4-40e6227d509d:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      event=?{event="*"}
+      |timeChart("event",limit=10)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Security Events Timechart
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  client_type:
+    label: Client Type
+    query: groupBy("client_type")
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: client_type
+  event:
+    label: Event Type
+    query: groupBy("event")
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: event
+  os_platform:
+    label: Operating System
+    query: groupBy("os_platform")
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: os_platform
+  reason:
+    label: Reason
+    query: groupBy("reason")
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: reason
