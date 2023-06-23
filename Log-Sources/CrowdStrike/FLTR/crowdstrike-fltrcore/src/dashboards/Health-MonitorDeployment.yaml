@@ -49,8 +49,15 @@ widgets:
       isLive: false
       type: searchlink
     options:
-      connect-points: false
-      imputation: none
+      interpolation: step-after
+      legendLabelOverflow: truncate
+      showDataPoints: false
+      connect-points: true
+      stacking: normal
+      yAxisScale: linear
+      regression: false
+      show-utc: false
+      imputation: lerp
       legend: false
       series:
         _count:

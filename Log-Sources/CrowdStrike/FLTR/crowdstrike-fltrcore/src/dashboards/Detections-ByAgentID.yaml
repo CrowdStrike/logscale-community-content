@@ -64,9 +64,16 @@ widgets:
       isLive: false
       type: searchlink
     options:
-      connect-points: false
-      imputation: none
       series: {}
+      interpolation: step-after
+      legendLabelOverflow: truncate
+      showDataPoints: false
+      connect-points: true
+      stacking: normal
+      yAxisScale: linear
+      regression: false
+      show-utc: false
+      imputation: lerp
     visualization: time-chart
     title: Detection Rate
     isLive: false
