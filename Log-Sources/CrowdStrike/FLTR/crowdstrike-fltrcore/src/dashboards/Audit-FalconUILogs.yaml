@@ -20,7 +20,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }
@@ -85,7 +85,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }
@@ -146,7 +146,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }
@@ -206,7 +206,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }
@@ -253,7 +253,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }
@@ -309,7 +309,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }
@@ -374,7 +374,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }
@@ -427,7 +427,7 @@ widgets:
 
       | case {
           test(?ExcludeInternal=="Yes")
-            | UserId!=/^(cs\.detectswriter|CrowdStrike|detectsapi|unknown)$/i ;
+            | UserId=/@/ ;
           test(?ExcludeInternal=="No")
             | UserId=?UserId ;
         }

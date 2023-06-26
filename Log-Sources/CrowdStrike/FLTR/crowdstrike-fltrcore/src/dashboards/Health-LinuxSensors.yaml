@@ -182,7 +182,7 @@ widgets:
     y: 0
     height: 3
     queryString: |-
-      #event_simpleName=/6(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)$/
+      #event_simpleName=/^(OsVersionInfo|ConfigStateUpdate|SensorHeartbeat)$/
       | event_platform=Lin
       | groupBy([cid, aid], function=([selectLast([ConfigStateData, OSVersionString, SensorStateBitMap])]), limit=max)
       | ConfigStateData match {

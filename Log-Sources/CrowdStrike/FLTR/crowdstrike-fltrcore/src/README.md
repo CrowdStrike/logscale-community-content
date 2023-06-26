@@ -22,7 +22,7 @@ Version 1.3.7
 - Changed the MITRE content to weight the values around severity.
 - Added "Search - Acquire Host Details" to the dashboards and interactions. 
 - Added "Audit - Falcon UI Audit Logs" to monitor your Falcon audit logs from FLTR.
-- Changed most of the timeChart functions in dashboards to use "step after".
+- Fixed a typo in the Linux health dashboard. 
 
 Version 1.3.6
 - Enabled "Require user input before searching" for most of the dashboards. You can use `*` as an input if needed. 
