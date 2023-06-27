@@ -1,0 +1,39 @@
+name: 'Data Transmission Ratio '
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  213b326d-5f61-453d-8eea-6cdb6a2d4fc3:
+    x: 0
+    y: 0
+    height: 8
+    queryString: |-
+      groupBy(?SourceOrDest, function={ sum(BytesSent, as=sumSent)})
+      |  join({groupBy(?SourceOrDest, function={ sum(BytesReceived, as=sumRec)})}, field=?SourceOrDest, key=?SourceOrDest, include=sumRec)
+    start: 7d
+    width: 12
+    options:
+      series: {}
+      xZero: false
+      legendLabelOverflow: full
+      legend: false
+      polyOrder: 1
+      symbolSize: 760
+      regressionType: linear
+      inputDataFormat: long
+      yZero: false
+    visualization: scatter-chart
+    title: Ratio of Total BytesSent to BytesReceived
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.3.0
+parameters:
+  SourceOrDest:
+    label: SourceOrDest
+    order: 50
+    values:
+    - SourceIP
+    - DestinationIP
+    type: list
+    defaultValue: SourceIP

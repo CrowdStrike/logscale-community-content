@@ -1,0 +1,90 @@
+name: External Traffic by Action & GEO
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  1492a9ae-675c-4487-bb51-5a2769d2ec54:
+    x: 0
+    y: 6
+    height: 5
+    queryString: |-
+      Action = ?Action
+      | match(file="service-names-port-numbers.csv",column="Port Number",field=DestinationPort,include=["Service Name",Description])|DestinationPort=?DestinationPort
+       | !cidr(DestinationIP, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+       | ipLocation(field=DestinationIP)
+       | ipLocation(field=SourceIP)
+       | DestinationIP.country=?DestinationCountry
+       | groupBy(field=["Service Name",Action,SourceIP,SourceIP.country,DestinationIP,DestinationIP.country],limit=max)
+    visualization: table-view
+    start: 1y
+    width: 12
+    title: External Traffic by GEO and Service Name
+    type: query
+  a3286aa6-8ac9-4afc-8f5a-806e4c94a9d3:
+    x: 6
+    y: 0
+    height: 6
+    queryString: |-
+      Action = ?Action
+      | match(file="service-names-port-numbers.csv",column="Port Number",field=DestinationPort,include=["Service Name",Description])|DestinationPort=?DestinationPort
+      | !cidr(DestinationIP, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+      | ipLocation(field=DestinationIP)
+      | DestinationIP.country=?DestinationCountry
+      | worldMap(ip=DestinationIP)
+    visualization: world-map
+    start: 1d
+    width: 6
+    title: Destination IPs
+    type: query
+  dd4a5f17-fbbc-4641-90ea-a2a7fe10abb7:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |-
+      Action = ?Action
+      | match(file="service-names-port-numbers.csv",column="Port Number",field=DestinationPort,include=["Service Name",Description])|DestinationPort=?DestinationPort
+       | !cidr(DestinationIP, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+       | ipLocation(field=DestinationIP)
+       | DestinationIP.country=?DestinationCountry
+      | worldMap(ip=SourceIP)
+    visualization: world-map
+    start: 24h
+    width: 6
+    title: Source IPs
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.3.0
+parameters:
+  Action:
+    label: Action
+    query: groupby(Action)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Action
+  DestinationCountry:
+    label: DestinationCountry
+    query: DestinationPort=?DestinationPort   | !cidr(DestinationIP, subnet=["224.0.0.0/4",
+      "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])  | ipLocation(field=DestinationIP)  |
+      ipLocation(field=SourceIP)  | groupBy(field=[DestinationIP.country],limit=max,
+      function=count(DestinationIP.country, distinct=true))
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DestinationIP.country
+  DestinationPort:
+    label: DestinationPort
+    query: match(file="service-names-port-numbers.csv",column="Port Number",field=DestinationPort,include=["Service
+      Name",Description])|groupby(["Service Name","DestinationPort"])|ServiceName:=rename("Service
+      Name")|ServiceName=*|table([ServiceName,DestinationPort])
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DestinationPort

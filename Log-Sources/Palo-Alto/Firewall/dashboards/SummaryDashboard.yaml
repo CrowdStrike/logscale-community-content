@@ -1,0 +1,173 @@
+name: Summary Dashboard
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  dcbadf6e-9deb-426f-bbe4-3d9352590d0e:
+    x: 4
+    y: 10
+    height: 4
+    queryString: groupby(Type)
+    visualization: pie-chart
+    start: 24h
+    width: 4
+    title: Flow Types
+    type: query
+  848ebb9a-2000-4cd8-a32c-ce5e7592cce0:
+    x: 0
+    y: 10
+    height: 4
+    queryString: SessionID = * RuleName=?rule and InboundInterface=?inbound and Category=?cat
+      and Application=?app and SourceIP=?sourceip and DestinationIP=?destip and SessionID=?session|groupBy("RuleName",limit=20000)
+    visualization: pie-chart
+    start: 24h
+    width: 4
+    title: Rules
+    type: query
+  aa87f534-26b4-46a0-8823-f9211eef208f:
+    x: 8
+    y: 10
+    height: 4
+    queryString: SessionID = * RuleName=?rule and InboundInterface=?inbound and Category=?cat
+      and Application=?app and SourceIP=?sourceip and DestinationIP=?destip and SessionID=?session|groupBy("Application")
+    visualization: pie-chart
+    start: 24h
+    width: 4
+    title: Applications
+    type: query
+  a1ec5f9c-a1c3-40f4-a9fb-650779d09039:
+    x: 0
+    y: 6
+    height: 4
+    queryString: SessionID=* RuleName=?rule and InboundInterface=?inbound and Category=?cat
+      and Application=?app and SourceIP=?sourceip and DestinationIP=?destip and SessionID=?session|sankey(source="SourceIP",target="DestinationIP")
+    visualization: sankey
+    start: 24h
+    width: 6
+    title: Source IP <-> Destination IP
+    type: query
+  1dee7188-05a7-4241-9cec-f416237a64d5:
+    x: 0
+    y: 0
+    height: 6
+    queryString: SessionID=* RuleName=?rule and InboundInterface=?inbound and Category=?cat
+      and Application=?app and SourceIP=?sourceip and DestinationIP=?destip and SessionID=?session|table([SessionID,Application,Protocol,RuleName,SequenceNumber,Bytes,BytesReceived,InboundInterface,BytesSent,OutboundInterface,Category,SourceIP,DestinationIP,Threat_ContentType,StartTime,ReceiveTime],limit=20000)|sort([SequenceNumber,Threat_ContentType],
+      type=any, order=asce)
+    visualization: table-view
+    start: 24h
+    width: 12
+    title: Events
+    type: query
+  bab28662-d981-4b11-8150-551ab054c493:
+    x: 0
+    y: 14
+    height: 4
+    queryString: |
+      Action="deny"|worldMap(ip="sourceIP")
+    start: 24h
+    width: 4
+    options:
+      magnitudeMode: opacity
+      maxOpacity: 56
+      opacityMode: opacity
+      projection: mercator
+      norm: true
+      opacity: 56
+      maxSize: 31
+    visualization: world-map
+    title: Denied Requests
+    type: query
+  43bb244b-49d6-4058-94fe-e9f4f164ab23:
+    x: 6
+    y: 6
+    height: 4
+    queryString: timechart(Bytes)
+    start: 24h
+    width: 6
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Timechart - Bytes
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.3.0
+parameters:
+  destip:
+    label: Destination IP
+    query: SessionID!=0 and RuleName=?rule and InboundInterface=?inbound and Category=?cat
+      and Application=?app and SourceIP=?sourceip and DestinationIP=?destip and SessionID=?session|
+      groupby(DestinationIP)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DestinationIP
+  rule:
+    label: Rule Name
+    query: SessionID!=0|groupby(RuleName)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: RuleName
+  sourceip:
+    label: Source IP
+    query: SessionID!=0 and RuleName=?rule and InboundInterface=?inbound and Category=?cat
+      and Application=?app and SourceIP=?sourceip and DestinationIP=?destip and SessionID=?session
+      | groupby(SourceIP)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: SourceIP
+  inbound:
+    label: Inbound Interface
+    query: SessionID!=0|groupby(InboundInterface)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: InboundInterface
+  cat:
+    label: Category
+    query: SessionID!=0 | groupby(Category)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Category
+  prot:
+    label: Protocol
+    query: SessionID!=0 |groupby(Protocol)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Protocol
+  session:
+    label: Session ID
+    query: SessionID!=0 and RuleName=?rule and InboundInterface=?inbound and Category=?cat
+      and Application=?app and SourceIP=?sourceip and DestinationIP=?destip and SessionID=?session|groupby(SessionID)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: SessionID
+  app:
+    label: Application
+    query: SessionID!=0|groupby(Application)
+    timeInterval: 8y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Application
