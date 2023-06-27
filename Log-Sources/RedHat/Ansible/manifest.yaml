@@ -1,0 +1,10 @@
+author:
+  name: redhat
+name: redhat/ansible
+description: This package is a collecton of Humio dashboard for Ansible automation
+  tool  logs.
+version: 0.1.0
+minHumioVersion: 1.20.0
+type: application
+$schema: https://schemas.humio.com/manifest/v2.0.0
+licenseUrl: https://www.apache.org/licenses/LICENSE-2.0
