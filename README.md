@@ -27,7 +27,7 @@ Here's a quick summary of the various folders in this repository contaiming LogS
   - Queries, dashboards, alerts, etc. grouped by vendor and application
 - **[Config-Samples](Config-Samples)**: 
   - These folders contain quick starts, configuration examples, and other useful artifacts.
-- **[Parsers](Parsers)**:
+- **[Parsers-Only](Parsers-Only)**:
   - Standalone parsers beyond what is in the LogScale Marketplace. 
 
 # Wiki

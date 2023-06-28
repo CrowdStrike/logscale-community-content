@@ -1,0 +1,21 @@
+/^(?<ts>.*?)\s(?<hostname>.*?)\s.*?(?<ciscoEvent>%.*?)\:\s(?<message>.*?)\senvironment=(?<environment>.*?)($|\s)/
+| case {
+    ciscoEvent=/[a-zA-Z]+-\d-/ | ciscoEvent =/^.{1}(?<facility>[^-]*).(?<severity>\d+).(?<mnemonic>\w+$)/ ;
+    ciscoEvent=/[[a-zA-Z]+-[a-zA-Z]\S+/ | ciscoEvent = /^.{1}(?<facility>[^-].*?).(?<subfacility>[^-]*).(?<severity>\d+).(?<mnemonic>\w+$)/ ;
+  *;
+  }
+| severity match { 
+    0 => severity_level:="emergency" ;
+    1 => severity_level:="alert" ;
+    2 => severity_level:="critical" ;
+    3 => severity_level:="error" ;
+    4 => severity_level:="warning" ;
+    5 => severity_level:="notification" ;
+    6 => severity_level:="informational" ;
+    7 => severity_level:="debug" ;
+    * => * ;
+  }
+| case 
+{ mnemonic = "HOST_FLAPPING" | message = /^(?<host>\w+)\s(?<host_mac>[^ ]*)\s+\w+\s+(?<vlan>\S+\s+\d+).+?(?=Port)(?<source_channel>\S+).+?(?=Port|Ethernet)(?<destination_channel>\S+)/; 
+*}
+| @timestamp := parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXXXX", field=ts) 
