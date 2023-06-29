@@ -1,0 +1,123 @@
+name: Metrics Dashboard
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  18cecb12-223c-4c74-b99e-48320b5aee99:
+    x: 4
+    y: 0
+    description: Trending Packets in to look for spikes/lows from specific sourceIPs
+      in the environment
+    height: 4
+    queryString: timechart(buckets=1000, series=SourceIP, function=count())
+    start: 30d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      series: {}
+    visualization: time-chart
+    title: Time Chart of SourceIPs
+    type: query
+  28c1bfb8-a361-42ec-8cc5-2e8d7feb0814:
+    x: 8
+    y: 0
+    description: 'This search looks for potential TOR Traffic using commonly used
+      TOR ports. '
+    height: 4
+    queryString: |-
+      DestinationPort = 9001 OR DestinationPort = 9030 OR DestinationPort = 9040 OR DestinationPort = 9050 OR DestinationPort = 9051 OR DestinationPort = 9150 OR (Application = /tor/i AND Application != active-directory)
+      | table(["SourceIP", "DestinationIP", "SourcePort", "DestinationPort","Application", "SourceUser","Protocol", "Action"], limit=20000)
+    visualization: table-view
+    start: 30d
+    width: 4
+    title: TOR Traffic
+    type: query
+  4f954518-2abf-43ba-b904-d8ad577b5149:
+    x: 0
+    y: 2
+    description: Largest connection outbound for 1 day
+    height: 1
+    queryString: eval(BytesSent = (Bytes / 102 * 1024)) | AverageMB := avg("BytesSent")
+      | LargestConnection := max("AverageMB")
+    start: 24h
+    width: 4
+    options:
+      ct: []
+      default: {}
+    visualization: single-value
+    title: Largest Connection of the day
+    type: query
+  3599b5ca-4e6e-4d65-b58b-59612e96529c:
+    x: 4
+    y: 4
+    description: visualizes inbound interface to identify noisy intefaces
+    height: 4
+    queryString: timechart(buckets=1000, series=InboundInterface, function=count())
+    start: 30d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      series: {}
+    visualization: time-chart
+    title: Inbound Inteface Traffic
+    type: query
+  93814bd7-116e-4352-a05b-d260add50af5:
+    x: 8
+    y: 4
+    description: |+
+      This search looks for outbound ICMP packets with a packet size larger than 15,000 bytes or 15 KBs. Various threat actors have been known to use ICMP as a command and control channel for their attack infrastructure. Large ICMP packets from an endpoint to a remote host may be indicative of this activity.
+
+    height: 4
+    queryString: KiloBytesSent := (BytesSent / 1000) | KiloBytesSent > 15.00 | table(["KiloBytesSent",
+      "SourceIP","DestinationIP","Protocol"])
+    visualization: table-view
+    start: 30d
+    width: 4
+    title: Large ICMP PacketOutbound
+    type: query
+  5670e712-9d25-404d-957e-99acda5bacc8:
+    x: 0
+    y: 1
+    description: Average Size Packet in MB
+    height: 1
+    queryString: MegaByte := (Bytes / 1000000) | avg(MegaByte)
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Average Size Packet In MB
+    type: query
+  7da3bd51-2b86-48db-a275-89a6dda60d64:
+    x: 0
+    y: 4
+    height: 4
+    queryString: timechart(buckets=1000, series=OutboundInterface, function=count())
+    start: 30d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      series: {}
+    visualization: time-chart
+    title: OutBound Inteface Traffic
+    type: query
+  e0b54d62-0f2c-4c9e-a39f-0e13d5ce5f65:
+    x: 0
+    y: 0
+    description: Calculates the total bytes seen in the environment and changes it
+      to GB
+    height: 1
+    queryString: GigaByte := (Bytes / 1073741824) | count(GigaByte)
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Ingestion a Day in GB
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.3.0

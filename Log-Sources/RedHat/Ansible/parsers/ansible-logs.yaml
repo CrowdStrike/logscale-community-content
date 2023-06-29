@@ -1,0 +1,89 @@
+name: ansible-logs
+tests:
+- '2022-11-22 19:00:12,973 p=1268491 u=root n=ansible | ok: [172.31.18.108] => { "msg":
+  { "changed": true, "cmd": "uptime -p", "delta": "0:00:00.021810", "end": "2022-11-22
+  19:00:12.762551", "failed": false, "msg": "", "rc": 0, "start": "2022-11-22 19:00:12.740741",
+  "stderr": "", "stderr_lines": [], "stdout": "up 13 weeks, 3 days, 19 hours, 4 minutes",
+  "stdout_lines": [ "up 13 weeks, 3 days, 19 hours, 4 minutes" ] } }'
+- '2022-11-22 21:00:13,369 p=1269713 u=root n=ansible | ok: [172.31.23.82] => { "msg":
+  { "changed": true, "cmd": "uptime -p", "delta": "0:00:00.006359", "end": "2022-11-22
+  21:00:13.129005", "failed": false, "msg": "", "rc": 0, "start": "2022-11-22 21:00:13.122646",
+  "stderr": "", "stderr_lines": [], "stdout": "up 8 weeks, 6 days, 22 hours, 30 minutes",
+  "stdout_lines": [ "up 8 weeks, 6 days, 22 hours, 30 minutes" ] } }'
+- '2022-10-17 02:00:10,806 p=107402 u=root n=ansible | changed: [172.31.23.82] =>
+  {"changed": true, "dest": "/tmp/test1", "gid": 0, "group": "root", "mode": "0644",
+  "owner": "root", "size": 0, "state": "file", "uid": 0}'
+- '2022-10-17 02:00:09,977 p=107402 u=root n=ansible | ok: [172.31.23.82] => {"cache_update_time":
+  1665844913, "cache_updated": false, "changed": false}'
+- |-
+  2022-10-17 01:40:59,397 p=106026 u=root n=ansible | [DEPRECATION WARNING]: The 'ec2' module has been deprecated and replaced by the
+   'ec2_instance' module'. This feature will be removed from amazon.aws in
+  version 4.0.0. Deprecation warnings can be disabled by setting
+  deprecation_warnings=False in ansible.cfg.
+- '2022-10-17 02:00:05,869 p=107402 u=root n=ansible | fatal: [172.31.9.74]: UNREACHABLE!
+  => {"changed": false, "msg": "mkdir: cannot create directory ‘/root/.ansible/tmp/ansible-tmp-1665972005.710697-107438-260280441308106’:
+  No space left on device\n", "unreachable": true}'
+- 2022-10-17 01:40:02,554 p=106026 u=root n=ansible | TASK [Create a VPC] ************************************************************
+- '2022-10-17 01:40:05,534 p=106026 u=root n=ansible | changed: [localhost] => {"changed":
+  true, "debugging": {"expected_cidrs": ["10.10.0.0/16"], "to_add": [], "to_remove":
+  []}, "vpc": {"cidr_block": "10.10.0.0/16", "cidr_block_association_set": [{"association_id":
+  "vpc-cidr-assoc-051ecdf1d1ce9d875", "cidr_block": "10.10.0.0/16", "cidr_block_state":
+  {"state": "associated"}}], "classic_link_enabled": false, "dhcp_options_id": "dopt-96161af3",
+  "id": "vpc-0e6bcf540c44cf2de", "instance_tenancy": "default", "is_default": false,
+  "owner_id": "517716713836", "state": "available", "tags": {"Name": "my_ansible_vpc"}}}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |2+
+
+  // Ansible logs parsing
+
+  /(?<@timestamp>\d+\-\d+\-\d+\s\d+\:\d+\:\d+\,\d+) p=(?<processId>\d+) u=(?<user>\w+) n=(?<n>\w+) \| (?<remainder>.*)/
+
+  | case {
+      // Playbook initiated
+      remainder = /PLAYBOOK\:\s(?<playbook>[^*]+)/;
+
+      // Play initiated
+      remainder = /PLAY\s\[(?<play>[^\]]+)/;
+
+      // Task initiated
+      remainder = /TASK\s\[(?<task>[^\]]+)\]/;
+
+      // Task completed on host
+      remainder = /(?<state>[^:]+)\:\s\[(?<host>[^\]]+)\]$/;
+
+      // ???
+      remainder = /(?<state>[^:]+)\:\s\[(?<host>[^\]]+)\]//\s\=>\s\(item=(?<dontknowwhatthisis>[^\)]+)\)\s=>\s(?<info>.*)/
+          | parseJson(info)
+          | drop(info);
+
+      // ???
+      remainder = /(?<state>[^:]+)\:\s\[(?<host>[^\]]+)\]//\s\=>\s(?<info>.*)/
+          // stderr_lines duplicates what is in the stderr field. Ditto for stdout_lines
+          | parseJson(info, exclude=["stderr_lines", "stdout_lines"])
+          | drop(info);
+
+      // And more cases!
+      remainder = /PLAY RECAP\s/;
+
+      remainder = /(?<state>[^:]+)\:\s\[(?<host_ip>.*)\]\s\=\>\s(?<line2>.*)/
+          |parseJson(field=line2);
+      remainder = /(?<state>[^:]+)\:\s\[(?<host_ip>[^\]]+)\]\s\=>\s\(item=(?<info>.*)\)/
+          |parseJson(field=info);
+         remainder = /Using\s(?<config_file>.+)\sas\s/;
+
+      remainder = /(?<host_ip>\d+\.\d+\.\d+\.\d+)\s+\:\s+(?<remainder1>.*)/
+          |kvparse(field=remainder1)
+          |drop(remainder1);
+
+      remainder = /(?<host>[^:]+)\:\s(?<line2>.*)/
+          |kvParse(field=line2);
+      remainder = /\[(?<deprecation_warning>.+\]:.*)/ | drop(deprecation_warning);
+  // Comment this asterisk in to make all events pass the parser
+  //    *
+  }
+  | drop(remainder)
+  | parseTimestamp("yyyy-MM-dd' 'HH:mm:ss,SSS", field=@timestamp,timezone="UTC")
+
+
+tagFields: []

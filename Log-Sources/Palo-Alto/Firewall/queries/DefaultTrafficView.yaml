@@ -1,0 +1,12 @@
+name: Default Traffic View
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"Type","format":"text","width":68},{"type":"field","fieldName":"Application","format":"text","width":141},{"type":"field","fieldName":"SourceIP","format":"text","width":126},{"type":"field","fieldName":"DestinationIP","format":"text","width":132},{"type":"field","fieldName":"DestinationPort","format":"text","width":132},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.1.0
+timeInterval:
+  isLive: false
+  start: 1y
+queryString: Type = TRAFFIC

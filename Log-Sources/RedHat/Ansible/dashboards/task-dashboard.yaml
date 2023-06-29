@@ -1,0 +1,208 @@
+name: Deployment Status
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  e22a1a85-47d3-41a7-aa25-e02a24f9bf34:
+    x: 0
+    y: 12
+    height: 4
+    queryString: 'groupby([host_ip,task,p]) '
+    visualization: pie-chart
+    start: 1d
+    width: 4
+    title: 'Activity Stream: Top jobs'
+    type: query
+  b1130af8-9c68-4dd5-bbd2-29aa33f09208:
+    x: 0
+    y: 16
+    height: 4
+    queryString: ' top(["task"]) | table(task)'
+    visualization: table-view
+    start: 1d
+    width: 4
+    title: Top Tasks
+    type: query
+  bc270085-ec73-43d6-b276-e0cfdaaeeee7:
+    x: 4
+    y: 16
+    height: 4
+    queryString: 'state=fatal '
+    start: 1d
+    width: 4
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Fatal Error
+    type: query
+  4756501b-cc97-49a8-9273-fe8010afe7d3:
+    x: 8
+    y: 16
+    height: 4
+    queryString: groupBy("cache_update_time")
+    visualization: pie-chart
+    start: 1d
+    width: 4
+    title: 'Caching update time '
+    type: query
+  214e2f0d-9df6-49cd-be4e-d543fc69566f:
+    x: 8
+    y: 0
+    height: 4
+    queryString: count(unreachable, distinct = true)
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Unreachable Hosts
+    type: query
+  a0fefab3-307f-4ae7-9e05-9742df970d98:
+    x: 4
+    y: 12
+    height: 4
+    queryString: groupby([u,task]) | rename("u",as="user") | rename("_count", as=count)|table([user,task,count])
+    visualization: table-view
+    start: 1d
+    width: 4
+    title: Tasks by user
+    type: query
+  b5075e1e-6a6e-4bdc-87b9-be70cdb9d1c3:
+    x: 4
+    y: 8
+    height: 4
+    queryString: sankey(source="processId",target="task")
+    visualization: sankey
+    start: 1h
+    width: 4
+    title: Tasks by Process
+    type: query
+  dbce6462-493a-41e3-bc86-f2b949a0f90d:
+    x: 4
+    y: 4
+    height: 4
+    queryString: timechart(function=percentile(field = "changed", percentiles=[90,
+      95, 99]))
+    start: 1d
+    width: 4
+    options:
+      interpolation: natural
+      xAxisTitle: Average, Count, Minimum, Maximum, Standard Deviation, Sum, and Variance(Trending,latency)
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: 'Activity Stream: Aggregate functions from each event'
+    type: query
+  a93cd45e-93eb-429f-a7ca-069c8ced7532:
+    x: 8
+    y: 4
+    height: 4
+    queryString: top("host_ip")
+    start: 1d
+    width: 4
+    options:
+      innerRadius: 54
+      legendLabelOverflow: full
+      maxLegendRows: 6
+      maxSeriesCount: 5
+    visualization: pie-chart
+    title: 'Hosts - Frequency of Deployment '
+    type: query
+  a5f93784-5c16-495c-a1fb-550a0797fb7e:
+    x: 4
+    y: 0
+    height: 4
+    queryString: task=?taskname|timeChart(task)
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      imputation: none
+    visualization: time-chart
+    title: Tasks Over Time
+    type: query
+  7634a318-fa80-4415-baec-33e7ddde43b7:
+    x: 4
+    y: 20
+    height: 4
+    queryString: groupBy("changed")
+    visualization: pie-chart
+    start: 2h
+    width: 4
+    title: Percentage Changed during job execution
+    type: query
+  62d9f557-41dc-4458-8b06-7eac296afe05:
+    x: 0
+    y: 8
+    height: 4
+    queryString: groupby([u,processId]) | rename("processId",as="process") |rename("u",as="user")
+    visualization: table-view
+    start: 1d
+    width: 4
+    title: 'Activity Stream: Top User'
+    type: query
+  6986e097-bd0f-4cbc-aa68-ea09c7486b71:
+    x: 8
+    y: 12
+    height: 4
+    queryString: top(changed)|count()
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: 'Number of Time  Tasks executed   Successfully  '
+    type: query
+  884ae238-6677-4cba-a6bb-5d15dd90b823:
+    x: 0
+    y: 4
+    height: 4
+    queryString: groupBy(task)
+    visualization: bar-chart
+    start: 1d
+    width: 4
+    title: group by Tasks
+    type: query
+  5118326b-1e9b-440b-8c25-e3a9b6fa888e:
+    x: 0
+    y: 0
+    height: 4
+    queryString: failed=1 | count()
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Failed Tasks
+    type: query
+  c08acdb3-c6fd-41ce-adbd-82b06da8ce4c:
+    x: 8
+    y: 8
+    height: 4
+    queryString: groupby(task)
+    visualization: pie-chart
+    start: 1d
+    width: 4
+    title: Group By Tasks
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  taskname:
+    label: Tasks
+    query: groupby(task)
+    timeInterval: 2d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: task
