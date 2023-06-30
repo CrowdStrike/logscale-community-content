@@ -1,0 +1,321 @@
+name: Cisco-ASA-Events
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  d4f1840b-6f42-4272-a66d-4ce942af50b6:
+    x: 4
+    y: 0
+    height: 3
+    queryString: |-
+      cisco_facility=ASA cisco_severity=?severity cisco_className=?classname |
+      groupby(#host) |
+      rename(#host,as=Firewall) | rename("_count",as="Number of events")
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Events per firewall
+    isLive: false
+    type: query
+  c1c36a33-0466-4d28-957f-049f17b3119d:
+    x: 8
+    y: 11
+    height: 4
+    queryString: groupBy("type")
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: ICMP Connction Denied
+    isLive: false
+    type: query
+  bff71d30-a036-4bbe-928c-49e5ea548f30:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |2
+       top("source_ip", limit=10) | sort()
+    visualization: bar-chart
+    end: now
+    start: 1y
+    width: 4
+    title: Top 10 Source Address
+    isLive: false
+    type: query
+  11ff626b-069f-436d-8509-e9eead090502:
+    x: 8
+    y: 19
+    height: 4
+    queryString: ' cisco_facility=ASA #host=?asaHost cisco_severity=?severity cisco_className=?classname
+      | sankey(source="cisco_facility", target="src_addr")'
+    visualization: sankey
+    end: now
+    start: 1y
+    width: 4
+    title: Source Ip Address
+    isLive: false
+    type: query
+  7ab5dd6a-0fd8-477b-a910-2622a5f056ef:
+    x: 8
+    y: 7
+    height: 4
+    queryString: |
+      match(file="cisco/asa/asa_message_class.csv", field="cisco_classDefinition") | inside | timechart(span=1h)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Connection From  Inside
+    isLive: false
+    type: query
+  e6142827-b67f-43a8-85b3-fb671d71126f:
+    x: 4
+    y: 15
+    height: 4
+    queryString: |2
+       failed | timechart(span=1h)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Failed Connections
+    isLive: false
+    type: query
+  f4027e9e-fbbb-4f8a-8512-068dc32812a2:
+    x: 4
+    y: 7
+    height: 4
+    queryString: groupBy([source_port, cisco_action, outside, inside], function =
+      [])
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: Cisco Action by Ports
+    isLive: false
+    type: query
+  612dc49d-d080-43dc-bc4a-5796aadafe1a:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      cisco_facility=ASA |
+      count(field=#host, distinct=true)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      background-color: '#1f5cea'
+      default: {}
+    visualization: single-value
+    title: Number of ASA firewalls
+    isLive: false
+    type: query
+  d886dc79-6383-401a-8b76-fc8509ac6056:
+    x: 0
+    y: 19
+    height: 4
+    queryString: 'groupBy("cisco_severity") '
+    end: now
+    start: 1y
+    width: 8
+    options:
+      inputDataFormat: ''
+      maxSeriesCount: 50
+      series: {}
+      valuesOnBars: false
+    visualization: bar-chart
+    title: ' Severity Messages'
+    isLive: false
+    type: query
+  eb63bae8-ceaf-40cd-8445-5cf9996e5d56:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      cisco_facility=ASA #host=?asaHost cisco_severity=?severity cisco_className=?classname |
+      rename("cisco_classDefinition",as="ASA message classes") |
+      timechart("ASA message classes", limit=10)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top  10 Messages
+    isLive: false
+    type: query
+  7142b136-a0f8-4c8f-a7ba-807b0a246365:
+    x: 0
+    y: 23
+    height: 8
+    queryString: |-
+      cisco_facility=ASA #host=?asaHost cisco_severity=?severity cisco_className=?classname |
+      rename(#host,as=Firewall) | rename(cisco_severity,as=Severity) | rename(cisco_className,as="Class name") | rename(cisco_mnemonic,as=Mnemonic) | rename(cisco_message,as=Message) |
+      select(["@timestamp",Firewall,Severity,"Class name",Mnemonic,Message])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: Event list
+    isLive: false
+    type: query
+  2e2259f2-c97e-4919-8aab-a552371da342:
+    x: 8
+    y: 15
+    height: 4
+    queryString: ' cisco_facility=ASA | sankey(source="cisco_facility", target="cisco_mnemonic")'
+    visualization: sankey
+    end: now
+    start: 1y
+    width: 4
+    title: Cisco Secure Firewall ASA Series Syslog Messages
+    isLive: false
+    type: query
+  5a27fcf8-dc7d-4ba6-be06-0951cf066d1c:
+    x: 8
+    y: 3
+    height: 4
+    queryString: top(destination_ip, limit=10) | sort()
+    visualization: pie-chart
+    end: now
+    start: 1y
+    width: 4
+    title: Top 10 Destination Address
+    isLive: false
+    type: query
+  17e79b7e-9d24-4b6c-a3f3-ec2db36ccf4f:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      #host=?asaHost cisco_facility=ASA cisco_mnemonic=710003 dst_port=?DestPort |
+      top(dst_port)
+    visualization: pie-chart
+    end: now
+    start: 1y
+    width: 4
+    title: Top 10 Attempted access to ports
+    isLive: false
+    type: query
+  9a973ace-187d-4c9d-a8b7-32ae8a1a3b34:
+    x: 0
+    y: 11
+    height: 4
+    queryString: |2
+        groupBy(["cisco_severity","cisco_className" ])
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: Failed By Cisco Class Name
+    isLive: false
+    type: query
+  9cd731d1-43fb-44cd-8daa-8ac6bb5f4eab:
+    x: 4
+    y: 3
+    height: 4
+    queryString: cisco_severity=?severity | timechart("source_port")
+    end: now
+    start: 1y
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: 'Top Source Ports '
+    isLive: false
+    type: query
+  a5c985c2-e48f-4c65-8001-353f04544bb8:
+    x: 0
+    y: 7
+    height: 4
+    queryString: cisco_action = Built | timechart(span=1h)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Accepted Connection
+    isLive: false
+    type: query
+  5242888f-8932-49d5-9e37-9c361152981b:
+    x: 4
+    y: 11
+    height: 4
+    queryString: |
+      match(file="cisco/asa/asa_message_class.csv", field="cisco_classDefinition") | outside | timechart(span=1h)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Connections per hour from Outside
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  DestPort:
+    label: Dest Port
+    query: groupby([destination_port])
+    timeInterval: 1y
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: destination_port
+  severity:
+    label: Cisco Severity
+    valueFilters: {}
+    fileName: asa_severity.csv
+    defaultValue: '*'
+    order: 50
+    valueField: cisco_severity
+    type: file
+    labelField: cisco_severity_message
+  asaHost:
+    label: ASA Host
+    query: top(#host)
+    timeInterval: 1y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: '#host'
+  sourceip:
+    label: Source IP
+    query: ' groupby([src_addr])'
+    timeInterval: 1y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 40
+    valueField: src_addr
+  classname:
+    label: Message class
+    valueFilters: {}
+    fileName: cisco/asa/asa_message_class.csv
+    defaultValue: '*'
+    order: 60
+    valueField: cisco_className
+    type: file
+    labelField: cisco_classDefinition
+  cisco_mnemonic:
+    label: Cisco Mnemonic
+    query: groupBy([cisco_mnemonic])
+    timeInterval: 1y
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cisco_mnemonic

@@ -1,0 +1,9 @@
+cisco_severity,cisco_severity_message
+*,*
+1,1-alert
+2,2-critical
+3,3-error
+4,4-warning
+5,5-notification
+6,6-informational
+7,7-debugging
