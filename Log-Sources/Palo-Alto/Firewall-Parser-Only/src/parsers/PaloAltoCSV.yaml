@@ -44,7 +44,7 @@ script: |-
             _fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, SourceIP, DestinationIP, NATSourceIP, NATDestinationIP, RuleName, SourceUser, DestinationUser, Application, VirtualSystem, SourceZone, DestinationZone, InboundInterface, OutboundInterface, LogAction, _fu3, SessionID, RepeatCount, SourcePort, DestinationPort, NATSourcePort, NATDestinationPort, Flags, Protocol, Action, URL_Filename, ThreatID, Category, Severity, Direction, SequenceNumber, ActionFlags, SourceLocation, DestinationLocation, _fu4, ContentType, PCAP_ID, FileDigest, Cloud, URLIndex, UserAgent, FileType, "X-Forwarded-For", Referer, Sender, Subject, Recipient, ReportID, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, _fu5, SourceVMUUID, DestinationVMUUID, HTTPMethod, TunnelID_IMSI, MonitorTag_IMEI, ParentSessionID, ParentStartTime, TunnelType, ThreatCategory, ContentVersion, _fu6, SCTPAssociationID, PayloadProtocolID, HTTPHeaders
           ])
         | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
-      Type="HIP-MATCH"
+      Type="HIPMATCH" OR Type="HIP-MATCH"
         | parseCSV(csv_data, columns=[
             _fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, SourceUser, VirtualSystem, Machinename, OS, SourceAddress, HIP, RepeatCount, HIPType, _fu3, _fu4, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, VirtualSystemID, IPv6SourceAddress, HostID
           ])
@@ -93,6 +93,11 @@ script: |-
         | parseCSV(csv_data, columns=[
             _fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, VirtualSystem, EventID, Stage, AuthenticationMethod, TunnelType, SourceUser, SourceRegion, MachineName, PublicIP, PublicIPv6, PrivateIP, PrivateIPv6, HostID, UserSerialNumber, ClientVersion, ClientOS, ClientOSVersion, RepeatCount, Reason, Error, Description, Status, Location, LoginDuration, ConnectMethod, ErrorCode, Portal, SequenceNumber, ActionFlags
         ])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="IPTAG"
+      | parseCSV(csv_data, columns=[
+          _fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, VirtualSystem, SourceIP, TagName, EventID, RepeatCount, TimeOutThreshold, DataSourceName, DataSourceType, DataSourceSubtype, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, VirtualSystemID
+      ])
         | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
       * | _unsupported := "True"
     }
