@@ -32,7 +32,7 @@ script: |-
   | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC")
   // | drop([_fu1, _fu2, _fu3, _fu4, _fu5, _fu6])
   ;
-  Type="HIP-MATCH"
+  Type="HIPMATCH" OR Type="HIP-MATCH"
   | parseCSV(csv_data, columns=[
   _fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, SourceUser, VirtualSystem, Machinename, OS, SourceAddress, HIP, RepeatCount, HIPType, _fu3, _fu4, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, VirtualSystemID, IPv6SourceAddress, HostID
   ])
@@ -101,6 +101,13 @@ script: |-
   ])
   | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC")
   // | drop([_fu1, _fu2])
+  ;
+  Type="IPTAG"
+      | parseCSV(csv_data, columns=[
+          _fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, VirtualSystem, SourceIP, TagName, EventID, RepeatCount, TimeOutThreshold, DataSourceName, DataSourceType, DataSourceSubtype, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, VirtualSystemID
+      ])
+  // | drop([_fu1, _fu2])
+  | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC")
   ;
   * | _unsupported := "True"
   }
