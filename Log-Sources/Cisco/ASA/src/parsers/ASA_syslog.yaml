@@ -1,30 +1,88 @@
 name: ASA_syslog
-tests: []
+tests:
+- |-
+  <164>Jul 29 2022 16:10:45 ciscoasa : %ASA-4-400037: IDS:6053 DNS all records request
+   from 209.141.47.28 to 23.121.1.57 on interface outside
+- |-
+  <166>Nov 19 2022 22:06:02 ciscoasa : %ASA-6-302020: Built outbound ICMP connection
+   for faddr 1.1.1.1/0 gaddr 23.121.1.57/8113 laddr 192.168.1.122/8113
+- |-
+  <163>Nov 20 2022 01:58:04 ciscoasa : %ASA-3-710003: TCP access denied by ACL from
+   59.127.11.46/47369 to outside:23.121.1.57/23
+- |-
+  <166>Nov 20 2022 02:15:24 ciscoasa : %ASA-6-302016: Teardown UDP connection 474574
+   for outside:9.9.9.9/53 to inside:192.168.1.126/39734 duration 0:00:00 bytes 141
+- '<166>Nov 20 2022 02:32:35 ciscoasa : %ASA-6-302013: Built outbound TCP connection
+  476080 for outside:165.225.216.35/443 (165.225.216.35/443) to inside:192.168.1.24/51568
+  (23.121.1.57/51568)'
+- |-
+  <166>Nov 20 2022 20:17:41 ciscoasa : %ASA-6-106015: Deny TCP (no connection) from
+   21   192.168.1.33/53285 to 17.253.13.202/443 flags RST on interface inside
+- '<166>Nov 20 2022 17:25:15 ciscoasa : %ASA-6-302010: 97 in use, 424 most used'
+- |-
+  <166>Nov 20 2022 08:10:03 ciscoasa : %ASA-6-725007: SSL session with client inside:192.168.1.22/52036
+   18   terminated.
+- |-
+  <166>Nov 20 2022 08:04:55 ciscoasa : %ASA-6-725001: Starting SSL handshake with
+   16   client inside:192.168.1.22/51980 for TLS session.
+- |-
+  <166>Nov 20 2022 08:04:53 ciscoasa : %ASA-6-725002: Device completed SSL handshake
+   14   with client inside:192.168.1.22/51968
+- |-
+  <166>Nov 20 2022 08:04:56 ciscoasa : %ASA-6-725003: SSL client inside:192.168.1.22/51981
+   12   request to resume previous session.
+- |-
+  <165>Nov 20 2022 08:55:28 ciscoasa : %ASA-5-111010: User ''cjohnson'', running
+    8   ''N/A'' from IP 192.168.1.22, executed ''write memory
+- |-
+  <164>Nov 20 2022 19:20:02 ciscoasa : %ASA-4-313004: Denied ICMP type=0, from laddr
+    6   162.55.244.69 on interface outside to 23.121.1.57: no matching session
+- '<166>Nov 22 2022 18:40:52 ciscoasa : %ASA-6-305011: Built dynamic TCP translation
+  from inside:192.168.1.22/50721 to outside:23.121.1.57/50721'
+- '<166>Nov 22 2022 03:49:54 ciscoasa : %ASA-6-302010: 125 in use, 424 most used'
+- '<166>Nov 22 2022 18:40:52 ciscoasa : %ASA-6-305011: Built dynamic TCP translation
+  from inside:192.168.1.22/50721 to outside:23.121.1.57/50721'
+- '<162>Nov 18 2022 05:57:05 ciscoasa : %ASA-2-106001: Inbound TCP connection denied
+  from 35.196.217.93/443 to 192.168.1.126/54046 flags FIN PSH ACK  on interface outside'
+- '<163>Nov 18 2022 05:35:05 ciscoasa : %ASA-3-710003: TCP access denied by ACL from
+  36.48.42.8/4221 to outside:23.121.1.57/23'
 fieldsToBeRemovedBeforeParsing: []
 $schema: https://schemas.humio.com/parser/v0.2.0
-script: "/(<(?<priority>\\d+)>)?(?<@timestamp>\\S+\\s+\\S+\\s+\\S+\\s+\\S+)\\s+(?<host>\\\
-  S+)?\\s+(?<app>[^\\s\\[:]+)?(\\[(?<pid>[^\\]]+)\\]:)?(?<msg>.*)/ |\n/%(?<cisco_facility>[A-Z0-9_]+)-(?<cisco_severity>[0-7]+)-(?<cisco_mnemonic>[A-Z0-9_]+):\
-  \ (?<cisco_message>.+)/ |\n\n// enrich events with severity name\nmatch(\"asa_severity_lookup.csv\"\
-  ,field=\"cisco_severity\") |\n\n// enrich events with class names\n// first set\
-  \ class names and definitions to -unknown-\ncisco_className:=\"-unknown-\" | cisco_classDefinition:=\"\
-  -unknown-\" |\n// then match against the lookup file. If there is no match -unknown-\
-  \ stays, if there is a match, the enrichment overwrites -unknown-\nregex(\"(?<cisco_messageClass>.{3})\"\
-  , field=cisco_mnemonic) |\nmatch(\"asa_message_class.csv\",column=cisco_messageClass,field=cisco_messageClass,strict=false)\
-  \ |\ndrop(cisco_messageClass) |\n\n// generic from/to IPv4 address extraction\n\
-  // + based on mnemonic, do targeted extraction\ncase {\n    regex(\"from (?<cisco_interfaceSrc>\\\
-  S+):(?<src_addr>\\d+\\.\\d+\\.\\d+\\.\\d+)\\/(?<cisco_srcPort>\\d+) to (?<cisco_interfaceDest>\\\
-  S+):(?<dest_addr>\\d+\\.\\d+\\.\\d+\\.\\d+)\\/(?<cisco_destPort>\\d+)\",field=cisco_message);\n\
-  \    regex(\"71000[23]\", field=cisco_mnemonic) | regex(\"(?<cisco_protocol>\\S+)\
-  \ access (?<cisco_action>\\S+).+from (?<src_addr>\\S+)\\/(?<cisco_srcPort>\\d+)\
-  \ to (?<cisco_interface>\\S+):(?<dest_addr>\\S+)\\/(?<cisco_destPort>\\d+)\", field=cisco_message);\n\
-  \    regex(\"1060(06|15)\", field=cisco_mnemonic) | regex(\"(?<cisco_action>\\S+).+from\
-  \ (?<src_addr>\\d+\\.\\d+\\.\\d+\\.\\d+)\\/(?<cisco_srcPort>\\d{1,5}) to (?<dest_addr>\\\
-  d+\\.\\d+\\.\\d+\\.\\d+)\\/(?<cisco_destPort>\\d{1,5}).+on interface (?<cisco_interface>\\\
-  S+)\", field=cisco_message);\n    regex(\"30201[3-6]\", field=cisco_mnemonic) |\
-  \ regex(\"(?<cisco_action>\\S+).+for (?<cisco_interfaceSrc>\\S+):(?<src_addr>\\\
-  d+\\.\\d+\\.\\d+\\.\\d+)\\/(?<cisco_srcPort>\\d{1,5}).+to (?<cisco_interfaceDest>\\\
-  S+):(?<dest_addr>\\d+\\.\\d+\\.\\d+\\.\\d+)\\/(?<cisco_destPort>\\d{1,5})\", field=cisco_message);\n\
-  \    * } |\n\nparseTimestamp(\"MMM [ ]d yyyy HH:mm:ss\", field=@timestamp, timezone=\"\
-  Europe/Berlin\")\n| kvParse() "
+script: |-
+  /(<(?<priority>\d+?)>)?(?<@timestamp>\S+?\s+?\S+?\s+?\S+?\s+?\S+?)\s+?(?<host>\S+)?\s+?(?<app>[^\s\[:]+?)?(\[(?<pid>[^\]]+?)\]:)?(?<msg>.*)/ |
+
+  /%(?<cisco_facility>[A-Z0-9_]+?)-(?<cisco_severity>[0-7]+?)-(?<cisco_mnemonic>[A-Z0-9_]+?): (?<cisco_message>.+)/ |
+
+  // enrich events with severity name
+  match("cisco/asa/asa_severity.csv",field="cisco_severity") |
+
+  // enrich events with class names
+  // first set class names and definitions to -unknown-
+  cisco_className:="-unknown-" | cisco_classDefinition:="-unknown-" |
+  // then match against the lookup file. If there is no match -unknown- stays, if there is a match, the enrichment overwrites -unknown-
+  cisco_mnemonic=/(?<cisco_messageClass>.{3})/ |
+  match("cisco/asa/asa_message_class.csv",column=cisco_messageClass,field=cisco_messageClass,strict=false) |
+  drop(cisco_messageClass) |
+
+  // generic from/to IPv4 address extraction
+  // + based on mnemonic, do targeted extraction
+  case {
+
+      cisco_message = /from\s((?<src_location>\w+?)\:)?(?<src_addr>(\d{1,3}\.){3}\d{1,3})\/(?<src_port>\d+?)\sto\s((?<dst_location>\w+?)\:)?(?<dst_addr>(\d{1,3}\.){3}\d{1,3})\/(?<dst_port>\d+?) /;
+
+      in(cisco_mnemonic,values=[710002,710003]) | cisco_message=/(?<cisco_protocol>\S+?) access (?<cisco_action>\S+?).+from (?<src_addr>\S+?)\/(?<src_port>\d+?) to (?<cisco_interface>\S+?):(?<dst_addr>\S+?)\/(?<dst_port>\d+?)/;
+
+      in(cisco_mnemonic,values = [106006,106007,106008,106009,106010,106011,106012,106013,106014,106015]) | cisco_message=/(?<cisco_action>\S+?).+from (?<src_addr>\d+?\.\d+?\.\d+?\.\d+?)\/(?<src_port>\d{1,5}) to (?<dst_addr>\d+?\.\d+?\.\d+?\.\d+?)\/(?<dst_port>\d{1,5}).+on interface (?<cisco_interface>\S+?)/;
+
+      in(cisco_mnemonic,values = [111010]) | cisco_message=/\s*User\s+?['"]?(?<user>[^'"\s]+?)['"]?\s*,\s*running\s+?['"]?(?<process_name>[^'"\s]+?)['"]?\s+?from\s+IP\s+?(?<src_ip>[^,\s]+?)\s*,\s*(?<vendor_action>\S+?)\s+?['"]?(?<parent_process_name>[^'"]+?)['"]?$/;
+
+      in(cisco_mnemonic,values = [302013,302014,302015,302016]) | cisco_message=/(?<cisco_action>\S+?).+for (?<cisco_interfaceSrc>\S+?):(?<src_addr>.+?)\/(?<src_port>\d{1,5}).+?to (?<cisco_interfaceDest>\S+?):(?<dst_addr>.+?)\/(?<dst_port>\d{1,5})/;
+
+      in(cisco_mnemonic,values = [302010]) | cisco_message= /(?<conn_in_use>[\d]+?) in use, (?<conn_most_used>[\d]+?) most used/ ;
+
+      * } |
+
+  parseTimestamp("MMM [ ]d yyyy HH:mm:ss", field=@timestamp, timezone="Z")
+  | kvParse("cisco_message", as="cisco_message")
 tagFields:
 - host

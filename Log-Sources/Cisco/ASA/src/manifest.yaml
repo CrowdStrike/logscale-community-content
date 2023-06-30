@@ -1,7 +1,7 @@
 author:
-  name: LogScale Community Content
-name: crowdstrike-lcc/cisco-asa
-description: Base Package for CISCO ASA
+  name: cisco
+name: cisco/asa
+description: cisco/asa
 version: 0.1.0
 minHumioVersion: 1.20.0
 type: application

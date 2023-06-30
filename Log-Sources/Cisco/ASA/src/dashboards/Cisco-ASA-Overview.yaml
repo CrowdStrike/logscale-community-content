@@ -1,0 +1,227 @@
+name: Cisco-ASA-Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  40e989cc-cc2d-4051-99ad-3c737fd2042b:
+    x: 0
+    y: 8
+    height: 5
+    queryString: |-
+      cisco_action=denied
+      |groupBy(field=[src_addr, src_port, dest_addr, service])
+      |sort(_count, order=desc)
+      |ipLocation(field=src_addr)
+      |ioc:lookup("src_addr", type="ip_address")
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: ACL Block List
+    isLive: false
+    type: query
+  a608c1f2-56ec-49cd-9bbc-355fad521dd3:
+    x: 4
+    y: 4
+    height: 4
+    queryString: cisco_facility=ASA  cisco_severity=?severity cisco_className=?classname
+      | sankey(source="cisco_facility", target="cisco_mnemonic")
+    visualization: sankey
+    end: now
+    start: 1y
+    width: 4
+    title: System Message Logging Over time(cisco mnemonic)
+    isLive: false
+    type: query
+  4d719a01-8d0e-44b4-abe4-3b09410c896d:
+    x: 0
+    y: 13
+    height: 4
+    queryString: |-
+      cisco_mnemonic = 710003 |
+      top("src_addr", limit=20, rest=Other, percent=True) |
+      ipLocation("src_addr") |
+      match(file="cisco/asa/country_codes.csv", column=Alpha2Code, field=src_addr.country)
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 12
+    title: Source Address with Country Name
+    isLive: false
+    type: query
+  56485a0a-33cd-4ecb-b786-a17d925012ab:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |2-
+       cisco_facility=ASA cisco_mnemonic=710003  |
+      top(dst_port)
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: Top 10 Attempted access to ports table
+    isLive: false
+    type: query
+  1018786d-3618-4b76-b999-3621930b32dd:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      cisco_mnemonic = 710003 |
+      top("src_addr", limit=10, rest=Other, percent=true) |
+      ipLocation("src_addr") |
+      match(file="cisco/asa/country_codes.csv", column=Alpha2Code, field=src_addr.country) |
+      rename("_count",as="Event count") | rename(src_addr.country,as=Country1) | rename(CountryName,as=Country2) | rename(src_addr.state,as="State/region") | rename(src_addr.city,as=City) | rename(src_addr,as="Source IP address") |
+      format("%,.1f", field=percent, as=Percent) |
+      select(["Source IP address", Country1, Country2, "State/region", City, "Event count", Percent])
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: Source IP address with City and Country Code  Over-time
+    isLive: false
+    type: query
+  f8e022ae-c24b-4af9-9fce-c21a21b997dc:
+    x: 4
+    y: 8
+    height: 5
+    queryString: |-
+      cisco_mnemonic=710003  |
+      worldMap(ip="src_addr")
+    end: now
+    start: 1y
+    width: 8
+    options:
+      magnitudeMode: size
+      opacityMode: size
+      autoRotate: false
+      norm: true
+      fixedOpacity: 33
+      maxSize: 24
+      minSize: 5
+    visualization: world-map
+    title: ACL Blocks
+    isLive: false
+    type: query
+  0b4f5f4c-c61b-4c7b-bfed-a95b07984d47:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      cisco_mnemonic =  302013 |
+      top("src_addr", limit=10, rest=Other, percent=true) |
+      ipLocation("src_addr") |
+      match(file="cisco/asa/country_codes.csv", column=Alpha2Code, field=src_addr.country)
+    visualization: bar-chart
+    end: now
+    start: 1y
+    width: 4
+    title: Activities from Source Overt Time
+    isLive: false
+    type: query
+  d4b26ae3-2f22-4dcc-88ff-3e3f37cfa32e:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      cisco_facility=ASA cisco_severity=?severity cisco_className=?classname |
+      rename("cisco_severity_message",as="Severity levels") |
+      top("Severity levels")
+    visualization: bar-chart
+    end: now
+    start: 1y
+    width: 6
+    title: Cisco Severity Events Over Time
+    isLive: false
+    type: query
+  ba052039-ee05-4438-9fcb-5bee4a910b03:
+    x: 0
+    y: 0
+    height: 4
+    queryString: groupBy("cisco_mnemonic")
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: 'cisco mnemonic '
+    isLive: false
+    type: query
+  f9a739f5-de64-4f85-9f84-e95a4a571d97:
+    x: 4
+    y: 0
+    height: 4
+    queryString: groupBy("type")
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 4
+    title: ICMP Connection Warning
+    isLive: false
+    type: query
+  3a771f15-fa62-4e3c-a7f1-a8972bcbb200:
+    x: 6
+    y: 17
+    height: 4
+    queryString: |-
+      cisco_facility=ASA  cisco_severity=?severity cisco_className=?classname |
+      top("cisco_classDefinition", rest=Other, percent=true) |
+      rename("cisco_classDefinition",as="ASA message classes") | rename("_count",as="Number of events") |
+      format("%,.2f", field=percent, as=Percent) |
+      table(["ASA message classes", "Number of events", Percent])
+    visualization: table-view
+    end: now
+    start: 1y
+    width: 6
+    title: Number Of Events with Percentage
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.11.0
+parameters:
+  eventType:
+    label: Event Type
+    query: groupby([cisco_mnemonic])
+    timeInterval: 1y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cisco_mnemonic
+  src_ip:
+    label: Source IP
+    query: groupBy([src_addr])
+    timeInterval: 1y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: src_addr
+  dest_ip:
+    label: Destionation IP
+    query: groupby([dst_addr])
+    timeInterval: 1y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: dst_addr
+  severity:
+    label: severity
+    valueFilters: {}
+    fileName: cisco/asa/asa_severity.csv
+    defaultValue: '*'
+    order: 50
+    valueField: cisco_severity
+    type: file
+    labelField: cisco_severity_message
+  classname:
+    label: Cisco Class Name
+    query: groupBy([cisco_className])
+    timeInterval: 1y
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: cisco_className
