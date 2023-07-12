@@ -12,3 +12,5 @@ timeZone: UTC+00:00
 queryStart: 30d
 actionNameReferences:
 - FLTR aidmaster Upload
+labels:
+- fltr

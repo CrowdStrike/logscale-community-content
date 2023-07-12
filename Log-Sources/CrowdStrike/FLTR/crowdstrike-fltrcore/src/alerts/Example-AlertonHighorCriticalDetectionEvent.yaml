@@ -1,0 +1,12 @@
+name: Example - Alert on High or Critical Detection Event
+description: Alert that will fire on any Falcon detection event with a severity of
+  "High" or "Critical".
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1h
+queryString: |-
+  #streamingApiEvent=Event_DetectionSummaryEvent OR #event_simpleName!=*
+  | SeverityName=/(High|Critical)/
+throttleField: aid
+actionNameReferences: []

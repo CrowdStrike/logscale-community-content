@@ -1,0 +1,12 @@
+name: Example - PowerShell Downloads From a PR2 Event
+description: Detect both "powershell.exe" and "DownloadString" in a ProcessRollup2
+  event, case-insensitive.
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1h
+queryString: |-
+  #event_simpleName=ProcessRollup2
+  | CommandLine=/powershell\.exe.*DownloadString/i
+throttleField: aid
+actionNameReferences: []

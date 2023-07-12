@@ -19,10 +19,12 @@ It is highly recommended that you follow these steps after installing this packa
 ## Changelog
 
 Version 1.3.7
-- Changed the MITRE content to weight the values around severity.
+- Changed the MITRE content to weigh the values around severity instead of just count. 
 - Added "Search - Acquire Host Details" to the dashboards and interactions. 
 - Added "Audit - Falcon UI Audit Logs" to monitor your Falcon audit logs from FLTR.
 - Fixed a typo in the Linux health dashboard. 
+- Bumped the minimum LogScale version to 1.96.0 to match released features.
+- Added several example alerts. 
 
 Version 1.3.6
 - Enabled "Require user input before searching" for most of the dashboards. You can use `*` as an input if needed. 

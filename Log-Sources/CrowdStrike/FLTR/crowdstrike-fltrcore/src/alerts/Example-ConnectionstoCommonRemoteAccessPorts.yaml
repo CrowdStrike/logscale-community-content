@@ -1,0 +1,16 @@
+name: Example - Connections to Common Remote Access Ports
+description: Alert that fires when a host connects to an outbound port associated
+  with remote access, e.g. SSH or RDP.
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1h
+queryString: |-
+  #event_simpleName=NetworkConnectIP4
+  | RemotePort=/^(21|22|3389|5900|5901)$/
+  | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+  | $"crowdstrike/fltr-core:zComputerName"()
+  | connection:=format("%s -> %s:%s", field=[LocalAddressIP4, RemoteAddressIP4, RemotePort])
+  | groupBy([aid, ComputerName], function=collect(connection, limit=10), limit=max)
+throttleField: aid
+actionNameReferences: []
