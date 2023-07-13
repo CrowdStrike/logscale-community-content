@@ -13,6 +13,7 @@ Have a useful query you'd like to submit? Not a problem! Just submit a [pull req
 For example:
 
 `[T1552.001] Microsoft Teams Unsecured Credentials In Files.logscale`
+
 `[CVE-2023-36884] Office and Windows HTML Remote Code Execution Vulnerability.logscale`
 
 The file itself should contain a formatted version of the query. You should also include a `// comment` at the top of the query that provides the following:
