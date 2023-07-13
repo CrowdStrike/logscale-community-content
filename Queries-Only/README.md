@@ -2,7 +2,7 @@
 
 # LogScale and FLTR Queries
 
-These are standalone queries for LogScale and FLTR, often situational to CVEs and ATT&CK techniques. Many of them are posted on the [CrowdStrike subreddit](https://www.reddit.com/r/crowdstrike/), including [Cool Query Friday](https://www.reddit.com/r/crowdstrike/?f=flair_name%3A%22CQF%22). 
+These are standalone queries for LogScale and FLTR, often situational to CVEs and ATT&CK techniques. Many of them are posted in the [CrowdStrike subreddit](https://www.reddit.com/r/crowdstrike/), including [Cool Query Friday](https://www.reddit.com/r/crowdstrike/?f=flair_name%3A%22CQF%22). 
 
 # Submitting Queries
 
