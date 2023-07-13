@@ -1,0 +1,12 @@
+// [T1087.001] Account Discovery - Local Accounts - Lin
+//
+// https://attack.mitre.org/techniques/T1087/001/
+//
+// Identify Linux PR2 events that are referencing /etc/passwd. 
+
+#event_simpleName=ProcessRollup2
+| event_platform=Lin
+| CommandLine=/.*\s+\/etc\/passwd\s+.*/
+| select([timestamp, aid, UID, ParentBaseFileName, ImageFileName, CommandLine])
+| sort(field=timestamp, order=asc, limit=10000)
+| timestamp := formatTime("%Y-%m-%d %H:%M:%S", field=timestamp, locale=en_US, timezone=Z)

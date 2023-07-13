@@ -29,6 +29,8 @@ Here's a quick summary of the various folders in this repository contaiming LogS
   - These folders contain quick starts, configuration examples, and other useful artifacts.
 - **[Parsers-Only](Parsers-Only)**:
   - Standalone parsers beyond what is in the LogScale Marketplace. 
+- **[Queries-Only](Queries-Only)**:
+  - Standalone queries for LogScale and FLTR, often situational to CVEs and ATT&CK techniques. 
 
 # Wiki
 

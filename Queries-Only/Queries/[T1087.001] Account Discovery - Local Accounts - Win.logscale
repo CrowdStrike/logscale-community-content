@@ -1,4 +1,8 @@
-// [T1087.001] Account Discovery - Local Accounts
+// [T1087.001] Account Discovery - Local Accounts - Win
+//
+// https://attack.mitre.org/techniques/T1087/001/
+//
+// Identify Windows PR2 events from net that reference local accounts. 
 
 #event_simpleName=ProcessRollup2 
 | event_platform=Win ImageFileName=/\\(net1?\.exe)/
