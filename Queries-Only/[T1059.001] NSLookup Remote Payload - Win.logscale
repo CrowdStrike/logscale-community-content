@@ -1,4 +1,8 @@
-// [T1059.001] NSLookup Remote Payload
+// [T1059.001] NSLookup Remote Payload - Win
+//
+// https://attack.mitre.org/techniques/T1059/001/
+//
+// Identify Windows PR2 events with txt in the CommandLine from nslookup. 
 
 #event_simpleName=ProcessRollup2
 | ParentBaseFileName=powershell.exe ImageFileName=/.*\\nslookup\.exe/

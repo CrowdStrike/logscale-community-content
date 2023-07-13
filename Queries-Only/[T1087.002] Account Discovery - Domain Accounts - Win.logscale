@@ -1,4 +1,8 @@
-// [T1087.002] Account Discovery - Domain Accounts
+// [T1087.002] Account Discovery - Domain Accounts - Win
+//
+// https://attack.mitre.org/techniques/T1087/002/
+//
+// Identify Windows PR2 events that reference domain accounts from the net command. 
 
 #event_simpleName=ProcessRollup2 
 | event_platform=Win ImageFileName=/net1?\.exe/
