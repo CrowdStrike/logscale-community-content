@@ -10,16 +10,12 @@ If both packages are mistakenly installed in the FLTR repo, go to `Alerts -> Sch
 
 ## Setup Instructions
 
-Detailed setup instructions with screenshots can be found here:
-
-https://github.com/CrowdStrike/logscale-community-content/wiki/FLTR-Setup-and-Configuration
-
-It is highly recommended that you follow these steps after installing this package. 
+Follow the [package setup instructions](https://github.com/CrowdStrike/logscale-community-content/wiki/FLTR-Setup-and-Configuration) to get going. It is highly recommended that you follow these steps after installing this package.
 
 ## Changelog
 
 Version 1.3.8
-- Added missing recon_apps.csv file and updated references to the file. 
+- Added the missing recon_apps.csv file and associated references. 
 
 Version 1.3.7
 - Changed the MITRE content to weigh the values around severity instead of just count. 
@@ -37,7 +33,8 @@ Version 1.3.6
 - Renamed the "Windows" dashboards to put them under the "OS" category. 
 - Renamed a large number of saved queries to make the description more accurate. 
 - Added a `zUsbNormalize()` user function to normalize USB events to human-readable names. 
-- Added new queries from other internal packages. 
+- Added new queries from other internal packages.
+- Bumps minimum required version of LogScale to 1.85.
 
 Version 1.3.5
 - Added the query name as a comment at the beginning of each query. 
