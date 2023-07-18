@@ -696,7 +696,7 @@ widgets:
         }
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
-      | match(file="recon_apps.csv", field=FileName, include=FileName, ignoreCase=true, strict=true)
+      | match(file="crowdstrike/fltr-core/recon_apps.csv", field=FileName, include=FileName, ignoreCase=true, strict=true)
       | groupBy([@timestamp, UserSid, FileName, TargetProcessId, CommandLine, aid], limit=1000)
       | drop(_count)
       | sort(@timestamp, limit=1000)

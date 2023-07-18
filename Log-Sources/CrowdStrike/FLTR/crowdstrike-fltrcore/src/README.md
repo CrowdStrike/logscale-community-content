@@ -18,6 +18,9 @@ It is highly recommended that you follow these steps after installing this packa
 
 ## Changelog
 
+Version 1.3.8
+- Added missing recon_apps.csv file and updated references to the file. 
+
 Version 1.3.7
 - Changed the MITRE content to weigh the values around severity instead of just count. 
 - Added "Search - Acquire Host Details" to the dashboards and interactions. 
