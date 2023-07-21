@@ -1,0 +1,158 @@
+name: Audit Events
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  5179f9f6-be76-4a35-a6c6-a8401fe7280d:
+    x: 3
+    y: 0
+    description: Namespaces
+    height: 7
+    queryString: |-
+      source=audit
+      | parseJson(field=log)
+      | objectRef.namespace=?namespace
+      | rename(field=objectRef.namespace,as=namespace)
+      | groupBy([namespace],function=count())
+    visualization: pie-chart
+    end: now
+    start: 1h
+    width: 5
+    title: Namespaces
+    isLive: false
+    type: query
+  06941661-a36c-4498-8769-06213f66e9a4:
+    x: 0
+    y: 0
+    description: audit event count
+    height: 7
+    queryString: |-
+      source=audit
+      | parseJson(field=log)
+      | objectRef.namespace=?namespace
+      | timeChart(span=5m)
+    end: now
+    start: 6h
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Count
+    isLive: false
+    type: query
+  c2317899-7880-4f05-a400-0df3e5225514:
+    x: 0
+    y: 14
+    description: User Actions
+    height: 7
+    queryString: |-
+      source=audit
+      | parseJson(field=log)
+      | verb=?verb objectRef.namespace=?namespace objectRef.resource=?resource user.username=?user
+      | table([@timestamp,hostname,auditID,user.username,objectRef.resource,objectRef.subresource,objectRef.namespace,objectRef.name,verb])
+    visualization: table-view
+    end: now
+    start: 5m
+    width: 12
+    title: User Actions
+    isLive: false
+    type: query
+  d6e6c89e-7bf7-407c-8b96-46bfd04458a8:
+    x: 8
+    y: 0
+    description: Action Verbs Breakdown
+    height: 7
+    queryString: |-
+      source=audit
+      | parseJson(field=log)
+      | objectRef.namespace=?namespace
+      | groupBy([verb],function=count())
+    end: now
+    start: 1h
+    width: 4
+    options:
+      withLegendTitle: true
+    visualization: pie-chart
+    title: Verbs
+    isLive: false
+    type: query
+  493a1b84-297f-403f-b254-d48becb10a33:
+    x: 6
+    y: 7
+    description: Resource Types
+    height: 7
+    queryString: |-
+      source=audit
+      | parseJson(field=log)
+      | apiVersion="audit.k8s.io/v1" user.username=* hostname=* objectRef.namespace=?namespace verb=* objectRef.resource=*
+      | groupBy([objectRef.resource],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 1h
+    width: 6
+    title: Resource Types
+    isLive: false
+    type: query
+  0045196c-37a9-4656-b69d-5664c1b62b5b:
+    x: 0
+    y: 7
+    description: Users
+    height: 7
+    queryString: |-
+      source=audit
+      | parseJson(field=log)
+      | objectRef.namespace=?namespace
+      | groupBy([user.username],function=count())
+    visualization: pie-chart
+    end: now
+    start: 1h
+    width: 6
+    title: Users
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.8.0
+parameters:
+  namespace:
+    isMultiParam: false
+    label: Namespace
+    query: source=audit | parseJson(log) | rename(field=objectRef.namespace, as=namespace)
+      | groupBy([namespace], function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: namespace
+  resource:
+    isMultiParam: false
+    label: Resource
+    query: source=audit | parseJson(log)|rename(field=objectRef.resource,as=resource)
+      | groupBy([resource],function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: resource
+  user:
+    isMultiParam: false
+    label: User
+    query: source=audit | parseJson(log) | rename(field=user.username,as=user) | groupBy([user],function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: user
+  verb:
+    isMultiParam: false
+    label: Verb
+    query: source=audit | parseJson(log) | groupBy([verb],function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: verb

@@ -1,0 +1,149 @@
+name: Kubernetes Container Search
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  b3dcea56-544a-4741-b0d8-53543075ef0c:
+    x: 2
+    y: 0
+    description: Containers Summary
+    height: 5
+    queryString: |-
+      source=container hostname=?hostname kubernetes.namespace_name=?namespace
+                       kubernetes.pod_name=?pod_name
+                       kubernetes.container_name=?container_name |
+      rename(field=kubernetes.namespace_name, as=namespace)|
+      rename(field=kubernetes.container_name,as=container_name)|
+      regex(regex=?regex,field=log)|
+      groupBy([container_name],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 1h
+    width: 3
+    title: Summary - Containers
+    isLive: false
+    type: query
+  b2a5db93-495b-4ce6-a2cf-7ae188b8e98b:
+    x: 0
+    y: 5
+    description: Container Event Search
+    height: 8
+    queryString: |-
+      source=container kubernetes.namespace_name=?namespace
+                       hostname=?hostname
+                       kubernetes.container_name=?container_name |
+      rename(field=kubernetes.namespace_name, as=namespace)|
+      rename(field=kubernetes.container_name,as=container_name)| rename(kubernetes.pod_name,as=pod_name) |
+      regex(regex=?regex,field=log)|
+      table([@timestamp,hostname,namespace,pod_name,container_name,log])
+    visualization: table-view
+    end: now
+    start: 1h
+    width: 12
+    title: Container Event Search
+    isLive: false
+    type: query
+  615fda64-4ceb-4c55-aaee-6fa96b0f4e8f:
+    x: 0
+    y: 0
+    description: Events count timechart split by container
+    height: 5
+    queryString: 'source=container | timeChart(series=kubernetes.container_name) '
+    end: now
+    start: 6h
+    width: 2
+    options:
+      gradient: true
+      showDataPoints: false
+      connect-points: false
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Timechart - Events by Container
+    isLive: false
+    type: query
+  dca6bf42-4f27-49b4-9424-791f41734f6d:
+    x: 5
+    y: 0
+    description: PodNames Summary
+    height: 5
+    queryString: |-
+      source=container hostname=?hostname kubernetes.namespace_name=?namespace kubernetes.pod_name=?pod_name
+                       kubernetes.container_name=?container_name |
+      rename(field=kubernetes.namespace_name, as=namespace)|
+      rename(field=kubernetes.container_name,as=container_name)|  rename(kubernetes.pod_name,as=pod_name) |
+      regex(regex=?regex,field=log) | groupBy([pod_name],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 1h
+    width: 3
+    title: Summary - Pods
+    isLive: false
+    type: query
+  b6992902-a9c3-4339-bc29-5e88d048f8d0:
+    x: 8
+    y: 0
+    description: PodNames by host
+    height: 5
+    queryString: |-
+      source=container hostname=?hostname kubernetes.namespace_name=?namespace kubernetes.pod_name=?pod_name
+                       kubernetes.container_name=?container_name |
+      rename(field=kubernetes.namespace_name, as=namespace)|
+      rename(field=kubernetes.container_name,as=container_name)|  rename(kubernetes.pod_name,as=pod_name) |
+      regex(regex=?regex,field=log) | groupBy([pod_name,hostname],function=[])
+    visualization: table-view
+    end: now
+    start: 1h
+    width: 4
+    title: Pods by Host
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.8.0
+parameters:
+  hostname:
+    isMultiParam: false
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    defaultValue: '*'
+    order: 50
+    valueField: hostname
+    type: file
+    labelField: hostname
+  container_name:
+    isMultiParam: false
+    label: Container Name
+    query: source=container hostname=?hostname  | kubernetes.namespace_name=?namespace
+      | rename(field=kubernetes.container_name, as=container_name) | groupBy([container_name],function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: container_name
+  namespace:
+    isMultiParam: false
+    label: Namespace
+    query: source=container | groupBy([kubernetes.namespace_name],function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: kubernetes.namespace_name
+  regex:
+    isMultiParam: false
+    label: Regex
+    order: 50
+    type: text
+  pod_name:
+    isMultiParam: false
+    label: Pod Name
+    valueFilters: {}
+    fileName: kubernetes_pod_names.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: pod_name
