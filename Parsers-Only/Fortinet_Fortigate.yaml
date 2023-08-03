@@ -49,16 +49,16 @@ script: |-
   Vendor:="fortinet" | logtype:="fortinet-firewall-log" |
   // ECS fields
   ecs.version:=8.8.0 | event.category:="network" | event.kind:="event" |
-  destination.address:=dstip | destination.ip:=dstip | destination.port:=dstport | destination.mac:=dstmac | destination.geo.country_name:="dstcountry" |
-  source.address:=srcip | source.ip:=srcip | source.port:=srcport | source.mac:=srcmac | source.geo.country_name:="srccountry" |
+  destination.address:=dstip | destination.ip:=dstip | destination.port:=dstport | destination.mac:=dstmac | destination.geo.country_name:=dstcountry |
+  source.address:=srcip | source.ip:=srcip | source.port:=srcport | source.mac:=srcmac | source.geo.country_name:=srccountry |
   network.iana_number:=proto | network.application:=lower(app) |
   // Computes the Community ID, a standard for hashing network flows. This can be used to easily correlate and join network flows across systems
   communityId(proto=network.iana_number,sourceip=source.ip,sourceport=source.port,destinationip=destination.ip,destinationport=destination.por,as=network.community_id) |
   source.bytes:=sentbyte | destination.bytes:=rcvdbyte | network.bytes:=source.bytes+destination.bytes |
-  source.packets:="sentpkt" | destination.packets:="rcvdpkt" | network.packets:=source.packets+destination.packets |
+  source.packets:=sentpkt | destination.packets:=rcvdpkt | network.packets:=source.packets+destination.packets |
   observer.type:="firewall" | observer.vendor:="Fortinet" |
   observer.ingress.interface.name:=srcintf | observer.egress.interface.name:=dstintf |
-  log.level:="level"
+  log.level:=level
 tagFields:
 - Vendor
 - logtype
