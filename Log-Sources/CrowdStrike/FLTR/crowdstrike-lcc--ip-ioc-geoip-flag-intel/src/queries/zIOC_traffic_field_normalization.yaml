@@ -1,0 +1,167 @@
+name: zIOC_traffic_field_normalization
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // zIOC_traffic_field_normalization
+  // Companion to "Network Connections - IOC and GeoIP Lookups with flag"
+  // Called in local queries using following syntax: $"zIOC_traffic_field_normalization"()
+  // Called when IOC package installed using following syntax: $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+
+  // Within this normalization:
+  //    - The CRWD PaSta standards for:
+  //        > Source / Dest IP are set to: source.ip and destination.ip
+  //        > Domain name is set to: destination.domain
+  //        > HTTP URL is set to: url.domain
+  //    - NATed fields are not mapped into PaSta standard.  While NATing will occur, for context of lookups, focused
+  //      solely on the viewed "source" and "dest" traffic values (whether it be pre or post NAT)
+  //    - Additional values, like Product name, ComputerName, and UserName, are commented out (but left in query) for context / future use
+
+  case {
+
+  // For CrowdStrike Falcon Endpoint
+  // Set query for events that apply to connection activity, for example:
+  // #event_simpleName=NetworkConnectIP4 or #event_simpleName=DnsRequest or #event_simpleName=HttpRequestDetect
+  //    - NetworkConnectIP4: This event is generated when an application attempts a remote connection.
+  //    - DnsRequest: When a process on a host makes a DNS request, the sensor generates a DnsRequest event for each unique domain name that the process looks up,
+  //      and then immediately sends theDnsRequest event to the cloud.
+  //    - HttpRequestDetect: An event that indicates a detection on an HTTP(S) request.
+
+  // Optional setting to target specific repo that contains this type of data
+  // #repo="<repo name>"
+
+  #event_simpleName=/(NetworkConnectIP4|DnsRequest|HttpRequestDetect)/
+
+  // Set default fields that apply to all events
+  | case {
+      #Vendor != * | #Vendor := "crowdstrike";
+      }
+  //| Product := "xxx"
+  | Domain := "IOC"
+  | Action := "Connection"
+
+  // Set host / user /  connection-related fields
+  // | host.hostname := xxx
+  // | user.name := xxx
+  | source.ip := LocalAddressIP4
+  | destination.ip := RemoteAddressIP4
+  | destination.domain := DomainName
+  | url.domain := HttpUrl
+  ;
+
+  // ############################################## //
+
+  // For Palo Alto Networks (TRAFFIC logs)
+
+  // Set query for events that apply to connection activity, for example:
+  // Palo via BSD syslog uses #Type; Palo via LEEF-formatted syslog uses leef.ext.Type
+  // #Type = TRAFFIC or leef.ext.Type = TRAFFIC
+  // Optional setting to target specific repo that contains this type of data
+  // #repo="<repo name>"
+
+  // Palo via BSD syslog uses #Type; Palo via LEEF-formatted syslog uses leef.ext.Type
+  #Type = TRAFFIC or leef.ext.Type = TRAFFIC
+
+  // Set default fields that apply to all events
+  | case {
+      #Vendor != * | #Vendor := "paloaltonetworks";
+      }
+  //| Product := "xxx"
+  | Domain := "IOC"
+  | Action := "Connection"
+
+  // Set host / user /  connection-related fields
+  | case {
+      #Type = TRAFFIC
+         // | host.hostname := xxx
+          // | user.name := xxx
+          | source.ip := SourceIP
+          // | source.nat.ip := NATSourceIP
+          | destination.ip := DestinationIP
+          // | destination.nat.ip := NATDestinationIP
+          ;
+      leef.ext.Type = TRAFFIC
+          // | host.hostname := leef.ext.devicehostname
+          // | user.name := xxx
+          | source.ip := leef.ext.src
+          // | source.nat.ip := leef.ext.srcPostNAT
+          | destination.ip := leef.ext.dst
+          // | destination.nat.ip := leef.ext.dstPostNAT
+          ;
+      *};
+
+
+  // ############################################## //
+
+  // For Zscaler (ZIA / ZPA)
+  //  - Zscaler Internet Access (ZIA) is for connecting users to public applications on the internet
+  //  - Zscaler Private Access (ZPA) is for connecting users to an enterprise's internal applications
+
+  // Set query for events that apply to connection activity
+  // Optional setting to target specific repo that contains this type of data
+  // #repo="<repo name>"
+  // Zscaler has configurable output - this example supports:
+  //  - Zscaler ZIA via LEEF-formatted syslog using leef.xxx syntax
+  //  - Zscaler ZPA via syslog using kv parsing
+
+  #repo = Zscaler_ZPA OR #repo = Zscaler_ZIA
+
+  // Set default fields that apply to all events
+  | case {
+      #Vendor != * | #Vendor := "zscaler";
+      }
+  | Domain := "IOC"
+  | Action := "Connection"
+
+  // Set host / user /  connection-related fields
+  | case {
+      #repo = Zscaler_ZIA  /* ZIA-related data - LEEF attributes - https://www.ibm.com/docs/en/dsm?topic=overview-predefined-leef-event-attributes */
+          | Product := "zia"
+          // | host.hostname := leef.ext.devicehostname
+          // | user.name := leef.ext.usrName /* The user name as entered into the Zscaler Client Connector */
+          | source.ip := leef.ext.src
+          // | source.nat.ip := leef.ext.srcPostNAT
+          | destination.ip := leef.ext.dst
+          ;
+      #repo = Zscaler_ZPA  /* ZPA-related data - https://help.zscaler.com/zpa/about-user-activity-log-fields */
+          | Product := "zpa"
+          // | host.hostname := xxx
+          // | user.name := Username /* The user name as entered into the Zscaler Client Connector */
+          | source.ip := ClientPrivateIP /* The private IP address of the Zscaler Client Connector */
+          // | source.nat.ip := ClientPublicIP /* The public IP address of the Zscaler Client Connector */
+          | destination.ip := ServerIP
+          ;
+      *};
+
+
+  // ############################################## //
+
+  // For Corelight Zeek
+  // Set query for events that apply to connection activity
+  // #Type = TRAFFIC or leef.ext.Type = TRAFFIC
+  // Optional setting to target specific repo that contains this type of data
+  // #repo="<repo name>"
+
+  #repo=Corelight
+
+  // Set default fields that apply to all events
+  | case {
+      #Vendor != * | #Vendor := "corelight";
+      }
+  //| Product := "Zeek"
+  | Domain := "IOC"
+  | Action := "Connection"
+
+  // Set host / user /  connection-related fields
+
+  // | host.hostname := xxx
+  // | user.name := xxx
+  | source.ip := id.orig_h
+  | destination.ip := id.resp_h
+  ;
+
+  }

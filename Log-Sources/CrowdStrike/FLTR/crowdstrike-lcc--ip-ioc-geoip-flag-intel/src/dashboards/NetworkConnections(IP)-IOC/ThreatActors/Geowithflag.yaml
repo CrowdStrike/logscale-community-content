@@ -1,0 +1,542 @@
+name: Network Connections (IP) - IOC / Threat Actors / Geo with flag
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  note-1689510882624-0:
+    x: 0
+    y: 0
+    height: 3
+    text: "CrowdStrike currently tracks and profiles hundreds of adversaries, and\
+      \ indicator of compromise (IOC) details are linked into LogScale and updated\
+      \ hourly.  Every adversary is motivated by a specific objective whether it is\
+      \ financial, espionage or political gain.\nCrowdStrike uses a two-part cryptonym\
+      \ so adversaries can be easily identified based on these three critical motivating\
+      \ factors: \n\n* Nation-states perform espionage and are identified by their\
+      \ country of origin’s national animal such as BEAR (Russia), PANDA (China),\
+      \ KITTEN (Iran), CHOLLIMA (North Korea), etc.\n* SPIDERs are cybercriminals\
+      \ motivated by monetary gain \n* Hacktivists, looking to create political disruption,\
+      \ are JACKALS\n\nFor more information about adversary naming, additional details\
+      \ available here: [CrowdStrike Adversary Overview](https://www.crowdstrike.com/adversaries/)"
+    width: 12
+    title: CrowdStrike Adversary Tracking
+    type: note
+  a241235f-783d-44ad-bdd4-1614105d442a:
+    x: 6
+    y: 3
+    height: 4
+    queryString: |-
+      // Network Connections (IP) - IOC / Threat Actor / GeoIP with flag
+
+      // Call saved query to pull in all applicable network events with IPs
+      // Update the saved query with mappings for applicable products that gen network traffic
+      // If calling function locally use following syntax:
+      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+
+      // Check the local address first.
+      | case {
+          // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
+          !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(source.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | source.country := Country | source.flag := Flag | source.continent := Continent
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Check the remote address.
+      | case {
+          // Apply when the dst_ip is a non-RFC1918 IP address.
+          !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(destination.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | destination.country := Country | destination.flag := Flag | destination.continent := Continent
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Only grab events with IOC labels.
+      | ioc[0].labels=*
+
+      // Parse out threat actor information if available
+      | case {
+              ioc[0].labels = /Actor/i  | regex("^Actor\/(?<iocActor>\w+)\W+(?<iocDetail>.*)", field=ioc[0].labels, strict=false);
+              ioc[0].labels != /Actor/i  | iocActor := "None Listed" | iocDetail := ioc[0].labels;
+              * }
+
+      // Filter out results with no threat actor listed
+      | iocActor != "None Listed"
+
+      // Parameter selections
+      | #Vendor = ?Vendor
+      //| Product = ?Product
+      | ioc[0].malicious_confidence = ?MaliciousConfidence
+      | iocActor = ?IocActor
+      | destination.country = ?DestCountry
+
+      // Logic to auto-determine URL to use for Falcon UI linkage to Threat Actor information
+      // Uncomment URL that applies to your region / customer Falcon UI cluster
+      // To access the IOC Actor Intel link, user must first be logged in to Falcon UI
+
+      | rootURL := "https://falcon.crowdstrike.com/"
+      // | rootURL := "https://falcon.us-2.crowdstrike.com/"
+      // | rootURL := "https://falcon.laggar.gcw.crowdstrike.com/"
+      // | rootURL := "https://falcon.eu-1.crowdstrike.com/"
+
+      // Alternate threat actor URL for non-Falcon customers
+      // https://www.crowdstrike.com/adversaries/ + <threat actor name>
+
+      // Build Threat Actor URL
+      | case {
+            iocActor != "None Listed"  | format("[%s Intel](%sintelligence-v2/actors/%s/summary)", field=["iocActor", "rootURL", "iocActor"], as="IOC Actor Intel");
+            *
+          }
+
+      // Update Formatting for Use in Parameters/Displays
+      | replace(",", with=" -- ", field=iocDetail, as= "IOC Details")
+      | "Confidence" := ioc[0].malicious_confidence
+
+      // = = = = = = =
+
+      | iocActor != "None Listed"
+      | worldMap(ip=destination.ip)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      autoRotate: true
+      projection: orthographic
+      zLevel: 3.6
+    visualization: world-map
+    title: Threat Actors - Dest Countries
+    isLive: false
+    type: query
+  0645e4ad-17f9-45ec-9da8-6efb6cc33019:
+    x: 0
+    height: 6
+    queryString: |-
+      // Network Connections (IP) - IOC / Threat Actor / GeoIP with flag
+
+      // Call saved query to pull in all applicable network events with IPs
+      // Update the saved query with mappings for applicable products that gen network traffic
+      // If calling function locally use following syntax:
+      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+
+      // Check the local address first.
+      | case {
+          // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
+          !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(source.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | source.country := Country | source.flag := Flag | source.continent := Continent
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Check the remote address.
+      | case {
+          // Apply when the dst_ip is a non-RFC1918 IP address.
+          !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(destination.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | destination.country := Country | destination.flag := Flag | destination.continent := Continent
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Only grab events with IOC labels.
+      | ioc[0].labels=*
+
+      // Parse out threat actor information if available
+      | case {
+              ioc[0].labels = /Actor/i  | regex("^Actor\/(?<iocActor>\w+)\W+(?<iocDetail>.*)", field=ioc[0].labels, strict=false);
+              ioc[0].labels != /Actor/i  | iocActor := "None Listed" | iocDetail := ioc[0].labels;
+              * }
+
+      // Filter out results with no threat actor listed
+      | iocActor != "None Listed"
+
+      // Parameter selections
+      | #Vendor = ?Vendor
+      //| Product = ?Product
+      | ioc[0].malicious_confidence = ?MaliciousConfidence
+      | iocActor = ?IocActor
+      | destination.country = ?DestCountry
+
+      // Logic to auto-determine URL to use for Falcon UI linkage to Threat Actor information
+      // Uncomment URL that applies to your region / customer Falcon UI cluster
+      // To access the IOC Actor Intel link, user must first be logged in to Falcon UI
+
+      | rootURL := "https://falcon.crowdstrike.com/"
+      // | rootURL := "https://falcon.us-2.crowdstrike.com/"
+      // | rootURL := "https://falcon.laggar.gcw.crowdstrike.com/"
+      // | rootURL := "https://falcon.eu-1.crowdstrike.com/"
+
+      // Alternate threat actor URL for non-Falcon customers
+      // https://www.crowdstrike.com/adversaries/ + <threat actor name>
+
+      // Build Threat Actor URL
+      | case {
+            iocActor != "None Listed"  | format("[%s Intel](%sintelligence-v2/actors/%s/summary)", field=["iocActor", "rootURL", "iocActor"], as="IOC Actor Intel");
+            *
+          }
+
+      // Update Formatting for Use in Parameters/Displays
+      | replace(",", with=" -- ", field=iocDetail, as= "IOC Details")
+      | "Confidence" := ioc[0].malicious_confidence
+
+      // = = = = = = =
+
+      // Display the results
+      | table([@timestamp, #Vendor, source.ip, destination.ip, destination.nat.ip, destination.country, destination.flag, Confidence, "IOC Actor Intel", "IOC Details"], limit=1000)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    y: 7
+    interactions:
+    - conditions: null
+      name: Drill to specific time - raw source and dest IP
+      titleTemplate: null
+      queryString: ?DateTime and ?Source and ?Destination
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        DateTime: '["{{ fields.@timestamp }}"]'
+        Destination: '["{{ fields.destination.ip }}"]'
+        Source: '["{{ fields.source.ip }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    - conditions: null
+      name: Drill to dashboard time -  raw source and dest IP
+      titleTemplate: null
+      queryString: ?Source and ?Destination
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Destination: '["{{ fields.destination.ip }}"]'
+        Source: '["{{ fields.source.ip }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Network Connections (IP) - IOC / Threat Actor / Geo
+    isLive: false
+    type: query
+  5ba81242-8475-4633-96be-bf40bc9432ff:
+    x: 0
+    height: 4
+    queryString: |-
+      // Network Connections (IP) - IOC / Threat Actor / GeoIP with flag
+
+      // Call saved query to pull in all applicable network events with IPs
+      // Update the saved query with mappings for applicable products that gen network traffic
+      // If calling function locally use following syntax:
+      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+
+      // Check the local address first.
+      | case {
+          // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
+          !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(source.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | source.country := Country | source.flag := Flag | source.continent := Continent
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Check the remote address.
+      | case {
+          // Apply when the dst_ip is a non-RFC1918 IP address.
+          !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(destination.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | destination.country := Country | destination.flag := Flag | destination.continent := Continent
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Only grab events with IOC labels.
+      | ioc[0].labels=*
+
+      // Parse out threat actor information if available
+      | case {
+              ioc[0].labels = /Actor/i  | regex("^Actor\/(?<iocActor>\w+)\W+(?<iocDetail>.*)", field=ioc[0].labels, strict=false);
+              ioc[0].labels != /Actor/i  | iocActor := "None Listed" | iocDetail := ioc[0].labels;
+              * }
+
+      // Filter out results with no threat actor listed
+      | iocActor != "None Listed"
+
+      // Parameter selections
+      | #Vendor = ?Vendor
+      //| Product = ?Product
+      | ioc[0].malicious_confidence = ?MaliciousConfidence
+      | iocActor = ?IocActor
+      | destination.country = ?DestCountry
+
+      // Logic to auto-determine URL to use for Falcon UI linkage to Threat Actor information
+      // Uncomment URL that applies to your region / customer Falcon UI cluster
+      // To access the IOC Actor Intel link, user must first be logged in to Falcon UI
+
+      | rootURL := "https://falcon.crowdstrike.com/"
+      // | rootURL := "https://falcon.us-2.crowdstrike.com/"
+      // | rootURL := "https://falcon.laggar.gcw.crowdstrike.com/"
+      // | rootURL := "https://falcon.eu-1.crowdstrike.com/"
+
+      // Alternate threat actor URL for non-Falcon customers
+      // https://www.crowdstrike.com/adversaries/ + <threat actor name>
+
+      // Build Threat Actor URL
+      | case {
+            iocActor != "None Listed"  | format("[%s Intel](%sintelligence-v2/actors/%s/summary)", field=["iocActor", "rootURL", "iocActor"], as="IOC Actor Intel");
+            *
+          }
+
+      // Update Formatting for Use in Parameters/Displays
+      | replace(",", with=" -- ", field=iocDetail, as= "IOC Details")
+      | "Confidence" := ioc[0].malicious_confidence
+
+      // = = = = = = =
+
+      | iocActor != "None Listed"
+      | top(iocActor)
+    end: '2023-07-17T15:15:53.07Z'
+    start: '2023-07-10T15:15:53.07Z'
+    width: 3
+    y: 3
+    interactions:
+    - conditions: null
+      name: Drill to Threat Actor Intel
+      titleTemplate: null
+      urlTemplate: https://falcon.crowdstrike.com/intelligence-v2/actors/{{fields.iocActor}}/summary
+      openInNewTab: true
+      type: customlink
+    options:
+      innerRadius: 0
+      legendPosition: right
+    visualization: pie-chart
+    title: Threat Actors
+    isLive: false
+    type: query
+  d520b898-c8ba-4f45-b107-1d75084adce0:
+    x: 9
+    y: 3
+    height: 4
+    queryString: |-
+      // Network Connections (IP) - IOC / Threat Actor / GeoIP with flag
+
+      // Call saved query to pull in all applicable network events with IPs
+      // Update the saved query with mappings for applicable products that gen network traffic
+      // If calling function locally use following syntax:
+      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+
+      // Check the local address first.
+      | case {
+          // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
+          !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(source.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | source.country := Country | source.flag := Flag | source.continent := Continent
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Check the remote address.
+      | case {
+          // Apply when the dst_ip is a non-RFC1918 IP address.
+          !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(destination.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | destination.country := Country | destination.flag := Flag | destination.continent := Continent
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Only grab events with IOC labels.
+      | ioc[0].labels=*
+
+      // Parse out threat actor information if available
+      | case {
+              ioc[0].labels = /Actor/i  | regex("^Actor\/(?<iocActor>\w+)\W+(?<iocDetail>.*)", field=ioc[0].labels, strict=false);
+              ioc[0].labels != /Actor/i  | iocActor := "None Listed" | iocDetail := ioc[0].labels;
+              * }
+
+      // Filter out results with no threat actor listed
+      | iocActor != "None Listed"
+
+      // Parameter selections
+      | #Vendor = ?Vendor
+      //| Product = ?Product
+      | ioc[0].malicious_confidence = ?MaliciousConfidence
+      | iocActor = ?IocActor
+      | destination.country = ?DestCountry
+
+      // Logic to auto-determine URL to use for Falcon UI linkage to Threat Actor information
+      // Uncomment URL that applies to your region / customer Falcon UI cluster
+      // To access the IOC Actor Intel link, user must first be logged in to Falcon UI
+
+      | rootURL := "https://falcon.crowdstrike.com/"
+      // | rootURL := "https://falcon.us-2.crowdstrike.com/"
+      // | rootURL := "https://falcon.laggar.gcw.crowdstrike.com/"
+      // | rootURL := "https://falcon.eu-1.crowdstrike.com/"
+
+      // Alternate threat actor URL for non-Falcon customers
+      // https://www.crowdstrike.com/adversaries/ + <threat actor name>
+
+      // Build Threat Actor URL
+      | case {
+            iocActor != "None Listed"  | format("[%s Intel](%sintelligence-v2/actors/%s/summary)", field=["iocActor", "rootURL", "iocActor"], as="IOC Actor Intel");
+            *
+          }
+
+      // Update Formatting for Use in Parameters/Displays
+      | replace(",", with=" -- ", field=iocDetail, as= "IOC Details")
+      | "Confidence" := ioc[0].malicious_confidence
+
+      // = = = = = = =
+
+      | timeChart(span=1d, function=count(), series=destination.country)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      legendPosition: right
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: 'Threat Actors - # Hits by Dest Country'
+    isLive: false
+    type: query
+  7be802c2-1e8c-4753-8061-98c6637b5149:
+    x: 3
+    y: 3
+    height: 4
+    queryString: |-
+      // Network Connections (IP) - IOC / Threat Actor / GeoIP with flag
+
+      // Call saved query to pull in all applicable network events with IPs
+      // Update the saved query with mappings for applicable products that gen network traffic
+      // If calling function locally use following syntax:
+      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+
+      // Check the local address first.
+      | case {
+          // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
+          !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(source.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | source.country := Country | source.flag := Flag | source.continent := Continent
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Check the remote address.
+      | case {
+          // Apply when the dst_ip is a non-RFC1918 IP address.
+          !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(destination.ip)
+            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | destination.country := Country | destination.flag := Flag | destination.continent := Continent
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
+          *
+        }
+
+      // Only grab events with IOC labels.
+      | ioc[0].labels=*
+
+      // Parse out threat actor information if available
+      | case {
+              ioc[0].labels = /Actor/i  | regex("^Actor\/(?<iocActor>\w+)\W+(?<iocDetail>.*)", field=ioc[0].labels, strict=false);
+              ioc[0].labels != /Actor/i  | iocActor := "None Listed" | iocDetail := ioc[0].labels;
+              * }
+
+      // Filter out results with no threat actor listed
+      | iocActor != "None Listed"
+
+
+      // Parameter selections
+      | #Vendor = ?Vendor
+      //| Product = ?Product
+      | ioc[0].malicious_confidence = ?MaliciousConfidence
+      | iocActor = ?IocActor
+      | destination.country = ?DestCountry
+
+      // Logic to auto-determine URL to use for Falcon UI linkage to Threat Actor information
+      // Uncomment URL that applies to your region / customer Falcon UI cluster
+      // To access the IOC Actor Intel link, user must first be logged in to Falcon UI
+
+      | rootURL := "https://falcon.crowdstrike.com/"
+      // | rootURL := "https://falcon.us-2.crowdstrike.com/"
+      // | rootURL := "https://falcon.laggar.gcw.crowdstrike.com/"
+      // | rootURL := "https://falcon.eu-1.crowdstrike.com/"
+
+      // Alternate threat actor URL for non-Falcon customers
+      // https://www.crowdstrike.com/adversaries/ + <threat actor name>
+
+      // Build Threat Actor URL
+      | case {
+            iocActor != "None Listed"  | format("[%s Intel](%sintelligence-v2/actors/%s/summary)", field=["iocActor", "rootURL", "iocActor"], as="IOC Actor Intel");
+            *
+          }
+
+      // Update Formatting for Use in Parameters/Displays
+      | replace(",", with=" -- ", field=iocDetail, as= "IOC Details")
+      | "Confidence" := ioc[0].malicious_confidence
+
+
+      // = = = = = = =
+
+      | iocActor != "None Listed"
+      // | ioc[0].malicious_confidence := "Malicious Confidence"
+      | "Confidence" := ioc[0].malicious_confidence
+      | top("Confidence")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      innerRadius: 0
+      legendPosition: right
+    visualization: pie-chart
+    title: Malicious Confidence Level
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0
+parameters:
+  DestCountry:
+    defaultValue: '*'
+    label: Dest Country
+    order: 50
+    type: text
+  IocActor:
+    defaultValue: '*'
+    label: IOC Actor
+    order: 1
+    type: text
+  MaliciousConfidence:
+    label: Malicious Confidence
+    order: 20
+    values:
+      '*': '*'
+      medium: Medium
+      low: Low
+      unverified: Unverified
+      high: High
+    type: list
+    defaultValue: '*'
+  Vendor:
+    label: Vendor
+    query: $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+      | groupBy(Vendor)
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 60
+    valueField: '#Vendor'
