@@ -48,9 +48,9 @@ script: |-
   // With https data, squid sets up a tunnel using "CONNECT" method. When method=CONNECT it is not possible to know what direction the data transfer is taking
   // Other "methods" are logged, unsure whether to extract the data into destination/source bytes
   case {
-      in(http.request.method, values=[GET,HEAD]) | destination.bytes:=responseSize | network.bytes:=responseSize;
-      in(http.request.method, values=[PUT,POST]) | source.bytes:=responseSize | network.bytes:=responseSize;
-      in(http.request.method, values=[CONNECT]) | network.bytes:=responseSize | network.direction:="unknown";
+      regex("^(GET|HEAD)$", field=http.request.method) | destination.bytes:=responseSize | network.bytes:=responseSize;
+      regex("^(PUT|POST)$", field=http.request.method) | source.bytes:=responseSize | network.bytes:=responseSize;
+      regex("^CONNECT$", field=http.request.method) | network.bytes:=responseSize | network.direction:="unknown";
   * } |
 
   // logic for setting "event.type" values. There are other cacheResultCode reported by squid, but I'm unsure what values to set for these, so I'm not.
@@ -61,3 +61,6 @@ script: |-
   * }
 tagFields:
 - Vendor
+- http.response.status_code
+- event.type
+- cacheResultCode
