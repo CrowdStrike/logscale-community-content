@@ -1,0 +1,107 @@
+name: PaloAltoFirewall
+tests:
+- May 07 06:40:06 PA-VM 1,2020/05/07 02:40:06,44A1B3FC68F5304,TRAFFIC,end,2049,2020/05/07
+  02:40:06,103.125.191.136,10.0.0.10,103.125.191.136,10.0.0.10,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,2020/05/07
+  02:40:06,574277,1,52564,8088,52564,8088,0x400064,tcp,allow,74,74,0,1,2020/05/07
+  02:40:06,0,any,0,730218,0x0,United States,10.0.0.0-10.255.255.255,0,1,0,aged-out,0,0,0,0,,PA-VM,from-policy,,,0,,0,,N/A,0,0,0,0
+- May 07 06:40:03 PA-VM 1,2020/05/07 02:40:03,44A1B3FC68F5304,TRAFFIC,end,2049,2020/05/07
+  02:40:03,111.223.73.130,172.16.2.242,111.223.73.130,172.16.2.242,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,2020/05/07
+  02:40:03,574238,1,41102,8088,41102,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07
+  02:40:03,7,any,0,730182,0x0,United States,10.0.0.0-10.255.255.255,0,4,0,aged-out,0,0,0,0,,PA-VM,from-policy,,,0,,0,,N/A,0,0,0,0
+- May 07 06:40:06 PA-VM 1,2020/05/07 02:40:06,44A1B3FC68F5304,TRAFFIC,end,2049,2020/05/07
+  02:40:06,103.125.191.136,10.0.0.10,103.125.191.136,10.0.0.10,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,2020/05/07
+  02:40:06,574277,1,52564,8088,52564,8088,0x400064,tcp,allow,74,74,0,1,2020/05/07
+  02:40:06,0,any,0,730218,0x0,United States,10.0.0.0-10.255.255.255,0,1,0,aged-out,0,0,0,0,,PA-VM,from-policy,,,0,,0,,N/A,0,0,0,0
+- May 07 06:40:03 PA-VM 1,2020/05/07 02:40:03,44A1B3FC68F5304,TRAFFIC,end,2049,2020/05/07
+  02:40:03,111.223.73.130,172.16.2.242,111.223.73.130,172.16.2.242,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,2020/05/07
+  02:40:03,574238,1,41102,8088,41102,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07
+  02:40:03,7,any,0,730182,0x0,United States,10.0.0.0-10.255.255.255,0,4,0,aged-out,0,0,0,0,,PA-VM,from-policy,,,0,,0,,N/A,0,0,0,0
+- May 07 06:40:01 PA-VM 1,2020/05/07 02:40:01,44A1B3FC68F5304,TRAFFIC,end,2049,2020/05/07
+  02:40:01,34.216.78.37,172.16.1.232,34.216.78.37,172.16.1.232,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,2020/05/07
+  02:40:01,574299,1,42116,8088,42116,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07
+  02:40:01,7,any,0,730239,0x0,United States,10.0.0.0-10.255.255.255,0,4,0,aged-out,0,0,0,0,,PA-VM,from-policy,,,0,,0,,N/A,0,0,0,0
+- May 07 06:39:59 PA-VM 1,2020/05/07 02:39:59,44A1B3FC68F5304,TRAFFIC,end,2049,2020/05/07
+  02:39:59,172.16.2.242,51.15.82.93,172.16.2.242,51.15.82.93,splunk,,,incomplete,vsys1,untrusted,trusted,ethernet1/3,ethernet1/2,log-forwarding-default,2020/05/07
+  02:39:59,574235,1,41916,8088,41916,8088,0x400064,tcp,allow,296,296,0,4,2020/05/07
+  02:39:59,7,any,0,730180,0x0,United States,10.0.0.0-10.255.255.255,0,4,0,aged-out,0,0,0,0,,PA-VM,from-policy,,,0,,0,,N/A,0,0,0,0
+- Aug 24 09:13:49 10.0.1.1  1,2022/08/24 09:13:48,009401015183,TRAFFIC,end,1,2022/08/24
+  09:13:48,10.0.1.200,52.40.10.231,71.39.18.125,52.40.10.231,Inside-Outside,,,splunk,vsys1,Inside,Outside,ethernet1/2,ethernet1/1,Jupiter,2022/08/24
+  09:13:48,65048,1,51242,443,54518,443,0x400053,tcp,allow,5057,1938,3119,20,2022/08/24
+  09:13:18,1,not-resolved,0,3338115,0x0,10.0.0.0-10.255.255.255,US,0,10,10
+- |-
+  Aug 24 09:12:41 10.0.1.1  1,2022/08/24 09:12:40,009401015183,TRAFFIC,start,1,2022/08/24 09:12:40,10.0.2.103,10.0.1.120,0.0.0.0,0.0.0.0,Client-Server,frothly.local\grace.hoppy,,symantec-endpoint-manager,vsys1,Inside,Inside,ethernet1/3,ethernet1/2,Jupiter,2022/08/24 09:12:40,5602,1,51505,8014,0,0,0x0,tcp,allow,1821,1137,684,5,2022/08/24 09:12:41,0,any,0,3337962,0x0,10.0.0.0-10.255.255.255,10.0.0.0-10.255.255.255,0,3,2
+  Aug 24 09:12:40 10.0.1.1  1,2022/08/24 09:12:40,009401015183,TRAFFIC,end,1,2022/08/24 09:12:40,10.0.2.101,10.0.1.100,0.0.0.0,0.0.0.0,Client-Server,frothly.local\amber.turing,,dns,vsys1,Inside,Inside,^Cethernet1/3,ethernet1/2,Jupiter,2022/08/24 09:12:40,6652,1,65358,53,0,0,0x19,udp,allow,416,81,335,2,2022/08/24 09:12:10,0,any,0,3337953,0x0,10.0.0.0-10.255.255.255,10.0.0.0-10.255.255.255,0,1,1
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  // CSV column names taken from https://docs.paloaltonetworks.com/pan-os/8-1/pan-os-admin/monitoring/use-syslog-for-monitoring/syslog-field-descriptions.html
+  // Globalprotect column names taken from https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-admin/monitoring/use-syslog-for-monitoring/syslog-field-descriptions/globalprotect-log-fields/globalprotect-log-fields-for-pan-os-913-and-later-releases.html
+
+  // Set ECS values.
+  parser_version:="1.0.1"
+  | vendor:="paloalto"
+  | product:="firewall"
+
+  // Parse syslog header.
+  | /^(?<sysLogDateTime>\S+?\s+?\S+?\s+?\S+?)\s+?(?<domain>\S+?)\s+?(?<csv_data>.*)/
+
+  // Parse the remained of the headers.
+  | parseCSV("csv_data", columns=["_fu1", "ReceiveTime", "SerialNumber", "Type"])
+
+  // Parse the remaining fields based on the Type
+  | case {
+      Type="TRAFFIC"
+        | parseCSV("csv_data", columns=["_fu1","ReceiveTime","SerialNumber","Type","Threat_ContentType","_fu2","GeneratedTime","SourceIP","DestinationIP","NATSourceIP","NATDestinationIP","RuleName","SourceUser","DestinationUser","Application","VirtualSystem","SourceZone","DestinationZone","InboundInterface","OutboundInterface","LogAction","_fu3","SessionID","RepeatCount","SourcePort","DestinationPort","NATSourcePort","NATDestinationPort","Flags","Protocol","Action","Bytes","BytesSent","BytesReceived","Packets","StartTime","ElapsedTime","Category","_fu4","SequenceNumber","ActionFlags","SourceLocation","DestinationLocation","_fu5","PacketsSent","PacketsReceived","SessionEndReason","DeviceGroupHierarchyLevel1","DeviceGroupHierarchyLevel2","DeviceGroupHierarchyLevel3","DeviceGroupHierarchyLevel4","VirtualSystemName","DeviceName","ActionSource","SourceVMUUID","DestinationVMUUID","TunnelID_IMSI","MonitorTag_IMEI","ParentSessionID","ParentStartTime","TunnelType","SCTPAssociationID","SCTPChunks","SCTPChunksSent","SCTPChunksReceived"])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="THREAT"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, SourceIP, DestinationIP, NATSourceIP, NATDestinationIP, RuleName, SourceUser, DestinationUser, Application, VirtualSystem, SourceZone, DestinationZone, InboundInterface, OutboundInterface, LogAction, _fu3, SessionID, RepeatCount, SourcePort, DestinationPort, NATSourcePort, NATDestinationPort, Flags, Protocol, Action, URL_Filename, ThreatID, Category, Severity, Direction, SequenceNumber, ActionFlags, SourceLocation, DestinationLocation, _fu4, ContentType, PCAP_ID, FileDigest, Cloud, URLIndex, UserAgent, FileType, "X-Forwarded-For", Referer, Sender, Subject, Recipient, ReportID, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, _fu5, SourceVMUUID, DestinationVMUUID, HTTPMethod, TunnelID_IMSI, MonitorTag_IMEI, ParentSessionID, ParentStartTime, TunnelType, ThreatCategory, ContentVersion, _fu6, SCTPAssociationID, PayloadProtocolID, HTTPHeaders])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="HIP-MATCH"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, SourceUser, VirtualSystem, Machinename, OS, SourceAddress, HIP, RepeatCount, HIPType, _fu3, _fu4, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, VirtualSystemID, IPv6SourceAddress, HostID])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="USERID"
+        | parseCSV(csv_data, columns=[FUTURE_USE, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu1, GeneratedTime, VirtualSystem, SourceIP, User, DataSourceName, EventID, RepeatCount, TimeOutThreshold, SourcePort, DestinationPort, DataSource, DataSourceType, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, VirtualSystemID, FactorType, FactorCompletionTime, FactorNumber, _fu2, _fu3, UserGroupFlags, SourcebyUser])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="START" OR Type="END"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Subtype, _fu2, GeneratedTime, SourceIP, DestinationIP, NATSourceIP, NATDestinationIP, RuleName, SourceUser, DestinationUser, Application, VirtualSystem, SourceZone, DestinationZone, InboundInterface, OutboundInterface, LogAction, _fu3, SessionID, RepeatCount, SourcePort, DestinationPort, NATSourcePort, NATDestinationPort, Flags, Protocol, Action, Severity, SequenceNumber, ActionFlags, SourceLocation, DestinationLocation, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, TunnelID_IMSI, MonitorTag_IMEI, ParentSessionID, ParentStartTime, Tunnel, Bytes, BytesSent, BytesReceived, Packets, PacketsSent, PacketsReceived, MaximumEncapsulation, UnknownProtocol, StrictCheck, TunnelFragment, SessionsCreated, SessionsClosed, SessionEndReason, ActionSource, StartTime, ElapsedTime, TunnelInspectionRule])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="SCTP"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, _fu2, _fu3, GeneratedTime, SourceAddress, DestinationAddress, _fu4, _fu5, RuleName, _fu6, _fu7, _fu8, VirtualSystem, SourceZone, DestinationZone, InboundInterface, OutboundInterface, LogAction, _fu9, SessionID, RepeatCount, SourcePort, DestinationPort, _fu10, _fu11, _fu12, _fu13, IPProtocol, Action, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, SequenceNumber, _fu14, SCTPAssociationID, PayloadProtocolID, Severity, SCTPChunkType, _fu15, SCTPVerificationTag1, SCTPVerificationTag2, SCTPCauseCode, DiameterAppID, DiameterCommandCode, DiameterAVPCode, SCTPStreamID, SCTPAssociationEndReason, OpCode, SCCPCallingPartySSN, SCCPCallingPartyGlobalTitle, SCTPFilter, SCTPChunks, SCTPChunksSent, SCTPChunksReceived, Packets, PacketsSent, PacketsReceived])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="CONFIG"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, Host, VirtualSystem, Command, Admin, Client, Result, ConfigurationPath, BeforeChangeDetail, AfterChangeDetail, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="AUTHENTICATION"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, VirtualSystem, SourceIP, User, NormalizeUser, Object, AuthenticationPolicy, RepeatCount, AuthenticationID, Vendor, LogAction, ServerProfile, Description, ClientType, EventType, FactorNumber, SequenceNumber, ActionFlags, DeviceGroupHierarchy1, DeviceGroupHierarchy2, DeviceGroupHierarchy3, DeviceGroupHierarchy4, VirtualSystemName, DeviceName, VirtualSystemID, AuthenticationProtocol])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="SYSTEM"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Content_ThreatType, _fu2, GeneratedTime, VirtualSystem, EventID, Object, _fu3, _fu4, Module, Severity, Description, SequenceNumber, ActionFlags, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="CORRELATION"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Content_ThreatType, _fu2, GeneratedTime, SourceAddress, SourceUser, VirtualSystem, Category, Severity, DeviceGroupHierarchyLevel1, DeviceGroupHierarchyLevel2, DeviceGroupHierarchyLevel3, DeviceGroupHierarchyLevel4, VirtualSystemName, DeviceName, VirtualSystemID, ObjectName, ObjectID, Evidence])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="GTP"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, SourceAddress, DestinationAddress, _fu3, _fu4, RuleName, _fu5, _fu6, Application, VirtualSystem, SourceZone, DestinationZone, InboundInterface, OutboundInterface, LogAction, _fu7, SessionID, _fu8, SourcePort, DestinationPort, _fu9, _fu10, _fu11, Protocol, Action, GTPEventType, MSISDN, AccessPointName, RadioAccessTechnology, GTPMessageType, EndUserIPAddress, TunnelEndpointIdentifier1, TunnelEndpointIdentifier2, GTPInterface, GTPCause, Severity, ServingCountryMCC, ServingNetworkMNC, AreaCode, CellID, GTPEventCode, _fu12, _fu13, SourceLocation, DestinationLocation, _fu14, _fu15, _fu16, _fu17, _fu18, _fu19, _fu20, TunnelID_IMSI, MonitorTag_IMEI, _fu21, _fu22, _fu23, _fu24, _fu25, _fu26, _fu27, _fu28, _fu29, _fu30, _fu31, _fu32, _fu33, _fu34, _fu35, _fu36, StartTime, ElapsedTime, TunnelInspectionRule])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      Type="GLOBALPROTECT"
+        | parseCSV(csv_data, columns=[_fu1, ReceiveTime, SerialNumber, Type, Threat_ContentType, _fu2, GeneratedTime, VirtualSystem, EventID, Stage, AuthenticationMethod, TunnelType, SourceUser, SourceRegion, MachineName, PublicIP, PublicIPv6, PrivateIP, PrivateIPv6, HostID, UserSerialNumber, ClientVersion, ClientOS, ClientOSVersion, RepeatCount, Reason, Error, Description, Status, Location, LoginDuration, ConnectMethod, ErrorCode, Portal, SequenceNumber, ActionFlags])
+        | parseTimestamp(field="ReceiveTime", format="yyyy/MM/dd HH:mm:ss", timezone="UTC") ;
+      * ;
+    }
+
+  // Alias fields for ECS.
+  | event.type:=Action
+  | event.category:=Type
+  | event.outcome:=Threat_ContentType
+
+  // Drop the csv_data and "future use" fields since it is not needed.
+  | drop([csv_data, _fu1, _fu2, _fu3, _fu4, _fu5])
+
+  // Set the timestamp to "now" to deal with inconsistencies in the log time.
+  | @timestamp:=now()
+tagFields:
+- vendor
+- event.type
+- event.category
+- parser_version
+- product

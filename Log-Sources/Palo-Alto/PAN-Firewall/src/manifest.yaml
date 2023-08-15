@@ -1,9 +1,9 @@
 author:
-  name: pan
+  name: LogScale Community Content
 name: pan/firewall
 description: This package provides a parser and dashboard visualizations for PAN firewall
   log events.
-version: 0.1.0
+version: 1.0.1
 minHumioVersion: 1.20.0
 type: application
 $schema: https://schemas.humio.com/manifest/v2.0.0
