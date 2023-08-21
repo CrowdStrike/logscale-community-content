@@ -16,6 +16,7 @@ script: |-
   // Fortinet FortiGate parser
   // bjorn.graabek@crowdstrike.com
   //
+  // v0.4.0, more detailed/correct parsing based on "action" values
   // v0.3.0, initial work on making the parser ECS compliant. The parser keeps the original field names and adds ECS field equivalents
   // There are more fields to map to ECS fields. Fortigate log format is described here:
   // https://docs.fortinet.com/document/fortigate/7.4.0/fortios-log-message-reference/357866/log-message-fields
@@ -38,11 +39,10 @@ script: |-
   * } |
   drop(timestamp) |
 
-  // According to Fortigate docs, everything but deny means the session was allowed
-  // despite the docs, surely the action="perf-stats" events have nothing to do with allowing/denying data, so hence event.type is not being set
   case {
-      action=deny | event.type:="denied";
-      action="perf-stats";
+      in(action, values=["deny","blocked"]) | event.type:="denied";
+      in(action, values=["perf-stats","trim-disk","update","delete","reseeding","roll-log"]) | event.type:="info";
+      action!=* | event.type:="info";
   * | event.type:="allowed" } |
 
   // LogScale PaSta fields
