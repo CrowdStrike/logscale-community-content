@@ -16,16 +16,16 @@ find . -name .DS_Store -exec rm -f {} \;
 (
   cd src
   zip -r ../$ARCHIVE \
-	manifest.yaml \
-	actions \
-	alerts \
-	queries \
-	parsers \
-	dashboards \
+  manifest.yaml \
+  actions \
+  alerts \
+  queries \
+  parsers \
+  dashboards \
   data \
-	scheduled-searches \
+  scheduled-searches \
   view-interactions \
-	README.md
+  README.md
 )
 
 echo Created package $ARCHIVE
