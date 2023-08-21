@@ -1,0 +1,6 @@
+name: audit-log
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: parseJson(handleNull=empty) | parseTimestamp(field=timestamp)
+tagFields: []

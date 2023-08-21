@@ -1,0 +1,66 @@
+name: Quality Issues
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  09afb172-bdbb-4c8a-a256-1eefa39de7ef:
+    x: 0
+    y: 0
+    description: Video Quality - Bad
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.video_quality.quality="bad"
+      | rename(content.payload.object.participant.email, as=email)
+      | rename(content.payload.object.uuid, as=event_uuid)
+      |  rename(content.payload.object.participant.qos.video_quality.quality, as=quality)
+      | quality!="" email!=""
+      | groupBy([event_uuid, email, quality], function=[])
+    visualization: table-view
+    end: now
+    start: 1h
+    width: 4
+    title: Video Quality - Bad
+    isLive: false
+    type: query
+  24c72321-bcab-4e1a-b542-2a038950070c:
+    x: 4
+    y: 0
+    description: Audio  Quality - Bad
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.audio_quality.quality="bad"
+      | rename(content.payload.object.participant.email, as=email)
+      | rename(content.payload.object.uuid, as=event_uuid)
+      |  rename(content.payload.object.participant.qos.audio_quality.quality, as=quality)
+      | quality!="" email!=""
+      | groupBy([event_uuid, email, quality], function=[])
+    visualization: table-view
+    end: now
+    start: 1h
+    width: 4
+    title: Audio Quality - Bad
+    isLive: false
+    type: query
+  89ff53de-b283-498f-95f8-168e5c23f382:
+    x: 8
+    y: 0
+    description: Sharing Quality - Bad
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.as_quality.quality="bad"
+      | rename(content.payload.object.participant.email, as=email)
+      | rename(content.payload.object.uuid, as=event_uuid)
+      |  rename(content.payload.object.participant.qos.as_quality.quality, as=quality)
+      | quality!="" email!=""
+      | groupBy([event_uuid, email, quality], function=[])
+    visualization: table-view
+    end: now
+    start: 1h
+    width: 4
+    title: Sharing Quality - Bad
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0

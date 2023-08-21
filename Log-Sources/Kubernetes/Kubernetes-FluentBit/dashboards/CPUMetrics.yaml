@@ -10,8 +10,8 @@ widgets:
     y: 4
     description: CPU Core - Combined
     height: 6
-    queryString: |
-      source=cpu hostname=?hostname
+    queryString: |-
+      flb.source=cpu hostname=?hostname
       | tail(50)
       | regex("\"cpu(?<core_raw>\d{1,2}+)\.p_cpu\":(?<cpu_raw>[.0-9]+),", field=@rawstring, repeat=true)
       | format(format="%.2i", field=core_raw, as=core)
@@ -42,7 +42,7 @@ widgets:
     description: CPU Core - System
     height: 6
     queryString: |-
-      source=cpu hostname=?hostname
+      flb.source=cpu hostname=?hostname
       | tail(50)
       | regex("\"cpu(?<core_raw>\d{1,2}+)\.p_system\":(?<cpu_raw>[.0-9]+),", field=@rawstring, repeat=true)
       | format(format="%.2i", field=core_raw, as=core)
@@ -69,7 +69,7 @@ widgets:
     description: CPU Core - User
     height: 6
     queryString: |-
-      source=cpu hostname=?hostname
+      flb.source=cpu hostname=?hostname
       | tail(50)
       | regex("\"cpu(?<core_raw>\d{1,2}+)\.p_user\":(?<cpu_raw>[.0-9]+),", field=@rawstring, repeat=true)
       | format(format="%.2i", field=core_raw, as=core)
@@ -97,14 +97,14 @@ widgets:
     description: User CPU
     height: 4
     queryString: |-
-      source=cpu hostname=?hostname
+      flb.source=cpu hostname=?hostname
       | timechart(function=[
              avg(field=user_p,as=avg),
              min(field=user_p,as=min),
              max(field=user_p,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 4
     options:
       gradient: true
@@ -126,14 +126,14 @@ widgets:
     description: System CPU
     height: 4
     queryString: |-
-      source=cpu hostname=?hostname
+      flb.source=cpu hostname=?hostname
       | timechart(function=[
              avg(field=system_p,as=avg),
              min(field=system_p,as=min),
              max(field=system_p,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 4
     options:
       gradient: true
@@ -155,14 +155,14 @@ widgets:
     description: Combined CPU
     height: 4
     queryString: |-
-      source=cpu hostname=?hostname
+      flb.source=cpu hostname=?hostname
       | timechart(function=[
              avg(field=cpu_p,as=avg),
              min(field=cpu_p,as=min),
              max(field=cpu_p,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 4
     options:
       gradient: true
@@ -178,10 +178,9 @@ widgets:
     title: CPU - system+user
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.8.0
+$schema: https://schemas.humio.com/dashboard/v0.12.0
 parameters:
   hostname:
-    isMultiParam: false
     label: Hostname
     valueFilters: {}
     fileName: k8s_hostnames.csv

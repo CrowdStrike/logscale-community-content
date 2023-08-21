@@ -1,0 +1,13 @@
+name: Gather Zoom Country Codes
+description: Gather Zoom Country Codes
+enabled: true
+queryString: content.payload.object.participant.data.location=* | regex(regex="\((?<code>[^\)]+)\)$",
+  field=content.payload.object.participant.data.location) | groupBy([code], function=[])
+backfillLimit: 0
+schedule: '*/5 * * * *'
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC+00:00
+queryStart: 30d
+actionNameReferences:
+- Zoom Country Codes

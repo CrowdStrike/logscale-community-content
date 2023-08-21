@@ -1,0 +1,75 @@
+name: zoom_qss
+tests:
+- |-
+  {
+      "time": 1684803769.144972,
+      "source": "zoom-qss-qos",
+      "sourcetype": "zoom_qss",
+      "host": "sa-cluster.humio-support.com",
+      "index": "Zoom_QSS_Dev",
+      "event":
+      {
+          "module": "message",
+          "content":
+          {
+              "event": "meeting.participant_qos",
+              "payload":
+              {
+                  "account_id": "XzajLvbUT3usM0Mn5MdtxA",
+                  "object":
+                  {
+                      "uuid": "3TX3MMOqRoaWwBc9sv39Aw==",
+                      "participant":
+                      {
+                          "participant_user_id": "A_FcfQr5SqafcZ-skZULJw",
+                          "qos":
+                          [
+                              {
+                                  "details":
+                                  {
+                                      "avg_loss": "0.0%",
+                                      "max_loss": "0.0%",
+                                      "bitrate": "67 kbps",
+                                      "jitter": "0 ms",
+                                      "latency": "9 ms"
+                                  },
+                                  "date_time": "2023-05-23T01:02:00Z",
+                                  "type": "audio_input"
+                              },
+                              {
+                                  "details":
+                                  {
+                                      "avg_loss": "0.0%",
+                                      "max_loss": "0.0%",
+                                      "bitrate": "929 kbps",
+                                      "jitter": "0 ms",
+                                      "latency": "9 ms"
+                                  },
+                                  "date_time": "2023-05-23T01:02:00Z",
+                                  "type": "video_input"
+                              }
+                          ],
+                          "user_id": "16779264",
+                          "email": "gleb.sechenov@crowdstrike.com"
+                      }
+                  }
+              },
+              "event_ts": 1684803769082
+          },
+          "header":
+          {
+              "Authorization": "wPevQl7qS9WjSU6hK8FBbw",
+              "clientId": "xm0j2gIgRTyR_2iBQ9utA",
+              "x-zm-trackingid": "EventService_a2aee897dca44d25a5faf62df6bc2459",
+              "x-zm-signature": "v0=9367ab2a2435bfd8c55e619a170563ae46576e3e8a121ec1e3a1b1267125f209",
+              "x-zm-request-timestamp": "1684803769"
+          }
+      },
+      "fields":
+      {}
+  }
+- ''
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: parseJson() | parseTimestamp(unixTimeMillis, field=content.event_ts)
+tagFields: []

@@ -1,0 +1,4 @@
+$schema: https://schemas.humio.com/action/v0.5.0
+fileName: zoom_event_types.csv
+name: Zoom Event Types
+type: upload-file

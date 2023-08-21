@@ -1,0 +1,15 @@
+name: serilog-jsonformatter
+tests:
+- '{"Timestamp":"2019-01-18T10:57:45.2447250+01:00","Level":"Error","MessageTemplate":"Terminated
+  unexpectedly","RenderedMessage":"Terminated unexpectedly","Exception":"System.Exception:
+  arargg","Properties":{"ProcessId":"8009"}}'
+- '{"Timestamp":"2019-01-18T13:06:53.3642110+01:00","Level":"Information","MessageTemplate":"Number
+  of user sessions {@UserSessions}","RenderedMessage":"Number of user sessions 103","Properties":{"UserSessions":103,"ProcessId":"8009"}}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  parseJson()
+  | @timestamp := parseTimestamp(field=Timestamp)
+  | @display := format("%1$-13s | %2$s", field=[Level, RenderedMessage])
+  | drop([Timestamp,MessageTemplate,RenderedMessage])
+tagFields: []

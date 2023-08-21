@@ -11,7 +11,7 @@ widgets:
     description: Network - Write Errors
     height: 4
     queryString: |-
-      hostname=?hostname| regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.errors\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      flb.source=netif hostname=?hostname| regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.errors\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
              avg(field=netif_metric,as=avg),
@@ -19,7 +19,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -37,7 +37,7 @@ widgets:
     description: Network - Read Drops
     height: 4
     queryString: |-
-      hostname=?hostname
+      flb.source=netif hostname=?hostname
       | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.drop\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
@@ -46,7 +46,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -64,7 +64,7 @@ widgets:
     description: Network - Write Packets
     height: 4
     queryString: |-
-      hostname=?hostname
+      flb.source=netif hostname=?hostname
       | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.packets\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
@@ -73,7 +73,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -91,7 +91,7 @@ widgets:
     description: Network - Read Bytes
     height: 4
     queryString: |-
-      source=netif hostname=?hostname
+      flb.source=netif hostname=?hostname
       | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.bytes\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
@@ -100,7 +100,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -118,7 +118,7 @@ widgets:
     description: Network - Write Bytes
     height: 4
     queryString: |-
-      source=netif hostname=?hostname
+      flb.source=netif hostname=?hostname
       | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.bytes\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
@@ -127,7 +127,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -145,7 +145,7 @@ widgets:
     description: Network - Write Drops
     height: 4
     queryString: |-
-      hostname=?hostname
+      flb.source=netif hostname=?hostname
       | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.drop\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
@@ -154,7 +154,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -172,7 +172,7 @@ widgets:
     description: Network - Read Packets
     height: 4
     queryString: |-
-      hostname=?hostname
+      flb.source=netif hostname=?hostname
       | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.packets\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
@@ -181,7 +181,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -199,7 +199,7 @@ widgets:
     description: Network - Read Errors
     height: 4
     queryString: |-
-      hostname=?hostname
+      flb.source=netif hostname=?hostname
       | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.errors\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
       | netif_name=?netif
       | timechart(function=[
@@ -208,7 +208,7 @@ widgets:
              max(field=netif_metric,as=max)
              ], span=1m)
     end: now
-    start: 1d
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -220,10 +220,9 @@ widgets:
     title: Network - Read Errors
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.8.0
+$schema: https://schemas.humio.com/dashboard/v0.12.0
 parameters:
   hostname:
-    isMultiParam: false
     label: Hostname
     valueFilters: {}
     fileName: k8s_hostnames.csv
@@ -232,7 +231,6 @@ parameters:
     order: 50
     valueField: hostname
   netif:
-    isMultiParam: false
     label: Network Interface
     valueFilters: {}
     fileName: network_interfaces.csv

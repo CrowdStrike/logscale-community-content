@@ -1,0 +1,7 @@
+name: zeek-json
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: parseJson() | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX", field=_write_ts)
+tagFields:
+- _path

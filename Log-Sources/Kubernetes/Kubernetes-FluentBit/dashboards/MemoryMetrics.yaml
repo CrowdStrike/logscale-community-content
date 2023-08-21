@@ -11,14 +11,14 @@ widgets:
     description: memory used
     height: 4
     queryString: |-
-      source=mem hostname=?hostname
+      flb.source=mem hostname=?hostname
       | timechart(function=[
              avg(field=Mem.used,as=avg),
              min(field=Mem.used,as=min),
              max(field=Mem.used,as=max)
-             ], span=5m)
+             ], span=1m)
     end: now
-    start: 6h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -36,11 +36,11 @@ widgets:
     description: host total memory
     height: 5
     queryString: |-
-      source=mem
+      flb.source=mem
       | groupBy([hostname,Mem.total],function=[avg(Mem.total,as=avg_total)])
     visualization: bar-chart
     end: now
-    start: 1h
+    start: 15m
     width: 12
     title: Summary - Host Total Memory
     isLive: false
@@ -51,13 +51,13 @@ widgets:
     description: memory free
     height: 4
     queryString: |-
-      source=mem hostname=?hostname | timechart(function=[
+      flb.source=mem hostname=?hostname | timechart(function=[
              avg(field=Mem.free,as=avg),
              min(field=Mem.free,as=min),
              max(field=Mem.free,as=max)
-             ], span=5m)
+             ], span=1m)
     end: now
-    start: 6h
+    start: 15m
     width: 6
     options:
       showDataPoints: true
@@ -69,10 +69,9 @@ widgets:
     title: Memory Free
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.8.0
+$schema: https://schemas.humio.com/dashboard/v0.12.0
 parameters:
   hostname:
-    isMultiParam: false
     label: Hostname
     valueFilters: {}
     fileName: k8s_hostnames.csv

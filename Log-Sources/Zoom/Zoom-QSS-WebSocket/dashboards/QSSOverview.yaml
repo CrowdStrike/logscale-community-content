@@ -1,0 +1,274 @@
+name: QSS Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  11b24ac1-106b-4644-b405-669b64f3caef:
+    x: 0
+    y: 0
+    description: Zoom Events
+    height: 6
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=*| participant_data:="participant_data"
+      | format("%s.%s",field=[zoom_event_type,participant_data],as=content_event)
+      | test(content.event == content_event)
+      | content.payload.object.participant.data.network_type=* content.payload.object.uuid=* content.payload.object.participant.email!=""
+      | rename(content.payload.object.uuid,as=event_uuid)
+      | groupBy([event_uuid],function=[]) | count()
+    end: now
+    start: 15m
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Zoom Events
+    isLive: false
+    type: query
+  f3b4898c-afa8-4eb5-b186-71687e0a26f0:
+    x: 6
+    y: 0
+    description: Zoom Event Countries
+    height: 6
+    queryString: |-
+      content.payload.object.participant.data.location=*
+      | regex(regex="\((?<code>[^\)]+)\)$", field=content.payload.object.participant.data.location)
+      | lookup("county_codes__iso_3166.csv", on=[code])
+      | groupBy([country],limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Zoom Event Countries
+    isLive: false
+    type: query
+  9c3684e6-37d2-451b-866e-fd6ee463ee50:
+    x: 3
+    y: 6
+    description: Zoom Device Platforms
+    height: 6
+    queryString: "content.payload.object.participant.data.device = *\n| case {\n\t\
+      content.payload.object.participant.data.device = \"\" | device := \"Unknown\"\
+      ;\n\t* | device := content.payload.object.participant.data.device\n}\n| groupBy([device])"
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Zoom Device Platforms
+    isLive: false
+    type: query
+  7e6f3040-0555-47f5-8d51-d32221610687:
+    x: 3
+    y: 0
+    description: Event Participants
+    height: 6
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type="*" | participant_data:="participant_data"
+      | format("%s.%s",field=[zoom_event_type,participant_data],as=content_event)
+      | test(content.event == content_event)
+      | content.payload.object.participant.data.network_type=* content.payload.object.uuid=* content.payload.object.participant.email!=""
+      | rename(content.payload.object.uuid,as=event_uuid)
+      | groupBy([event_uuid,participant_count],function=[count(content.payload.object.participant.email,distinct=true,as=participant_count)]) | sum(participant_count)
+    end: now
+    start: 15m
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Participants
+    isLive: false
+    type: query
+  4cad9ba0-c936-4000-9254-64a9a1b5c5f5:
+    x: 9
+    y: 6
+    description: Connection Type
+    height: 6
+    queryString: content.payload.object.participant.data.connection_type=* | rename(field=content.payload.object.participant.data.connection_type,
+      as=connection_type) | groupby([connection_type], limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Connection Type
+    isLive: false
+    type: query
+  b53935e1-a31f-4c72-a2f5-f136cd110d4d:
+    x: 3
+    y: 12
+    description: Audio Quality
+    height: 6
+    queryString: content.payload.object.participant.qos.audio_quality.quality=* |
+      rename(content.payload.object.participant.qos.audio_quality.quality,as=audio_quality)
+      | groupBy([audio_quality])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Audio Quality
+    isLive: false
+    type: query
+  15d3ed74-2756-4865-894d-cbcee44fe125:
+    x: 0
+    y: 6
+    description: Zoom Version
+    height: 6
+    queryString: content.payload.object.participant.data.version=* | regex(regex="^(?<zoom_version>\d+\.\d+)",
+      field=content.payload.object.participant.data.version) | groupBy([zoom_version],
+      limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Zoom Version
+    isLive: false
+    type: query
+  b84e8ea4-26d0-4be0-baf0-561422ae9598:
+    x: 0
+    y: 12
+    description: Video Quality
+    height: 6
+    queryString: content.payload.object.participant.qos.video_quality.quality=* |
+      rename(content.payload.object.participant.qos.video_quality.quality,as=video_quality)
+      | groupBy([video_quality])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Video Quality
+    isLive: false
+    type: query
+  c53a340d-6073-4880-b20f-e3bbaaedde75:
+    x: 6
+    y: 12
+    description: Sharing Quality
+    height: 6
+    queryString: content.payload.object.participant.qos.as_quality.quality=* | rename(content.payload.object.participant.qos.as_quality.quality,as=sharing_quality)
+      | groupBy([sharing_quality])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Sharing Quality
+    isLive: false
+    type: query
+  6025e9e1-f3f0-4673-b4e6-3f68b0c43268:
+    x: 6
+    y: 6
+    description: Network Type
+    height: 6
+    queryString: content.payload.object.participant.data.network_type=* | rename(field=content.payload.object.participant.data.network_type,
+      as=network_type) | groupBy(field=network_type, function=[count()],limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Network Type
+    isLive: false
+    type: query
+  14b3dead-672f-4848-98c6-8e4b1621ea27:
+    x: 9
+    y: 0
+    description: Event Types
+    height: 6
+    queryString: |-
+      content.payload.object.participant.data.network_type=*
+      | regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | groupBy([zoom_event_type,content.payload.object.uuid],function=[count()])
+      | groupBy([zoom_event_type])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Event Types
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0
+parameters:
+  location:
+    label: Location
+    valueFilters: {}
+    fileName: locations__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: location
+  connection_type:
+    label: Connection Type
+    valueFilters: {}
+    fileName: connections_types__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: connection_type
+  network_type:
+    valueFilters: {}
+    fileName: network_types__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: network_type
+  zoom-uuid:
+    label: Event Uuid
+    query: rename(field=content.payload.object.uuid, as=zoom_uuid) | groupBy([zoom_uuid],
+      function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: zoom_uuid
+  country-code:
+    label: County Code
+    valueFilters: {}
+    fileName: country_codes__qss.csv
+    defaultValue: '*'
+    order: 50
+    valueField: code
+    type: file
+    labelField: code
+  version:
+    label: Zoom Version
+    valueFilters: {}
+    fileName: zoom_version__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: version
+  zoom-type:
+    label: Zoom Type
+    valueFilters: {}
+    fileName: zoom_event_types.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: zoom_type
+  zoom-device-os:
+    label: Device OS
+    valueFilters: {}
+    fileName: zoom_devices.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: device
+  participant-email:
+    label: Participant Email
+    valueFilters: {}
+    fileName: participant_emails__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: participant_email
+  zoom-account-id:
+    label: Zoom Account Id
+    query: content.payload.account_id=* | rename(field=content.payload.account_id,as=account_id)
+      | groupBy([account_id],function=[])
+    timeInterval: 6h
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: account_id

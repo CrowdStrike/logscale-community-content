@@ -1,0 +1,7 @@
+name: syslog-utc
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: /(?<@timestamp>\S+\s+\S+\s+\S+)\s+(?<host>\S+)?\s+(?<app>[^\s\[:]+)?(\[(?<pid>[^\]]+)\])?/
+  | kvParse() | parseTimestamp("MMM [ ]d HH:mm:ss", field=@timestamp, timezone="UTC")
+tagFields: []

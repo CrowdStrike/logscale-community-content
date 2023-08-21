@@ -1,0 +1,7 @@
+name: kv-millis
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: kvParse(@rawstring) | case { @rawstring=/(?<@timestamp>\d+)/ | parseTimestamp(unixTimeMillis,
+  field=@timestamp); * }
+tagFields: []

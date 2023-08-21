@@ -1,0 +1,17 @@
+name: test-qss
+tests:
+- |-
+  {
+  "payload":
+  {
+  "plainToken":"qNazE7RkQ96FhEGGy3grVQ"
+  },
+  "event_ts":1681912217653,
+  "event":"endpoint.url_validation"
+  }
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  parseJson()
+  | newtoken:=hashRewrite(field="payload.plainToken", salt="UFhtASIgTIuca7eitP60Tg", hash=sha256)
+tagFields: []

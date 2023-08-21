@@ -11,7 +11,7 @@ widgets:
     description: Disk Read Size
     height: 4
     queryString: |-
-      source=disk device=?device hostname=?hostname
+      flb.source=disk device=?device hostname=?hostname
       | timechart(function=[
              avg(field=read_size,as=avg),
              min(field=read_size,as=min),
@@ -37,7 +37,7 @@ widgets:
     description: Disk Write Size
     height: 4
     queryString: |-
-      source=disk device=?device hostname=?hostname
+      flb.source=disk device=?device hostname=?hostname
       | timechart(function=[
              avg(field=write_size,as=avg),
              min(field=write_size,as=min),
@@ -57,10 +57,9 @@ widgets:
     title: Disk - Write Size
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.8.0
+$schema: https://schemas.humio.com/dashboard/v0.12.0
 parameters:
   device:
-    isMultiParam: false
     label: Disk Device
     query: source=disk | groupBy([device], function=[])
     timeInterval: 7d
@@ -70,7 +69,6 @@ parameters:
     order: 50
     valueField: device
   hostname:
-    isMultiParam: false
     label: Hostname
     valueFilters: {}
     fileName: k8s_hostnames.csv

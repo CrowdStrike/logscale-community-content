@@ -3,7 +3,6 @@ description: ''
 enabled: true
 queryString: |-
   source=docker.events
-  | parseJson(message)
   | Action=*
   | regex("^(?<action>[^:\s]+)(:\s(?<parameter>.+))?",field=Action)
   | groupBy([action],function=[])

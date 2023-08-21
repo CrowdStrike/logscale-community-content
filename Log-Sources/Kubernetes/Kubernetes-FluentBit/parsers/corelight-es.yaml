@@ -1,0 +1,15 @@
+name: corelight-es
+tests:
+- '{"@path":"ssl","@sensor":"host-sensor","@timestamp":"2019-06-01T02:57:21.447430Z","ts":"2019-06-01T02:57:21.315851Z","uid":"CRhx1x1MYYH6xO7dv4","id.orig_h":"192.168.1.1","id.orig_p":50784,"id.resp_h":"192.168.2.5","id.resp_p":9200,"version":"TLSv12","cipher":"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384","curve":"secp256r1","server_name":"cloud.humio.com","resumed":false,"next_protocol":"http/1.1","established":true,"cert_chain_fuids":["F671m51Onwmr8oAKy9","FZJCHc1wPNqqSsLPl5"],"client_cert_chain_fuids":[],"subject":"CN=cloud.humio.com","issuer":"CN=Let''s
+  Encrypt Authority X3,O=Let''s Encrypt,C=US","validation_status":"ok"}'
+- '{"@path":"dns","@sensor":"host-sensor","@timestamp":"2019-06-01T03:06:26.590089Z","ts":"2019-06-01T03:06:16.994889Z","uid":"CFPT4C4iXSRk0oWQu5","id.orig_h":"192.168.1.2","id.orig_p":60923,"id.resp_h":"192.168.2.6","id.resp_p":5355,"proto":"udp","trans_id":63004,"query":"wpad","qclass":1,"qclass_name":"C_INTERNET","qtype":28,"qtype_name":"AAAA","AA":false,"TC":false,"RD":false,"RA":false,"Z":0,"rejected":false}'
+- '{"@path":"x509","@sensor":"host-sensor","@timestamp":"2019-06-01T02:57:39.982467Z","ts":"2019-06-01T02:57:39.982467Z","id":"FJyS8D2AI1cHajXbMg","certificate.version":3,"certificate.serial":"0394BF7C616948D34169AA51CE3A4BFCC76C","certificate.subject":"CN=cloud.humio.com","certificate.issuer":"CN=Let''s
+  Encrypt Authority X3,O=Let''s Encrypt,C=US","certificate.not_valid_before":"2019-05-16T03:11:23.000000Z","certificate.not_valid_after":"2019-08-14T03:11:23.000000Z","certificate.key_alg":"rsaEncryption","certificate.sig_alg":"sha256WithRSAEncryption","certificate.key_type":"rsa","certificate.key_length":2048,"certificate.exponent":"65537","san.dns":["cloud.humio.com"],"basic_constraints.ca":false}'
+- '{"@path":"http","@sensor":"host-sensor","@timestamp":"2019-06-01T02:47:15.126838Z","ts":"2019-06-01T02:47:15.126838Z","uid":"Cwy1Uoss0nITqx3i2","id.orig_h":"192.168.1.2","id.orig_p":53234,"id.resp_h":"192.168.2.4","id.resp_p":49152,"trans_depth":1,"method":"GET","host":"192.168.1.41","uri":"/","version":"1.1","user_agent":"UPnP/1.0
+  DLNADOC/1.50 Platinum/1.0.5.13","request_body_len":0,"response_body_len":48,"status_code":404,"status_msg":"Not
+  Found","tags":[],"resp_fuids":["FOpZk4TkjbqvS8Uff"],"resp_mime_types":["text/html"]}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: parseJson() | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXX", field=@timestamp)
+tagFields:
+- '@path'
