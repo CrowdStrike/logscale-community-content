@@ -31,8 +31,8 @@ queryString: |-
   | decodedCommand:=base64Decode(base64String, charset="UTF-16LE")
 
   // Added to make identify demo events easier.
-  | ParentBaseFileName=?ParentFileName
-  | decodedCommand=?decodedCommand
+  | ParentBaseFileName=~wildcard(?ParentBaseFileName, ignoreCase=true)
+  | decodedCommand=~wildcard(?decodedCommand, ignoreCase=true)
 
   // Uncomment the next line to include detection types.
   // | join({#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent ExternalApiType="Event_DetectionSummaryEvent"}, field=aid, key=AgentIdString, include=[DetectName, Tactic, Technique], limit=200000)

@@ -26,7 +26,8 @@ queryString: |-
   | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
 
   // Make these fields as optional inputs by putting a ? at the beginning.
-  | DomainName=?DomainName FileName=?FileName
+  | DomainName=~wildcard(?DomainName, ignoreCase=true)
+  | FileName=~wildcard(?FileName, ignoreCase=true)
 
   // Add the ComputerName.
   | $"crowdstrike/fltr-core:zComputerName"()

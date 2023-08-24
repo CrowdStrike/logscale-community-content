@@ -16,7 +16,8 @@ queryString: |-
   | $"crowdstrike/fltr-core:zComputerName"()
 
   // Allow the option to select the aid or ComputerName.
-  | aid=?aid ComputerName=?ComputerName
+  | aid=~wildcard(?aid, ignoreCase=true)
+  | ComputerName=~wildcard(?ComputerName, ignoreCase=true)
 
   // Extract the filename.
   | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)

@@ -19,17 +19,18 @@ queryString: |-
   | test(inputRemotePort!="*")
 
   // Find the specific event types. 
-  | (#event_simpleName=ProcessRollup2 event_platform=Win aid=?aid) OR (#event_simpleName=NetworkConnectIP4 RemotePort=?RemotePort event_platform=Win aid=?aid)
+  | aid=~wildcard(?aid, ignoreCase=true)
+  | (#event_simpleName=ProcessRollup2 event_platform=Win) OR (#event_simpleName=NetworkConnectIP4 RemotePort=?RemotePort event_platform=Win)
 
   // Rename the ProcessId to be used in a selfJoinFilter. 
   | #event_simpleName match {
-      ProcessRollup2 => pid:=TargetProcessId;
-      NetworkConnectIP4 => pid:=ContextProcessId;
+      ProcessRollup2 => pid:=TargetProcessId ;
+      NetworkConnectIP4 => pid:=ContextProcessId ;
     }
 
   // Join the events from above. Change the port to match the one above. 
   | selfJoinFilter([aid, pid], where=[
-      {#event_simpleName=NetworkConnectIP4 event_platform=Win RemotePort=?RemotePort aid=?aid}, 
+      {#event_simpleName=NetworkConnectIP4 event_platform=Win RemotePort=?RemotePort}, 
       {#event_simpleName=ProcessRollup2 event_platform=Win}
     ], prefilter=true)
 
@@ -44,6 +45,7 @@ queryString: |-
 
   // Extract FileName from the ImageFileName.
   | regex(regex="(?<FileName>[^\\\]+)$", field=ImageFileName)
+  | FileName=~wildcard(?FileName, ignoreCase=true)
 
   | case {
       // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
