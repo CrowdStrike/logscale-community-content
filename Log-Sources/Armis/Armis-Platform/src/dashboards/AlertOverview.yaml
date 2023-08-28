@@ -1,0 +1,149 @@
+name: Alert Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  0f02fd0e-95bb-4356-8ac6-8502b1913aaf:
+    x: 6
+    y: 4
+    height: 4
+    queryString: groupBy(relatedDevices[0].category)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      legend: true
+      legendPosition: bottom
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Alerts by Device Category
+    isLive: false
+    type: query
+  1d89bb2b-dbd0-4687-8df2-7e97e2887768:
+    x: 9
+    y: 4
+    height: 4
+    queryString: top("relatedDevices[0].name")
+    end: now
+    start: 7d
+    width: 3
+    options:
+      legendPosition: bottom
+      series: {}
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Top Alerts by Device Name
+    isLive: false
+    type: query
+  73c0cec5-aa05-49d9-a589-4d156f084ce8:
+    x: 2
+    y: 0
+    height: 4
+    queryString: timeChart(policy.actionParams.alertTitle)
+    end: now
+    start: 7d
+    width: 10
+    options:
+      series: {}
+      lastBucketBehavior: include
+      showDataPoints: false
+      connect-points: false
+      maxSeriesCount: 50
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Alerts over Time
+    isLive: false
+    type: query
+  6d20d792-0ccb-4862-b3bd-f3e0ee969a45:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      policy.actionTypeDisplay = "Alert*"
+      |count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      decimal-places: 2
+      color-method: static
+      use-colorised-thresholds: false
+      value-format: raw
+      default:
+        bg: inherit
+        txt: rgb(34 197 94)
+    visualization: single-value
+    title: Alerts Last 24h
+    isLive: false
+    type: query
+  15f51cd2-4ac2-4db0-a29f-70772cd0cc09:
+    x: 3
+    y: 4
+    height: 4
+    queryString: groupBy(policy.labels[0])
+    end: now
+    start: 7d
+    width: 3
+    options:
+      legendPosition: bottom
+      series: {}
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Alerts by Policy
+    isLive: false
+    type: query
+  09e8ad62-e49a-407c-bece-1faacaa5483f:
+    x: 0
+    y: 8
+    height: 6
+    queryString: |
+      policy.actionTypeDisplay = "Alert*"
+    end: now
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"title","format":"text","header":"Title","width":227},{"type":"field","fieldName":"policy.actionTypeDisplay","format":"text","header":"Severity","width":150},{"type":"field","fieldName":"relatedDevices[0].ip","format":"text","header":"Device
+        IP","width":150},{"type":"field","fieldName":"relatedDevices[0].displayTitle","format":"text","header":"Device","width":200},{"type":"field","fieldName":"relatedDevices[0].model","format":"text","header":"Device
+        Model","width":227},{"type":"field","fieldName":"policy.actionParams.alertDescription","format":"text","header":"Alert
+        Description"}]'
+      newestAtBottom: 'false'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Alert Events List
+    isLive: false
+    type: query
+  c29752d9-11aa-450e-8422-ee5609c98ffd:
+    x: 0
+    y: 4
+    height: 4
+    queryString: groupBy(policy.actionTypeDisplay)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      series: {}
+      legendLabelOverflow: full
+      withLegendTitle: false
+      legendPosition: bottom
+      legendTitle: Priority
+    visualization: pie-chart
+    title: Alerts by Priority
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.9.0

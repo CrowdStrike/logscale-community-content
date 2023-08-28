@@ -1,0 +1,41 @@
+name: armis-platform
+tests:
+- '{"id": 1000006, "type": "SYSTEM_POLICY_VIOLATION", "_time": "2022-01-22T00:31:47.589+00:00",
+  "title": "[Risk] Old Operating System Detected", "policy": {"actionParams": {},
+  "actionType": "ALERT_LOW", "actionTypeDisplay": "Alert Low", "alertClassificationId":
+  1, "consolidationTimeBack": null, "creationTime": 1637343794114, "description":
+  null, "enforcementListId": null, "groupingElement": null, "hourFilter": null, "id":
+  13, "isActive": true, "isBoundary": false, "isEditable": true, "isRepeating": false,
+  "labels": [], "lastActiveChange": null, "modificationTime": 1642718152131, "optionsKey":
+  null, "owner": null, "parentId": null, "recurringThreshold": null, "repeatingTimeFrame":
+  null, "rootAqlEntity": "ACTIVITY", "rules": {"and": ["type:\"Risk Factor Updated\"
+  riskFactors:(type:\"Operating System Score\" score:High )"]}, "sensors": null, "tags":
+  [], "timezone": "UTC", "title": "[Risk] Old Operating System Detected", "weekdayFilter":
+  null}, "status": "UNKNOWN_STATUS", "content": "The Armis security platform has detected
+  a violation of a policy and generated an alert.\n\n**Recommended actions**:\n\n
+  * Find and quarantine the offending device/s if necessary. They are located near
+  the sensor labeled <sensor id=\"10\">SPAN 8154 eth2 (vSwitch SPAN)</sensor>.\n\n
+  * Look at the timeline of other activities by the same devices, and see if there
+  are any other activities that might be important, and create policies for those
+  or for combinations of them.\n\n * Investigate other activities that would generate
+  this alert and refine the policy if necessary.\n\n", "riskLevel": 3, "timestamp":
+  "2022-01-22T00:31:47.589+00:00", "activities": [{"type": "RISK_FACTOR_UPDATED",
+  "title": "wemo Risk Factor \"Operating System ''Linux'' With Os Version ''3.18.27''
+  Installed\" set to 10", "content": "Operating System ''Linux'' with os version ''3.18.27''
+  installed", "timestamp": "2022-01-22T00:31:47.589+00:00", "decision_data": {"risk_factor_id":
+  166}}], "description": "The Armis security platform has detected a violation of
+  a policy and generated an alert.", "relatedLinks": [], "relatedDevices": [{"id":
+  13, "ip": "192.168.1.9", "ipv6": "fe80::26f5:a2ff:fe4c:fa61", "name": "wemo", "site":
+  null, "type": "UNKNOWN", "user": null, "model": "Unknown model", "sensor": {"name":
+  "SPAN 8154 eth2 (vSwitch SPAN)", "type": "SPAN"}, "category": "UNKNOWN", "isSensor":
+  false, "riskLevel": 7, "identifier": "24:F5:A2:4C:FA:61", "isCorporate": false,
+  "isEncrypted": false, "displayTitle": "wemo", "isAccessPoint": false, "isUnencrypted":
+  false, "isNetworkBridge": false, "isShadowNetwork": false}], "hostname": "armisappliance8154"}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  parseJson()
+  | parseTimestamp(field=timestamp)
+  | Vendor := "armis"
+tagFields:
+- Vendor

@@ -1,0 +1,155 @@
+name: CTD Alerts
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  f2705f79-a4a6-4ace-b37e-7de347086402:
+    x: 8
+    y: 5
+    height: 4
+    queryString: |-
+      "cef.event_class_id" = Alert*
+      | groupBy(cef.severity)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      legendPosition: right
+      legendTitle: Severity
+      series: {}
+      withLegendTitle: true
+    visualization: pie-chart
+    title: Alert Severity
+    isLive: false
+    type: query
+  8790047d-ba7f-43e1-9098-9de7a0a6b443:
+    x: 0
+    y: 9
+    height: 10
+    queryString: |
+      "cef.event_class_id" = Alert*
+    end: now
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"cef.name","format":"text","header":"Alert
+        Name","width":180},{"type":"field","fieldName":"cef.severity","format":"text","header":"Severity","width":122},{"type":"field","fieldName":"cef.ext.msg","format":"text","header":"Alert
+        Message"},{"type":"fieldLink","fieldName":"cef.label.CTDlink","openInNewBrowserTab":true,"style":"button","header":"CTD
+        Link","width":500}]'
+      newestAtBottom: 'false'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Alert Events
+    isLive: false
+    type: query
+  2550fb29-a08d-48d5-b63f-cc6d83619019:
+    x: 0
+    y: 5
+    height: 4
+    queryString: |-
+      "cef.event_class_id" = Alert*
+      | groupBy("cef.ext.cat")
+      | sort()
+    end: now
+    start: 7d
+    width: 4
+    options:
+      series: {}
+      withXAxisTitle: false
+      labelAngle: 33
+      valuesOnBars: true
+      yScaleType: log
+      barChartType: grouped
+      legend: false
+      sortOrder: descending
+      withYAxisTitle: false
+    visualization: bar-chart
+    title: Alert Category
+    isLive: false
+    type: query
+  04f10258-f5ae-4ebc-87e2-8a75df7c9c90:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      "cef.event_class_id" = Alert*
+      | stats()
+    end: now
+    start: 1d
+    width: 3
+    options:
+      color-method: static
+      first-bucket: exclude
+      use-colorised-thresholds: false
+      value-format: raw
+      default:
+        bg: inherit
+        txt: rgb(34 197 94)
+      ct:
+      - bg: inherit
+        txt: rgb(239 68 68)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      - bg: inherit
+        txt: rgb(34 197 94)
+        v: null
+      - bg: inherit
+        txt: rgb(234 179 8)
+        v: null
+      trend: true
+      last-bucket: exclude
+      decimal-places: 0
+      text-color: '#007bff'
+      sparkline-zero: false
+    visualization: single-value
+    title: Alerts Last 24h
+    isLive: false
+    type: query
+  cfd5119b-8eee-4ae9-93ef-9cfa9eb4abfa:
+    x: 3
+    y: 0
+    height: 5
+    queryString: |-
+      "cef.event_class_id" = Alert*
+      | timeChart(cef.name)
+    end: now
+    start: 7d
+    width: 9
+    options:
+      legendPosition: right
+      series: {}
+      interpolation: monotone
+      legendLabelOverflow: truncate
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Alerts Last 7d
+    isLive: false
+    type: query
+  1e280342-479c-4ae7-a04d-6c982e03eaba:
+    x: 4
+    y: 5
+    height: 4
+    queryString: |-
+      "cef.event_class_id"=Alert*
+      | rename("cef.label.IndicatorScore",as="Alert Score")
+      | groupBy("Alert Score")
+    end: now
+    start: 7d
+    width: 4
+    options:
+      legendPosition: right
+      legendTitle: Score
+      withLegendTitle: true
+    visualization: pie-chart
+    title: Alert Score
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.9.0

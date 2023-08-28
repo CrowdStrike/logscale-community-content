@@ -1,0 +1,220 @@
+name: CTD Health
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  4c85e948-4407-4e7f-98f3-72c7543a9f67:
+    x: 9
+    y: 6
+    height: 4
+    queryString: |-
+      "cef.event_class_id"=HealthCheck
+      | timeChart(span=1hour, function=max("cef.label.used__var", as="/var/"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      connect-points: false
+      imputation: zero
+      mx: 100
+      interpolation: monotone
+    visualization: time-chart
+    title: Disk Percent Usage (/var/)
+    isLive: false
+    type: query
+  731e23c1-163f-45f7-b238-6ce174df6636:
+    x: 6
+    y: 2
+    height: 4
+    queryString: |-
+      "cef.event_class_id"=HealthCheck
+      | timeChart(span=1hour, function=max(cef.label.mysql_query, as="Query Time"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      series: {}
+      interpolation: monotone
+      tension: 0.5
+      legend: false
+      connect-points: false
+      plotType: area
+      imputation: zero
+    visualization: time-chart
+    title: MySQL Query Time (in seconds)
+    isLive: false
+    type: query
+  1bf7f6ce-fc20-42ef-97b8-3d95f483cf4c:
+    x: 6
+    y: 6
+    height: 4
+    queryString: |-
+      "cef.event_class_id"=HealthCheck
+      | timeChart(span=1hour, function=max("cef.label.used__tmp", as="/tmp/"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      connect-points: false
+      imputation: zero
+      mx: 100
+      interpolation: monotone
+    visualization: time-chart
+    title: Disk Percent Usage (/tmp/)
+    isLive: false
+    type: query
+  925e1080-2fca-4974-99eb-a9140fd31beb:
+    x: 3
+    y: 2
+    height: 4
+    queryString: |
+      "cef.event_class_id"=HealthCheck
+      | timeChart(span=1hour, function=max(cef.label.mem, as="Memory"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      series: {}
+      interpolation: monotone
+      mx: 100
+      legend: false
+      connect-points: false
+      plotType: area
+      imputation: zero
+      horizontalPlotLineLabel: ''
+      showDataPoints: false
+    visualization: time-chart
+    title: Memory Utilization
+    isLive: false
+    type: query
+  46a269ce-7758-47ca-bcdb-c654387f117b:
+    x: 0
+    y: 0
+    height: 2
+    queryString: |-
+      cef.name = Health*
+      | rename("cef.label.Site",as="Site")
+      | rename("cef.device.product",as="Product")
+      | rename("cef.device.version",as="Version")
+      | groupBy(Site, function=selectLast(["Product", "Version"]))
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Site Info
+    isLive: false
+    type: query
+  7d0d60b6-d569-471b-b294-4709dd0290fb:
+    x: 9
+    y: 2
+    height: 4
+    queryString: |-
+      "cef.event_class_id"=HealthCheck
+      | timeChart(span=1hour, function=max(cef.label.postgres_query, as="Query Time"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      series: {}
+      interpolation: monotone
+      legend: false
+      connect-points: false
+      plotType: area
+      imputation: zero
+    visualization: time-chart
+    title: Postgres Query Time (in seconds)
+    isLive: false
+    type: query
+  a9d9e875-5319-48cb-8eae-3390aafc994c:
+    x: 0
+    y: 2
+    height: 4
+    queryString: |
+      "cef.event_class_id"=HealthCheck
+      | eval(ctd_cpu_cores = 6)
+      | eval(cpu_utilization = (cef.label.cpu * 100) / ctd_cpu_cores)
+      | timeChart(span=1hour, function=max(cpu_utilization, as="CPU"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      series: {}
+      interpolation: monotone
+      mx: 100
+      legend: false
+      connect-points: false
+      plotType: area
+      imputation: zero
+      horizontalPlotLineLabel: ''
+      showDataPoints: false
+    visualization: time-chart
+    title: CPU Utilization
+    isLive: false
+    type: query
+  8fdcedd7-a6ba-4acc-8f83-641deeac7a4e:
+    x: 0
+    y: 6
+    height: 4
+    queryString: |-
+      "cef.event_class_id"=HealthCheck
+      | timeChart(span=1hour, function=max("cef.label.used__etc", as="/etc/"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      interpolation: monotone
+      mx: 100
+      showDataPoints: false
+      connect-points: false
+      imputation: zero
+    visualization: time-chart
+    title: Disk Percent Usage (/etc/)
+    isLive: false
+    type: query
+  4d44d41e-a217-4dcd-921d-7a4831132494:
+    x: 4
+    y: 0
+    height: 2
+    queryString: |-
+      "cef.event_class_id"=HealthCheck
+      | groupBy(cef.event_class_id, function=selectLast(["cef.label.service_docker", "cef.label.service_firewalld", "cef.label.service_icsranger", "cef.label.service_jwthenticator", "cef.label.service_mariadb", "cef.label.service_netunnel", "cef.label.service_postgres", "cef.label.service_rabbitmq", "cef.label.service_redis", "cef.label.service_watchdog"]))
+      | table(["cef.label.service_docker", "cef.label.service_firewalld", "cef.label.service_icsranger", "cef.label.service_jwthenticator", "cef.label.service_mariadb", "cef.label.service_netunnel", "cef.label.service_postgres", "cef.label.service_rabbitmq", "cef.label.service_redis", "cef.label.service_watchdog"])
+      | Jwthenticator := rename("cef.label.service_jwthenticator")
+      | Netunnel := rename("cef.label.service_netunnel")
+      | Docker :=rename("cef.label.service_docker")
+      | Firewalld := rename("cef.label.service_firewalld")
+      | Icsranger := rename("cef.label.service_icsranger")
+      | Mariadb := rename("cef.label.service_mariadb")
+      | Postgres := rename("cef.label.service_postgres")
+      | Rabbitmq := rename("cef.label.service_rabbitmq")
+      | Redis := rename("cef.label.service_redis")
+      | Watchdog := rename("cef.label.service_watchdog")
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 8
+    title: Services
+    isLive: false
+    type: query
+  01040850-a77a-4685-bb6f-3d49cd1859f1:
+    x: 3
+    y: 6
+    height: 4
+    queryString: |-
+      "cef.event_class_id"=HealthCheck
+      | timeChart(span=1hour, function=max("cef.label.used__opt_icsranger", as="/opt/icsranger"))
+    end: now
+    start: 7d
+    width: 3
+    options:
+      connect-points: false
+      imputation: zero
+      mx: 100
+      interpolation: monotone
+    visualization: time-chart
+    title: Disk Percent Usage (/opt/icsranger)
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.9.0
