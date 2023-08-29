@@ -1,0 +1,754 @@
+name: ZIA - User Investigation
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  6277dbd0-1cf0-43ee-b1bb-e3a85097d3c6:
+    x: 8
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.event.protocol)
+    end: now
+    start: 1d
+    width: 4
+    y: 26
+    interactions:
+    - conditions: null
+      name: Top Protocols
+      titleTemplate: 'Protocol: {{ fields.Vendor.event.protocol }}'
+      queryString: 'Vendor.event.protocol=?Vendor_event_protocol '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_protocol: '["{{fields.Vendor.event.protocol}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Protocols
+    isLive: false
+    type: query
+  4fdee0a2-1b02-4fa4-b374-526d601efa3e:
+    x: 4
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Blocked
+      | timechart(Vendor.event.urlsupercategory, limit=10)
+    end: now
+    start: 1d
+    width: 4
+    y: 34
+    interactions:
+    - conditions: null
+      name: Top Blocked Super Categories
+      titleTemplate: 'Category: {{ fields.Vendor.event.urlsupercategory }}'
+      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|Vendor.event.action=Blocked
+        | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory'
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_urlsupercategory: '["{{fields.Vendor.event.urlsupercategory}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Blocked Super Categories
+    isLive: false
+    type: query
+  5e5a8ec1-3da7-488b-b5cc-88c0c7d31d11:
+    x: 9
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | top(IOC.Confidence)
+    end: now
+    start: 1d
+    width: 3
+    y: 4
+    interactions:
+    - conditions: null
+      name: CrowdStrike IOCs by Confidence
+      titleTemplate: 'Confidence: {{ fields.IOC.Confidence }}'
+      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.event.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")
+        | IOC.Confidence=?IOC_Confidence '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        IOC_Confidence: '["{{fields.IOC.Confidence}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top CrowdStrike IOCs by Confidence
+    isLive: false
+    type: query
+  48485316-d46b-47d1-9b41-e7a27a488a9a:
+    x: 4
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.event.appname)
+    end: now
+    start: 1d
+    width: 4
+    y: 26
+    interactions:
+    - conditions: null
+      name: Top Application Names
+      titleTemplate: 'Application: {{ fields.Vendor.event.appname }}'
+      queryString: 'Vendor.event.appname=?Vendor_event_appname '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_appname: '["{{fields.Vendor.event.appname}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Application Names
+    isLive: false
+    type: query
+  7b45ef95-cf3a-453e-a42a-ad5c43097392:
+    x: 0
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Blocked
+      | top([Vendor.event.urlcategory, Vendor.event.hostname])
+      | sankey(source="Vendor.event.urlcategory", target="Vendor.event.hostname")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 12
+    interactions:
+    - conditions: null
+      name: Top Blocked Category to Hostname
+      titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
+      queryString: 'Vendor.event.action=Blocked | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory
+        Vendor.event.hostname=?Vendor_event_hostname '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_hostname: '["{{ fields.source }}"]'
+        Vendor_event_urlsupercategory: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top Blocked Categories to Domains
+    isLive: false
+    type: query
+  0c3f21ee-3e24-4e00-a850-9f22d53a5709:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ioc.detected=true
+      | timechart(Vendor.event.user, limit=10)
+    end: now
+    start: 1d
+    width: 6
+    y: 4
+    interactions:
+    - conditions: null
+      name: CrowdStrike IOC Hits by Username
+      titleTemplate: 'Username: {{ fields.Vendor.event.user }}'
+      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.event.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ioc.detected=true
+        | Vendor.event.user=?Vendor_event_user'
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_user: '["{{fields.Vendor.event.user}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top CrowdStrike IOC Hits by Username
+    isLive: false
+    type: query
+  514f5dc2-6d5b-43ef-83d2-21c38fc4e2a7:
+    x: 8
+    y: 34
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Allowed
+      | top(Vendor.event.useragent, limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Top User Agents
+    isLive: false
+    type: query
+  bdb89fde-8af7-412d-8f3b-cfebc66d8e52:
+    x: 6
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | timechart(Vendor.event.requestmethod)
+    end: now
+    start: 1d
+    width: 6
+    y: 30
+    interactions:
+    - conditions: null
+      name: Request Methods
+      titleTemplate: 'Method: {{ fields.Vendor.event.requestmethod }}'
+      queryString: Vendor.event.requestmethod=?Vendor_event_requestmethod
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_requestmethod: '["{{fields.Vendor.event.requestmethod}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Request Methods
+    isLive: false
+    type: query
+  031e74ff-f0b1-48bc-908f-3c4d4d3c6277:
+    x: 4
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | event.action = blocked
+      | Vendor.event.dlpdictionaries!="None"
+      | top(Vendor.event.dlpdictionaries)
+    end: now
+    start: 1d
+    width: 4
+    y: 39
+    interactions:
+    - conditions: null
+      name: Top Blocked DLP Dictionaries
+      titleTemplate: 'DLP: {{ fields.Vendor.event.dlpdictionaries }}'
+      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|event.action=blocked|Vendor.event.dlpdictionaries!="None"
+        | Vendor.event.dlpdictionaries=?Vendor_event_dlpdictionaries '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_dlpdictionaries: '["{{fields.Vendor.event.dlpdictionaries}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Blocked DLP Dictionaries
+    isLive: false
+    type: query
+  f865bf6a-e04f-4dcd-ad86-e9809fd93901:
+    x: 6
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.threatname!="None"
+      | top([Vendor.event.urlcategory, Vendor.event.threatname])
+      | sankey(source=Vendor.event.urlcategory, target=Vendor.event.threatname)
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 8
+    interactions:
+    - conditions: null
+      name: Top Vendor Categories to Threat Names
+      titleTemplate: 'Category: {{ fields.source }}, Threat: {{ fields.target }}'
+      queryString: '#type=zscalernss-web|Vendor.event.threatname!="None" | Vendor.event.urlcategory=?Vendor_event_urlcategory
+        Vendor.event.threatname=?Vendor_event_threatname '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_threatname: '["{{ fields.source }}"]'
+        Vendor_event_urlcategory: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top Vendor Categories to Threat Names
+    isLive: false
+    type: query
+  9d7df522-4aae-4e8f-86bd-cee32b7c7d0c:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.threatname != "None"
+      | top(Vendor.event.threatname)
+    end: now
+    start: 1d
+    width: 4
+    y: 39
+    interactions:
+    - conditions: null
+      name: Top Threat Names
+      titleTemplate: 'Threat: {{ fields.Vendor.event.threatname }}'
+      queryString: 'Vendor.event.threatname!="None" | Vendor.event.threatname=?Vendor_event_threatname '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_threatname: '["{{fields.Vendor.event.threatname}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Threat Names
+    isLive: false
+    type: query
+  74ec105d-1a29-46dc-81fe-d5a2959631a5:
+    x: 6
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Allowed
+      | top([Vendor.event.urlcategory, Vendor.event.hostname], limit=20)
+      | sankey(source="Vendor.event.urlcategory", target="Vendor.event.hostname")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 12
+    interactions:
+    - conditions: null
+      name: Top Allowed Categories to Domains
+      titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
+      queryString: '#type=zscalernss-web|Vendor.event.action=Allowed | Vendor.event.urlcategory=?Vendor_event_urlcategory
+        Vendor.event.hostname=?Vendor_event_hostname '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_hostname: '["{{ fields.source }}"]'
+        Vendor_event_urlcategory: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top Allowed Categories to Domains
+    isLive: false
+    type: query
+  a2e5c116-a7f0-4d83-9200-e784da7b2600:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Blocked
+      | top(Vendor.event.urlcategory)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Blocked Categories
+    isLive: false
+    type: query
+  04a61b55-cb3c-4981-9972-dfdad527e55a:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | timechart(Vendor.event.user, function=sum(Vendor.event.requestsize), limit=10)
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - conditions: null
+      name: Top Users by Volume
+      titleTemplate: 'User: {{ fields.Vendor.event.user }}'
+      queryString: '#type=zscalernss-web | Vendor.event.user=?Vendor_event_user'
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_user: '["{{fields.Vendor.event.user}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Users by Volume
+    isLive: false
+    type: query
+  feee03ca-6149-452c-b049-319b5c4d6779:
+    x: 0
+    y: 30
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | count("Vendor.event.location", distinct=true)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Distinct Locations
+    isLive: false
+    type: query
+  7765d024-987a-41b3-a98f-258b510e55d3:
+    x: 6
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ipLocation(ioc[0].indicator)
+      | rename(ioc[0].indicator.country, as="IOC.Country")
+      | top(IOC.Country)
+    end: now
+    start: 1d
+    width: 3
+    y: 4
+    interactions:
+    - conditions: null
+      name: Top CrowdStrike IOCs by Country
+      titleTemplate: 'Country: {{ fields.IOC.Country }}'
+      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.event.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|rename(ioc[0].indicator.country,as="IOC.Country")
+        | IOC.Country=?IOC_Country '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        IOC_Country: '["{{fields.IOC.Country}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top CrowdStrike IOCs by Country
+    isLive: false
+    type: query
+  0d867275-9209-41ed-84e2-304751423faa:
+    x: 3
+    y: 30
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | count(Vendor.event.user, distinct=true)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Distinct Users
+    isLive: false
+    type: query
+  15132888-94a5-49af-af03-2f912d35e669:
+    x: 9
+    y: 17
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Allowed
+      | top([Vendor.event.hostname])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Allowed Domains
+    isLive: false
+    type: query
+  1bda239e-4364-4834-89a6-f99cc39e37e7:
+    x: 0
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Allowed
+      | timechart(Vendor.event.urlsupercategory, limit=10)
+    end: now
+    start: 1d
+    width: 4
+    y: 34
+    interactions:
+    - conditions: null
+      name: Top Allowed Super Categories
+      titleTemplate: 'Category: {{ fields.Vendor.event.urlsupercategory }}'
+      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|Vendor.event.action=Allowed
+        | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory'
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_urlsupercategory: '["{{fields.Vendor.event.urlsupercategory}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Allowed Super Categories
+    isLive: false
+    type: query
+  12d3a9d1-4878-4132-a7d0-c29f8a2a88bb:
+    x: 0
+    y: 43
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | ioc:lookup(field=Vendor.event.hostname, type=domain, confidenceThreshold=Unverified, strict=true)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(Continent, as="IOC.Continent")
+      | rename(ioc[0].indicator, as="IOC.Domain")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | table([@timestamp, Vendor.event.user, Vendor.event.ClientIP, IOC.Domain, IOC.Confidence, IOC.Actor, IOC.Details], limit=1000)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":200},{"type":"field","fieldName":"Vendor.event.user","format":"text","header":"Username","width":200},{"type":"field","fieldName":"Vendor.event.ClientIP","format":"text","header":"ClientIP","width":128},{"type":"field","fieldName":"IOC.Domain","format":"text","width":137},{"type":"field","fieldName":"IOC.Confidence","format":"text","width":128},{"type":"field","fieldName":"IOC.Actor","format":"text","width":164},{"type":"field","fieldName":"IOC.Details","format":"text"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: CrowdStrike IOC Enrichment on Destination Domain
+    isLive: false
+    type: query
+  243637b7-fa6f-4566-aced-4d1382eaa60d:
+    x: 3
+    y: 17
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Blocked
+      | top([Vendor.event.hostname])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Blocked Domains
+    isLive: false
+    type: query
+  75db1df3-4ee7-45c7-8584-aee828cb4930:
+    x: 6
+    y: 17
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.action=Allowed
+      | top(Vendor.event.urlcategory)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Allowed Categories
+    isLive: false
+    type: query
+  2f6527d4-d573-45e5-a992-7868c16ca7ae:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.threatname!="None"
+      | timechart(Vendor.event.threatname, limit=10)
+    end: now
+    start: 1d
+    width: 6
+    y: 8
+    interactions:
+    - conditions: null
+      name: Top Vendor Threat Names
+      titleTemplate: 'Threat: {{ fields.Vendor.event.threatname }}'
+      queryString: '#type=zscalernss-web|Vendor.event.threatname!="None" | Vendor.event.threatname=?Vendor_event_threatname'
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_threatname: '["{{fields.Vendor.event.threatname}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Vendor Threat Names
+    isLive: false
+    type: query
+  93b5bd6f-cbf3-4032-afd7-444d392d8319:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.event.appclass)
+    end: now
+    start: 1d
+    width: 4
+    y: 26
+    interactions:
+    - conditions: null
+      name: Top Application Classes
+      titleTemplate: 'Application: {{ fields.event.appclass }}'
+      queryString: 'event.appclass=?event_appclass '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        event_appclass: '["{{fields.event.appclass}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legend: true
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Application Classes
+    isLive: false
+    type: query
+  6a487c30-93ca-4a3a-8073-ba86c036e18a:
+    x: 0
+    y: 21
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ipLocation(ioc[0].indicator)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(Continent, as="IOC.Continent")
+      | rename(ioc[0].indicator, as="IOC.IP")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | rename(ioc[0].indicator.country, as="IOC.Country")
+      | table([@timestamp, Vendor.event.user, Vendor.event.ClientIP, IOC.IP, IOC.Confidence, IOC.Country, IOC.Actor, IOC.Details], limit=1000)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: CrowdStrike IOC Enrichment on Server IP
+    isLive: false
+    type: query
+  d2752bdb-a3b8-42a5-a3f2-6dd4ebd44538:
+    x: 6
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | Vendor.event.transactionsize!=0
+      | timechart(Vendor.event.action, function=sum(Vendor.event.requestsize))
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - conditions: null
+      name: Actions Over Time by Volume
+      titleTemplate: 'Action: {{ fields.Vendor.event.action }}'
+      queryString: '#type="zscalernss-web"|Vendor.event.transactionsize!=0 | Vendor.event.action=?Vendor_event_action'
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_action: '["{{fields.Vendor.event.action}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Actions Over Time by Volume
+    isLive: false
+    type: query
+  61bfd1f6-f97e-4a83-af68-5c0dee479049:
+    x: 8
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+      | event.action=blocked
+      | Vendor.event.dlpengine!="None"
+      | top(Vendor.event.dlpengine)
+    end: now
+    start: 1d
+    width: 4
+    y: 39
+    interactions:
+    - conditions: null
+      name: Top Blocked DLP Engines
+      titleTemplate: 'Engine: {{ fields.Vendor.event.dlpengine }}'
+      queryString: '#type=zscalernss-web|event.action=blocked|Vendor.event.dlpengine!="None"
+        | Vendor.event.dlpengine=?Vendor_event_dlpengine '
+      useWidgetTimeWindow: true
+      repoOrViewName: 
+      arguments:
+        Vendor_event_dlpengine: '["{{fields.Vendor.event.dlpengine}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Blocked DLP Engines
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0
+parameters:
+  Username:
+    label: Username
+    order: 50
+    type: text

@@ -1,0 +1,17 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.2.0
+interaction:
+  conditions:
+  - argument: ''
+    fieldName: Vendor.event.user
+    operator: present
+  name: Investigate - Username
+  titleTemplate: ''
+  useWidgetTimeWindow: true
+  dashboardReference:
+    name: ZIA - User Investigation
+    packageSpecifier: zscaler/nss-web
+    repoOrViewName: 
+  arguments:
+    Username: '{{fields.Vendor.event.user}}'
+  openInNewTab: true
+  type: dashboardlink

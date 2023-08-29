@@ -1,0 +1,25 @@
+name: Threat - CrowdStrike IOC Enrichment on Destination Domain
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":200},{"type":"field","fieldName":"Vendor.event.user","format":"text","header":"Username","width":200},{"type":"field","fieldName":"Vendor.event.ClientIP","format":"text","header":"ClientIP","width":128},{"type":"field","fieldName":"IOC.Domain","format":"text","width":137},{"type":"field","fieldName":"IOC.Confidence","format":"text","width":128},{"type":"field","fieldName":"IOC.Actor","format":"text","width":164},{"type":"field","fieldName":"IOC.Details","format":"text"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | ioc:lookup(field=Vendor.event.hostname, type=domain, confidenceThreshold=Unverified, strict=true)
+  | case {
+      ioc[0].labels=Actor*
+        | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+      * | iocActor:="None Listed" ;
+    }
+  | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+  | rename(Continent, as="IOC.Continent")
+  | rename(ioc[0].indicator, as="IOC.Domain")
+  | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+  | rename(iocActor, as="IOC.Actor")
+  | table([@timestamp, Vendor.event.user, Vendor.event.ClientIP, IOC.Domain, IOC.Confidence, IOC.Actor, IOC.Details], limit=1000)

@@ -1,0 +1,15 @@
+name: Threat - CrowdStrike IOC Hits by Username
+visualization:
+  options:
+    connect-points: false
+    imputation: none
+  type: time-chart
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  | ioc.detected=true
+  | timechart(Vendor.event.user, limit=10)

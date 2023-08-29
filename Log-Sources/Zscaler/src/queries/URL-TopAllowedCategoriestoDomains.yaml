@@ -1,0 +1,13 @@
+name: URL - Top Allowed Categories to Domains
+visualization:
+  options: {}
+  type: sankey
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | Vendor.event.action=Allowed
+  | top([Vendor.event.urlcategory, Vendor.event.hostname], limit=20)
+  | sankey(source="Vendor.event.urlcategory", target="Vendor.event.hostname")

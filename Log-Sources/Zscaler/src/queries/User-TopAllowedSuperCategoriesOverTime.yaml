@@ -1,0 +1,15 @@
+name: User - Top Allowed Super Categories Over Time
+visualization:
+  options:
+    connect-points: false
+    imputation: none
+  type: time-chart
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+  | Vendor.event.action=Allowed
+  | timechart(Vendor.event.urlsupercategory, limit=10)

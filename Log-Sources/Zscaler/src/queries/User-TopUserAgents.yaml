@@ -1,0 +1,13 @@
+name: User - Top User Agents
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
+  | Vendor.event.action=Allowed
+  | top(Vendor.event.useragent, limit=100)
