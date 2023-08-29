@@ -155,8 +155,8 @@ widgets:
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
-        Vendor_event_hostname: '["{{ fields.source }}"]'
-        Vendor_event_urlsupercategory: '["{{ fields.target }}"]'
+        Vendor_event_hostname: '["{{ fields.target }}"]'
+        Vendor_event_urlsupercategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -298,8 +298,8 @@ widgets:
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
-        Vendor_event_threatname: '["{{ fields.source }}"]'
-        Vendor_event_urlcategory: '["{{ fields.target }}"]'
+        Vendor_event_threatname: '["{{ fields.target }}"]'
+        Vendor_event_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -360,8 +360,8 @@ widgets:
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
-        Vendor_event_hostname: '["{{ fields.source }}"]'
-        Vendor_event_urlcategory: '["{{ fields.target }}"]'
+        Vendor_event_hostname: '["{{ fields.target }}"]'
+        Vendor_event_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink

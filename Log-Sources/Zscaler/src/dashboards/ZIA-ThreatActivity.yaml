@@ -224,8 +224,8 @@ widgets:
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
-        Vendor_event_threatname: '["{{ fields.source }}"]'
-        Vendor_event_urlcategory: '["{{ fields.target }}"]'
+        Vendor_event_threatname: '["{{ fields.target }}"]'
+        Vendor_event_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
