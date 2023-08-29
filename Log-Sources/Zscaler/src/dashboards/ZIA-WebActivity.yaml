@@ -22,7 +22,7 @@ widgets:
       name: Top Protocols
       titleTemplate: 'Protocol: {{ fields.Vendor.event.protocol }}'
       queryString: 'Vendor.event.protocol=?Vendor_event_protocol '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_protocol: '["{{fields.Vendor.event.protocol}}"]'
@@ -54,7 +54,7 @@ widgets:
       titleTemplate: 'Category: {{ fields.Vendor.event.urlsupercategory }}'
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|Vendor.event.action=Blocked
         | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory'
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_urlsupercategory: '["{{fields.Vendor.event.urlsupercategory}}"]'
@@ -84,7 +84,7 @@ widgets:
       name: Top Application Names
       titleTemplate: 'Application: {{ fields.Vendor.event.appname }}'
       queryString: 'Vendor.event.appname=?Vendor_event_appname '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_appname: '["{{fields.Vendor.event.appname}}"]'
@@ -135,7 +135,7 @@ widgets:
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
       queryString: 'Vendor.event.action=Blocked | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory
         Vendor.event.hostname=?Vendor_event_hostname '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_hostname: '["{{ fields.target }}"]'
@@ -162,7 +162,7 @@ widgets:
       name: Top Application Classes
       titleTemplate: 'Application: {{ fields.event.appclass }}'
       queryString: 'event.appclass=?event_appclass '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         event_appclass: '["{{fields.event.appclass}}"]'
@@ -209,7 +209,7 @@ widgets:
       name: Request Methods
       titleTemplate: 'Method: {{ fields.Vendor.event.requestmethod }}'
       queryString: Vendor.event.requestmethod=?Vendor_event_requestmethod
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_requestmethod: '["{{fields.Vendor.event.requestmethod}}"]'
@@ -240,7 +240,7 @@ widgets:
       name: Actions Over Time by Volume
       titleTemplate: 'Action: {{ fields.Vendor.event.action }}'
       queryString: '#type="zscalernss-web"|Vendor.event.transactionsize!=0 | Vendor.event.action=?Vendor_event_action'
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_action: '["{{fields.Vendor.event.action}}"]'
@@ -274,7 +274,7 @@ widgets:
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
       queryString: '#type=zscalernss-web|Vendor.event.action=Allowed | Vendor.event.urlcategory=?Vendor_event_urlcategory
         Vendor.event.hostname=?Vendor_event_hostname '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_hostname: '["{{ fields.target }}"]'
@@ -317,7 +317,7 @@ widgets:
       name: Top Users by Volume
       titleTemplate: 'User: {{ fields.Vendor.event.user }}'
       queryString: '#type=zscalernss-web | Vendor.event.user=?Vendor_event_user'
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_user: '["{{fields.Vendor.event.user}}"]'
@@ -382,7 +382,7 @@ widgets:
       titleTemplate: 'Category: {{ fields.Vendor.event.urlsupercategory }}'
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|Vendor.event.action=Allowed
         | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory'
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_urlsupercategory: '["{{fields.Vendor.event.urlsupercategory}}"]'

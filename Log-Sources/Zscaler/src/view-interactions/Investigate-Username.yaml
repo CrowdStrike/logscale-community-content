@@ -6,7 +6,7 @@ interaction:
     operator: present
   name: Investigate - Username
   titleTemplate: ''
-  useWidgetTimeWindow: true
+  useWidgetTimeWindow: false
   dashboardReference:
     name: ZIA - User Investigation
     packageSpecifier: zscaler/nss-web

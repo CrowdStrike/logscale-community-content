@@ -26,7 +26,7 @@ widgets:
       titleTemplate: 'Confidence: {{ fields.IOC.Confidence }}'
       queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.event.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")
         | IOC.Confidence=?IOC_Confidence '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         IOC_Confidence: '["{{fields.IOC.Confidence}}"]'
@@ -60,7 +60,7 @@ widgets:
       titleTemplate: 'Country: {{ fields.IOC.Country }}'
       queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.event.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|rename(ioc[0].indicator.country,as="IOC.Country")
         | IOC.Country=?IOC_Country '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         IOC_Country: '["{{fields.IOC.Country}}"]'
@@ -121,7 +121,7 @@ widgets:
       titleTemplate: 'Username: {{ fields.Vendor.event.user }}'
       queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.event.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ioc.detected=true
         | Vendor.event.user=?Vendor_event_user'
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_user: '["{{fields.Vendor.event.user}}"]'
@@ -154,7 +154,7 @@ widgets:
       titleTemplate: 'Engine: {{ fields.Vendor.event.dlpengine }}'
       queryString: '#type=zscalernss-web|event.action=blocked|Vendor.event.dlpengine!="None"
         | Vendor.event.dlpengine=?Vendor_event_dlpengine '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_dlpengine: '["{{fields.Vendor.event.dlpengine}}"]'
@@ -187,7 +187,7 @@ widgets:
       titleTemplate: 'DLP: {{ fields.Vendor.event.dlpdictionaries }}'
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|event.action=blocked|Vendor.event.dlpdictionaries!="None"
         | Vendor.event.dlpdictionaries=?Vendor_event_dlpdictionaries '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_dlpdictionaries: '["{{fields.Vendor.event.dlpdictionaries}}"]'
@@ -221,7 +221,7 @@ widgets:
       titleTemplate: 'Category: {{ fields.source }}, Threat: {{ fields.target }}'
       queryString: '#type=zscalernss-web|Vendor.event.threatname!="None" | Vendor.event.urlcategory=?Vendor_event_urlcategory
         Vendor.event.threatname=?Vendor_event_threatname '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_threatname: '["{{ fields.target }}"]'
@@ -249,7 +249,7 @@ widgets:
       name: Top Threat Names
       titleTemplate: 'Threat: {{ fields.Vendor.event.threatname }}'
       queryString: 'Vendor.event.threatname!="None" | Vendor.event.threatname=?Vendor_event_threatname '
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_threatname: '["{{fields.Vendor.event.threatname}}"]'
@@ -310,7 +310,7 @@ widgets:
       name: Top Vendor Threat Names
       titleTemplate: 'Threat: {{ fields.Vendor.event.threatname }}'
       queryString: '#type=zscalernss-web|Vendor.event.threatname!="None" | Vendor.event.threatname=?Vendor_event_threatname'
-      useWidgetTimeWindow: true
+      useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_event_threatname: '["{{fields.Vendor.event.threatname}}"]'
