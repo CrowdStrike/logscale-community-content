@@ -1,5 +1,5 @@
 #####
-## Sample configuration file for Microsoft Windows.
+## Sample configuration file for Linux.
 ## This is YAML, so structure and indentation is important.
 ## Lines can be uncommented by removing the #. You should not need to change the number of spaces after that.
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
