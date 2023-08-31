@@ -10,5 +10,5 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | Vendor.event.threatname!="None"
-  | timechart(Vendor.event.threatname, limit=10)
+  | Vendor.threatname!="None"
+  | timechart(Vendor.threatname, limit=10)

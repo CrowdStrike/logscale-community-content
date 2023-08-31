@@ -8,5 +8,6 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | Vendor.event.action=Allowed
-  | top([Vendor.event.hostname])
+  | #Vendor.action=Allowed
+  | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+  | top([Vendor.domain])

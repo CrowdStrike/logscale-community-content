@@ -12,7 +12,9 @@ widgets:
     queryString: |-
       #event_simpleName=UserLogon
       | event_platform=Win
-      | UserIsAdmin=?UserIsAdmin UserName=?UserName LogonType=?LogonType
+      | UserIsAdmin=?UserIsAdmin 
+      | UserName=?UserName 
+      | LogonType=?LogonType
       | $"crowdstrike/fltr-core:zLogonTypeName"()
       | timeChart(LogonTypeName, function=count(UserSid))
     end: now

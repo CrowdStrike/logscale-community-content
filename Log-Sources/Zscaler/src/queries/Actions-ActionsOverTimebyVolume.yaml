@@ -10,5 +10,5 @@ timeInterval:
   start: 1d
 queryString: |-
   #type = "zscalernss-web"
-  | Vendor.event.transactionsize!=0
-  | timechart(Vendor.event.action, function=sum(Vendor.event.requestsize))
+  | Vendor.reqsize!=0
+  | timechart(#Vendor.action, function=sum(Vendor.reqsize))

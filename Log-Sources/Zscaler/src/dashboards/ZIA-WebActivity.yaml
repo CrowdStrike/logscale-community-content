@@ -11,8 +11,8 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | top(Vendor.event.protocol)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.proto)
     end: now
     start: 1d
     width: 4
@@ -20,12 +20,12 @@ widgets:
     interactions:
     - conditions: null
       name: Top Protocols
-      titleTemplate: 'Protocol: {{ fields.Vendor.event.protocol }}'
-      queryString: 'Vendor.event.protocol=?Vendor_event_protocol '
+      titleTemplate: 'Protocol: {{ fields.Vendor.proto }}'
+      queryString: 'Vendor.proto=?Vendor_proto '
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_protocol: '["{{fields.Vendor.event.protocol}}"]'
+        Vendor_proto: '["{{fields.Vendor.proto}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -41,9 +41,9 @@ widgets:
     height: 5
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Blocked
-      | timechart(Vendor.event.urlsupercategory, limit=10)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Blocked
+      | timechart(Vendor.urlsupercat, limit=10)
     end: now
     start: 1d
     width: 4
@@ -51,13 +51,13 @@ widgets:
     interactions:
     - conditions: null
       name: Top Blocked Super Categories
-      titleTemplate: 'Category: {{ fields.Vendor.event.urlsupercategory }}'
-      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|Vendor.event.action=Blocked
-        | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory'
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
+      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Blocked
+        | Vendor.urlsupercat=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_urlsupercategory: '["{{fields.Vendor.event.urlsupercategory}}"]'
+        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -73,8 +73,8 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | top(Vendor.event.appname)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.appname)
     end: now
     start: 1d
     width: 4
@@ -82,12 +82,12 @@ widgets:
     interactions:
     - conditions: null
       name: Top Application Names
-      titleTemplate: 'Application: {{ fields.Vendor.event.appname }}'
-      queryString: 'Vendor.event.appname=?Vendor_event_appname '
+      titleTemplate: 'Application: {{ fields.Vendor.appname }}'
+      queryString: 'Vendor.appname=?Vendor_appname '
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_appname: '["{{fields.Vendor.event.appname}}"]'
+        Vendor_appname: '["{{fields.Vendor.appname}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -104,8 +104,8 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | count(Vendor.event.user, distinct=true)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | count(user.email, distinct=true)
     end: now
     start: 1d
     width: 3
@@ -120,10 +120,11 @@ widgets:
     height: 5
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Blocked
-      | top([Vendor.event.urlcategory, Vendor.event.hostname])
-      | sankey(source="Vendor.event.urlcategory", target="Vendor.event.hostname")
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Blocked
+      | top([Vendor.urlcat, Vendor.domain])
+      | sankey(source="Vendor.urlcat", target="Vendor.domain")
     visualization: sankey
     end: now
     start: 1d
@@ -133,13 +134,13 @@ widgets:
     - conditions: null
       name: Top Blocked Category to Hostname
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: 'Vendor.event.action=Blocked | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory
-        Vendor.event.hostname=?Vendor_event_hostname '
+      queryString: '#Vendor.action=Blocked | Vendor.urlsupercat=?Vendor_urlsupercat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
+        Vendor.domain=?Vendor_domain '
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_hostname: '["{{ fields.target }}"]'
-        Vendor_event_urlsupercategory: '["{{ fields.source }}"]'
+        Vendor_domain: '["{{ fields.target }}"]'
+        Vendor_urlsupercat: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -151,8 +152,8 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | top(Vendor.event.appclass)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.appclass)
     end: now
     start: 1d
     width: 4
@@ -183,9 +184,9 @@ widgets:
     height: 5
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Allowed
-      | top(Vendor.event.useragent, limit=100)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Allowed
+      | top(Vendor.eua, limit=100)
     visualization: table-view
     end: now
     start: 1d
@@ -198,8 +199,8 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | timechart(Vendor.event.requestmethod)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | timechart(http.request.method)
     end: now
     start: 1d
     width: 6
@@ -207,12 +208,12 @@ widgets:
     interactions:
     - conditions: null
       name: Request Methods
-      titleTemplate: 'Method: {{ fields.Vendor.event.requestmethod }}'
-      queryString: Vendor.event.requestmethod=?Vendor_event_requestmethod
+      titleTemplate: 'Method: {{ fields.http.request.method }}'
+      queryString: http.request.method=?http_request_method
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_requestmethod: '["{{fields.Vendor.event.requestmethod}}"]'
+        http_request_method: '["{{fields.http.request.method}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -228,9 +229,9 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.transactionsize!=0
-      | timechart(Vendor.event.action, function=sum(Vendor.event.requestsize))
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | Vendor.reqsize!=0
+      | timechart(#Vendor.action, function=sum(Vendor.reqsize))
     end: now
     start: 1d
     width: 6
@@ -238,12 +239,12 @@ widgets:
     interactions:
     - conditions: null
       name: Actions Over Time by Volume
-      titleTemplate: 'Action: {{ fields.Vendor.event.action }}'
-      queryString: '#type="zscalernss-web"|Vendor.event.transactionsize!=0 | Vendor.event.action=?Vendor_event_action'
+      titleTemplate: 'Action: {{ fields.#Vendor.action }}'
+      queryString: '#type="zscalernss-web"|Vendor.reqsize!=0 | #Vendor.action=?Vendor_action'
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_action: '["{{fields.Vendor.event.action}}"]'
+        Vendor_action: '["{{fields.#Vendor.action}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -259,10 +260,11 @@ widgets:
     height: 5
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Allowed
-      | top([Vendor.event.urlcategory, Vendor.event.hostname], limit=20)
-      | sankey(source="Vendor.event.urlcategory", target="Vendor.event.hostname")
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Allowed
+      | top([Vendor.urlcat, Vendor.domain], limit=20)
+      | sankey(source="Vendor.urlcat", target="Vendor.domain")
     visualization: sankey
     end: now
     start: 1d
@@ -272,13 +274,13 @@ widgets:
     - conditions: null
       name: Top Allowed Categories to Domains
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#type=zscalernss-web|Vendor.event.action=Allowed | Vendor.event.urlcategory=?Vendor_event_urlcategory
-        Vendor.event.hostname=?Vendor_event_hostname '
+      queryString: '#type=zscalernss-web|#Vendor.action=Allowed | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
+        Vendor.domain=?Vendor_domain '
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_hostname: '["{{ fields.target }}"]'
-        Vendor_event_urlcategory: '["{{ fields.source }}"]'
+        Vendor_domain: '["{{ fields.target }}"]'
+        Vendor_urlcat: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -291,9 +293,9 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Blocked
-      | top(Vendor.event.urlcategory)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Blocked
+      | top(Vendor.urlcat)
     visualization: table-view
     end: now
     start: 1d
@@ -306,8 +308,8 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | timechart(Vendor.event.user, function=sum(Vendor.event.requestsize), limit=10)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | timechart(user.email, function=sum(Vendor.reqsize), limit=10)
     end: now
     start: 1d
     width: 6
@@ -315,12 +317,12 @@ widgets:
     interactions:
     - conditions: null
       name: Top Users by Volume
-      titleTemplate: 'User: {{ fields.Vendor.event.user }}'
-      queryString: '#type=zscalernss-web | Vendor.event.user=?Vendor_event_user'
+      titleTemplate: 'User: {{ fields.user.email }}'
+      queryString: '#type=zscalernss-web | user.email=?user_email'
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_user: '["{{fields.Vendor.event.user}}"]'
+        user_email: '["{{fields.user.email}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -337,8 +339,8 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | count("Vendor.event.location", distinct=true)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | count("Vendor.location", distinct=true)
     end: now
     start: 1d
     width: 3
@@ -354,9 +356,10 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Allowed
-      | top([Vendor.event.hostname])
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Allowed
+      | top([Vendor.domain])
     visualization: table-view
     end: now
     start: 1d
@@ -369,9 +372,9 @@ widgets:
     height: 5
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Allowed
-      | timechart(Vendor.event.urlsupercategory, limit=10)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Allowed
+      | timechart(Vendor.urlsupercat, limit=10)
     end: now
     start: 1d
     width: 4
@@ -379,13 +382,13 @@ widgets:
     interactions:
     - conditions: null
       name: Top Allowed Super Categories
-      titleTemplate: 'Category: {{ fields.Vendor.event.urlsupercategory }}'
-      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=Vendor.event.user)|Vendor.event.action=Allowed
-        | Vendor.event.urlsupercategory=?Vendor_event_urlsupercategory'
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
+      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Allowed
+        | Vendor.urlsupercat=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        Vendor_event_urlsupercategory: '["{{fields.Vendor.event.urlsupercategory}}"]'
+        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -402,9 +405,10 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Blocked
-      | top([Vendor.event.hostname])
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Blocked
+      | top([Vendor.domain])
     visualization: table-view
     end: now
     start: 1d
@@ -418,9 +422,9 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-      | Vendor.event.action=Allowed
-      | top(Vendor.event.urlcategory)
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Allowed
+      | top(Vendor.urlcat)
     visualization: table-view
     end: now
     start: 1d

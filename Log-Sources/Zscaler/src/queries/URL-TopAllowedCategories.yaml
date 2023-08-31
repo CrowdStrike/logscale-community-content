@@ -8,5 +8,5 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | Vendor.event.action=Allowed
-  | top(Vendor.event.urlcategory)
+  | #Vendor.action=Allowed
+  | top(Vendor.urlcat)

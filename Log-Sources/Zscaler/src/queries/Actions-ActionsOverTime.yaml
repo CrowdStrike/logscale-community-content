@@ -9,4 +9,4 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | timechart(Vendor.event.action)
+  | timechart(#Vendor.action)

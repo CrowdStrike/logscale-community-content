@@ -8,5 +8,5 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | Vendor.event.threatname!="None"
-  | top(Vendor.event.threatname)
+  | Vendor.threatname!="None"
+  | top(Vendor.threatname)

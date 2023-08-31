@@ -8,7 +8,7 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
   | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
   | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
   | top(IOC.Confidence)

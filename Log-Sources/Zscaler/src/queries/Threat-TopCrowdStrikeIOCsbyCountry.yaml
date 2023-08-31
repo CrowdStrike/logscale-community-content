@@ -8,7 +8,7 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
   | ipLocation(ioc[0].indicator)
   | rename(ioc[0].indicator.country, as="IOC.Country")
   | top(IOC.Country)

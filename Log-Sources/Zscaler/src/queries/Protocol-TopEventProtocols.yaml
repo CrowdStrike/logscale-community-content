@@ -8,4 +8,4 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | top(Vendor.event.protocol)
+  | top(Vendor.proto)
