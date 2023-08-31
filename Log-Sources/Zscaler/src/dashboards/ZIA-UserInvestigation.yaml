@@ -169,24 +169,30 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
-      | user.email=~wildcard(?Username, ignoreCase=true)
       | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
       | ioc.detected=true
-      | timechart(user.email, limit=10)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | rename(iocActor, as="IOC.Actor")
+      | timechart(IOC.Actor, limit=10)
     end: now
     start: 1d
     width: 6
-    y: 4
+    y: 0
     interactions:
     - conditions: null
-      name: CrowdStrike IOC Hits by Username
-      titleTemplate: 'Username: {{ fields.user.email }}'
-      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ioc.detected=true
-        | user.email=?user_email'
+      name: CrowdStrike IOC Hits by Threat Actor
+      titleTemplate: 'Actor: {{ fields.IOC.Actor }}'
+      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ioc.detected=true|case
+        { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
+        := "None Listed"}|rename(iocActor,as="IOC.Actor") | IOC.Actor=?IOC_Actor'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName: Zscaler-Development
       arguments:
-        user_email: '["{{fields.user.email}}"]'
+        IOC_Actor: '["{{fields.IOC.Actor}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -194,7 +200,7 @@ widgets:
       connect-points: false
       imputation: none
     visualization: time-chart
-    title: Top CrowdStrike IOC Hits by Username
+    title: Top CrowdStrike IOC Hits by Threat Actor
     isLive: false
     type: query
   514f5dc2-6d5b-43ef-83d2-21c38fc4e2a7:
@@ -536,7 +542,7 @@ widgets:
   12d3a9d1-4878-4132-a7d0-c29f8a2a88bb:
     x: 0
     y: 43
-    height: 4
+    height: 5
     queryString: |-
       #type=zscalernss-web
       | user.email=~wildcard(?Username, ignoreCase=true)
@@ -638,12 +644,12 @@ widgets:
     interactions:
     - conditions: null
       name: Top Application Classes
-      titleTemplate: 'Application: {{ fields.event.appclass }}'
+      titleTemplate: 'Application: {{ fields.appclass }}'
       queryString: 'event.appclass=?event_appclass '
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        event_appclass: '["{{fields.event.appclass}}"]'
+        event_appclass: '["{{fields.appclass}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink

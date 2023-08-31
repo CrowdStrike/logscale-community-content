@@ -161,12 +161,12 @@ widgets:
     interactions:
     - conditions: null
       name: Top Application Classes
-      titleTemplate: 'Application: {{ fields.event.appclass }}'
+      titleTemplate: 'Application: {{ fields.appclass }}'
       queryString: 'event.appclass=?event_appclass '
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
-        event_appclass: '["{{fields.event.appclass}}"]'
+        event_appclass: '["{{fields.appclass}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
