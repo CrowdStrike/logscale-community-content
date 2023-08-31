@@ -286,11 +286,7 @@ widgets:
     end: now
     start: 1d
     width: 12
-    options:
-      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":200},{"type":"field","fieldName":"user.email","format":"text","header":"Username","width":200},{"type":"field","fieldName":"Vendor.cip","format":"text","header":"ClientIP","width":128},{"type":"field","fieldName":"IOC.Domain","format":"text","width":137},{"type":"field","fieldName":"IOC.Confidence","format":"text","width":128},{"type":"field","fieldName":"IOC.Actor","format":"text","width":164},{"type":"field","fieldName":"IOC.Details","format":"text"}]'
-      newestAtBottom: 'true'
-      showOnlyFirstLine: 'false'
-    visualization: list-view
+    visualization: table-view
     title: CrowdStrike IOC Enrichment on Destination Domain
     isLive: false
     type: query
