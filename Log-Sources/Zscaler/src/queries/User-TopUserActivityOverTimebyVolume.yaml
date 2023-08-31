@@ -10,4 +10,4 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | timechart(Vendor.event.user, function=sum(Vendor.event.requestsize), limit=10)
+  | timechart(user.email, function=sum(Vendor.reqsize), limit=10)

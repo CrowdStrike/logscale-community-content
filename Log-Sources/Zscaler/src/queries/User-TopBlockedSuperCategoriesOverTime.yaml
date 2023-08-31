@@ -10,6 +10,6 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-  | Vendor.event.action=Blocked
-  | timechart(Vendor.event.urlsupercategory, limit=10)
+  | user.email=~wildcard(?Username, ignoreCase=true)
+  | #Vendor.action=Blocked
+  | timechart(Vendor.urlsupercat, limit=10)

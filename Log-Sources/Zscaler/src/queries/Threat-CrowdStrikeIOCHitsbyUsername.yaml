@@ -10,6 +10,6 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | ioc:lookup(field=Vendor.event.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
   | ioc.detected=true
-  | timechart(Vendor.event.user, limit=10)
+  | timechart(user.email, limit=10)

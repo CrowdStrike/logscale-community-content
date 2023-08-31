@@ -8,6 +8,6 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | Vendor.event.threatname!="None"
-  | top([Vendor.event.urlcategory, Vendor.event.threatname])
-  | sankey(source=Vendor.event.urlcategory, target=Vendor.event.threatname)
+  | Vendor.threatname!="None"
+  | top([Vendor.urlcat, Vendor.threatname])
+  | sankey(source=Vendor.urlcat, target=Vendor.threatname)

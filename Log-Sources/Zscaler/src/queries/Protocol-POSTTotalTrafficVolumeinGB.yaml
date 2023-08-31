@@ -9,9 +9,9 @@ timeInterval:
   start: 1d
 queryString: |-
   #type = "zscalernss-web"
-  | Vendor.event.transactionsize!=0
-  | Vendor.event.requestmethod=POST
-  | thisBytes:=sum(Vendor.event.transactionsize)
+  | Vendor.reqsize!=0
+  | http.request.method=POST
+  | thisBytes:=sum(Vendor.reqsize)
   | unit:convert(thisBytes, to="G", as=thisGB)
   | format("%.1f GB", field=thisGB, as=thisGB)
   | drop([_sum, thisBytes])

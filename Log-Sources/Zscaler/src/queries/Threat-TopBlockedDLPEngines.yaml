@@ -9,5 +9,5 @@ timeInterval:
 queryString: |-
   #type=zscalernss-web
   | event.action=blocked
-  | Vendor.event.dlpengine!="None"
-  | top(Vendor.event.dlpengine)
+  | Vendor.dlpeng!="None"
+  | top(Vendor.dlpeng)

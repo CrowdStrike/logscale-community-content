@@ -10,4 +10,4 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | timechart(Vendor.event.requestmethod)
+  | timechart(http.request.method)

@@ -8,6 +8,6 @@ timeInterval:
   start: 1d
 queryString: |-
   #type=zscalernss-web
-  | Vendor.event.user=~wildcard(?Username, ignoreCase=true)
-  | Vendor.event.action=Allowed
-  | top(Vendor.event.useragent, limit=100)
+  | user.email=~wildcard(?Username, ignoreCase=true)
+  | #Vendor.action=Allowed
+  | top(Vendor.eua, limit=100)
