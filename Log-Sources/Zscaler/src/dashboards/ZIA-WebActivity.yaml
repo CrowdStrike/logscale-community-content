@@ -134,13 +134,13 @@ widgets:
     - conditions: null
       name: Top Blocked Category to Hostname
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#Vendor.action=Blocked | Vendor.urlsupercat=?Vendor_urlsupercat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
+      queryString: '#Vendor.action=Blocked | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
         Vendor.domain=?Vendor_domain '
       useWidgetTimeWindow: false
       repoOrViewName: 
       arguments:
         Vendor_domain: '["{{ fields.target }}"]'
-        Vendor_urlsupercat: '["{{ fields.source }}"]'
+        Vendor_urlcat: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
