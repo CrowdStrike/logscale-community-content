@@ -128,7 +128,7 @@ widgets:
         { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
         := "None Listed"}|rename(iocActor,as="IOC.Actor") | IOC.Actor=?IOC_Actor'
       useWidgetTimeWindow: false
-      repoOrViewName: Zscaler-Development
+      repoOrViewName:
       arguments:
         IOC_Actor: '["{{fields.IOC.Actor}}"]'
       openInNewTab: true

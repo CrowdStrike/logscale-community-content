@@ -169,6 +169,7 @@ widgets:
     height: 4
     queryString: |-
       #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
       | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
       | ioc.detected=true
       | case {
@@ -181,7 +182,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 0
+    y: 4
     interactions:
     - conditions: null
       name: CrowdStrike IOC Hits by Threat Actor
@@ -190,7 +191,7 @@ widgets:
         { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
         := "None Listed"}|rename(iocActor,as="IOC.Actor") | IOC.Actor=?IOC_Actor'
       useWidgetTimeWindow: false
-      repoOrViewName: Zscaler-Development
+      repoOrViewName:
       arguments:
         IOC_Actor: '["{{fields.IOC.Actor}}"]'
       openInNewTab: true
