@@ -1,0 +1,23 @@
+name: Web - Threat - CrowdStrike IOC Threat Actors to Country by Server IP
+visualization:
+  options: {}
+  type: sankey
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  | ipLocation(ioc[0].indicator)
+  | case {
+      ioc[0].labels=Actor*
+        | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+      * | iocActor:="None Listed" ;
+    }
+  | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+  | rename(ioc[0].indicator, as="IOC.IP")
+  | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+  | rename(iocActor, as="IOC.Actor")
+  | rename(ioc[0].indicator.country, as="IOC.Country")
+  | sankey(source="IOC.Actor", target="IOC.Country")

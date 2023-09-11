@@ -1,0 +1,14 @@
+name: Web - Threat - CrowdStrike IOC Hits on Server IP by Confidence
+visualization:
+  options: {}
+  type: pie-chart
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+  | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+  | top(IOC.Confidence)

@@ -1,0 +1,14 @@
+name: Web - URL - Top Blocked Categories to Domains
+visualization:
+  options: {}
+  type: sankey
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | #Vendor.action=Blocked
+  | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+  | top([Vendor.urlcat, Vendor.domain], limit=20)
+  | sankey(source="Vendor.urlcat", target="Vendor.domain")

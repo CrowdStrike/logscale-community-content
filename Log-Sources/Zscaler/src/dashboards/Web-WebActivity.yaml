@@ -1,0 +1,441 @@
+name: Web - Web Activity
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  6277dbd0-1cf0-43ee-b1bb-e3a85097d3c6:
+    x: 8
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.proto)
+    end: now
+    start: 1d
+    width: 4
+    y: 13
+    interactions:
+    - conditions: null
+      name: Top Protocols
+      titleTemplate: 'Protocol: {{ fields.Vendor.proto }}'
+      queryString: 'Vendor.proto=?Vendor_proto '
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        Vendor_proto: '["{{fields.Vendor.proto}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Protocols
+    isLive: false
+    type: query
+  4fdee0a2-1b02-4fa4-b374-526d601efa3e:
+    x: 4
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Blocked
+      | timechart(Vendor.urlsupercat, limit=10)
+    end: now
+    start: 1d
+    width: 4
+    y: 21
+    interactions:
+    - conditions: null
+      name: Top Blocked Super Categories
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
+      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Blocked
+        | Vendor.urlsupercat=?Vendor_urlsupercat'
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Blocked Super Categories
+    isLive: false
+    type: query
+  48485316-d46b-47d1-9b41-e7a27a488a9a:
+    x: 4
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.appname)
+    end: now
+    start: 1d
+    width: 4
+    y: 13
+    interactions:
+    - conditions: null
+      name: Top Application Names
+      titleTemplate: 'Application: {{ fields.Vendor.appname }}'
+      queryString: 'Vendor.appname=?Vendor_appname '
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        Vendor_appname: '["{{fields.Vendor.appname}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Application Names
+    isLive: false
+    type: query
+  0d867275-9209-41ed-84e2-304751423faa:
+    x: 3
+    y: 17
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | count(user.email, distinct=true)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Distinct Users
+    isLive: false
+    type: query
+  7b45ef95-cf3a-453e-a42a-ad5c43097392:
+    x: 0
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Blocked
+      | top([Vendor.urlcat, Vendor.domain])
+      | sankey(source="Vendor.urlcat", target="Vendor.domain")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 4
+    interactions:
+    - conditions: null
+      name: Top Blocked Category to Hostname
+      titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
+      queryString: '#Vendor.action=Blocked | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
+        Vendor.domain=?Vendor_domain '
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        Vendor_domain: '["{{ fields.target }}"]'
+        Vendor_urlcat: '["{{ fields.source }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top Blocked Categories to Domains
+    isLive: false
+    type: query
+  93b5bd6f-cbf3-4032-afd7-444d392d8319:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | top(Vendor.appclass)
+    end: now
+    start: 1d
+    width: 4
+    y: 13
+    interactions:
+    - conditions: null
+      name: Top Application Classes
+      titleTemplate: 'Application: {{ fields.appclass }}'
+      queryString: 'event.appclass=?event_appclass '
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        event_appclass: '["{{fields.appclass}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legend: true
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Application Classes
+    isLive: false
+    type: query
+  514f5dc2-6d5b-43ef-83d2-21c38fc4e2a7:
+    x: 8
+    y: 21
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Allowed
+      | top(Vendor.eua, limit=100)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 4
+    title: Top User Agents
+    isLive: false
+    type: query
+  bdb89fde-8af7-412d-8f3b-cfebc66d8e52:
+    x: 6
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | timechart(http.request.method)
+    end: now
+    start: 1d
+    width: 6
+    y: 17
+    interactions:
+    - conditions: null
+      name: Request Methods
+      titleTemplate: 'Method: {{ fields.http.request.method }}'
+      queryString: http.request.method=?http_request_method
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        http_request_method: '["{{fields.http.request.method}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Request Methods
+    isLive: false
+    type: query
+  d2752bdb-a3b8-42a5-a3f2-6dd4ebd44538:
+    x: 6
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | Vendor.reqsize!=0
+      | timechart(#Vendor.action, function=sum(Vendor.reqsize))
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - conditions: null
+      name: Actions Over Time by Volume
+      titleTemplate: 'Action: {{ fields.#Vendor.action }}'
+      queryString: '#type="zscalernss-web"|Vendor.reqsize!=0 | #Vendor.action=?Vendor_action'
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        Vendor_action: '["{{fields.#Vendor.action}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Actions Over Time by Volume
+    isLive: false
+    type: query
+  74ec105d-1a29-46dc-81fe-d5a2959631a5:
+    x: 6
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Allowed
+      | top([Vendor.urlcat, Vendor.domain], limit=20)
+      | sankey(source="Vendor.urlcat", target="Vendor.domain")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 4
+    interactions:
+    - conditions: null
+      name: Top Allowed Categories to Domains
+      titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
+      queryString: '#type=zscalernss-web|#Vendor.action=Allowed | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
+        Vendor.domain=?Vendor_domain '
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        Vendor_domain: '["{{ fields.target }}"]'
+        Vendor_urlcat: '["{{ fields.source }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top Allowed Categories to Domains
+    isLive: false
+    type: query
+  a2e5c116-a7f0-4d83-9200-e784da7b2600:
+    x: 0
+    y: 9
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Blocked
+      | top(Vendor.urlcat)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Blocked Categories
+    isLive: false
+    type: query
+  04a61b55-cb3c-4981-9972-dfdad527e55a:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | timechart(user.email, function=sum(Vendor.reqsize), limit=10)
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - conditions: null
+      name: Top Users by Volume
+      titleTemplate: 'User: {{ fields.user.email }}'
+      queryString: '#type=zscalernss-web | user.email=?user_email'
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        user_email: '["{{fields.user.email}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Users by Volume
+    isLive: false
+    type: query
+  feee03ca-6149-452c-b049-319b5c4d6779:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | count("Vendor.location", distinct=true)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Distinct Locations
+    isLive: false
+    type: query
+  15132888-94a5-49af-af03-2f912d35e669:
+    x: 9
+    y: 9
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Allowed
+      | top([Vendor.domain])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Allowed Domains
+    isLive: false
+    type: query
+  1bda239e-4364-4834-89a6-f99cc39e37e7:
+    x: 0
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Allowed
+      | timechart(Vendor.urlsupercat, limit=10)
+    end: now
+    start: 1d
+    width: 4
+    y: 21
+    interactions:
+    - conditions: null
+      name: Top Allowed Super Categories
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
+      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Allowed
+        | Vendor.urlsupercat=?Vendor_urlsupercat'
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Allowed Super Categories
+    isLive: false
+    type: query
+  243637b7-fa6f-4566-aced-4d1382eaa60d:
+    x: 3
+    y: 9
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | #Vendor.action=Blocked
+      | top([Vendor.domain])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Blocked Domains
+    isLive: false
+    type: query
+  75db1df3-4ee7-45c7-8584-aee828cb4930:
+    x: 6
+    y: 9
+    height: 4
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | #Vendor.action=Allowed
+      | top(Vendor.urlcat)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 3
+    title: Top Allowed Categories
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0
+parameters:
+  Username:
+    defaultValue: '*'
+    label: Username
+    order: 50
+    type: text

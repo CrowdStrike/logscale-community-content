@@ -1,0 +1,15 @@
+name: Web - User - Top Blocked Super Categories Over Time
+visualization:
+  options:
+    connect-points: false
+    imputation: none
+  type: time-chart
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | user.email=~wildcard(?Username, ignoreCase=true)
+  | #Vendor.action=Blocked
+  | timechart(Vendor.urlsupercat, limit=10)

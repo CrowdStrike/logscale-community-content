@@ -1,0 +1,12 @@
+name: Web - Actions - Actions Over Time
+visualization:
+  options:
+    connect-points: false
+  type: time-chart
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | timechart(#Vendor.action)

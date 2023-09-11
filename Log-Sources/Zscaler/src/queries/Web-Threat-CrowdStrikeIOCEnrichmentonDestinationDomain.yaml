@@ -1,0 +1,21 @@
+name: Web - Threat - CrowdStrike IOC Hits on Destination Domain
+visualization:
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+  | ioc:lookup(field=Vendor.domain, type=domain, confidenceThreshold=Unverified, strict=true)
+  | case {
+      ioc[0].labels=Actor*
+        | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+      * | iocActor:="None Listed" ;
+    }
+  | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+  | rename(ioc[0].indicator, as="IOC.Domain")
+  | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+  | rename(iocActor, as="IOC.Actor")
+  | table([@timestamp, user.email, Vendor.cip, IOC.Domain, IOC.Confidence, IOC.Actor, IOC.Details], limit=1000)

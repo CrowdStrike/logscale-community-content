@@ -1,0 +1,11 @@
+name: Web - User - Total Distinct Users
+visualization:
+  options: {}
+  type: single-value
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type="zscalernss-web"
+  | count(user.email, distinct=true)

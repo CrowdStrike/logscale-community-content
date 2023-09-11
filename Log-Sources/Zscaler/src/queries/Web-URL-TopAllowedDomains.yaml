@@ -1,0 +1,13 @@
+name: Web - URL - Top Allowed Domains
+visualization:
+  options: {}
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | #Vendor.action=Allowed
+  | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+  | top([Vendor.domain])

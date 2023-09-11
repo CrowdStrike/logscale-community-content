@@ -1,0 +1,14 @@
+name: Web - Actions - Actions Over Time by Volume
+visualization:
+  options:
+    connect-points: false
+    imputation: none
+  type: time-chart
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type = "zscalernss-web"
+  | Vendor.reqsize!=0
+  | timechart(#Vendor.action, function=sum(Vendor.reqsize))

@@ -1,0 +1,11 @@
+name: Web - Application - Top Application Classes
+visualization:
+  options: {}
+  type: pie-chart
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type=zscalernss-web
+  | top(Vendor.appclass)

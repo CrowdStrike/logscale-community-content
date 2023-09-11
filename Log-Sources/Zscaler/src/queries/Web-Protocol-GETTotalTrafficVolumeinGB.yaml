@@ -1,0 +1,17 @@
+name: Web - Protocol - GET Total Traffic Volume in GB
+visualization:
+  options:
+    default: {}
+  type: single-value
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  #type = "zscalernss-web"
+  | Vendor.reqsize!=0
+  | http.request.method=GET
+  | thisBytes:=sum(Vendor.reqsize)
+  | unit:convert(thisBytes, to="G", as=thisGB)
+  | format("%.1f GB", field=thisGB, as=thisGB)
+  | drop([_sum, thisBytes])

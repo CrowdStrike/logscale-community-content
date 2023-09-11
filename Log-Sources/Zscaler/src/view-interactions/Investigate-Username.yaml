@@ -8,7 +8,7 @@ interaction:
   titleTemplate: ''
   useWidgetTimeWindow: false
   dashboardReference:
-    name: ZIA - User Investigation
+    name: Web - User Investigation
     packageSpecifier: zscaler/nss-web
     repoOrViewName:
   arguments:
