@@ -1,4 +1,4 @@
-name: 'Threat - CrowdStrike IOCs by Confidence '
+name: 'Threat - CrowdStrike IOC Hits on Server IP by Confidence'
 visualization:
   options: {}
   type: pie-chart

@@ -23,7 +23,7 @@ widgets:
       titleTemplate: 'Protocol: {{ fields.Vendor.proto }}'
       queryString: 'Vendor.proto=?Vendor_proto '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_proto: '["{{fields.Vendor.proto}}"]'
       openInNewTab: true
@@ -55,7 +55,7 @@ widgets:
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Blocked
         | Vendor.urlsupercat=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
       openInNewTab: true
@@ -85,7 +85,7 @@ widgets:
       titleTemplate: 'Application: {{ fields.Vendor.appname }}'
       queryString: 'Vendor.appname=?Vendor_appname '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_appname: '["{{fields.Vendor.appname}}"]'
       openInNewTab: true
@@ -137,7 +137,7 @@ widgets:
       queryString: '#Vendor.action=Blocked | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
         Vendor.domain=?Vendor_domain '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_domain: '["{{ fields.target }}"]'
         Vendor_urlcat: '["{{ fields.source }}"]'
@@ -164,7 +164,7 @@ widgets:
       titleTemplate: 'Application: {{ fields.appclass }}'
       queryString: 'event.appclass=?event_appclass '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         event_appclass: '["{{fields.appclass}}"]'
       openInNewTab: true
@@ -211,7 +211,7 @@ widgets:
       titleTemplate: 'Method: {{ fields.http.request.method }}'
       queryString: http.request.method=?http_request_method
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         http_request_method: '["{{fields.http.request.method}}"]'
       openInNewTab: true
@@ -242,7 +242,7 @@ widgets:
       titleTemplate: 'Action: {{ fields.#Vendor.action }}'
       queryString: '#type="zscalernss-web"|Vendor.reqsize!=0 | #Vendor.action=?Vendor_action'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_action: '["{{fields.#Vendor.action}}"]'
       openInNewTab: true
@@ -277,7 +277,7 @@ widgets:
       queryString: '#type=zscalernss-web|#Vendor.action=Allowed | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
         Vendor.domain=?Vendor_domain '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_domain: '["{{ fields.target }}"]'
         Vendor_urlcat: '["{{ fields.source }}"]'
@@ -320,7 +320,7 @@ widgets:
       titleTemplate: 'User: {{ fields.user.email }}'
       queryString: '#type=zscalernss-web | user.email=?user_email'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         user_email: '["{{fields.user.email}}"]'
       openInNewTab: true
@@ -386,7 +386,7 @@ widgets:
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Allowed
         | Vendor.urlsupercat=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
       openInNewTab: true

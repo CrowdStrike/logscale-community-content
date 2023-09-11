@@ -10,7 +10,7 @@ interaction:
   dashboardReference:
     name: ZIA - User Investigation
     packageSpecifier: zscaler/nss-web
-    repoOrViewName: 
+    repoOrViewName:
   arguments:
     Username: '{{fields.user.email}}'
   openInNewTab: true

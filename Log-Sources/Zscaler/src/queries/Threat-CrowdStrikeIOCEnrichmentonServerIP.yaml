@@ -1,4 +1,4 @@
-name: Threat - CrowdStrike IOC Enrichment on Server IP
+name: Threat - CrowdStrike IOC Hits on Server IP
 visualization:
   options: {}
   type: table-view
@@ -16,7 +16,6 @@ queryString: |-
       * | iocActor:="None Listed" ;
     }
   | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
-  | rename(Continent, as="IOC.Continent")
   | rename(ioc[0].indicator, as="IOC.IP")
   | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
   | rename(iocActor, as="IOC.Actor")

@@ -16,14 +16,14 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 26
+    y: 36
     interactions:
     - conditions: null
       name: Top Protocols
       titleTemplate: 'Protocol: {{ fields.Vendor.proto }}'
       queryString: 'Vendor.proto=?Vendor_proto '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_proto: '["{{fields.Vendor.proto}}"]'
       openInNewTab: true
@@ -34,6 +34,49 @@ widgets:
       series: {}
     visualization: pie-chart
     title: Top Protocols
+    isLive: false
+    type: query
+  14303116-d145-4f4a-83ac-41d623ede348:
+    x: 0
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
+      | ioc:lookup(field=Vendor.domain, type=domain, confidenceThreshold=Unverified, strict=true)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.Domain")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | top([IOC.Actor, IOC.Domain], limit=20)
+      | sankey(source="IOC.Actor", target="IOC.Domain")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 8
+    interactions:
+    - conditions: null
+      name: CrowdStrike IOC Threat Actors to Country by Server IP
+      titleTemplate: 'Actor: {{ fields.source }}, Domain: {{ fields.target }}'
+      queryString: '#type=zscalernss-web|wildcard("*@*",ignoreCase=true,field=user.email)|regex("^(?<Vendor.domain>.*?)(\\/|$)",field=Vendor.eurl,strict=false)|ioc:lookup(field=Vendor.domain,type=domain,confidenceThreshold=Unverified,strict=true)|case
+        { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
+        := "None Listed"}|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].indicator,as="IOC.Domain")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")|rename(iocActor,as="IOC.Actor")
+        | IOC.Domain=?IOC_Domain IOC.Actor=?IOC_Actor '
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        IOC_Actor: '["{{ fields.source }}"]'
+        IOC_Domain: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: CrowdStrike IOC Threat Actors to Country by Server IP
     isLive: false
     type: query
   4fdee0a2-1b02-4fa4-b374-526d601efa3e:
@@ -47,7 +90,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 34
+    y: 44
     interactions:
     - conditions: null
       name: Top Blocked Super Categories
@@ -55,7 +98,7 @@ widgets:
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Blocked
         | Vendor.urlsupercat=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
       openInNewTab: true
@@ -84,12 +127,12 @@ widgets:
     y: 4
     interactions:
     - conditions: null
-      name: CrowdStrike IOCs by Confidence
+      name: CrowdStrike IOC Hits on Server IP by Confidence
       titleTemplate: 'Confidence: {{ fields.IOC.Confidence }}'
       queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")
         | IOC.Confidence=?IOC_Confidence '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         IOC_Confidence: '["{{fields.IOC.Confidence}}"]'
       openInNewTab: true
@@ -99,7 +142,50 @@ widgets:
       legendPosition: right
       series: {}
     visualization: pie-chart
-    title: Top CrowdStrike IOCs by Confidence
+    title: CrowdStrike IOC Hits on Server IP by Confidence
+    isLive: false
+    type: query
+  cafefa10-6a61-42c2-b83b-bbfcefeb9ebb:
+    x: 6
+    height: 5
+    queryString: |-
+      #type=zscalernss-web
+      | user.email=~wildcard(?Username, ignoreCase=true)
+      | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ipLocation(ioc[0].indicator)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.IP")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | rename(ioc[0].indicator.country, as="IOC.Country")
+      | sankey(source="IOC.Actor", target="IOC.Country")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 8
+    interactions:
+    - conditions: null
+      name: CrowdStrike IOC Threat Actors to Country by Server IP
+      titleTemplate: 'Actor: {{ fields.source }}, Country: {{ fields.target }}'
+      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|case
+        { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
+        := "None Listed"}|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].indicator,as="IOC.IP")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")|rename(iocActor,as="IOC.Actor")|rename(ioc[0].indicator.country,as="IOC.Country")
+        | IOC.Country=?IOC_Country IOC.Actor=?IOC_Actor '
+      useWidgetTimeWindow: false
+      repoOrViewName:
+      arguments:
+        IOC_Actor: '["{{ fields.source }}"]'
+        IOC_Country: '["{{ fields.target }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: CrowdStrike IOC Threat Actors to Country by Server IP
     isLive: false
     type: query
   48485316-d46b-47d1-9b41-e7a27a488a9a:
@@ -112,14 +198,14 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 26
+    y: 36
     interactions:
     - conditions: null
       name: Top Application Names
       titleTemplate: 'Application: {{ fields.Vendor.appname }}'
       queryString: 'Vendor.appname=?Vendor_appname '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_appname: '["{{fields.Vendor.appname}}"]'
       openInNewTab: true
@@ -146,15 +232,15 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 12
+    y: 27
     interactions:
     - conditions: null
       name: Top Blocked Category to Hostname
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#Vendor.action=Blocked | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
-        Vendor.domain=?Vendor_domain '
+      queryString: '#Vendor.action=Blocked | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)",
+        field=Vendor.eurl, strict=false) | Vendor.domain=?Vendor_domain '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_domain: '["{{ fields.target }}"]'
         Vendor_urlcat: '["{{ fields.source }}"]'
@@ -185,7 +271,7 @@ widgets:
     y: 4
     interactions:
     - conditions: null
-      name: CrowdStrike IOC Hits by Threat Actor
+      name: CrowdStrike IOC Hits on Server IP by Threat Actor
       titleTemplate: 'Actor: {{ fields.IOC.Actor }}'
       queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ioc.detected=true|case
         { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
@@ -201,12 +287,12 @@ widgets:
       connect-points: false
       imputation: none
     visualization: time-chart
-    title: Top CrowdStrike IOC Hits by Threat Actor
+    title: CrowdStrike IOC Hits on Server IP by Threat Actor
     isLive: false
     type: query
   514f5dc2-6d5b-43ef-83d2-21c38fc4e2a7:
     x: 8
-    y: 34
+    y: 44
     height: 5
     queryString: |-
       #type=zscalernss-web
@@ -230,14 +316,14 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 30
+    y: 40
     interactions:
     - conditions: null
       name: Request Methods
       titleTemplate: 'Method: {{ fields.http.request.method }}'
       queryString: http.request.method=?http_request_method
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         http_request_method: '["{{fields.http.request.method}}"]'
       openInNewTab: true
@@ -262,7 +348,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 39
+    y: 49
     interactions:
     - conditions: null
       name: Top Blocked DLP Dictionaries
@@ -270,7 +356,7 @@ widgets:
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|event.action=blocked|Vendor.dlpdict!="None"
         | Vendor.dlpdict=?Vendor_dlpdict '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_dlpdict: '["{{fields.Vendor.dlpdict}}"]'
       openInNewTab: true
@@ -296,7 +382,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 8
+    y: 13
     interactions:
     - conditions: null
       name: Top Vendor Categories to Threat Names
@@ -304,7 +390,7 @@ widgets:
       queryString: '#type=zscalernss-web|Vendor.threatname!="None" | Vendor.urlcat=?Vendor_urlcat
         Vendor.threatname=?Vendor_threatname '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_threatname: '["{{ fields.target }}"]'
         Vendor_urlcat: '["{{ fields.source }}"]'
@@ -325,14 +411,14 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 39
+    y: 49
     interactions:
     - conditions: null
       name: Top Threat Names
       titleTemplate: 'Threat: {{ fields.Vendor.threatname }}'
       queryString: 'Vendor.threatname!="None" | Vendor.threatname=?Vendor_threatname '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_threatname: '["{{fields.Vendor.threatname}}"]'
       openInNewTab: true
@@ -359,15 +445,16 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 12
+    y: 27
     interactions:
     - conditions: null
       name: Top Allowed Categories to Domains
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#type=zscalernss-web|#Vendor.action=Allowed | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
+      queryString: '#type=zscalernss-web|#Vendor.action=Allowed | Vendor.urlcat=?Vendor_urlcat
+        | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
         Vendor.domain=?Vendor_domain '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_domain: '["{{ fields.target }}"]'
         Vendor_urlcat: '["{{ fields.source }}"]'
@@ -379,7 +466,7 @@ widgets:
     type: query
   a2e5c116-a7f0-4d83-9200-e784da7b2600:
     x: 0
-    y: 17
+    y: 32
     height: 4
     queryString: |-
       #type=zscalernss-web
@@ -410,7 +497,7 @@ widgets:
       titleTemplate: 'User: {{ fields.user.email }}'
       queryString: '#type=zscalernss-web | user.email=?user_email'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         user_email: '["{{fields.user.email}}"]'
       openInNewTab: true
@@ -425,7 +512,7 @@ widgets:
     type: query
   feee03ca-6149-452c-b049-319b5c4d6779:
     x: 0
-    y: 30
+    y: 40
     height: 4
     queryString: |-
       #type=zscalernss-web
@@ -456,12 +543,12 @@ widgets:
     y: 4
     interactions:
     - conditions: null
-      name: Top CrowdStrike IOCs by Country
+      name: CrowdStrike IOC Hits on Server IP by Country
       titleTemplate: 'Country: {{ fields.IOC.Country }}'
       queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|rename(ioc[0].indicator.country,as="IOC.Country")
         | IOC.Country=?IOC_Country '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         IOC_Country: '["{{fields.IOC.Country}}"]'
       openInNewTab: true
@@ -471,12 +558,12 @@ widgets:
       legendPosition: right
       series: {}
     visualization: pie-chart
-    title: Top CrowdStrike IOCs by Country
+    title: CrowdStrike IOC Hits on Server IP by Country
     isLive: false
     type: query
   0d867275-9209-41ed-84e2-304751423faa:
     x: 3
-    y: 30
+    y: 40
     height: 4
     queryString: |-
       #type=zscalernss-web
@@ -493,7 +580,7 @@ widgets:
     type: query
   15132888-94a5-49af-af03-2f912d35e669:
     x: 9
-    y: 17
+    y: 32
     height: 4
     queryString: |-
       #type=zscalernss-web
@@ -519,7 +606,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 34
+    y: 44
     interactions:
     - conditions: null
       name: Top Allowed Super Categories
@@ -527,7 +614,7 @@ widgets:
       queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Allowed
         | Vendor.urlsupercat=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
       openInNewTab: true
@@ -542,7 +629,7 @@ widgets:
     type: query
   12d3a9d1-4878-4132-a7d0-c29f8a2a88bb:
     x: 0
-    y: 43
+    y: 22
     height: 5
     queryString: |-
       #type=zscalernss-web
@@ -555,21 +642,20 @@ widgets:
           * | iocActor:="None Listed" ;
         }
       | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
-      | rename(Continent, as="IOC.Continent")
       | rename(ioc[0].indicator, as="IOC.Domain")
       | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
       | rename(iocActor, as="IOC.Actor")
       | table([@timestamp, user.email, Vendor.cip, IOC.Domain, IOC.Confidence, IOC.Actor, IOC.Details], limit=1000)
+    visualization: table-view
     end: now
     start: 1d
     width: 12
-    visualization: table-view
-    title: CrowdStrike IOC Enrichment on Destination Domain
+    title: CrowdStrike IOC Hits on Destination Domain
     isLive: false
     type: query
   243637b7-fa6f-4566-aced-4d1382eaa60d:
     x: 3
-    y: 17
+    y: 32
     height: 4
     queryString: |-
       #type=zscalernss-web
@@ -586,7 +672,7 @@ widgets:
     type: query
   75db1df3-4ee7-45c7-8584-aee828cb4930:
     x: 6
-    y: 17
+    y: 32
     height: 4
     queryString: |-
       #type=zscalernss-web
@@ -611,14 +697,14 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 8
+    y: 13
     interactions:
     - conditions: null
       name: Top Vendor Threat Names
       titleTemplate: 'Threat: {{ fields.Vendor.threatname }}'
       queryString: '#type=zscalernss-web|Vendor.threatname!="None" | Vendor.threatname=?Vendor_threatname'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_threatname: '["{{fields.Vendor.threatname}}"]'
       openInNewTab: true
@@ -641,14 +727,14 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 26
+    y: 36
     interactions:
     - conditions: null
       name: Top Application Classes
       titleTemplate: 'Application: {{ fields.appclass }}'
       queryString: 'event.appclass=?event_appclass '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         event_appclass: '["{{fields.appclass}}"]'
       openInNewTab: true
@@ -664,7 +750,7 @@ widgets:
     type: query
   6a487c30-93ca-4a3a-8073-ba86c036e18a:
     x: 0
-    y: 21
+    y: 17
     height: 5
     queryString: |-
       #type=zscalernss-web
@@ -677,7 +763,6 @@ widgets:
           * | iocActor:="None Listed" ;
         }
       | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
-      | rename(Continent, as="IOC.Continent")
       | rename(ioc[0].indicator, as="IOC.IP")
       | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
       | rename(iocActor, as="IOC.Actor")
@@ -687,7 +772,7 @@ widgets:
     end: now
     start: 1d
     width: 12
-    title: CrowdStrike IOC Enrichment on Server IP
+    title: CrowdStrike IOC Hits on Server IP
     isLive: false
     type: query
   d2752bdb-a3b8-42a5-a3f2-6dd4ebd44538:
@@ -708,7 +793,7 @@ widgets:
       titleTemplate: 'Action: {{ fields.#Vendor.action }}'
       queryString: '#type="zscalernss-web"|Vendor.reqsize!=0 | #Vendor.action=?Vendor_action'
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_action: '["{{fields.#Vendor.action}}"]'
       openInNewTab: true
@@ -733,7 +818,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 39
+    y: 49
     interactions:
     - conditions: null
       name: Top Blocked DLP Engines
@@ -741,7 +826,7 @@ widgets:
       queryString: '#type=zscalernss-web|event.action=blocked|Vendor.dlpeng!="None"
         | Vendor.dlpeng=?Vendor_dlpeng '
       useWidgetTimeWindow: false
-      repoOrViewName: 
+      repoOrViewName:
       arguments:
         Vendor_dlpeng: '["{{fields.Vendor.dlpeng}}"]'
       openInNewTab: true

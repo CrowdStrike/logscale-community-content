@@ -1,6 +1,7 @@
-name: Threat - CrowdStrike IOC Hits on Destination Domain
+name: Threat - CrowdStrike IOC Threat Actors to Domains
 visualization:
-  type: table-view
+  options: {}
+  type: sankey
 $schema: https://schemas.humio.com/query/v0.3.0
 timeInterval:
   isLive: false
@@ -18,4 +19,5 @@ queryString: |-
   | rename(ioc[0].indicator, as="IOC.Domain")
   | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
   | rename(iocActor, as="IOC.Actor")
-  | table([@timestamp, user.email, Vendor.cip, IOC.Domain, IOC.Confidence, IOC.Actor, IOC.Details], limit=1000)
+  | top([IOC.Actor, IOC.Domain], limit=20)
+  | sankey(source="IOC.Actor", target="IOC.Domain")

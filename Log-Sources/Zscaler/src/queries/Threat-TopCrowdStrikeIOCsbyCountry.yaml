@@ -1,4 +1,4 @@
-name: Threat - Top CrowdStrike IOCs by Country
+name: Threat - CrowdStrike IOC Hits on Server IP by Country
 visualization:
   options: {}
   type: pie-chart

@@ -1,4 +1,4 @@
-name: Threat - CrowdStrike Threat Actors Over Time
+name: Threat - CrowdStrike IOC Threat Actors Over Time by Server IP
 visualization:
   options:
     connect-points: false
