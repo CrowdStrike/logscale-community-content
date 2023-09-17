@@ -146,8 +146,9 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "c343525be95cbbea",
+  "active": "eddb36b372b025fc",
   "lastOpenFiles": [
+    "Parsers-Only/Microsoft-DHCP-Service.yaml",
     "Queries-Only/Queries/Cool-Query-Friday/2023-09-08 - Cool Query Friday - Reflective .Net Module Loads and Program Database (PDB) File Paths.md",
     "Queries-Only/Helpful-CQL-Queries/Searching Comma Delineated List With User Input.md",
     "Queries-Only/Helpful-CQL-Queries/Omit RFC1819 CIDR Ranges from Search.md",
@@ -173,7 +174,6 @@
     "CrowdStrike-Query-Language-Map/Legacy-Event-Search/regex.md",
     "CrowdStrike-Query-Language-Map/Legacy-Event-Search/rename.md",
     "CrowdStrike-Query-Language-Map/Legacy-Event-Search/replace.md",
-    "CrowdStrike-Query-Language-Map/Legacy-Event-Search/rex.md",
     "CrowdStrike Query Language"
   ]
 }
