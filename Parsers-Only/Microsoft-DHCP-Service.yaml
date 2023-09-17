@@ -1,0 +1,67 @@
+name: Microsoft-DHCP-Service
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  // Microsoft DHCP parser
+  // bjorn.graabek@crowdstrike.com
+  //
+  // v0.1.0
+
+  // On startup, MS DHCP writes several lines explaining the log format. This line drops these.
+  case { not regex("^\d+,", field=@rawstring) | dropEvent(); * } |
+  // Actual event parsing
+  parseCsv(@rawstring, columns=[event.code,Date,Time,event.reason,host.ip,host.name,MACAddress,UserName,TransactionID,microsoft.dhcp.result,Probationtime,CorrelationID,Dhcid,VendorClass_Hex,VendorClass_ASCII,UserClass_Hex,UserClass_ASCII,RelayAgentInformation,DnsRegError]) |
+  // Create a date/time stamp we can actually parse
+  // Make sure the timezone is set correctly for your servers
+  concat([Date, Time], as=@timestamp) |
+  parseTimestamp("MM/dd/yyHH:mm:ss", field=@timestamp, timezone="Europe/London") |
+
+  // ECS fields
+  ecs.version:="8.9.0" |
+  event.module:="microsoft-dhcp" |
+  event.kind:="event" | event.category:="network" |
+
+  // Add descriptive fields based on event field values.
+  // This will expand the size of stored events, increasing license use.
+  // This could instead be done at search time
+  // Comment out the following if you don't want the descriptions stored with the events.
+  case {
+    event.code=00 | event.code.message:="The log was started";
+    event.code=01 | event.code.message:="The log was stopped";
+    event.code=02 | event.code.message:="The log was temporarily paused due to low disk space";
+    event.code=10 | event.code.message:="A new IP address was leased to a client";
+    event.code=11 | event.code.message:="A lease was renewed by a client";
+    event.code=12 | event.code.message:="A lease was released by a client";
+    event.code=13 | event.code.message:="An IP address was found to be in use on the network";
+    event.code=14 | event.code.message:="A lease request could not be satisfied because the scope's address pool was exhausted";
+    event.code=15 | event.code.message:="A lease was denied";
+    event.code=16 | event.code.message:="A lease was deleted";
+    event.code=17 | event.code.message:="A lease was expired and DNS records for an expired leases have not been deleted";
+    event.code=18 | event.code.message:="A lease was expired and DNS records were deleted";
+    event.code=20 | event.code.message:="A BOOTP address was leased to a client";
+    event.code=21 | event.code.message:="A dynamic BOOTP address was leased to a client";
+    event.code=22 | event.code.message:="A BOOTP request could not be satisfied because the scope's address pool for BOOTP was exhausted";
+    event.code=23 | event.code.message:="A BOOTP IP address was deleted after checking to see it was not in use";
+    event.code=24 | event.code.message:="IP address cleanup operation has began";
+    event.code=25 | event.code.message:="IP address cleanup statistics";
+    event.code=30 | event.code.message:="DNS update request to the named DNS server";
+    event.code=31 | event.code.message:="DNS update failed";
+    event.code=32 | event.code.message:="DNS update successful";
+    event.code=33 | event.code.message:="Packet dropped due to NAP policy";
+    event.code=34 | event.code.message:="DNS update request failed as the DNS update request queue limit exceeded";
+    event.code=35 | event.code.message:="DNS update request failed";
+    event.code=36 | event.code.message:="Packet dropped because the server is in failover standby role or the hash of the client ID does not match";
+    event.code>50 | event.code.message:="Rogue server detection information";
+    * | event.code.message:="Unexpected event.code, parser may need to be updated"
+  } |
+
+  case {
+    microsoft.dhcp.result=0 | microsoft.dhcp.result_description:="NoQuarantine";
+    microsoft.dhcp.result=1 | microsoft.dhcp.result_description:="Quarantine";
+    microsoft.dhcp.result=2 | microsoft.dhcp.result_description:="Drop Packet";
+    microsoft.dhcp.result=3 | microsoft.dhcp.result_description:="Probation";
+    microsoft.dhcp.result=6 | microsoft.dhcp.result_description:="No Quarantine Information";
+    * | microsoft.dhcp.result_description:="Unexpected microsoft.dhcp.result, parser may need to be updated"
+  }
+tagFields: []
