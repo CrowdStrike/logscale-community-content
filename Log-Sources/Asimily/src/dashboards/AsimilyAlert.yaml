@@ -1,0 +1,126 @@
+name: Asimily Alert
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  70c812a0-12b7-4a8e-bb46-1b8e9659a06a:
+    x: 0
+    y: 7
+    height: 5
+    queryString: |
+      #type = Asimily
+      //| criticality = "Medium"
+      | deviceFamily = "Medical Devices"
+      | deviceModel != ""
+      | top(deviceModel)
+      | rename(field="_count", as="Number of Anomalies")
+      | rename(field="deviceModel", as="Device Model")
+    visualization: bar-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Top Medical Device Models with Anomalies
+    isLive: false
+    type: query
+  2646d343-2c5b-44bb-81d1-6d41c617581d:
+    x: 0
+    y: 0
+    height: 7
+    queryString: |-
+      #type = Asimily
+      | criticality != "Low"
+      | top([ipAddress, macAddress, deviceType, manufacturer],limit=20)
+      //| top(ipAddress)
+      | rename(field="_count", as="Number of Anomalies")
+      | rename(field="ipAddress", as="IP Address")
+      | rename(field="macAddress", as="MAC Address")
+
+      | rename(field="manufacturer", as="Manufacturer")
+      | sort("Number of Anomalies",order=desc)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 6
+    title: Top 20 Devices with Anomalies
+    isLive: false
+    type: query
+  63799997-6d35-4c89-b736-4ace321c234f:
+    x: 6
+    y: 0
+    height: 7
+    queryString: |-
+      #type = Asimily
+      | destinationIpAddress[0] = *
+      | split(field="destinationIpAddress")
+      | ipLocation(destinationIpAddress)
+      | worldMap(ip=destinationIpAddress)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      zLevel: 1.5
+      projection: orthographic
+      autoRotate: true
+      rotZ: 2
+      rotY: -20
+      fixedSize: 14
+      rotX: 55
+    visualization: world-map
+    title: Anomaly Destination IPs
+    isLive: false
+    type: query
+  85084af8-b0a9-4666-9d33-079c0086e8e8:
+    x: 0
+    y: 12
+    height: 4
+    queryString: '#type=Asimily | timeChart(span=1h)'
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Ingested Anomalies Per Hour
+    isLive: false
+    type: query
+  2d92b4c9-f2db-4e80-9df0-21605ca2c82e:
+    x: 8
+    y: 7
+    height: 5
+    queryString: |-
+      #type = Asimily
+      | criticality != Low
+      | groupBy(context)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      innerRadius: 46
+      legend: true
+      maxSeriesCount: 45
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Anomalies in Past 24 Hours
+    isLive: false
+    type: query
+  f953ada8-6dee-49de-a665-cecca17eeedb:
+    x: 4
+    y: 7
+    height: 5
+    queryString: |-
+      #type = Asimily
+      //| deviceFamily = "Medical*"
+      | rename(field="criticality", as="Criticality")
+      | groupBy(Criticality)
+      //save as a pie chart
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Anomalies by Criticality
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0
