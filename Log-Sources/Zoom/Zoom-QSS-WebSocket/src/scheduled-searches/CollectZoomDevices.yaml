@@ -1,9 +1,9 @@
 name: Collect Zoom Devices
 description: Create Zoom device platform lookup table
 enabled: true
-queryString: content.payload.object.participant.data.device=* | case {content.payload.object.participant.data.device=""
+queryString: 'content.payload.object.participant.data.device=* | case {content.payload.object.participant.data.device=""
   | device := "Unknown"; * | device := content.payload.object.participant.data.device}
-  | groupBy(field=[device],function=[])
+  | groupBy(field=[device],function=[]) '
 backfillLimit: 0
 schedule: '*/5 * * * *'
 queryEnd: now

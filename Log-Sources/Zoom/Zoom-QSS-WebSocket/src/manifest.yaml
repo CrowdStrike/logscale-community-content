@@ -1,7 +1,7 @@
 author:
   name: zoom
 name: zoom/qss
-description: This package provides operational observability of Zoom video conference
+description: This package provides observability of Zoom QSS QoS telemetry
 version: 0.1.0
 minHumioVersion: 1.20.0
 type: application

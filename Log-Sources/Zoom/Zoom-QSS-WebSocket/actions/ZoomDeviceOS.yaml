@@ -1,4 +1,0 @@
-$schema: https://schemas.humio.com/action/v0.5.0
-fileName: zoom_device_os.csv
-name: Zoom Device OS
-type: upload-file

@@ -1,0 +1,767 @@
+name: Zoom Event Metrics
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  30d806ad-6400-464c-a74f-b9932e3743c6:
+    x: 0
+    y: 4
+    description: Participant Audio Bitrate (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.audio_input.bitrate=*\n\
+      \t| regex(regex=\"^(?<bitrate>\\d+) kbps\", field=content.payload.object.participant.qos.audio_input.bitrate)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.audio_output.bitrate=*\n\
+      \t| regex(regex=\"^(?<bitrate>\\d+) kbps\", field=content.payload.object.participant.qos.audio_output.bitrate)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(bitrate),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      interpolation: linear
+      xAxisTitle: ''
+      connect-points: true
+      yAxisTitle: kbps
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Audio - Bitrate
+    isLive: false
+    type: query
+  795b929a-60ef-4670-b19f-99e16a4c891f:
+    x: 6
+    y: 48
+    description: Desktop Sharing Quality Score
+    height: 4
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | rename(field=content.payload.object.participant.qos.as_quality.quality_score, as=quality_score)
+      | timechart(function=avg(quality_score,as=quality_score))
+    end: now
+    start: 15m
+    width: 6
+    options:
+      series:
+        quality_score:
+          color: '#0D912E'
+          title: Quality Score
+      gradient: true
+      showDataPoints: true
+      connect-points: true
+      regression: false
+      imputation: lerp
+    visualization: time-chart
+    title: Sharing - Quality Score
+    isLive: false
+    type: query
+  ebb4eef3-524d-4d59-a334-0b5c9ca930f8:
+    x: 6
+    y: 28
+    description: Participant Video Max Loss Percent (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.video_input.max_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.video_input.max_loss)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.video_output.max_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.video_output.max_loss)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(loss),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: '%'
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Video - Max Loss
+    isLive: false
+    type: query
+  cd7218e2-4aa0-4af0-8998-3269fd79e120:
+    x: 0
+    y: 0
+    description: Zoom Events on a Timeline
+    height: 4
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | rename(field=content.payload.object.uuid, as=event_uuid)
+      | evalue:=5
+      | timechart(series=event_uuid,function=max(evalue),span=1m,buckets=60,limit=20)
+    end: now
+    start: 15m
+    width: 3
+    options:
+      gradient: false
+      interpolation: step-after
+      showDataPoints: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      extrapolate: false
+      mn: 0
+      imputation: none
+    visualization: time-chart
+    title: Zoom Events
+    isLive: false
+    type: query
+  aeef046f-8c2e-4b8d-a022-a0d8a4996c41:
+    x: 3
+    y: 0
+    description: Zoom Events - Participants Count
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type | participant_data:=\"participant_data\"\n\
+      | format(\"%s.%s\",field=[zoom_event_type,participant_data],as=content_event)\n\
+      | test(content.event == content_event)\n| content.payload.object.participant.email!=\"\
+      \"\n| content.payload.object.participant.data.network_type=*\n| content.payload.object.uuid=?event-uuid\n\
+      | content.payload.object.participant.email=?participant-email\n| rename(content.payload.object.uuid,as=event_uuid)\n\
+      | groupBy([event_uuid,participant_count],function=[count(content.payload.object.participant.email,distinct=true,as=participant_count)]) "
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 3
+    title: Zoom Events - Participants
+    isLive: false
+    type: query
+  561726bf-a135-4491-b12d-f1e5ab94d589:
+    x: 6
+    y: 4
+    description: Participant Audio Jitter (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.audio_input.jitter=*\n\
+      \t| regex(regex=\"^(?<jitter>\\d+) ms\", field=content.payload.object.participant.qos.audio_input.jitter)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.audio_output.jitter=*\n\
+      \t| regex(regex=\"^(?<jitter>\\d+) ms\", field=content.payload.object.participant.qos.audio_output.jitter)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(jitter),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      xAxisTitle: ''
+      connect-points: true
+      yAxisTitle: ms
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Audio - JItter
+    isLive: false
+    type: query
+  e5ed1e15-654f-4a29-877b-e308f856af79:
+    x: 6
+    y: 36
+    description: Desktop Sharing Jitter (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.as_input.jitter=*\n\
+      \t| regex(regex=\"^(?<jitter>\\d+) ms\", field=content.payload.object.participant.qos.as_input.jitter)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.as_output.jitter=*\n\
+      \t| regex(regex=\"^(?<jitter>\\d+) ms\", field=content.payload.object.participant.qos.as_output.jitter)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(jitter),span=15s)"
+    end: now
+    start: 15m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: ms
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Sharing - Jitter
+    isLive: false
+    type: query
+  50e68a79-1a90-4fa6-b3f5-6b60f96aefad:
+    x: 0
+    y: 32
+    description: Video Quality
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.audio_quality.quality=*
+      | rename(field=content.payload.object.participant.qos.video_quality.quality, as=quality)
+      | regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | rename(field=content.payload.object.participant.email,as=email)
+      | case{
+      quality="good" | qualityBinNumber := 1;
+      quality="fair" | qualityBinNumber := 2;
+      quality="poor" | qualityBinNumber := 3;
+      quality="bad" | qualityBinNumber := 4;
+      }
+      | bucket(field=[quality, qualityBinNumber])
+      | sort(qualityBinNumber, limit=1000)
+      | drop(qualityBinNumber)
+    end: now
+    start: 5m
+    width: 6
+    options:
+      colorPalette: monoGreen
+      includeHistogram: true
+    visualization: heat-map
+    title: Video Quality
+    isLive: false
+    type: query
+  84438fce-8326-4aad-b87d-ce7deb0d227e:
+    x: 0
+    y: 8
+    description: Participant Audio Latency (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.audio_input.latency=*\n\
+      \t| regex(regex=\"^(?<latency>\\d+) ms\", field=content.payload.object.participant.qos.audio_input.latency)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.audio_output.latency=*\n\
+      \t| regex(regex=\"^(?<latency>\\d+) ms\", field=content.payload.object.participant.qos.audio_output.latency)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(latency),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      connect-points: true
+      yAxisTitle: ms
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Audio - Latency
+    isLive: false
+    type: query
+  c21ac317-1a9e-415a-b6fa-abe382818864:
+    x: 0
+    y: 52
+    description: Zoom CPU Usage - zoom[min,max,avg], system[max]
+    height: 4
+    queryString: |
+      content.payload.object.participant.qos.cpu_usage.zoom_min_cpu_usage=*
+      | regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | regex(regex="^(?<zoom_min_cpu>[.\d]+)%$", field=content.payload.object.participant.qos.cpu_usage.zoom_min_cpu_usage)
+      | regex(regex="^(?<zoom_max_cpu>[.\d]+)%$", field=content.payload.object.participant.qos.cpu_usage.zoom_max_cpu_usage)
+      | regex(regex="^(?<zoom_avg_cpu>[.\d]+)%$", field=content.payload.object.participant.qos.cpu_usage.zoom_avg_cpu_usage)
+      | regex(regex="^(?<system_max_cpu>[.\d]+)%$", field=content.payload.object.participant.qos.cpu_usage.system_max_cpu_usage)
+      | timechart(function=[avg(zoom_min_cpu, as=zoom_min),avg(zoom_max_cpu, as=zoom_max),avg(zoom_avg_cpu, as=zoom_avg),avg(system_max_cpu, as=system_max)],span=15s)
+    end: now
+    start: 5m
+    width: 6
+    options:
+      connect-points: true
+      yAxisTitle: '%'
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: CPU Usage
+    isLive: false
+    type: query
+  241782f4-46bb-49d7-88df-ebf3bb8dc988:
+    x: 0
+    y: 36
+    description: Desktop Sharing Bitrate (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.as_input.bitrate=*\n\
+      \t| regex(regex=\"^(?<bitrate>\\d+) kbps\", field=content.payload.object.participant.qos.as_input.bitrate)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.as_output.bitrate=*\n\
+      \t| regex(regex=\"^(?<bitrate>\\d+) kbps\", field=content.payload.object.participant.qos.as_output.bitrate)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(bitrate),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      connect-points: true
+      yAxisTitle: kbps
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Sharing - Bitrate
+    isLive: false
+    type: query
+  581f8158-2a61-47b8-ac33-5636b41976d7:
+    x: 6
+    y: 44
+    description: Desktop Sharing Max Loss (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.as_input.max_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.as_input.max_loss)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.as_output.max_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.as_output.max_loss)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(loss),span=15s)"
+    end: now
+    start: 15m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: '%'
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Sharing - Max Loss
+    isLive: false
+    type: query
+  7ba28d0c-c646-4d41-88d1-9b6cb93875f6:
+    x: 0
+    y: 16
+    description: Participant Audio Quality
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.audio_quality.quality=*
+      | rename(field=content.payload.object.participant.qos.audio_quality.quality, as=quality)
+      | regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | rename(field=content.payload.object.participant.email,as=email)
+      | case{
+      quality="good" | qualityBinNumber := 1;
+      quality="fair" | qualityBinNumber := 2;
+      quality="poor" | qualityBinNumber := 3;
+      quality="bad" | qualityBinNumber := 4;
+      }
+      | bucket(field=[quality, qualityBinNumber])
+      | sort(qualityBinNumber, limit=1000)
+      | drop(qualityBinNumber)
+    end: now
+    start: 5m
+    width: 6
+    options:
+      colorPalette: monoGreen
+      gapBetweenRectangles: true
+      includeHistogram: true
+    visualization: heat-map
+    title: Audio - Quality
+    isLive: false
+    type: query
+  94bd08e6-e0fe-41df-822e-e8070529401c:
+    x: 6
+    y: 20
+    description: Participant Video Jitter (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.video_input.jitter=*\n\
+      \t| regex(regex=\"^(?<jitter>\\d+) ms\", field=content.payload.object.participant.qos.video_input.jitter)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.video_output.jitter=*\n\
+      \t| regex(regex=\"^(?<jitter>\\d+) ms\", field=content.payload.object.participant.qos.video_output.jitter)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(jitter),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: ms
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Video Jitter
+    isLive: false
+    type: query
+  950e1c42-4585-4e1a-81be-b0e3712b3b3c:
+    x: 0
+    y: 48
+    description: Desktop Sharing Quality
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.as_quality.quality=*
+      | rename(field=content.payload.object.participant.qos.as_quality.quality, as=quality)
+      | regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | rename(field=content.payload.object.participant.email,as=email)
+      | case{
+      quality="good" | qualityBinNumber := 1;
+      quality="fair" | qualityBinNumber := 2;
+      quality="poor" | qualityBinNumber := 3;
+      quality="bad" | qualityBinNumber := 4;
+      }
+      | bucket(field=[quality, qualityBinNumber])
+      | sort(qualityBinNumber, limit=1000)
+      | drop(qualityBinNumber)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      colorPalette: monoGreen
+    visualization: heat-map
+    title: Sharing - Quality
+    isLive: false
+    type: query
+  123750db-4e65-4f4c-9780-1547bf26cdae:
+    x: 0
+    y: 12
+    description: Participant Audio Average Loss Percent (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.audio_input.avg_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.audio_input.avg_loss)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.audio_output.avg_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.audio_output.avg_loss)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(loss),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      connect-points: true
+      yAxisTitle: '%'
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Audio - Avg Loss
+    isLive: false
+    type: query
+  90a3849e-02fa-4ca0-9fd5-eb8484feb74b:
+    x: 6
+    y: 0
+    description: Event Participants
+    height: 4
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+).(?<content_event_type>.+)$", field=content.event)
+      | zoom_event_type=?zoom-event-type content_event_type="participant_data"
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | content.payload.object.participant.data.device=?device
+      | content.payload.object.participant.data.network_type=?network-type
+      | case { content.payload.object.participant.data.connection_type=* | connection_type:=content.payload.object.participant.data.connection_type;
+               * | connection_type := "n/a"; }
+      | content.payload.object.participant.data.version=?zoom-version
+      | rename(field=content.payload.object.participant.email, as=participant_email)
+      | rename(field=content.payload.object.participant.data.device,as=device)
+      | rename(field=content.payload.object.participant.data.network_type, as=network_type)
+      | rename(field=content.payload.object.participant.data.connection_type, as=connection_type)
+      | rename(field=content.payload.object.participant.data.version, as=zoom_version)
+      | rename(field=content.payload.object.uuid,as=event_uuid)
+      | participant_email!=""
+      | groupBy([event_uuid,participant_email,zoom_event_type,zoom_version,device,network_type,connection_type],function=[])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 6
+    title: Participants
+    isLive: false
+    type: query
+  eab881e5-7c7a-4739-947c-824dc151fdfa:
+    x: 0
+    y: 28
+    description: Participant Video Average Loss Percent (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.video_input.avg_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.video_input.avg_loss)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.video_output.avg_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.video_output.avg_loss)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(loss),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: '%'
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Video - Average Loss
+    isLive: false
+    type: query
+  584563a8-15d5-4ed9-bda2-5bb0aa95e8be:
+    x: 0
+    y: 40
+    description: Desktop Sharing Latency (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.as_input.latency=*\n\
+      \t| regex(regex=\"^(?<latency>\\d+) ms\", field=content.payload.object.participant.qos.as_input.latency)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.as_output.latency=*\n\
+      \t| regex(regex=\"^(?<latency>\\d+) ms\", field=content.payload.object.participant.qos.as_output.latency)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(latency),span=15s)"
+    end: now
+    start: 15m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: ms
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Sharing - Latency
+    isLive: false
+    type: query
+  9af7fe82-5884-45a3-899e-2bc437db3886:
+    x: 0
+    y: 20
+    description: Participate Video Bitrate (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.video_input.bitrate=*\n\
+      \t| regex(regex=\"^(?<bitrate>\\d+) kbps\", field=content.payload.object.participant.qos.video_input.bitrate)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.video_output.bitrate=*\n\
+      \t| regex(regex=\"^(?<bitrate>\\d+) kbps\", field=content.payload.object.participant.qos.video_output.bitrate)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(bitrate),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: kbps
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Video Bitrate
+    isLive: false
+    type: query
+  38c34206-0cb9-4763-b4aa-9aa593d1ae1e:
+    x: 6
+    y: 12
+    description: Participant Audio Max Loss Percent (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.audio_input.max_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.audio_input.max_loss)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.audio_output.max_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.audio_output.avg_loss)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(loss),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      connect-points: true
+      yAxisTitle: '%'
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Audio - Max Loss
+    isLive: false
+    type: query
+  3bcbfe11-6156-4bdf-a53a-7479a1da4b4a:
+    x: 0
+    y: 24
+    description: Participant Video Latency (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.video_input.latency=*\n\
+      \t| regex(regex=\"^(?<latency>\\d+) ms\", field=content.payload.object.participant.qos.video_input.latency)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.video_output.latency=*\n\
+      \t| regex(regex=\"^(?<latency>\\d+) ms\", field=content.payload.object.participant.qos.video_output.latency)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(latency),span=15s)"
+    end: now
+    start: 5m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: ms
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Video - Latency
+    isLive: false
+    type: query
+  3b31e7ff-49d8-4190-83ea-1f09d2be0330:
+    x: 6
+    y: 16
+    description: Participant Audio Quality Score
+    height: 4
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | rename(field=content.payload.object.participant.qos.audio_quality.quality_score, as=quality_score)
+      | timechart(function=avg(quality_score, as=quality_score))
+    end: now
+    start: 5m
+    width: 6
+    options:
+      series:
+        quality_score:
+          color: '#0d912e'
+          title: Quality Score
+      gradient: true
+      showDataPoints: true
+      connect-points: true
+      yAxisTitle: score
+      extrapolate: false
+      plotType: area
+      imputation: lerp
+    visualization: time-chart
+    title: Audio - Quality Score
+    isLive: false
+    type: query
+  945cb6df-6806-4eda-9307-1aab2d85c8a4:
+    x: 6
+    y: 32
+    description: Video Quality Score
+    height: 4
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=?zoom-event-type
+      | content.payload.object.participant.email=?participant-email
+      | content.payload.object.uuid=?event-uuid
+      | rename(field=content.payload.object.participant.qos.video_quality.quality_score, as=quality_score)
+      | timechart(function=avg(quality_score, as=quality_score))
+    end: now
+    start: 5m
+    width: 6
+    options:
+      series:
+        quality_score:
+          color: '#0D912E'
+          title: Quality Score
+      gradient: true
+      showDataPoints: true
+      connect-points: true
+      yAxisTitle: score
+      extrapolate: false
+      plotType: area
+      imputation: lerp
+    visualization: time-chart
+    title: Video Quality Score
+    isLive: false
+    type: query
+  ee6db87e-5908-4739-b87c-cbc51ce9ac2f:
+    x: 0
+    y: 44
+    description: Desktop Sharing Avg Loss (in/out)
+    height: 4
+    queryString: "regex(regex=\"^(?<zoom_event_type>[^.]+)\", field=content.event)\n\
+      | zoom_event_type=?zoom-event-type\n| content.payload.object.participant.email=?participant-email\n\
+      | content.payload.object.uuid=?event-uuid\n| case {\n\tcontent.payload.object.participant.qos.as_input.avg_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.as_input.avg_loss)\n\
+      \t| direction := \"in\";\n\tcontent.payload.object.participant.qos.as_output.avg_loss=*\n\
+      \t| regex(regex=\"^(?<loss>[.\\d]+)%$\", field=content.payload.object.participant.qos.as_output.avg_loss)\n\
+      \t| direction := \"out\";\n}\n| timechart(series=direction,function=avg(loss),span=15s)"
+    end: now
+    start: 15m
+    width: 6
+    options:
+      series: {}
+      connect-points: true
+      yAxisTitle: '%'
+      extrapolate: false
+      plotType: line
+      regression: true
+      imputation: lerp
+    visualization: time-chart
+    title: Sharing - Avg Loss
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0
+parameters:
+  network-type:
+    label: Network Type
+    valueFilters: {}
+    fileName: network_types__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: network_type
+  participant-email:
+    label: Participant Email
+    query: '* | content.payload.object.participant.email!="" | content.payload.object.uuid=?event-uuid
+      | participant_email := content.payload.object.participant.email  | groupBy([participant_email],function=[])'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: participant_email
+  zoom-version:
+    label: Zoom Version
+    valueFilters: {}
+    fileName: zoom_version__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: version
+  zoom-event-type:
+    label: Zoom Event Type
+    valueFilters: {}
+    fileName: zoom_event_types.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: zoom_event_type
+  connection-type:
+    label: Connection Type
+    valueFilters: {}
+    fileName: connections_types__qss.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: connection_type
+  event-uuid:
+    label: Event Uuid
+    query: content.payload.object.uuid=*  | rename(field=content.payload.object.uuid,
+      as=event_uuid)  | groupBy([event_uuid], function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: event_uuid
+  device:
+    label: Zoom Device
+    valueFilters: {}
+    fileName: zoom_devices.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: device
