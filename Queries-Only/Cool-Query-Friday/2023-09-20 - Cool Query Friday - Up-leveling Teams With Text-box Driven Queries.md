@@ -52,12 +52,12 @@ Create search to look for file written activity...
 		    | CommandLine=~wildcard(?CommandLine, ignoreCase=true) 
 		    | ExecutionChain:=format(format="%s\n\t└ %s (%s)", field=[ParentBaseFileName, FileName, RawProcessId]);
 
-	#event_simpleName=/FileWritten/ 
-		| FileWritten:=FileName 
-		| SizeMB:=(Size/1024/1024) 
-		| FileWritten=~wildcard(?FileWritten, ignoreCase=true) 
-		| test(SizeMB>=?MinSizeThreshold) 
-		| format("%,.3f",field=["SizeMB"], as="SizeMB") | WrittenDetails:=format(format="%s (%sMB) ", field=[FileWritten, SizeMB]);
+		#event_simpleName=/FileWritten/ 
+			| FileWritten:=FileName 
+			| SizeMB:=(Size/1024/1024) 
+			| FileWritten=~wildcard(?FileWritten, ignoreCase=true) 
+			| test(SizeMB>=?MinSizeThreshold) 
+			| format("%,.3f",field=["SizeMB"], as="SizeMB") | WrittenDetails:=format(format="%s (%sMB) ", field=[FileWritten, SizeMB]);
 }
 
 // Use selfJoin to filter our instances on only one event happening
