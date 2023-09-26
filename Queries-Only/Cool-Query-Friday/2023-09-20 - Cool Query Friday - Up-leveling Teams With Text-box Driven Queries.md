@@ -48,7 +48,8 @@ Create search to look for file written activity...
 	    #event_simpleName=ProcessRollup2 
 		    | UserName=~wildcard(?UserName, ignoreCase=true) 
 		    | FileExecuted:=FileName 
-		    | FileExecuted=~wildcard(?FileExecuted, ignoreCase=true) 
+		    | FileExecuted=~wildcard(?FileExecuted, ignoreCase=true)
+		    | CommandLine=~wildcard(?CommandLine, ignoreCase=true) 
 		    | ExecutionChain:=format(format="%s\n\t└ %s (%s)", field=[ParentBaseFileName, FileName, RawProcessId]);
 
 	#event_simpleName=/FileWritten/ 
