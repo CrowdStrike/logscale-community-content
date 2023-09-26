@@ -63,10 +63,7 @@ Create search to look for file written activity...
 | selfJoinFilter(field=[aid, falconPID], where=[{#event_simpleName=ProcessRollup2}, {#event_simpleName=/FileWritten/}])
 
 // Aggregate to include desired fields
-| groupBy([aid, falconPID], function=([count(#event_simpleName, as=eventCount, distinct=true), collect([ComputerName, UserName, ExecutionChain, WrittenDetails])]))
-
-// Remove unneeded fields
-| drop(eventCount)
+| groupBy([aid, falconPID], function=([collect([ComputerName, UserName, ExecutionChain, WrittenDetails])]))
 
 // Add link to graph explorer
 | format("[Graph Explorer](https://falcon.us-2.crowdstrike.com/graphs/process-explorer/graph?id=pid:%s:%s)", field=["aid", "falconPID"], as="Graph Explorer")
