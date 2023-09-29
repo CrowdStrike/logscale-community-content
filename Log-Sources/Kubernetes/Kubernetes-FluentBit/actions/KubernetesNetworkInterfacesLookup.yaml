@@ -1,4 +1,0 @@
-$schema: https://schemas.humio.com/action/v0.5.0
-fileName: network_interfaces.csv
-name: Kubernetes Network Interfaces Lookup
-type: upload-file

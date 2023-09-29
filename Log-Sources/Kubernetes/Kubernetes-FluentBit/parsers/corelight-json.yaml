@@ -1,7 +1,0 @@
-name: corelight-json
-tests: []
-fieldsToBeRemovedBeforeParsing: []
-$schema: https://schemas.humio.com/parser/v0.2.0
-script: parseJson() | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXX", field=_write_ts)
-tagFields:
-- _path
