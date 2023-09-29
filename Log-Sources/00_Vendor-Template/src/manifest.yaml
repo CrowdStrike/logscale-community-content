@@ -1,9 +1,0 @@
-author:
-  name: LogScale Community Content
-name: crowdstrike-lcc/vendor-application
-description: Brief Description
-version: 1.0.0
-minHumioVersion: 1.82.0
-type: application
-$schema: https://schemas.humio.com/manifest/v2.0.0
-licenseUrl: https://www.apache.org/licenses/LICENSE-2.0
