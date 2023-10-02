@@ -1,0 +1,78 @@
+name: Disk Metrics
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  44a9f21c-b513-41ad-ad25-483d15c5e38e:
+    x: 0
+    y: 0
+    description: Disk Read Size
+    height: 4
+    queryString: |-
+      flb.source=disk device=?device hostname=?hostname
+      | timechart(function=[
+             avg(field=read_size,as=avg),
+             min(field=read_size,as=min),
+             max(field=read_size,as=max)
+             ], span=1m)
+    end: now
+    start: 1h
+    width: 6
+    options:
+      gradient: false
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Disk - Read Size
+    isLive: false
+    type: query
+  bb04b59b-ea4d-4457-9b7d-dfa36ddd3bdb:
+    x: 6
+    y: 0
+    description: Disk Write Size
+    height: 4
+    queryString: |-
+      flb.source=disk device=?device hostname=?hostname
+      | timechart(function=[
+             avg(field=write_size,as=avg),
+             min(field=write_size,as=min),
+             max(field=write_size,as=max)
+             ], span=1m)
+    end: now
+    start: 1h
+    width: 6
+    options:
+      gradient: false
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Disk - Write Size
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  device:
+    label: Disk Device
+    query: flb.source=disk | groupBy([device], function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 60
+    valueField: device
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: hostname

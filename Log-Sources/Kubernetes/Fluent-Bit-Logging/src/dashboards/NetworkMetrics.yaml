@@ -1,0 +1,240 @@
+name: Network Metrics
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  1ce95658-c83d-44ae-afa7-ca77d16d2fa7:
+    x: 6
+    y: 8
+    description: Network - Write Errors
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname| regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.errors\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Write Errors
+    isLive: false
+    type: query
+  3da178fc-e29c-4cff-a50b-d05afcca674a:
+    x: 0
+    y: 12
+    description: Network - Read Drops
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname
+      | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.drop\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Read Drops
+    isLive: false
+    type: query
+  cdf1dbfb-a243-4226-968a-61951a1c70f5:
+    x: 6
+    y: 4
+    description: Network - Write Packets
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname
+      | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.packets\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Write Packets
+    isLive: false
+    type: query
+  69210409-f98c-4f87-856a-bff38d5672ea:
+    x: 0
+    y: 0
+    description: Network - Read Bytes
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname
+      | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.bytes\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Read Bytes
+    isLive: false
+    type: query
+  793a5bd2-82b1-446b-8c23-f89bc37d8c1c:
+    x: 6
+    y: 0
+    description: Network - Write Bytes
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname
+      | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.bytes\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Write Bytes
+    isLive: false
+    type: query
+  ea535602-5ffe-4393-a7ea-b9778617635c:
+    x: 6
+    y: 12
+    description: Network - Write Drops
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname
+      | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.tx\.drop\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Write Drops
+    isLive: false
+    type: query
+  cde4ce5c-684f-4bd6-aa75-4096418bbc43:
+    x: 0
+    y: 4
+    description: Network - Read Packets
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname
+      | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.packets\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Read Packets
+    isLive: false
+    type: query
+  94604814-c533-4e5c-bf2e-fcc98ac37a4b:
+    x: 0
+    y: 8
+    description: Network - Read Errors
+    height: 4
+    queryString: |-
+      flb.source=netif hostname=?hostname
+      | regex("(?<netif_name>[-_a-zA-Z0-9]+)\.rx\.errors\":(?<netif_metric>\d+),", field=@rawstring, repeat=true)
+      | netif_name=?netif
+      | timechart(function=[
+             avg(field=netif_metric,as=avg),
+             min(field=netif_metric,as=min),
+             max(field=netif_metric,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Network - Read Errors
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: hostname
+  netif:
+    label: Network Interface
+    valueFilters: {}
+    fileName: network_interfaces.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: netif

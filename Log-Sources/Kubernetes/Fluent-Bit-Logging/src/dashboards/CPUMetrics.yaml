@@ -1,0 +1,190 @@
+name: CPU Metrics
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  ed190133-d72d-44dd-96b5-cd34ca69749d:
+    x: 8
+    y: 4
+    description: CPU Core - Combined
+    height: 6
+    queryString: |
+      flb.source=cpu hostname=?hostname
+      | tail(50)
+      | regex("\"cpu(?<core_raw>\d{1,2}+)\.p_cpu\":(?<cpu_raw>[.0-9]+),", field=@rawstring, repeat=true)
+      | format(format="%.2i", field=core_raw, as=core)
+      | format(format="%03.0f", field=cpu_raw, as=cpu)
+      | groupBy([core, cpu], function=percentile(field=cpu, percentiles=[95], as=p95_cpu))
+      | sort(field=[cpu])
+    end: now
+    start: 1m
+    width: 4
+    options:
+      labelAngle: 0
+      xAxisTitle: core
+      colorDomainMin: 1
+      colorPalette: monoMagenta
+      yAxisTitle: '% cpu'
+      legendLocation: right
+      includeHistogram: true
+      colorDomainMax: 100
+      gapBetweenRectangles: true
+      reversePalette: false
+    visualization: heat-map
+    title: CPU[core] - system+user
+    isLive: false
+    type: query
+  f836398a-cc37-4d14-8bf7-2158f16f3fd5:
+    x: 0
+    y: 4
+    description: CPU Core - System
+    height: 6
+    queryString: |-
+      flb.source=cpu hostname=?hostname
+      | tail(50)
+      | regex("\"cpu(?<core_raw>\d{1,2}+)\.p_system\":(?<cpu_raw>[.0-9]+),", field=@rawstring, repeat=true)
+      | format(format="%.2i", field=core_raw, as=core)
+      | format(format="%03.0f", field=cpu_raw, as=cpu)
+      | groupBy([core, cpu], function=percentile(field=cpu, percentiles=[95], as=p95_cpu))
+      | sort(field=[cpu])
+    end: now
+    start: 1m
+    width: 4
+    options:
+      xAxisTitle: core
+      colorDomainMin: 0
+      yAxisTitle: '% cpu'
+      legendLocation: right
+      includeHistogram: true
+      colorDomainMax: 100
+    visualization: heat-map
+    title: CPU[core] - system
+    isLive: false
+    type: query
+  7a3cd8f2-4a22-4182-bcca-86c471e02261:
+    x: 4
+    y: 4
+    description: CPU Core - User
+    height: 6
+    queryString: |-
+      flb.source=cpu hostname=?hostname
+      | tail(50)
+      | regex("\"cpu(?<core_raw>\d{1,2}+)\.p_user\":(?<cpu_raw>[.0-9]+),", field=@rawstring, repeat=true)
+      | format(format="%.2i", field=core_raw, as=core)
+      | format(format="%03.0f", field=cpu_raw, as=cpu)
+      | groupBy([core, cpu], function=percentile(field=cpu, percentiles=[95], as=p95_cpu))
+      | sort(field=[cpu])
+    end: now
+    start: 1m
+    width: 4
+    options:
+      xAxisTitle: core
+      colorDomainMin: 0
+      colorPalette: monoGreen
+      yAxisTitle: '% cpu'
+      legendLocation: right
+      includeHistogram: true
+      colorDomainMax: 100
+    visualization: heat-map
+    title: CPU[core] - user
+    isLive: false
+    type: query
+  4d13bd50-5474-4c11-9ff4-0238ee736ec2:
+    x: 4
+    y: 0
+    description: User CPU
+    height: 4
+    queryString: |-
+      flb.source=cpu hostname=?hostname
+      | timechart(function=[
+             avg(field=user_p,as=avg),
+             min(field=user_p,as=min),
+             max(field=user_p,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 4
+    options:
+      gradient: true
+      mx: 50
+      showDataPoints: true
+      connect-points: false
+      yAxisTitle: '% cpu'
+      plotType: line
+      regression: true
+      mn: 0
+      imputation: none
+    visualization: time-chart
+    title: CPU - user
+    isLive: false
+    type: query
+  876a18df-d37a-4fe4-ab7d-c8474e5dbf54:
+    x: 0
+    y: 0
+    description: System CPU
+    height: 4
+    queryString: |-
+      flb.source=cpu hostname=?hostname
+      | timechart(function=[
+             avg(field=system_p,as=avg),
+             min(field=system_p,as=min),
+             max(field=system_p,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 4
+    options:
+      gradient: true
+      mx: 50
+      showDataPoints: true
+      connect-points: false
+      yAxisTitle: '% cpu'
+      plotType: line
+      regression: true
+      mn: 0
+      imputation: none
+    visualization: time-chart
+    title: CPU - system
+    isLive: false
+    type: query
+  4c68ff62-2c7e-463a-ade2-284bfcf4d693:
+    x: 8
+    y: 0
+    description: Combined CPU
+    height: 4
+    queryString: |-
+      flb.source=cpu hostname=?hostname
+      | timechart(function=[
+             avg(field=cpu_p,as=avg),
+             min(field=cpu_p,as=min),
+             max(field=cpu_p,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 4
+    options:
+      gradient: true
+      mx: 50
+      showDataPoints: true
+      connect-points: false
+      yAxisTitle: '% cpu'
+      plotType: line
+      regression: true
+      mn: 0
+      imputation: none
+    visualization: time-chart
+    title: CPU - system+user
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: hostname

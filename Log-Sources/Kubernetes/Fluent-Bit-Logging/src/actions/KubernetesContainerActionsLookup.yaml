@@ -1,0 +1,4 @@
+$schema: https://schemas.humio.com/action/v0.5.0
+fileName: container_actions.csv
+name: Kubernetes Container Actions Lookup
+type: upload-file

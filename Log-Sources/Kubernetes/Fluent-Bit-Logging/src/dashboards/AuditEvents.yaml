@@ -1,0 +1,174 @@
+name: Audit Events
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  06941661-a36c-4498-8769-06213f66e9a4:
+    x: 0
+    y: 0
+    description: audit event count
+    height: 7
+    queryString: |-
+      flb.source=audit
+      | objectRef.namespace=?namespace
+      | timeChart(span=1m)
+    end: now
+    start: 15m
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Events
+    isLive: false
+    type: query
+  d6e6c89e-7bf7-407c-8b96-46bfd04458a8:
+    x: 4
+    y: 0
+    description: Action Verbs Breakdown
+    height: 7
+    queryString: |-
+      flb.source=audit
+      | objectRef.namespace=?namespace
+      | groupBy([verb],function=count())
+    end: now
+    start: 15m
+    width: 2
+    options:
+      withLegendTitle: true
+    visualization: pie-chart
+    title: Verbs
+    isLive: false
+    type: query
+  493a1b84-297f-403f-b254-d48becb10a33:
+    x: 9
+    y: 0
+    description: Resource Types
+    height: 7
+    queryString: |-
+      flb.source=audit
+      | apiVersion="audit.k8s.io/v1" user.username=* hostname=* objectRef.namespace=?namespace verb=* objectRef.resource=*
+      | groupBy([objectRef.resource],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Resources
+    isLive: false
+    type: query
+  0045196c-37a9-4656-b69d-5664c1b62b5b:
+    x: 6
+    y: 0
+    description: Users
+    height: 7
+    queryString: |-
+      flb.source=audit
+      | objectRef.namespace=?namespace
+      | groupBy([user.username],function=count())
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Users
+    isLive: false
+    type: query
+  ebf9244c-c252-4c26-8081-e1439211ed52:
+    x: 0
+    y: 7
+    description: User Actions
+    height: 7
+    queryString: |-
+      flb.source=audit
+      verb=?verb user.username=?user
+      userAgent=?userAgent objectRef.resource=?resource
+      | rename(objectRef.resource,as=resource)
+      | rename(objectRef.namespace, as=namespace)
+      | rename(user.username, as=user)
+      | table([@timestamp,user,verb,resource,namespace,userAgent,objectRef.name,requestURI])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 12
+    title: Actions
+    isLive: false
+    type: query
+  5179f9f6-be76-4a35-a6c6-a8401fe7280d:
+    x: 2
+    description: Namespaces
+    height: 7
+    queryString: |-
+      flb.source=audit
+      | objectRef.namespace=?namespace
+      | rename(field=objectRef.namespace,as=namespace)
+      | groupBy([namespace],function=count())
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 2
+    y: 0
+    interactions:
+    - conditions: null
+      name: Namespaces
+      titleTemplate: 'Namespace: {{ fields.namespace }}'
+      queryString: |-
+        source=audit
+        | parseJson(field=log)
+        | objectRef.namespace=?namespace
+        | rename(field=objectRef.namespace,as=namespace)
+      useWidgetTimeWindow: true
+      repoOrViewName: sa-fluentbit-testing
+      arguments:
+        namespace: '["{{fields.namespace}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Namespaces
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  userAgent:
+    defaultValue: '*'
+    label: userAgent
+    order: 50
+    type: text
+  resource:
+    label: Resource
+    query: flb.source=audit | parseJson(log)|rename(field=objectRef.resource,as=resource)
+      | groupBy([resource],function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: resource
+  verb:
+    label: Verb
+    query: flb.source=audit  | groupBy(field=[verb],function=[])
+    timeInterval: 2h
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: verb
+  user:
+    label: User
+    query: flb.source=audit | parseJson(log) | rename(field=user.username,as=user)
+      | groupBy([user],function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: user
+  namespace:
+    label: Namespace
+    query: flb.source=audit | parseJson(log) | rename(field=objectRef.namespace, as=namespace)
+      | groupBy([namespace], function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: namespace

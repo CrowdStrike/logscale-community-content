@@ -1,0 +1,262 @@
+name: Kubernetes Container Search
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  note-1696279978004-0:
+    x: 0
+    y: 10
+    description: Regular Expression Parameter Search Note
+    height: 2
+    text: "# RegEx Log Search\n        \nUse the RegEx parameter to filter log events.\
+      \  To match all events apply the default <empty string>, or use a <space> character,\
+      \ or the global regex match: \".*\"\n        "
+    width: 12
+    title: RegEx Parameter Search
+    type: note
+  b3dcea56-544a-4741-b0d8-53543075ef0c:
+    x: 6
+    y: 5
+    description: Containers Summary
+    height: 5
+    queryString: |-
+      flb.source=container | !in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"]) | hostname=?hostname
+                       kubernetes.namespace_name=?namespace
+                       kubernetes.pod_name=?pod_name
+                       kubernetes.container_name=?container_name
+      | rename(field=kubernetes.namespace_name, as=namespace)
+      | rename(field=kubernetes.container_name,as=container_name)
+      | regex(regex=?regex,field=log)
+      | groupBy([container_name],function=[count()], limit=15)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Top Containers
+    isLive: false
+    type: query
+  b2a5db93-495b-4ce6-a2cf-7ae188b8e98b:
+    x: 0
+    y: 12
+    description: Container Event Search
+    height: 8
+    queryString: |-
+      flb.source=container |!in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])| kubernetes.namespace_name=?namespace
+                       hostname=?hostname
+                       kubernetes.container_name=?container_name
+      | rename(field=kubernetes.namespace_name, as=namespace)
+      | rename(field=kubernetes.container_name,as=container_name)
+      | rename(kubernetes.pod_name,as=pod_name)
+      | regex(regex=?regex,field=log)
+      | table([@timestamp,hostname,namespace,pod_name,container_name,log])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 12
+    title: Container Event Search
+    isLive: false
+    type: query
+  615fda64-4ceb-4c55-aaee-6fa96b0f4e8f:
+    x: 2
+    y: 0
+    description: Events count timechart split by container
+    height: 5
+    queryString: |-
+      flb.source=container | !in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])
+      | timeChart(series=kubernetes.container_name, span=1m)
+    end: now
+    start: 15m
+    width: 4
+    options:
+      gradient: true
+      showDataPoints: false
+      connect-points: false
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Events by Container
+    isLive: false
+    type: query
+  dca6bf42-4f27-49b4-9424-791f41734f6d:
+    x: 9
+    y: 5
+    description: PodNames Summary
+    height: 5
+    queryString: |-
+      flb.source=container |!in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])| hostname=?hostname
+                       kubernetes.namespace_name=?namespace
+                       kubernetes.pod_name=?pod_name
+                       kubernetes.container_name=?container_name
+      | rename(field=kubernetes.namespace_name, as=namespace)
+      | rename(field=kubernetes.container_name,as=container_name)
+      | rename(kubernetes.pod_name,as=pod_name)
+      | regex(regex=?regex,field=log)
+      | groupBy([pod_name],function=[count()], limit=10)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Top Pods
+    isLive: false
+    type: query
+  1c168dc6-8b9e-42cc-87a7-39794d3dc871:
+    x: 0
+    y: 0
+    description: Event Count - (non control-plane containers)
+    height: 5
+    queryString: |-
+      flb.source=container
+      kubernetes.host=?hostname
+      | !in(kubernetes.container_name,values=["calico-kube-controllers",
+                                             "calico-node",
+                                             "coredns",
+                                             "etcd",
+                                             "kube-apiserver",
+                                             "kube-controller-manager",
+                                             "kube-proxykube-scheduler"])
+      | timeChart(span=1m)
+    end: now
+    start: 15m
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Container Events
+    isLive: false
+    type: query
+  b6992902-a9c3-4339-bc29-5e88d048f8d0:
+    x: 0
+    y: 5
+    description: PodNames by host
+    height: 5
+    queryString: |-
+      flb.source=container |!in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])| hostname=?hostname
+                       kubernetes.namespace_name=?namespace
+                       kubernetes.pod_name=?pod_name
+                       kubernetes.container_name=?container_name
+      | rename(field=kubernetes.namespace_name, as=namespace)
+      | rename(field=kubernetes.container_name,as=container_name)
+      | rename(kubernetes.pod_name,as=pod_name)
+      | regex(regex=?regex,field=log)
+      | groupBy([pod_name,hostname,namespace,container_name],function=[])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 6
+    title: Pods by Host
+    isLive: false
+    type: query
+  ce1e042d-83fd-4cc9-9d26-df8e7892f256:
+    x: 6
+    y: 0
+    description: Container Event Heat by weekday
+    height: 5
+    queryString: |-
+      // Heatmap of daily event count by container over the week
+      flb.source=container
+      // limit search to kubernetes control plane containers
+      | !in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])
+      | dayOfWeek := time:dayOfWeekName()
+      | dayOfWeekNum := time:dayOfWeek()
+      | hour := time:hour()
+      | groupBy([dayOfWeek, dayOfWeekNum, hour])
+      | sort([dayOfWeekNum, hour], type=[number, number], order=[asc, desc], limit=200)
+      | drop(dayOfWeekNum)
+    visualization: heat-map
+    end: now
+    start: 7d
+    width: 6
+    title: Event Heat (weekday)
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    defaultValue: '*'
+    order: 10
+    valueField: hostname
+    type: file
+    labelField: hostname
+  container_name:
+    label: Container Name
+    query: flb.source=container hostname=?hostname  | kubernetes.namespace_name=?namespace
+      | !in(kubernetes.container_name,      values=["calico-kube-controllers",              "calico-node",              "coredns",              "etcd",              "kube-apiserver",              "kube-controller-manager",              "kube-proxykube-scheduler"])
+      | rename(field=kubernetes.container_name, as=container_name) | groupBy([container_name],function=[])
+    timeInterval: 15m
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: container_name
+  namespace:
+    label: Namespace
+    query: flb.source=container |!in(kubernetes.container_name,      values=["calico-kube-controllers",              "calico-node",              "coredns",              "etcd",              "kube-apiserver",              "kube-controller-manager",              "kube-proxykube-scheduler"])
+      | groupBy([kubernetes.namespace_name],function=[])
+    timeInterval: 15m
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 20
+    valueField: kubernetes.namespace_name
+  regex:
+    defaultValue: ''
+    label: Regex
+    order: 50
+    type: text
+  pod_name:
+    label: Pod Name
+    query: flb.source=container kubernetes.pod_name=* | groupBy([kubernetes.pod_name],
+      function=[]) | rename(kubernetes.pod_name, as=pod_name) | sort(field=pod_name,reverse=false)
+    timeInterval: 15m
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: pod_name
