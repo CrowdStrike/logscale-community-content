@@ -1,0 +1,13 @@
+name: Gather Network Types
+description: Gather Network Types
+enabled: true
+queryString: content.payload.object.participant.data.network_type=* | rename(field=content.payload.object.participant.data.network_type,
+  as=network_type) | groupBy([network_type],function=[])
+backfillLimit: 0
+schedule: '*/5 * * * *'
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC+00:00
+queryStart: 30d
+actionNameReferences:
+- Network Types

@@ -1,0 +1,14 @@
+name: Gather Zoom Versions
+description: Gather Zoom Versions
+enabled: true
+queryString: "content.payload.object.participant.data.version = *\n| case {\n\tcontent.payload.object.participant.data.version\
+  \ = \"\" | zoom_version := \"Unknown\";\n\t* | version := content.payload.object.participant.data.version\n\
+  }\n| groupBy([version], function=[])"
+backfillLimit: 0
+schedule: '*/5 * * * *'
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC+00:00
+queryStart: 30d
+actionNameReferences:
+- Zoom Version

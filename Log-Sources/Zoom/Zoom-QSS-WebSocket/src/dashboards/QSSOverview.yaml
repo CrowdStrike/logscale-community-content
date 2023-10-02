@@ -1,0 +1,254 @@
+name: QSS Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  11b24ac1-106b-4644-b405-669b64f3caef:
+    x: 0
+    y: 4
+    description: Zoom Events
+    height: 6
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type=*| participant_data:="participant_data"
+      | format("%s.%s",field=[zoom_event_type,participant_data],as=content_event)
+      | test(content.event == content_event)
+      | content.payload.object.participant.data.network_type=* content.payload.object.uuid=* content.payload.object.participant.email!=""
+      | rename(content.payload.object.uuid,as=event_uuid)
+      | groupBy([event_uuid],function=[]) | count()
+    end: now
+    start: 15m
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Zoom Events
+    isLive: false
+    type: query
+  f3b4898c-afa8-4eb5-b186-71687e0a26f0:
+    x: 6
+    y: 4
+    description: Zoom Event Countries
+    height: 6
+    queryString: |-
+      content.payload.object.participant.data.location=*
+      | regex(regex="\((?<code>[^\)]+)\)$", field=content.payload.object.participant.data.location)
+      | lookup("county_codes__iso_3166.csv", on=[code])
+      | groupBy([country],limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Event Countries
+    isLive: false
+    type: query
+  9c3684e6-37d2-451b-866e-fd6ee463ee50:
+    x: 3
+    y: 10
+    description: Zoom Device Platforms
+    height: 6
+    queryString: "content.payload.object.participant.data.device = *\n| case {\n\t\
+      content.payload.object.participant.data.device = \"\" | device := \"Unknown\"\
+      ;\n\t* | device := content.payload.object.participant.data.device\n}\n| groupBy([device])"
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Device Platforms
+    isLive: false
+    type: query
+  7e6f3040-0555-47f5-8d51-d32221610687:
+    x: 3
+    y: 4
+    description: Event Participants
+    height: 6
+    queryString: |-
+      regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | zoom_event_type="*" | participant_data:="participant_data"
+      | format("%s.%s",field=[zoom_event_type,participant_data],as=content_event)
+      | test(content.event == content_event)
+      | content.payload.object.participant.data.network_type=* content.payload.object.uuid=* content.payload.object.participant.email!=""
+      | rename(content.payload.object.uuid,as=event_uuid)
+      | groupBy([event_uuid,participant_count],function=[count(content.payload.object.participant.email,distinct=true,as=participant_count)]) | sum(participant_count)
+    end: now
+    start: 15m
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Participants
+    isLive: false
+    type: query
+  4cad9ba0-c936-4000-9254-64a9a1b5c5f5:
+    x: 9
+    y: 10
+    description: Connection Type
+    height: 6
+    queryString: |-
+      content.payload.object.participant.data.connection_type=*
+      | rename(field=content.payload.object.participant.data.connection_type, as=connection_type)
+      | groupby([connection_type], limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Connection Type
+    isLive: false
+    type: query
+  b53935e1-a31f-4c72-a2f5-f136cd110d4d:
+    x: 3
+    y: 16
+    description: Audio Quality
+    height: 6
+    queryString: |-
+      content.payload.object.participant.qos.audio_quality.quality=*
+      | rename(content.payload.object.participant.qos.audio_quality.quality,as=audio_quality)
+      | groupBy([audio_quality])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Audio Quality
+    isLive: false
+    type: query
+  15d3ed74-2756-4865-894d-cbcee44fe125:
+    x: 0
+    y: 10
+    description: Zoom Version
+    height: 6
+    queryString: |-
+      content.payload.object.participant.data.version=*
+      | regex(regex="^(?<zoom_version>\d+\.\d+)", field=content.payload.object.participant.data.version)
+      | groupBy([zoom_version], limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Zoom Version
+    isLive: false
+    type: query
+  8b6967e9-964b-42ee-8b9c-e7b8782a616d:
+    x: 4
+    y: 0
+    description: Video Quality - Bad
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.video_quality.quality="bad"
+      | rename(content.payload.object.participant.email, as=email)
+      | rename(content.payload.object.uuid, as=event_uuid)
+      |  rename(content.payload.object.participant.qos.video_quality.quality, as=quality)
+      | quality!="" email!=""
+      | groupBy([event_uuid, email, quality], function=[])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 4
+    title: Video Quality - Bad
+    isLive: false
+    type: query
+  b84e8ea4-26d0-4be0-baf0-561422ae9598:
+    x: 0
+    y: 16
+    description: Video Quality
+    height: 6
+    queryString: |-
+      content.payload.object.participant.qos.video_quality.quality=*
+      | rename(content.payload.object.participant.qos.video_quality.quality,as=video_quality)
+      | groupBy([video_quality])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Video Quality
+    isLive: false
+    type: query
+  14b3dead-672f-4848-98c6-8e4b1621ea27:
+    x: 9
+    y: 4
+    description: Event Types
+    height: 6
+    queryString: |-
+      content.payload.object.participant.data.network_type=*
+      | regex(regex="^(?<zoom_event_type>[^.]+)", field=content.event)
+      | groupBy([zoom_event_type,content.payload.object.uuid],function=[count()])
+      | groupBy([zoom_event_type])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Event Types
+    isLive: false
+    type: query
+  f7b2f405-35e6-4af8-a041-cf88a46ccc79:
+    x: 8
+    y: 0
+    description: Sharing Quality - Bad
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.as_quality.quality="bad"
+      | rename(content.payload.object.participant.email, as=email)
+      | rename(content.payload.object.uuid, as=event_uuid)
+      |  rename(content.payload.object.participant.qos.as_quality.quality, as=quality)
+      | quality!="" email!=""
+      | groupBy([event_uuid, email, quality], function=[])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 4
+    title: Sharing Quality - Bad
+    isLive: false
+    type: query
+  c53a340d-6073-4880-b20f-e3bbaaedde75:
+    x: 6
+    y: 16
+    description: Sharing Quality
+    height: 6
+    queryString: |-
+      content.payload.object.participant.qos.as_quality.quality=*
+      | rename(content.payload.object.participant.qos.as_quality.quality,as=sharing_quality)
+      | groupBy([sharing_quality])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Sharing Quality
+    isLive: false
+    type: query
+  6025e9e1-f3f0-4673-b4e6-3f68b0c43268:
+    x: 6
+    y: 10
+    description: Network Type
+    height: 6
+    queryString: |-
+      content.payload.object.participant.data.network_type=*
+      | rename(field=content.payload.object.participant.data.network_type, as=network_type)
+      | groupBy(field=network_type, function=[count()],limit=20)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Network Type
+    isLive: false
+    type: query
+  f6682cbc-b33f-44d4-a98c-87ae4b5c5ab3:
+    x: 0
+    y: 0
+    description: Audio Quality - Bad
+    height: 4
+    queryString: |-
+      content.payload.object.participant.qos.audio_quality.quality="bad"
+      | rename(content.payload.object.participant.email, as=email)
+      | rename(content.payload.object.uuid, as=event_uuid)
+      |  rename(content.payload.object.participant.qos.audio_quality.quality, as=quality)
+      | quality!="" email!=""
+      | groupBy([event_uuid, email, quality], function=[])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 4
+    title: Audio Quality - Bad
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.12.0
