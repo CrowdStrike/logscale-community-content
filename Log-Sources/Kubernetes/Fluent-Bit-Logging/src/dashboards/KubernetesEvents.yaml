@@ -1,0 +1,129 @@
+name: Kubernetes Events
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  e140deab-f455-43f6-94e7-6845f2da2421:
+    x: 4
+    y: 0
+    description: Kubernetes Events by Message Level (type)
+    height: 4
+    queryString: flb.source=kubernetes | timechart(series=type,span=5m)
+    end: now
+    start: 2h
+    width: 3
+    options:
+      gradient: true
+      showDataPoints: false
+      connect-points: false
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Events by Level
+    isLive: false
+    type: query
+  907ff331-6452-42fc-a9c6-02ca5d1c9d75:
+    x: 7
+    y: 0
+    description: Kubernetes Event Count Heat Map (weekday)
+    height: 4
+    queryString: |-
+      // Heatmap of daily kubernetes event count
+      flb.source=kubernetes
+      | dayOfWeek := time:dayOfWeekName()
+      | dayOfWeekNum := time:dayOfWeek()
+      | hour := time:hour()
+      | groupBy([dayOfWeek, dayOfWeekNum, hour])
+      | sort([dayOfWeekNum, hour], type=[number, number], order=[asc, desc], limit=200)
+      | drop(dayOfWeekNum)
+    visualization: heat-map
+    end: now
+    start: 7d
+    width: 5
+    title: Heat Map (weekday)
+    isLive: false
+    type: query
+  5f1142bf-5c00-4a6a-9931-39f71870992a:
+    x: 0
+    y: 0
+    description: Event Count over Time
+    height: 4
+    queryString: flb.source=kubernetes | timechart(span=5m)
+    end: now
+    start: 2h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Count
+    isLive: false
+    type: query
+  ea6ec1c3-b134-4045-aeee-b5094f054a6b:
+    x: 0
+    y: 6
+    description: Kubernetes Events
+    height: 8
+    queryString: |-
+      flb.source=kubernetes | type=?msg-level | regex(regex=?msg-regex,field=message)
+      | rename(field=metadata.name, as=name)
+      | rename(field=metadata.namespace, as=namespace) | namespace=?namespace
+      | table([@timestamp,hostname,namespace,name,type,reason,message])
+    visualization: table-view
+    end: now
+    start: 2h
+    width: 12
+    title: Events
+    isLive: false
+    type: query
+  ef2cd55b-04db-4915-ba65-1f943ef54b53:
+    x: 2
+    y: 0
+    description: Message Level (type)
+    height: 4
+    queryString: flb.source=kubernetes | groupBy([type])
+    visualization: pie-chart
+    end: now
+    start: 2h
+    width: 2
+    title: Message Level
+    isLive: false
+    type: query
+  note-1696278217713-0:
+    x: 0
+    y: 4
+    description: Regular Expression Parameter Search Note
+    height: 2
+    text: "# RegEx Message Search\n        \nUse the RegEx parameter to filter event\
+      \ messages.  To match all events apply the default <empty string>, or use a\
+      \ <space> character, or the global regex match: \".*\"\n        "
+    width: 12
+    title: RegEx Parameter Search
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  msg-level:
+    label: Message Level
+    query: flb.source=kubernetes | groupBy([type], function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 20
+    valueField: type
+  msg-regex:
+    defaultValue: ''
+    label: Regex
+    order: 30
+    type: text
+  namespace:
+    label: Namespace
+    query: flb.source=kubernetes | rename(field=metadata.namespace,as=namespace) |
+      groupBy([namespace],function=[])
+    timeInterval: 2h
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 10
+    valueField: namespace

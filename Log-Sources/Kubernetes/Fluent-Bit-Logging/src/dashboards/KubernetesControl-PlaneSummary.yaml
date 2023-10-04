@@ -1,0 +1,562 @@
+name: Kubernetes Control-Plane Summary
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  bd2052d1-2b0c-4718-9e51-91677ff6a012:
+    x: 0
+    y: 27
+    description: Kube-Proxy - Events Severity IDs
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-proxy
+      hostname=?hostname
+      | regex(regex="^(?<severity_id>[IEW]\d\d\d\d)",field=log)
+      | groupBy([severity_id],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: Kube-Proxy - Severity
+    isLive: false
+    type: query
+  c4be6aa2-d415-445e-b88c-db9130bbf824:
+    x: 4
+    y: 15
+    description: Kube-ApiServer - Service Events
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-apiserver
+      hostname=?hostname
+      | regex(regex=?regex, field=log)
+      | regex(regex="^(?<msgelevel>[IEW])\d\d\d\d",field=log)
+      | severity :=?severity
+      // normalize severity to etcd level
+      | case { severity = "INFO"  | elevel := "I";
+               severity = "WARN"  | elevel := "W";
+               severity = "ERROR" | elevel := "E";
+               *                  | elevel := "*" }
+      // test for level match or glob * match
+      | case{ test(msgelevel==elevel) | pass:="true";
+              test(elevel=="*")   | pass:="true";
+              *                   | pass:="false"}
+      // apply the event filter
+      | test(pass=="true")
+      | rename(kubernetes.pod_name,as=pod_name)
+      | case { msgelevel = "I" | severity := "INFO";
+               msgelevel = "W" | severity := "WARN";
+               msgelevel = "E" | severity := "ERROR" }
+      | table([@timestamp,hostname,severity,log,pod_name])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: Kube-ApiServer - Events
+    isLive: false
+    type: query
+  fb43be6d-f78c-4813-98ba-6345d8f75ebd:
+    x: 0
+    y: 23
+    description: Kube-Controller-Manager - Events Severity IDs
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-controller-manager
+      hostname=?hostname
+      | regex(regex="^(?<severity_id>[IEW]\d\d\d\d)",field=log)
+      | groupBy([severity_id],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: Kube-Controller-Manager - Severity
+    isLive: false
+    type: query
+  b05c5e68-98e9-4fc3-a2ee-eb441cd16b08:
+    x: 0
+    y: 31
+    description: Calico - Events Severities Summary
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=calico*
+      hostname=?hostname
+      | regex("^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s\[(?<severity>[A-Z]+)\](?<message>.+)",field=log)
+      | groupBy([severity],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: Calico - Severity
+    isLive: false
+    type: query
+  9f691e52-1961-4ca3-bcea-99ccbd403f82:
+    x: 4
+    y: 19
+    description: Kube-Scheduler - Events
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-scheduler
+      hostname=?hostname
+      | regex(regex=?regex, field=log)
+      | regex(regex="^(?<msgelevel>[IEW])\d\d\d\d",field=log)
+      | mseverity:=?severity
+      // normalize mseverity to etcd level
+      | case { mseverity = "INFO"  | elevel := "I";
+               mseverity = "WARN"  | elevel := "W";
+               mseverity = "ERROR" | elevel := "E";
+               *                   | elevel := "*" }
+      // test for level match or glob * match
+      | case{ test(msgelevel==elevel) | pass:="true";
+              test(elevel=="*")   | pass:="true";
+              *                   | pass:="false"}
+      // apply the event filter
+      | test(pass=="true")
+      // normalize severity to [INFO,ERROR,WARN]
+      | case { msgelevel = "I" | severity := "INFO";
+               msgelevel = "W" | severity := "WARN";
+               msgelevel = "E" | severity := "ERROR" }
+      | rename(kubernetes.pod_name,as=pod_name)
+      | table([@timestamp,hostname,severity,log,pod_name])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: Kube-Scheduler - Events
+    isLive: false
+    type: query
+  90d4d0b2-2553-4a97-b5f1-8a98a382a383:
+    x: 4
+    y: 23
+    description: Kube-Controller-Manager - Events
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-controller-manager
+      hostname=?hostname
+      | regex(regex=?regex, field=log)
+      | regex(regex="^(?<level>[IEW])\d\d\d\d",field=log)
+      | mseverity:=?severity
+      // normalize mseverity to etcd level
+      | case { mseverity = "INFO"  | elevel := "I";
+               mseverity = "WARN"  | elevel := "W";
+               mseverity = "ERROR" | elevel := "E";
+               *                   | elevel := "*" }
+      // test for level match or glob * match
+      | case{ test(level==elevel) | pass:="true";
+              test(elevel=="*")   | pass:="true";
+              *                   | pass:="false"}
+      // apply the event filter
+      | test(pass=="true")
+      | rename(kubernetes.pod_name,as=pod_name)
+      | case { level = "I" | severity := "INFO";
+               level = "W" | severity := "WARN";
+               level = "E" | severity := "ERROR" }
+      | table([@timestamp,hostname,severity,log,pod_name])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: Kube-Controller-Manager - Events
+    isLive: false
+    type: query
+  dc7a79b5-c21b-4b5c-b6d4-ba226c534bce:
+    x: 4
+    y: 31
+    description: Calico Log Events
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=calico*
+      hostname=?hostname
+      | regex("^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s\[(?<log_severity>[A-Z]+)\](?<message>.+)",field=log)
+      | log_severity=?severity
+      // test for level match or glob * match
+      | case{ test(log_severity==?severity) | pass:="true";
+              test(?severity=="*")          | pass:="true";
+              *                             | pass:="false"}
+      // apply the event filter
+      | test(pass=="true")
+      | regex(?regex,field=log)
+      | rename(kubernetes.pod_name,as=pod_name)
+      | rename(log_severity,as=severity)
+      | table([@timestamp,hostname,severity,message,pod_name])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: Calico - Events
+    isLive: false
+    type: query
+  bc4ff158-5ff3-4e9a-9fdb-2fdb8bd1e5aa:
+    x: 0
+    y: 15
+    description: Kube-ApiServer - Service Event Severity IDs
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-apiserver
+      hostname=?hostname
+      | regex(regex="^(?<severity_id>[IEW]\d\d\d\d)",field=log)
+      | groupBy([severity_id],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: Kube-ApiServer - Severity ID
+    isLive: false
+    type: query
+  9dddf690-cefc-4e61-8845-82a588afdd25:
+    x: 6
+    y: 0
+    description: Containers Summary
+    height: 5
+    queryString: |-
+      flb.source=container
+      | in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])
+      | rename("kubernetes.container_name", as="container")
+      | groupBy([container],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 3
+    title: Events by Container
+    isLive: false
+    type: query
+  68010802-8107-42bd-9fb6-69695e1d623c:
+    x: 0
+    y: 0
+    description: Kubernetes Log Event Count
+    height: 5
+    queryString: |-
+      flb.source=container
+      kubernetes.host=?hostname
+      | in(kubernetes.container_name,values=["calico-kube-controllers",
+                                             "calico-node",
+                                             "coredns",
+                                             "etcd",
+                                             "kube-apiserver",
+                                             "kube-controller-manager",
+                                             "kube-proxykube-scheduler"])
+      | timeChart(span=1m)
+    end: now
+    start: 15m
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Count
+    isLive: false
+    type: query
+  14dbf70e-4f49-440c-9cf7-a4c08982950a:
+    x: 0
+    y: 35
+    description: CoreDNS Events Severity
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=coredns
+      hostname=?hostname
+      | regex("^\[(?<severity>[A-Z]+)\]\s(?<message>.+)",field=log)
+      | groupBy([severity],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: CoreDNS - Severity
+    isLive: false
+    type: query
+  note-1696284755279-0:
+    x: 0
+    y: 5
+    description: Regular Expression Parameter Search Note
+    height: 2
+    text: "# RegEx Message Search\n        \nUse the RegEx parameter to filter event\
+      \ messages.  To match all events apply the default <empty string>, or use a\
+      \ <space> character, or the global regex match: \".*\"\n\n        "
+    width: 12
+    title: RegEx Parameter Search
+    type: note
+  e4e035b6-5f11-4d6e-875d-e5e0b6aecc39:
+    x: 4
+    y: 35
+    description: CoreDNS Events
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=coredns
+      hostname=?hostname
+      | regex("^\[(?<log_severity>[A-Z]+)\]\s(?<message>.+)",field=log)
+      | log_severity=?severity
+      // test for level match or glob * match
+      | case{ test(log_severity==?severity) | pass:="true";
+              test(?severity=="*")          | pass:="true";
+              *                             | pass:="false"}
+      // apply the event filter
+      | test(pass=="true")
+      | regex(?regex,field=log)
+      | rename(kubernetes.pod_name,as=pod_name)
+      | rename(log_severity,as=severity)
+      | table([@timestamp,hostname,severity,message,pod_name])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: CoreDNS - Events
+    isLive: false
+    type: query
+  fa603e4e-a07a-4680-b4fd-2edeaba2205f:
+    x: 9
+    y: 0
+    description: Event Heat by Day of the Week
+    height: 5
+    queryString: |
+      // Heatmap of daily event count by container over the week
+      flb.source=container
+      // limit search to kubernetes control plane containers
+      | in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])
+      | dayOfWeek := time:dayOfWeekName()
+      | dayOfWeekNum := time:dayOfWeek()
+      | hour := time:hour()
+      | groupBy([dayOfWeek, dayOfWeekNum, hour])
+      | sort([dayOfWeekNum, hour], type=[number, number], order=[asc, desc], limit=200)
+      | drop(dayOfWeekNum)
+    visualization: heat-map
+    end: now
+    start: 7d
+    width: 3
+    title: Event Heat (week day)
+    isLive: false
+    type: query
+  9f10fb58-ed66-4977-986e-9bc10f0533c7:
+    x: 3
+    y: 0
+    description: Timechart - Event Count by Container
+    height: 5
+    queryString: |-
+      flb.source=container
+      kubernetes.host=?hostname
+      | in(kubernetes.container_name,
+           values=["calico-kube-controllers",
+                   "calico-node",
+                   "coredns",
+                   "etcd",
+                   "kube-apiserver",
+                   "kube-controller-manager",
+                   "kube-proxykube-scheduler"])
+      | timeChart(kubernetes.container_name,span=1m)
+    end: now
+    start: 15m
+    width: 3
+    options:
+      connect-points: false
+      gradient: true
+      imputation: none
+      regression: true
+    visualization: time-chart
+    title: Event Count by Container
+    isLive: false
+    type: query
+  0dcb28d8-0d5c-4ecc-86e7-28398b58d444:
+    x: 0
+    y: 7
+    description: etcd - summary breakdown of event severity levels
+    height: 4
+    queryString: |-
+      flb.source=container
+      hostname=?hostname
+      kubernetes.container_name=etcd
+      | rename(level,as=severity)
+      | groupBy([severity],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: Etcd - Msg Severity
+    isLive: false
+    type: query
+  53952473-2ef6-4ee5-a35b-a6b773211ca1:
+    x: 4
+    y: 27
+    description: Kube-Proxy - Events
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-proxy
+      hostname=?hostname
+      | regex(regex=?regex, field=log)
+      | regex(regex="^(?<msgelevel>[IEW])\d\d\d\d",field=log)
+      | mseverity:=?severity
+      // normalize mseverity to etcd level
+      | case { mseverity = "INFO"  | elevel := "I";
+               mseverity = "WARN"  | elevel := "W";
+               mseverity = "ERROR" | elevel := "E";
+               *                   | elevel := "*" }
+      // test for level match or glob * match
+      | case{ test(msgelevel==elevel) | pass:="true";
+              test(elevel=="*")       | pass:="true";
+              *                       | pass:="false"}
+      // apply the event filter
+      | test(pass=="true")
+      | rename(kubernetes.pod_name,as=pod_name)
+      | case { msgelevel = "I" | severity := "INFO";
+               msgelevel = "W" | severity := "WARN";
+               msgelevel = "E" | severity := "ERROR" }
+      | table([@timestamp,hostname,severity,log,pod_name])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: Kube-Proxy - Events
+    isLive: false
+    type: query
+  61ba493c-71a9-4aab-9e6f-a7844e703f76:
+    x: 0
+    y: 19
+    description: Kube-Scheduler - Events Severity IDs
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-scheduler
+      hostname=?hostname
+      | regex(regex="^(?<severity_id>[IEW]\d\d\d\d)",field=log)
+      | groupBy([severity_id],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: Kube-Scheduler - Severity
+    isLive: false
+    type: query
+  d57fe5ed-b928-4e0b-89ac-9c61c1411880:
+    x: 0
+    y: 11
+    description: Kube-ApiServer - Server Events Levels
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=kube-apiserver
+      hostname=?hostname
+      | level=*
+      | rename(level,as=severity)
+      | groupBy([severity],function=[count()])
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 4
+    title: Kube-ApiServer - Severity
+    isLive: false
+    type: query
+  11675110-27ec-40f8-a16f-e6cad18f5bfd:
+    x: 4
+    y: 11
+    description: Kube-Apiserver - Server Events
+    height: 4
+    queryString: |
+      flb.source=container
+      kubernetes.container_name=kube-apiserver
+      level=*
+      hostname=?hostname
+      | concat([msg,error], as="msg_error")
+      | regex(regex=?regex, field=msg_error)
+      | mseverity:=?severity
+      // normalize mseverity to etcd level
+      | case { mseverity = "INFO"  | elevel := "info";
+               mseverity = "WARN"  | elevel := "warn";
+               mseverity = "ERROR" | elevel := "error";
+               *                   | elevel := "*" }
+      // test for level match or glob * match
+      | case{ test(level==elevel) | pass:="true";
+              test(elevel=="*")   | pass:="true";
+              *                   | pass:="false"}
+      | rename(kubernetes.pod_name,as=pod_name) |
+      // apply the event filter
+      test(pass=="true")
+      | case { level = "info"  | severity := "INFO";
+               level = "warn"  | severity := "WARN";
+               level = "error" | severity := "ERROR" }
+      | table([@timestamp,hostname,severity,msg,error,pod_name])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: Kube-Apiserver - Messages
+    isLive: false
+    type: query
+  406b6a0a-97e3-4770-9e9e-48fc7955ad7b:
+    x: 4
+    y: 7
+    description: etcd events table
+    height: 4
+    queryString: |-
+      flb.source=container
+      kubernetes.container_name=etcd
+      hostname=?hostname
+      | regex(regex=?regex,field=msg)
+      | mseverity:=?severity
+      // normalize mseverity to etcd level
+      | case { mseverity = "INFO"  | elevel := "info";
+               mseverity = "WARN"  | elevel := "warn";
+               mseverity = "ERROR" | elevel := "error";
+               *                   | elevel := "*" }
+      // test for level match or glob * match
+      | case{ test(level==elevel) | pass:="true";
+              test(elevel=="*")   | pass:="true";
+              *                   | pass:="false"}
+      // apply the event filter
+      | test(pass=="true")
+      | case { level = "info"  | severity := "INFO";
+               level = "warn"  | severity := "WARN";
+               level = "error" | severity := "ERROR" }
+      | table([@timestamp,hostname,severity,msg])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 8
+    title: Etcd - Events
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    type: file
+    defaultValue: '*'
+    order: 10
+    valueField: hostname
+  regex:
+    defaultValue: ''
+    label: Regex
+    order: 50
+    type: text
+  severity:
+    label: Severity
+    order: 20
+    values:
+    - '*'
+    - INFO
+    - WARN
+    - ERROR
+    type: list
+    defaultValue: '*'

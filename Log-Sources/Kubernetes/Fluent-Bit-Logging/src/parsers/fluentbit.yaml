@@ -1,0 +1,74 @@
+name: fluentbit
+tests:
+- '{"_CMDLINE":"/usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf
+  --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml
+  --container-runtime=remote --container-runtime-endpoint=unix:///var/run/cri-dockerd.sock
+  --pod-infra-container-image=registry.k8s.io/pause:3.7","MESSAGE":"E0930 04:55:11.490029  477301
+  container_log_manager.go:268] \"Failed to rotate log for container\" err=\"failed
+  to rotate log \\\"/var/log/pods/kube-system_calico-node-pbbkz_bbbbbbbb-cccc-dddd-eeee-ffffffffffff/calico-node/0.log\\\":
+  failed to reopen container log \\\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\\":
+  rpc error: code = Unknown desc = docker does not support reopening container log
+  files\" path=\"/var/log/pods/kube-system_calico-node-pbbkz_bbbbbbbb-cccc-dddd-eeee-ffffffffffff/calico-node/0.log\"
+  containerID=\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"","_UID":"0","_GID":"0","_CAP_EFFECTIVE":"1ffffffffff","_SELINUX_CONTEXT":"unconfined\n","_BOOT_ID":"22222222222222222222222222222222","_MACHINE_ID":"22222222222222222222222222222222","_HOSTNAME":"workernode7","_TRANSPORT":"stdout","_STREAM_ID":"22222222222222222222222222222222","SYSLOG_IDENTIFIER":"kubelet","_PID":"477301","flb.time":1696049711.490209,"_COMM":"kubelet","_SYSTEMD_CGROUP":"/system.slice/kubelet.service","_SYSTEMD_SLICE":"system.slice","PRIORITY":"6","_SYSTEMD_INVOCATION_ID":"22222222222222222222222222222222","SYSLOG_FACILITY":"3","flb.source":"systemd","_SYSTEMD_UNIT":"kubelet.service","hostname":"workernode7","_EXE":"/usr/bin/kubelet"}'
+- '{"mem.VmPeak":4152996000,"mem.VmSize":4152868000,"mem.VmLck":0,"mem.VmHWM":137368000,"mem.VmRSS":98948000,"mem.VmData":548648000,"mem.VmStk":132000,"mem.VmExe":46820000,"mem.VmLib":3400000,"mem.VmPTE":812000,"mem.VmSwap":0,"fd":110,"hostname":"masternode1","flb.time":1696111758.693776,"alive":true,"proc_name":"dockerd","flb.source":"process","pid":108610}'
+- '{"flb.source":"netif","ens192.rx.packets":148,"ens192.rx.errors":0,"ens192.rx.fifo":0,"ens192.rx.frame":0,"ens192.rx.compressed":0,"ens192.rx.multicast":1,"ens192.tx.bytes":83085,"ens192.tx.packets":151,"ens192.tx.errors":0,"ens192.rx.bytes":23659,"ens192.tx.fifo":0,"ens192.tx.collisions":0,"ens192.rx.drop":0,"ens192.tx.compressepd":0,"flb.time":1696049710.691003,"hostname":"masternode1","ens192.tx.carrier":0,"ens192.tx.drop":0}'
+- '{"source":{"host":"masternode1","component":"kubelet"},"hostname":"workernode7","flb.time":1696111312,"involvedObject":{"name":"prometheus-prometheus-node-exporter-kvlvs","fieldPath":"spec.containers{node-exporter}","namespace":"monitoring","resourceVersion":"35868876","kind":"Pod","uid":"bbbbbbbb-cccc-dddd-eeee-ffffffffffff","apiVersion":"v1"},"flb.source":"kubernetes","lastTimestamp":"2023-09-30T22:01:52Z","count":6759,"metadata":{"name":"prometheus-prometheus-node-exporter-kvlvs.17826dc7ec7d5364","namespace":"monitoring","managedFields":[{"fieldsType":"FieldsV1","time":"2023-09-30T22:01:52Z","fieldsV1":{"f:message":{},"f:reason":{},"f:source":{"f:host":{},"f:component":{}},"f:type":{},"f:count":{},"f:firstTimestamp":{},"f:involvedObject":{},"f:lastTimestamp":{}},"manager":"kubelet","operation":"Update","apiVersion":"v1"}],"uid":"bbbbbbbb-cccc-dddd-eeee-ffffffffffff","creationTimestamp":"2023-09-30T22:01:52Z","resourceVersion":"39370535"},"type":"Normal","reportingComponent":"","reportingInstance":"","reason":"Pulled","message":"Container
+  image \"quay.io/prometheus/node-exporter:v1.5.0\" already present on machine","firstTimestamp":"2023-09-06T21:51:55Z"}'
+- '{"usec":968284,"msg":"pinned_lsm[553]: load_serviceable_symbols succeeded","flb.time":1695157665.968284,"flb.source":"kernel","hostname":"masternode1","priority":6,"sequence":13145053,"sec":8332201}'
+- '{"status":"exec_start: /bin/calico-node -felix-ready -bird-ready","id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","from":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","flb.time":1696111569.386738,"Type":"container","scope":"local","Action":"exec_start:
+  /bin/calico-node -felix-ready -bird-ready","Actor":{"Attributes":{"annotation.io.kubernetes.container.restartCount":"0","annotation.io.kubernetes.container.terminationMessagePath":"/dev/termination-log","annotation.io.kubernetes.container.terminationMessagePolicy":"File","vendor":"Project
+  Calico","annotation.io.kubernetes.pod.terminationGracePeriod":"0","description":"Calico
+  node handles networking and policy for Calico","execID":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","image":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","io.kubernetes.container.logpath":"/var/log/pods/kube-system_calico-node-pbbkz_bbbbbbbb-cccc-dddd-eeee-ffffffffffff/calico-node/0.log","io.kubernetes.container.name":"calico-node","io.kubernetes.docker.type":"container","io.kubernetes.pod.name":"calico-node-pbbkz","io.kubernetes.pod.namespace":"kube-system","io.kubernetes.pod.uid":"bbbbbbbb-cccc-dddd-eeee-ffffffffffff","io.kubernetes.sandbox.id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","version":"","maintainer":"laurence@tigera.io","summary":"Calico
+  node handles networking and policy for Calico","release":"1","annotation.io.kubernetes.container.hash":"e1018f38","name":"k8s_calico-node_calico-node-pbbkz_kube-system_bbbbbbbb-cccc-dddd-eeee-ffffffffffff_0","annotation.io.kubernetes.container.preStopHandler":"{\"exec\":{\"command\":[\"/bin/calico-node\",\"-shutdown\"]}}"},"ID":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"timeNano":1696111569386458624,"time":1696111569,"flb.source":"docker","hostname":"workernode7"}'
+- '{"device":"sda1","flb.source":"disk","hostname":"masternode1","read_size":0,"write_size":192512,"flb.time":1696111550.691658}'
+- '{"cpu0.p_cpu":1,"cpu0.p_user":0,"cpu0.p_system":1,"cpu1.p_cpu":1,"cpu1.p_user":1,"cpu1.p_system":0,"cpu2.p_cpu":6,"cpu2.p_user":0,"cpu2.p_system":6,"cpu3.p_cpu":2,"cpu3.p_user":0,"cpu3.p_system":2,"cpu4.p_cpu":4,"cpu4.p_user":1,"cpu4.p_system":3,"cpu5.p_cpu":2,"cpu5.p_user":0,"cpu5.p_system":2,"cpu6.p_cpu":2,"cpu6.p_user":0,"cpu6.p_system":2,"cpu7.p_cpu":1,"cpu7.p_user":1,"cpu7.p_system":0,"cpu8.p_cpu":2,"cpu8.p_user":1,"cpu8.p_system":1,"cpu9.p_cpu":35,"cpu9.p_user":0,"cpu9.p_system":35,"cpu10.p_cpu":51,"cpu10.p_user":14,"cpu10.p_system":37,"cpu11.p_cpu":4,"cpu11.p_user":0,"cpu11.p_system":4,"cpu12.p_cpu":1,"cpu12.p_user":0,"cpu12.p_system":1,"cpu13.p_cpu":1,"cpu13.p_user":1,"cpu13.p_system":0,"cpu14.p_cpu":2,"cpu14.p_user":1,"cpu14.p_system":1,"cpu15.p_cpu":0,"cpu15.p_user":0,"cpu15.p_system":0,"cpu_p":7.3125,"flb.time":1696111529.692127,"hostname":"masternode1","flb.source":"cpu","user_p":1.25,"system_p":6.0625}'
+- '{"log":"[2023/09/30 22:04:17] [ warn] [net] getaddrinfo(host=''kubernetes.default.svc'',
+  err=12): Timeout while contacting DNS servers\n","stream":"stderr","time":"2023-09-30T22:04:17.691380647Z","hostname":"masternode1","flb.source":"container","kubernetes":{"pod_name":"fluent-bit-dq6k6","namespace_name":"logging","pod_id":"bbbbbbbb-cccc-dddd-eeee-ffffffffffff","labels":{"app.kubernetes.io/instance":"fluent-bit","app.kubernetes.io/name":"fluent-bit","controller-revision-hash":"5795775664","pod-template-generation":"8"},"annotations":{"checksum/config":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","cni.projectcalico.org/containerID":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","cni.projectcalico.org/podIP":"192.168.11.204/32","cni.projectcalico.org/podIPs":"192.168.11.204/32","kubectl.kubernetes.io/restartedAt":"2023-03-13T19:43:15-07:00"},"host":"masternode1","container_name":"fluent-bit","docker_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","container_hash":"cr.fluentbit.io/fluent/fluent-bit@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","container_image":"cr.fluentbit.io/fluent/fluent-bit:2.1.8"}}'
+- '{"hostname":"masternode1","flb.time":1694219271.26358,"log":"2023-09-09 00:16:13.139
+  [INFO][2801724] k8s.go 411: Added Mac, interface name, and active container ID to
+  endpoint ContainerID=\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"
+  Namespace=\"logging\" Pod=\"fluent-bit-dq6k6\" WorkloadEndpoint=\"10--169--31--183-k8s-fluent--bit--dq6k6-eth0\"
+  endpoint=&v3.WorkloadEndpoint{TypeMeta:v1.TypeMeta{Kind:\"WorkloadEndpoint\", APIVersion:\"projectcalico.org/v3\"},
+  ObjectMeta:v1.ObjectMeta{Name:\"10--169--31--183-k8s-fluent--bit--dq6k6-eth0\",
+  GenerateName:\"fluent-bit-\", Namespace:\"logging\", SelfLink:\"\", UID:\"bbbbbbbb-cccc-dddd-eeee-ffffffffffff\",
+  ResourceVersion:\"36175317\", Generation:0, CreationTimestamp:time.Date(2023, time.September,
+  9, 0, 16, 12, 0, time.Local), DeletionTimestamp:<nil>, DeletionGracePeriodSeconds:(*int64)(nil),
+  Labels:map[string]string{\"app.kubernetes.io/instance\":\"fluent-bit\", \"app.kubernetes.io/name\":\"fluent-bit\",
+  \"controller-revision-hash\":\"5795775664\", \"pod-template-generation\":\"8\",
+  \"projectcalico.org/namespace\":\"logging\", \"projectcalico.org/orchestrator\":\"k8s\",
+  \"projectcalico.org/serviceaccount\":\"fluent-bit\"}, Annotations:map[string]string(nil),
+  OwnerReferences:[]v1.OwnerReference(nil), Finalizers:[]string(nil), ZZZ_DeprecatedClusterName:\"\",
+  ManagedFields:[]v1.ManagedFieldsEntry(nil)}, Spec:v3.WorkloadEndpointSpec{Orchestrator:\"k8s\",
+  Workload:\"\", Node:\"masternode1\", ContainerID:\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",
+  Pod:\"fluent-bit-dq6k6\", Endpoint:\"eth0\", ServiceAccountName:\"fluent-bit\",
+  IPNetworks:[]string{\"192.168.11.204/32\"}, IPNATs:[]v3.IPNAT(nil), IPv4Gateway:\"\",
+  IPv6Gateway:\"\", Profiles:[]string{\"kns.logging\", \"ksa.logging.fluent-bit\"},
+  InterfaceName:\"calie1ef996ca04\", MAC:\"26:f2:f2:38:2b:fb\", Ports:[]v3.WorkloadEndpointPort{v3.WorkloadEndpointPort{Name:\"http\",
+  Protocol:numorstring.Protocol{Type:1, NumVal:0x0, StrVal:\"TCP\"}, Port:0x7e4, HostPort:0x0,
+  HostIP:\"\"}}, AllowSpoofedSourcePrefixes:[]string(nil)}}","flb.source":"calico_cni"}'
+- '{"Mem.free":9149856,"Swap.total":0,"Swap.used":0,"Swap.free":0,"flb.source":"mem","hostname":"10-169-31-186","flb.time":1696035028.617339,"Mem.total":32873164,"Mem.used":23723308}'
+- '{"kind":"Event","apiVersion":"audit.k8s.io/v1","level":"Metadata","auditID":"eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee","stage":"ResponseComplete","requestURI":"/apis/coordination.k8s.io/v1/namespaces/kube-system/leases/kube-scheduler?timeout=5s","verb":"update","user":{"username":"system:kube-scheduler","groups":["system:authenticated"]},"sourceIPs":["10.10.10.10"],"userAgent":"kube-scheduler/v1.26.0
+  (linux/amd64) kubernetes/bbbbbbb/leader-election","objectRef":{"resource":"leases","namespace":"kube-system","name":"kube-scheduler","uid":"ffffffff-ffff-ffff-ffff-ffffffffffff","apiGroup":"coordination.k8s.io","apiVersion":"v1","resourceVersion":"11111111"},"responseStatus":{"metadata":{},"code":200},"requestReceivedTimestamp":"2023-09-30T00:30:56.000000Z","stageTimestamp":"2023-09-30T00:30:56.000000Z","annotations":{"authorization.k8s.io/decision":"allow","authorization.k8s.io/reason":"RBAC:
+  allowed by ClusterRoleBinding \"system:kube-scheduler\" of ClusterRole \"system:kube-scheduler\"
+  to User \"system:kube-scheduler\""},"hostname":"10-10-10-10","flb.source":"audit"}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  // Parse the basic object
+  parseJson() |
+  // Extract timestamp according to Fluent-Bit source (flb.source)
+  case {
+      // parse using embedded timestamp
+      flb.source="container" | parseTimestamp(field=time);
+      flb.source="audit" | parseTimestamp(field=requestReceivedTimestamp);
+      // systemd sources
+      flb.source="systemd" | SYSLOG_IDENTIFIER match {
+          // ("dockerd", "containerd") Timestamp (time) contained in MESSAGE KV
+          in(values=["dockerd","containerd"]) => kvParse(field=MESSAGE) | parseTimestamp(field=time);
+          // ("kubelet")  Timestamp (flb.time) added by fluent-bit
+          in(values=["kubelet"]) => parseTimestamp(field=flb.time,format="seconds")
+      };
+      // parse using fluent-bit timestamp
+      flb.source=* | parseTimestamp(field=flb.time,format="seconds")
+  }
+tagFields: []

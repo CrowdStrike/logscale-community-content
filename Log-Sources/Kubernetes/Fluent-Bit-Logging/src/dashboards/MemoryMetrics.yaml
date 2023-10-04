@@ -1,0 +1,81 @@
+name: Memory Metrics
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  6664146d-7ece-4ff8-b674-b0b4295a1cc6:
+    x: 0
+    y: 5
+    description: memory used
+    height: 4
+    queryString: |-
+      flb.source=mem hostname=?hostname
+      | timechart(function=[
+             avg(field=Mem.used,as=avg),
+             min(field=Mem.used,as=min),
+             max(field=Mem.used,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Memory Used
+    isLive: false
+    type: query
+  ed45bad1-84bc-4b88-9834-ff37c3f2f02b:
+    x: 0
+    y: 0
+    description: host total memory
+    height: 5
+    queryString: |-
+      flb.source=mem
+      | groupBy([hostname,Mem.total],function=[avg(Mem.total,as=avg_total)])
+    visualization: bar-chart
+    end: now
+    start: 15m
+    width: 12
+    title: Summary - Host Total Memory
+    isLive: false
+    type: query
+  f0573103-3d17-4b66-a1bf-35244b0383d4:
+    x: 6
+    y: 5
+    description: memory free
+    height: 4
+    queryString: |-
+      flb.source=mem hostname=?hostname | timechart(function=[
+             avg(field=Mem.free,as=avg),
+             min(field=Mem.free,as=min),
+             max(field=Mem.free,as=max)
+             ], span=1m)
+    end: now
+    start: 15m
+    width: 6
+    options:
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Memory Free
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    type: file
+    defaultValue: '*'
+    order: 50
+    valueField: hostname

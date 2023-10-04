@@ -1,0 +1,15 @@
+name: Kubernetes Network Interfaces
+description: Discover network interfaces
+enabled: true
+queryString: |-
+  flb.source=netif
+  | regex("(?<netif>[-_a-zA-Z0-9]+)\.rx\.bytes\":(?<netif_metric>\d+),", field=@rawstring)
+  | groupBy([netif],function=[])
+backfillLimit: 0
+schedule: '*/15 * * * *'
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC+00:00
+queryStart: 1h
+actionNameReferences:
+- Kubernetes Network Interfaces Lookup

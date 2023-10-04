@@ -1,0 +1,448 @@
+name: Kubernetes Daemons
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  68f734c7-028d-4495-98f1-4daf3364acee:
+    x: 10
+    y: 0
+    description: Containerd Events Count
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      hostname=?hostname
+      SYSLOG_IDENTIFIER="containerd"
+      | timeChart(span=1m)
+    end: now
+    start: 1h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Containerd - Events
+    isLive: false
+    type: query
+  4e8af8ff-7938-4d5f-adea-db436211bb33:
+    x: 8
+    y: 6
+    description: Containerd Msg Severity Timechart
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      SYSLOG_IDENTIFIER=containerd
+      hostname=?hostname | timechart(series=level, span=1m)
+    end: now
+    start: 1h
+    width: 2
+    options:
+      series:
+        error:
+          color: '#d10000'
+          title: error
+        info:
+          color: '#1e2ad2'
+          title: info
+        warning:
+          color: '#d4e30d'
+          title: warning
+      gradient: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Containerd - Severities
+    isLive: false
+    type: query
+  e962b67a-96d9-4ce4-99a3-1f64331a10d2:
+    x: 6
+    y: 6
+    description: Dockerd Top Severities
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      SYSLOG_IDENTIFIER=dockerd
+      hostname=?hostname
+      | groupBy([level],function=[count()])
+    end: now
+    start: 1h
+    width: 2
+    options:
+      series:
+        error:
+          color: '#db1414'
+          title: error
+        info:
+          color: '#1511e4'
+          title: info
+        warning:
+          color: '#dee114'
+          title: warning
+    visualization: pie-chart
+    title: Dockerd - Top Severities
+    isLive: false
+    type: query
+  note-1696280840093-0:
+    x: 0
+    y: 12
+    description: Regular Expression Parameter Search Note
+    height: 2
+    text: "# RegEx Message Search\n        \nUse the RegEx parameter to filter event\
+      \ messages.  To match all events apply the default <empty string>, or use a\
+      \ <space> character, or the global regex match: \".*\"\n        "
+    width: 12
+    title: RegEx Parameter Search
+    type: note
+  a0312168-2ef5-4134-bb2c-051bbda40209:
+    x: 6
+    y: 0
+    description: Dockerd Event Count
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      hostname=?hostname
+      SYSLOG_IDENTIFIER="dockerd"
+      | timeChart(span=1m)
+    end: now
+    start: 1h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Dockerd - Events
+    isLive: false
+    type: query
+  21d76705-b0f7-4b0b-a5b4-e7cc4838502d:
+    x: 0
+    y: 20
+    description: Dockerd Events
+    height: 6
+    queryString: "flb.source=systemd\nSYSLOG_IDENTIFIER=dockerd\nhostname=?hostname\n\
+      | severity := ?severity\n| case {\n\t(severity = \"WARN\") and (level = \"warning\"\
+      ) | pass := \"true\";\n\t(severity = \"ERROR\") and (level = \"error\") | pass\
+      \ := \"true\";\n\t(severity = \"INFO\") and (level = \"info\") | pass := \"\
+      true\" ;\n\ttest(severity == \"*\") | pass := \"true\"; * | pass := \"false\"\
+      \n}\n| pass=\"true\"\n| regex(regex=?regex,field=msg)\n| groupBy([@timestamp,\
+      \ hostname, level, msg],function=[])"
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 12
+    title: Dockerd Events
+    isLive: false
+    type: query
+  cdd64413-e51b-442d-b2f5-f667c668e490:
+    x: 0
+    y: 26
+    description: Containerd Events
+    height: 6
+    queryString: "flb.source=systemd\nSYSLOG_IDENTIFIER=containerd\nhostname=?hostname\n\
+      | severity := ?severity\n| case {\n\t(severity = \"WARN\") and (level = \"warning\"\
+      ) | pass := \"true\";\n\t(severity = \"ERROR\") and (level = \"error\") | pass\
+      \ := \"true\";\n\t(severity = \"INFO\") and (level = \"info\") | pass := \"\
+      true\" ;\n\ttest(severity == \"*\") | pass := \"true\"; * | pass := \"false\"\
+      \n}\n| pass=\"true\"\n| regex(regex=?regex,field=msg)\n| groupBy([@timestamp,\
+      \ hostname, level, msg],function=[])"
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 12
+    title: Containerd Events
+    isLive: false
+    type: query
+  dae7d745-fbbc-49db-9d7a-0079f282c0f2:
+    x: 0
+    y: 0
+    description: kubelet daemon status
+    height: 6
+    queryString: |-
+      flb.source=process
+      hostname=*
+      proc_name=containerd
+      | groupBy([hostname, proc_name, alive])
+      | case { alive =  "true" | proc_status := "RUNNING";
+               alive = "false" | proc_status := "DOWN";
+               *               | proc_status := "UNKNOWN"}
+      | sankey(source=proc_status, target=hostname, weight=count())
+    end: now
+    start: 1m
+    width: 2
+    options:
+      series:
+        DOWN:
+          color: '#C50D0D'
+        RUNNING:
+          color: '#08AA1B'
+    visualization: sankey
+    title: Kubelet - Status
+    isLive: false
+    type: query
+  b51dcb4a-11ae-4889-a8b9-051e0276b611:
+    x: 8
+    y: 0
+    description: containerd process status
+    height: 6
+    queryString: |-
+      flb.source=process
+      hostname=*
+      proc_name=containerd
+      | groupBy([hostname, proc_name, alive])
+      | case { alive =  "true" | proc_status := "RUNNING";
+               alive = "false" | proc_status := "DOWN";
+               *               | proc_status := "UNKNOWN"}
+      | sankey(source=proc_status, target=hostname, weight=count())
+    end: now
+    start: 1m
+    width: 2
+    options:
+      series:
+        DOWN:
+          color: '#C50D0D'
+        RUNNING:
+          color: '#08AA1B'
+      showAxes: false
+    visualization: sankey
+    title: Containerd - Status
+    isLive: false
+    type: query
+  c0f97abc-f9f3-4c53-bcdf-9086107108bb:
+    x: 4
+    y: 6
+    description: Dockerd Msg Severity Timechart
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      SYSLOG_IDENTIFIER=dockerd
+      hostname=?hostname | timechart(series=level, span=1m)
+    end: now
+    start: 1h
+    width: 2
+    options:
+      series:
+        error:
+          color: '#e50606'
+          title: error
+        info:
+          color: '#0c1197'
+          title: info
+        warning:
+          color: '#d2d51a'
+          title: warning
+      gradient: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Dockerd - Severities
+    isLive: false
+    type: query
+  081e107a-7bef-49b3-bc51-0662aff6c4ba:
+    x: 0
+    y: 14
+    description: Kubelet Log Event Messages
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      SYSLOG_IDENTIFIER=kubelet
+      hostname=?hostname
+      | regex(regex=?regex,field=MESSAGE)
+      | regex("^(?<syslog_header>[^\"]+)\"(?<message>[^\"]+)\"(?<details>.+)",field=MESSAGE)
+      | regex("^(?<msgid>\S+)\s(?<mtime>\S+)\s+(?<mn>\d+)\s(?<goref>[_a-z0-9]+\.go:\d+)\]",field=syslog_header)
+      | regex("^(?<go_module>[^:]+):(?<goline>\d+)",field=goref)
+      | case { msgid = "I*" | msg_severity := "INFO";
+               msgid = "W*" | msg_severity := "WARN";
+               msgid = "E*" | msg_severity := "ERROR";
+               *            | msg_severity := "UNKNOWN"}
+      | rename(field=msg_severity, as=severity)
+      | severity=?severity
+      | groupBy([@timestamp, gg, go_regex, hostname, severity, msgid, go_module, message, details],function=[])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 12
+    title: Kubelet Events
+    isLive: false
+    type: query
+  3d335c6b-7cd0-4f67-892d-b1fff09601ab:
+    x: 0
+    y: 6
+    description: Kubelet Message Severity Count
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      SYSLOG_IDENTIFIER=kubelet
+      hostname=?hostname
+      | regex("^(?<syslog_header>[^\"]+)\"(?<syslog_message>[^\"]+)\"(?<syslog_message_kv>.+)",field=MESSAGE)
+      | regex("^(?<msgid>\S+)\s(?<mtime>\S+)\s+(?<mn>\d+)\s(?<goref>[_a-z0-9]+\.go:\d+)\]",field=syslog_header)
+      | regex("^(?<gofile>[^:]+):(?<goline>\d+)",field=goref)
+      | case { msgid = "I*" | msg_severity := "INFO";
+             msgid = "W*" | msg_severity := "WARN";
+             msgid = "E*" | msg_severity := "ERROR";
+             * | msg_severity := "UNKNOWN"}
+      | msg_severity=?severity
+      | timeChart(series=msg_severity, span=1m)
+    end: now
+    start: 1h
+    width: 2
+    options:
+      series:
+        ERROR:
+          color: '#e90101'
+          title: ERROR
+        INFO:
+          color: '#213af2'
+          title: INFO
+        WARN:
+          color: '#e0e316'
+          title: WARN
+      gradient: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      regression: true
+      imputation: none
+    visualization: time-chart
+    title: Kubelet - Severities
+    isLive: false
+    type: query
+  6b768182-a755-44a0-a639-591037de1ab5:
+    x: 10
+    y: 6
+    description: Containerd Top Msg Severities
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      SYSLOG_IDENTIFIER=containerd
+      hostname=?hostname
+      | groupBy([level],function=[count()])
+    end: now
+    start: 1h
+    width: 2
+    options:
+      series:
+        error:
+          color: '#e30202'
+          title: error
+        info:
+          color: '#181fdc'
+          title: info
+        warning:
+          color: '#dcea1a'
+          title: warning
+    visualization: pie-chart
+    title: Containerd - Top Severities
+    isLive: false
+    type: query
+  aebb806b-213e-4453-a4e6-f76966286912:
+    x: 2
+    y: 0
+    description: kubelet log event count
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      hostname=?hostname
+      SYSLOG_IDENTIFIER="kubelet"
+      | timeChart(span=1m)
+    end: now
+    start: 1h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Kubelet - Events
+    isLive: false
+    type: query
+  3ec7517f-84f0-4805-aa71-fd24b17a3158:
+    x: 2
+    y: 6
+    description: Top Kubelet Log Event Severity
+    height: 6
+    queryString: |-
+      flb.source=systemd
+      SYSLOG_IDENTIFIER=kubelet
+      hostname=?hostname
+      | regex("^(?<syslog_header>[^\"]+)\"(?<syslog_message>[^\"]+)\"(?<syslog_message_kv>.+)",field=MESSAGE)
+      | regex("^(?<msgid>\S+)\s(?<mtime>\S+)\s+(?<mn>\d+)\s(?<goref>[_a-z0-9]+\.go:\d+)\]",field=syslog_header)
+      | regex("^(?<gomodule>[^:]+):(?<goline>\d+)",field=goref)
+      | case { msgid = "I*" | msg_severity := "INFO";
+               msgid = "W*" | msg_severity := "WARN";
+               msgid = "E*" | msg_severity := "ERROR";
+               *            | msg_severity := "UNKNOWN"}
+      | groupBy([msg_severity],function=[count()])
+    end: now
+    start: 1h
+    width: 2
+    options:
+      innerRadius: 40
+      series:
+        ERROR:
+          color: '#df0707'
+          title: ERROR
+        INFO:
+          color: '#001cf0'
+          title: INFO
+        WARN:
+          color: '#f9fd26'
+          title: WARN
+    visualization: pie-chart
+    title: Kubelet - Top Severities
+    isLive: false
+    type: query
+  d33cdad5-6810-4a1a-9ff5-68a8d1a3dd8c:
+    x: 4
+    y: 0
+    description: dockerd process status
+    height: 6
+    queryString: |-
+      flb.source=process
+      hostname=*
+      proc_name=containerd
+      | groupBy([hostname, proc_name, alive])
+      | case { alive = "true"  | proc_status := "RUNNING";
+               alive = "false" | proc_status := "DOWN";
+               *               | proc_status := "UNKNOWN"}
+      | sankey(source=proc_status, target=hostname, weight=count())
+    end: now
+    start: 1m
+    width: 2
+    options:
+      series:
+        DOWN:
+          color: '#C50D0D'
+        RUNNING:
+          color: '#08AA1B'
+    visualization: sankey
+    title: Dockerd - Status
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    type: file
+    defaultValue: '*'
+    order: 10
+    valueField: hostname
+  regex:
+    defaultValue: ''
+    label: Regex
+    order: 50
+    type: text
+  severity:
+    label: Severity
+    order: 20
+    values:
+    - '*'
+    - INFO
+    - WARN
+    - ERROR
+    type: list
+    defaultValue: '*'

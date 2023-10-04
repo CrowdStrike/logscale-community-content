@@ -1,0 +1,236 @@
+name: Docker Events
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  7aad4d05-37df-408b-a82a-8f347c4be94e:
+    x: 8
+    y: 0
+    description: Heat Map of Docker Events by Week Day
+    height: 5
+    queryString: |-
+      // Heatmap of weekday docker event count
+      flb.source=docker
+      | dayOfWeek := time:dayOfWeekName()
+      | dayOfWeekNum := time:dayOfWeek()
+      | hour := time:hour()
+      | groupBy([dayOfWeek, dayOfWeekNum, hour])
+      | sort([dayOfWeekNum, hour], type=[number, number], order=[asc, desc], limit=200)
+      | drop(dayOfWeekNum)
+    visualization: heat-map
+    end: now
+    start: 7d
+    width: 4
+    title: Heat Map - Events
+    isLive: false
+    type: query
+  75288b7c-232c-4ff5-8f21-6de01516a353:
+    x: 3
+    y: 0
+    description: Container Exit Code
+    height: 5
+    queryString: |-
+      flb.source=docker
+      hostname=?hostname
+      | Action=* Actor.Attributes.io.kubernetes.pod.namespace=?namespace Actor.Attributes.io.kubernetes.container.name=* Actor.Attributes.exitCode>=0
+      | containerName := rename(Actor.Attributes.io.kubernetes.container.name)
+      | exitCode := rename(Actor.Attributes.exitCode)
+      | preStopHandler := rename(Actor.Attributes.annotation.io.kubernetes.container.preStopHandler)
+      | groupBy([containerName, exitCode], function=[])
+      | sankey(source="exitCode",target="containerName")
+    end: now
+    start: 15m
+    width: 2
+    options:
+      series:
+        '0':
+          color: '#0ed100'
+        '1':
+          color: '#f60909'
+    visualization: sankey
+    title: Containers - Exit Codes
+    isLive: false
+    type: query
+  5b92055f-11b1-40de-8f5c-e2378ba95ada:
+    x: 0
+    y: 10
+    description: Docker Action Events
+    height: 6
+    queryString: |-
+      flb.source=docker
+      hostname=?hostname
+      | Actor.Attributes.io.kubernetes.container.name=?containerName Actor.Attributes.io.kubernetes.pod.namespace=?namespace Actor.Attributes.exitCode=?exitCode Action=?action
+      | regex("^(?<action>[^:\s]+)(:\s(?<parameter>.+))?",field=Action)
+      | namespace := rename(Actor.Attributes.io.kubernetes.pod.namespace)
+      | containerName := rename(Actor.Attributes.io.kubernetes.container.name)
+      | exitCode := rename(Actor.Attributes.exitCode)
+      | preStopHandler := rename(Actor.Attributes.annotation.io.kubernetes.container.preStopHandler)
+      | table([@timestamp,hostname,namespace,containerName, action, exitCode, parameter, preStopHandler])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 12
+    title: Actions
+    isLive: false
+    type: query
+  571728ff-9a3d-4a04-94f6-fa38e404451b:
+    x: 0
+    y: 0
+    description: docker event count
+    height: 5
+    queryString: |-
+      flb.source=docker
+      hostname=?hostname
+      | timeChart(span=1m)
+    end: now
+    start: 15m
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Docker Events
+    isLive: false
+    type: query
+  7428b836-1f3e-44a4-8a85-96577529530c:
+    x: 0
+    y: 5
+    description: Container Actions
+    height: 5
+    queryString: |-
+      flb.source=docker
+      hostname=?hostname
+      | Action=* Type=container
+      | regex("^(?<action>[^:\s]+)(:\s(?<parameter>.+))?",field=Action)
+      | groupBy([action],limit=10)
+    end: now
+    start: 7d
+    width: 2
+    options:
+      legendLabelOverflow: full
+    visualization: pie-chart
+    title: Top Container Actions
+    isLive: false
+    type: query
+  938c0488-7940-4ecf-bc9b-2b64ccba5000:
+    x: 5
+    y: 0
+    description: Containers by host
+    height: 5
+    queryString: |-
+      flb.source=docker
+      hostname=?hostname
+      | Action=* Actor.Attributes.io.kubernetes.pod.namespace=?namespace Actor.Attributes.io.kubernetes.container.name=*
+      | containerName := rename(Actor.Attributes.io.kubernetes.container.name)
+      | groupBy([containerName, hostname], function=[])
+      | sankey(source="containerName",target="hostname")
+    visualization: sankey
+    end: now
+    start: 15m
+    width: 3
+    title: Containers by Host
+    isLive: false
+    type: query
+  af43a9f3-eaae-4286-a3af-5891be1d01aa:
+    x: 2
+    y: 5
+    description: Top Action Types
+    height: 5
+    queryString: |-
+      kubernetes.pod_name=*
+      | groupBy([kubernetes.pod_name], function=[count()], limit=10)
+      | rename(kubernetes.pod_name, as=pod_name)
+      | sort(field=pod_name,reverse=false,limit=10)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 2
+    title: Top Actions Types
+    isLive: false
+    type: query
+  64e11899-084b-4a4f-ab89-33beceddcb1f:
+    x: 4
+    y: 5
+    description: Top Pulled Docker images
+    height: 5
+    queryString: |-
+      flb.source=docker
+      hostname=?hostname
+      | Type=image
+      | rename(Actor.Attributes.name, as=repoName)
+      | groupBy([repoName], function=count(), limit=10)
+    visualization: pie-chart
+    end: now
+    start: 15m
+    width: 2
+    title: Top Images
+    isLive: false
+    type: query
+  5eb696c8-90f6-4d16-aded-bd97d470d4a3:
+    x: 6
+    y: 5
+    description: Top docker image pull events
+    height: 5
+    queryString: |-
+      flb.source=docker
+      hostname=?hostname
+      | Type=image
+      | rename(Actor.Attributes.name, as=repoName)
+      | table([@timestamp, hostname, Type, Action, repoName])
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 6
+    title: Top Image Pulls
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  containerName:
+    label: Container Name
+    query: flb.source=docker |  parseJson(message) |  Action=* | containerName :=
+      rename(Actor.Attributes.io.kubernetes.container.name) | groupBy([containerName],
+      function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 40
+    valueField: containerName
+  hostname:
+    label: Hostname
+    valueFilters: {}
+    fileName: k8s_hostnames.csv
+    type: file
+    defaultValue: '*'
+    order: 10
+    valueField: hostname
+  exitCode:
+    label: Exit Code
+    query: flb.source=docker | parseJson(message) | Action=* | exitCode := rename(Actor.Attributes.exitCode)
+      | groupBy([exitCode], function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: exitCode
+  action:
+    label: Action
+    valueFilters: {}
+    fileName: container_actions.csv
+    type: file
+    defaultValue: '*'
+    order: 30
+    valueField: action
+  namespace:
+    label: Namespace
+    query: flb.source=docker | parseJson(message) | Action=* | namespace := rename(Actor.Attributes.io.kubernetes.pod.namespace)
+      | groupBy([namespace], function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 20
+    valueField: namespace
