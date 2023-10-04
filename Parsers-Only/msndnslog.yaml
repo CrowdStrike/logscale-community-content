@@ -20,6 +20,22 @@ tests:
 fieldsToBeRemovedBeforeParsing: []
 $schema: https://schemas.humio.com/parser/v0.2.0
 script: |+
+  // CAUTION - Using debug logging options slows DNS server performance. For this reason, all debug logging options are disabled by default.
+  // CAUTION - Debug logging can be resource intensive, affecting overall server performance and consuming disk space. 
+  // Therefore, it should only be used temporarily when more detailed information about server performance is needed.
+
+  // After debug logging is enabled, the log file must be tailed and shipped to LogScale. 
+  // Here is an example LogScale collector config file that can be used to tail and ship the log:
+  // https://github.com/CrowdStrike/logscale-community-content/blob/main/Config-Samples/Log-Shippers/Falcon-LogScale-Collector/FLC-BasicWindowsConfig.yaml
+
+  // The following section will need to be updated: The path to the dns log file from the steps above and the specific parser that will parse this log file (which is the related parser of this project)
+
+  // This section identifies a log file on disk to be tailed and shipped.
+  // sample_log:
+  //   type: file
+  //   include: C:\SAMPLELogPath\SAMPLELogFile.log
+  //   sink: humio
+  
   // The purpose of this parser is to parse the MS AD DNS log file on disk. It might be a useful to use this as a sample to "LogEverything"
 
   // QUERY_Response is a blank or an R. Need to convert blanks into something easily to understand. Maybe a csv lookup file from the header.
