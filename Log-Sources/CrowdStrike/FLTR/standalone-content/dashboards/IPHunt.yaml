@@ -83,7 +83,7 @@ widgets:
       | asn(RemoteAddressIP4)
       | rdns("RemoteAddressIP4")
       | default(value="N/A", field=[hostname])
-      | rename([[RemoteAddressIP4, "Remote IP"], [hostname, "Reverse DNS"], [RemoteAddressIP4.org, "ASN"], [connectionCount, "Total Connections"],[localPrevalence, "Unique Endpoints"]])
+      | rename([[RemoteAddressIP4, "Remote IP"], [hostname, "Reverse DNS"], [RemoteAddressIP4.asn, "ASN"], [RemoteAddressIP4.org, "ASN ORG"], [connectionCount, "Total Connections"],[localPrevalence, "Unique Endpoints"]])
     visualization: table-view
     end: now
     start: 30d
