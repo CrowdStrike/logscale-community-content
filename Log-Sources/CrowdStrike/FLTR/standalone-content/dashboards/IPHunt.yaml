@@ -1,0 +1,138 @@
+name: IP Prevalence Hunt
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  99bf4f94-6e9d-4948-b114-8fbc3240c44e:
+    x: 0
+    y: 4
+    height: 5
+    queryString: |-
+      RemoteAddressIP4=*
+      | RemoteAddressIP4=?RemoteAddressIP4
+      | case {
+          Protocol=1  | Protocol_Name:="ICMP";
+          Protocol=6  | Protocol_Name:="TCP";
+          Protocol=17 | Protocol_Name:="UDP";
+      }
+      | sankey(source="RemotePort", target="Protocol_Name")
+    visualization: sankey
+    end: now
+    start: 30d
+    width: 6
+    title: Port to Protocol Mapping
+    isLive: false
+    type: query
+  bf2b2e22-3912-45b4-80d7-921c66d71c74:
+    x: 0
+    y: 9
+    height: 4
+    queryString: |
+      RemoteAddressIP4=*
+      | RemoteAddressIP4=?RemoteAddressIP4
+      | case {
+          Protocol=1  | Protocol_Name:="ICMP";
+          Protocol=6  | Protocol_Name:="TCP";
+          Protocol=17 | Protocol_Name:="UDP";
+      }
+      | timeChart(span=1d, Protocol_Name)
+    end: now
+    start: 30d
+    width: 12
+    options:
+      legendTitle: Connections
+      withXAxisTitle: false
+      labelAngle: 0
+      xAxisTitle: Date
+      colorPalette: monoMagenta
+      yAxisTitle: Protocol
+      xLabelLimit: 177
+    visualization: heat-map
+    title: Protocol Heatmap
+    isLive: false
+    type: query
+  06129389-c51c-4608-8371-7845c35f5b0b:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      RemoteAddressIP4=*
+      | RemoteAddressIP4=?RemoteAddressIP4
+      | timeChart(span=1d, function=(count(aid, distinct=true, as=localPrevalence)))
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Local Prevalence (Past 24h)
+    isLive: false
+    type: query
+  7bd2ef26-2630-45c3-a8ac-876cb86398a0:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      RemoteAddressIP4=*
+      | RemoteAddressIP4=?RemoteAddressIP4
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/32", "169.254.0.0/16", "0.0.0.0/32"])
+      | groupBy([RemoteAddressIP4], function=([count(aid, distinct=true, as=localPrevalence), count(aid, as=connectionCount)]), limit=max)
+      | asn(RemoteAddressIP4)
+      | rdns("RemoteAddressIP4")
+      | default(value="N/A", field=[hostname])
+      | rename([[RemoteAddressIP4, "Remote IP"], [hostname, "Reverse DNS"], [RemoteAddressIP4.org, "ASN"], [connectionCount, "Total Connections"],[localPrevalence, "Unique Endpoints"]])
+    visualization: table-view
+    end: now
+    start: 30d
+    width: 8
+    title: IP Details
+    isLive: false
+    type: query
+  f5ba86aa-187d-40b9-89f3-3b34b8808ebf:
+    x: 0
+    y: 13
+    height: 6
+    queryString: |-
+      RemoteAddressIP4=*
+      | RemoteAddressIP4=?RemoteAddressIP4
+      | drop([@rawstring, @ingesttimestamp, #kind, #repo, #type, @sourcetype, @timestamp.nanos, @timezone, @id, @source, timestamp, name, TreeId, ConfigBuild, ConfigStateHash, EffectiveTransmissionClass])
+      | ContextTimeStamp:=ContextTimeStamp*1000 | formatTime(format="%F %T.L", field=ContextTimeStamp, as="ContextTimeStamp")
+    visualization: table-view
+    end: now
+    start: 30d
+    width: 12
+    title: Raw Data
+    isLive: false
+    type: query
+  1f7b625e-9003-4a5c-bc10-c92372eeecb6:
+    x: 6
+    y: 4
+    height: 5
+    queryString: |
+      RemoteAddressIP4=*
+      | RemoteAddressIP4=?RemoteAddressIP4
+      | case {
+          Protocol=1  | Protocol_Name:="ICMP";
+          Protocol=6  | Protocol_Name:="TCP";
+          Protocol=17 | Protocol_Name:="UDP";
+      }
+      | timeChart(span=1d, Protocol_Name)
+    end: now
+    start: 30d
+    width: 6
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Protocol Timechart
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.13.0
+parameters:
+  RemoteAddressIP4:
+    label: RemoteAddressIP4
+    order: 50
+    type: text
