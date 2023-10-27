@@ -1,0 +1,119 @@
+name: Okta Users
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  b78079a8-704c-426d-9c6b-6590bab34193:
+    x: 6
+    y: 0
+    height: 5
+    queryString: |-
+      actor.alternateId like ?{Username=*}
+      | rename(field="client.geographicalContext.city", as="City") | rename(field="client.geographicalContext.state", as="State") | rename(field="client.geographicalContext.country", as="Country")
+      | groupBy([City,State,Country]) | sort()
+    visualization: table-view
+    end: now
+    start: 15m
+    width: 3
+    title: Access Breakdown
+    isLive: false
+    type: query
+  e3e3408e-a9c8-48c7-947e-3a19ca34a2b1:
+    x: 0
+    y: 11
+    height: 4
+    queryString: |
+      #type = Okta*
+      | Okta.outcome.result = FAILURE
+      | Okta.actor.alternateId like ?{Username=*}
+    end: now
+    start: 1y
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","header":"TimeStamp","width":180},{"type":"field","fieldName":"Okta.actor.displayName","format":"text","header":"Actor","width":160},{"type":"field","fieldName":"Okta.actor.alternateId","format":"text","header":"Email","width":227},{"type":"field","fieldName":"Okta.outcome.result","format":"text","header":"Outcome","width":137},{"type":"field","fieldName":"Okta.outcome.reason","format":"text","header":"Reason","width":257},{"type":"field","fieldName":"Okta.client.geographicalContext.city","format":"text","header":"City","width":265},{"type":"field","fieldName":"Okta.client.geographicalContext.country","format":"text","header":"Country","width":287}]'
+      newestAtBottom: 'false'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Failures
+    isLive: false
+    type: query
+  30620f70-6b11-463f-b23e-fdf71087785d:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      actor.alternateId like ?{Username=*}
+      | debugContext.debugData.risk = /reasons=/
+      | rename(field="debugContext.debugData.risk", as="Observed Risk")
+      | groupBy("Observed Risk") | sort()
+    visualization: table-view
+    end: now
+    start: 30d
+    width: 3
+    title: Risk Reasons Observed
+    isLive: false
+    type: query
+  9078cac8-907c-4a60-af62-de5ba717875b:
+    x: 3
+    y: 0
+    height: 5
+    queryString: |-
+      actor.alternateId like ?{Username=*}
+      | worldMap(ip=client.ipAddress)
+    end: now
+    start: 1y
+    width: 3
+    options:
+      zLevel: 1.2
+    visualization: world-map
+    title: GeoData
+    isLive: false
+    type: query
+  d7a67fe5-aee3-4745-a59c-37b199678170:
+    x: 9
+    y: 0
+    height: 5
+    queryString: |-
+      actor.alternateId like ?{Username=*}
+      | parseJson(field=device.deviceIntegrator)
+      | CROWDSTRIKE.os = *
+      | eventType = "policy.evaluate_sign_on" or eventType = user.session.start
+      | rename(field="CROWDSTRIKE.os", as="OS Score") | rename(field="CROWDSTRIKE.sensorConfig", as="Sensor Score") | rename(field="CROWDSTRIKE.overall", as="Overall Score") | rename(field="Okta.target[0].displayName", as="Workstation")
+      | table([@timestamp,Workstation,"OS Score", "Sensor Score", "Overall Score"])
+    visualization: table-view
+    end: now
+    start: 30m
+    width: 3
+    title: Device Posture (Zero Trust Scores)
+    isLive: false
+    type: query
+  02eaf2b9-fded-4577-8e33-b95f4536f365:
+    x: 0
+    y: 5
+    height: 6
+    queryString: |-
+      #type=Okta-* |
+      Okta.actor.alternateId like ?{Username=*}
+      | parseJson(field=Okta.device.deviceIntegrator)
+      | Okta.eventType = "policy.evaluate_sign_on"
+      //| Okta.target[0].alternateId = "unknown"
+      | format("[Link](https://falcon.us-2.crowdstrike.com/search/host?term=_all:~'%s')", field=Okta.target[0].displayName, as="CRWD Search")  //<---Create Clickable Link to the Falcon UI
+      | rename(field="Okta.client.geographicalContext.city", as="City") | rename(field="Okta.client.geographicalContext.country", as="Country")
+      | rename(field="Okta.target[0].displayName", as="Object or Computer") | rename(field=Okta.target[1].alternateId, as="Application") | rename(field="CROWDSTRIKE.os", as="Asset ZTA")
+      | table([@timestamp,ActorUser,Okta.device.osVersion,ActorAddressIP,"Object or Computer",AuthenticationResult,"Asset ZTA",Application,City,Country,"CRWD Search"])
+    visualization: table-view
+    end: now
+    start: 2d
+    width: 12
+    title: Access Grid
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  Username:
+    defaultValue: '*'
+    label: Username
+    order: 50
+    type: text
