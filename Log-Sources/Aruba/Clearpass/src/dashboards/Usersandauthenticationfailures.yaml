@@ -1,0 +1,78 @@
+name: Users and authentication failures
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  07114738-70bb-4c2f-95b6-e834a352a6f9:
+    x: 0
+    y: 9
+    height: 6
+    queryString: |-
+      #type=aruba-clearpass "leef.ext.Common.Error-Code">199 "leef.ext.Common.Error-Code"<231 |
+      match(file="ClearpassErrorCodes.csv",field="leef.ext.Common.Error-Code",column=Code) |
+      groupby(["leef.ext.Common.Enforcement-Profiles",PolicyManagerEventDescription]) | sort()
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 5
+    title: Top authentication failures by enforcement profile
+    isLive: false
+    type: query
+  c9acda49-c16e-454a-9bb4-eb18bfecf57f:
+    x: 5
+    y: 9
+    height: 6
+    queryString: |-
+      #type=aruba-clearpass "leef.ext.Common.Error-Code">199 "leef.ext.Common.Error-Code"<231 |
+      match(file="ClearpassErrorCodes.csv",field="leef.ext.Common.Error-Code",column=Code) |
+      tempDelimiter:=" / " |
+      concat(["leef.ext.Common.Enforcement-Profiles",tempDelimiter,PolicyManagerEventDescription], as=enforcementProfiles) |
+      //timechart([PolicyManagerEventDescription,"leef.ext.Common.Enforcement-Profiles"])
+      timeChart(enforcementProfiles)
+    end: now
+    start: 1d
+    width: 7
+    options:
+      legendPosition: right
+      series: {}
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      showDataPoints: true
+      connect-points: false
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Enforcement profiles over time
+    isLive: false
+    type: query
+  fac47dc6-c9cd-43ed-85b7-31278de249cb:
+    x: 0
+    y: 0
+    height: 9
+    queryString: |-
+      #type=aruba-clearpass ("leef.ext.Common.Error-Code">199 and "leef.ext.Common.Error-Code"<231) |
+      match(file="ClearpassErrorCodes.csv", field="leef.ext.Common.Error-Code", column=Code) |
+      leef.ext.Common.Username=?usernameToken |
+      groupBy([leef.ext.Common.Username,PolicyManagerEventDescription,"leef.ext.Common.Enforcement-Profiles",leef.ext.Common.Alerts]) | sort(_count)
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 12
+    title: ' User names with authentication failures'
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  usernameToken:
+    label: usernameToken
+    query: '#type=aruba-clearpass ("leef.ext.Common.Error-Code">199 or "leef.ext.Common.Error-Code"<231)
+      | groupBy(leef.ext.Common.Username) | sort(_count)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: leef.ext.Common.Username
