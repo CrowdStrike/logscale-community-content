@@ -49,4 +49,4 @@ None
 
 ## Installation
 
-Please refer to the following Obsidian Security Installation and Configuration guide - <TDB>
+Please refer to the following Obsidian Security Installation and Configuration guide - https://docs.obsidiansecurity.com/obsidian/settings/workflow-integrations/create-a-webhook-to-crowdstrike-falcon-logscale
