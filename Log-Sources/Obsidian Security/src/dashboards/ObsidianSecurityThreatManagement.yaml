@@ -1,0 +1,77 @@
+name: Obsidian Security Threat Management
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  33231037-c150-4389-a1f3-558f30a04f73:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      workflowProperties.status = *
+      | groupBy(service.name)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      innerRadius: 0
+    visualization: pie-chart
+    title: Incident by Service
+    isLive: false
+    type: query
+  6e2d643d-6ae1-4f50-aa75-1e5aecffd974:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      workflowProperties.status = *
+
+      | groupBy(severity)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      innerRadius: 0
+    visualization: pie-chart
+    title: Incident by Severity
+    isLive: false
+    type: query
+  8d8b4f9d-a381-4859-a509-2fd0ac92fcde:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      workflowProperties.status = *
+      | table(fields=[severity, eventDatetime, service.name, relatedActorEmails[0], name, workflowProperties.status ])
+    end: now
+    start: 1y
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Incident Summary
+    isLive: false
+    type: query
+  aa9ca6ce-019d-4233-bd97-fc149cf3d750:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      workflowProperties.status = *
+
+      | groupBy(workflowProperties.status)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      innerRadius: 0
+    visualization: pie-chart
+    title: Incident Status
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
