@@ -1,0 +1,26 @@
+name: Obsidian_Webhook_Parser
+tests:
+- '{"MessageType":1,"accepted":false,"actor":{"entityType":"","name":""},"app_client_id":"","app_name":"","apps":null,"client_id":"","compliant":false,"compute_compliance":null,"config_url_path":"/posture_management/rule/view/SalesforceGhostAdmins/cGVhcnRyZWVwcm9kdWN0aW9uc3VzYS1kZXYtZWQubXkuc2FsZXNmb3JjZS5jb20=","context":{"total_users":0},"customer_id":"","datetime":"","description":"","domains":["Permission
+  Security"],"drift_timestamp":"2023-11-03T19:09:00.804378","event_time":"","event_type":"","id":"SalesforceGhostAdmins","integration":"","is_modified":false,"is_tuned":true,"labels":null,"lifecycle_state":"","name":"Ghost
+  administrators","old":{"accepted":false,"actor":{"entityType":"","name":""},"app_client_id":"","app_name":"","apps":null,"client_id":"","compliant":false,"compute_compliance":null,"context":{"total_users":0},"customer_id":"","datetime":"","description":"","domains":null,"event_time":"","event_type":"","id":"","integration":"","is_modified":false,"is_tuned":false,"labels":null,"lifecycle_state":"","name":"","org_id":"","overallPercentScore":null,"ownership":"","platform":"","quick_improvement":false,"recommendation":{"compliant":false,"compliant_remediation_instructions":"","compliant_summary_template":"","non_compliant_remediation_instructions":"","non_compliant_summary_template":"","remediation_instructions":"","severity":"","summary":"","value":{"boolean":null,"number":0,"percent":null,"range":null,"string":null}},"release_id":"","risk_level":"","rule_id":"","run_frequency_seconds":0,"scopes":null,"service":{"serviceId":""},"servicePercentScore":null,"settings":{"accept_forever":false,"accept_until":null,"accept_until_audit":null,"accepted_by":"","control":"","latest_update_audit":null,"severity":"","tenant":""},"severity":"","standards":null,"sub_services":null,"tenant":"","urls":"","user_email":"","value":{"boolean":null,"number":null,"percent":null,"range":null,"string":null}},"old_value":{"boolean":null,"number":0,"percent":null,"range":null,"string":null},"org":"awlopvvdpgvbaxgg","org_id":"","overallPercentScore":null,"ownership":"","platform":"","quick_improvement":false,"recommendation":{"compliant":false,"compliant_remediation_instructions":"","compliant_summary_template":"","non_compliant_remediation_instructions":"","non_compliant_summary_template":"","remediation_instructions":"","severity":"","summary":"","value":{"boolean":null,"number":0,"percent":null,"range":null,"string":null}},"release_id":"","risk_level":"","rule_id":"SalesforceGhostAdmins","run_frequency_seconds":0,"scopes":null,"service":{"serviceId":"SALESFORCE"},"servicePercentScore":null,"settings":{"accept_forever":false,"accept_until":null,"accept_until_audit":null,"accepted_by":"","control":"SalesforceGhostAdmins","latest_update_audit":null,"severity":"","tenant":"peartreeproductionsusa-dev-ed.my.salesforce.com"},"severity":"HIGH","standards":[{"author":"","control":"","link":"","name":"pci_dss_v4"},{"author":"","control":"","link":"","name":"soc_2"},{"author":"","control":"","link":"","name":"ccm4.0.7"},{"author":"","control":"","link":"","name":"nist80053"},{"author":"","control":"","link":"","name":"hipaa"},{"author":"","control":"","link":"","name":"cis_v8"}],"sub_services":null,"summary":"Configuration
+  drift detected for [Ghost administrators]","tenant":"peartreeproductionsusa-dev-ed.my.salesforce.com","topic_name":"configuration-drift-alerts","transition":"Passing
+  -\u003e Failing","urls":"","user_email":"","value":{"boolean":null,"number":10,"percent":null,"range":null,"string":null}}'
+- '{"actors":[{"id":"QKC9ji-_BI3Y3jG7MrDXDbLrDTyIS3IC16nKlk0NYZg=","name":"Mallory
+  Researcher3"}],"eventDatetime":"2023-11-01T20:26:01.921000Z","generatedDatetime":"2023-11-01T20:39:17.062288Z","humanReadableDescription":{"plain":"Review
+  . Shiva testing rule","tagged":"Review . Shiva testing rule"},"id":"0521a1e3f1fad6f72018615a982ef07a0ca8f1f1327ef6ef031440dd329cfedb","intelligenceCatalogReference":{"description":"Shiva
+  testing rule","detectionType":"RULE","mitreProperties":{"description":"","name":"","url":""},"name":"MFA
+  activiated","taxonomy":{"behavior":"","tactic":{"name":""},"technique":{"name":""}}},"name":"MFA
+  activiated","relatedActorEmails":["mallory.researcher@hyenacapital.net"],"relatedEmailDomains":["hyenacapital.net"],"relatedEvents":{"results":[{"id":"42021a59d45acb2797bab447675b90f6e728b8a14c3cfc553529a91e42a6d9c2_0","ipAddress":{"hostname":"comcastbusiness.net","raw":"173.164.250.106"},"rawEventName":"core.user.factor.activate"}]},"relatedTargetEmails":["mallory.researcher@hyenacapital.net"],"relatedTenants":["dev-304546.oktapreview.com"],"service":{"name":"Okta","serviceId":"OKTA"},"severity":"HIGH","targets":[{"id":"QKC9ji-_BI3Y3jG7MrDXDbLrDTyIS3IC16nKlk0NYZg=","name":"Mallory
+  Researcher3"}],"ticketId":"7263","workflowProperties":{"resolutionTag":"","resolutionTagLastUpdated":"","status":"OPEN"}}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |
+  parseJson()
+  | case {
+      //Threat Alert
+      eventDatetime | findTimestamp(field=eventDatetime);
+      //Compliance ALert
+      drift_timestamp | findTimestamp(field=drift_timestamp, timezone="UCT");
+      * | parsed := "false"
+  }
+tagFields: []
