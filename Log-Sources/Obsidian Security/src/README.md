@@ -11,13 +11,14 @@ This package contains a parser and 2 Dashboards
 Within the dashboard there are multiple searches/queries that can be used to visualise data ingested from Imperva's Cloud Web Application Firewall.
 
 Imperva creates the following comprehensive and detailed logs:
-- Security logs
-- Access logs
+- Posture and Compliance Alerts
+- Threat Detection Alerts
+- Integration Risk Alerts
 
 Log integration mode recommended for this package:
 
 Receive (Push mode): 
-Automatic log integration via Webhook. Obsidian Alerts are pushed to your designated LogScale repository.
+Log integration is achieved via Webhook. Obsidian Alerts are pushed to your designated LogScale repository by way of the LogScale Ingest API (https://library.humio.com/integrations/api-ingest.html#api-ingest-raw-data).
 Refer to <TBD> for further information.
 
 ## Release Notes
