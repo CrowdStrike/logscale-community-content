@@ -1,0 +1,22 @@
+name: 'Vulnerabilities: creator/owner with excessive number of stale/unused ePHI files'
+description: Triggered when a creator/owner have excessive number of stale ePHI files
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1d
+queryString: |
+  $tausight/ephi-risk-posture:Tausight_ePHIStored(HostName=?{HostName=*})
+
+  //edit age as number of days to find stale files more than 'age' days old
+  |age:=30
+  |case{ not in(field="Activity", values=[Email, "Cloud share"]) | parseTimestamp(as=@timestamp, field=LastAccessed); *|parseTimestamp(as=@timestamp, field=timestamp)}
+  |eval(curr_age = (now() - @timestamp)/(24*3600*1000))
+  |test(curr_age >= age)
+
+  |groupBy([OwnerName], function=count(field=FileName, as= "Files"), limit=10)
+  |sort(Files, order=desc)
+
+  |Files>=1
+  //Severity:=Medium
+throttleField: OwnerName
+actionNameReferences: []

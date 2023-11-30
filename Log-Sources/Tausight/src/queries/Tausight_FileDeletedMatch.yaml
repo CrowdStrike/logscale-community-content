@@ -1,0 +1,19 @@
+name: Tausight_FileDeletedMatch
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.4.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // clear subset of fileDeleted events that are most recent
+  |format(field=[HostName, FileName], as=FQFN, format="%s %s")
+  |case {match(file="FileDeleted.csv", field=FQFN, ignoreCase=true, column=HostId, mode=string, include=[FileDeletedInfo,FileDeletedTstamp])|test(FileDeletedTstamp < @timestamp);
+          not match(file="FileDeleted.csv", field=FQFN, ignoreCase=true, column=HostId, mode=string, include=[FileDeletedInfo,FileDeletedTstamp])|*}
+
+  // this match query runs 40% faster but less accurate
+  // | not match(file="FileDeleted.csv", field=FQFN, ignoreCase=true, column=HostId, mode=string, include=[FileDeletedInfo,FileDeletedTstamp])

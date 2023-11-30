@@ -1,0 +1,44 @@
+name: Tausight_AttachmentHasEphi
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.4.0
+timeInterval:
+  isLive: false
+  start: 30d
+queryString: |-
+  // Checks if any attachment has ePHI
+  email
+  |lower(hostName,as=HostName)
+  //|HostName=?{HostName = *}
+
+  |lower("email.sender", as=Sender)
+  |case{regex(field=Sender, regex="^.+@(?<DomainFrom>.+)$")|*;*|Sender:="Unknown"}
+  //|Sender = ?{Sender=*}
+
+  |lower("email.processInfo.userName",as=UserName)
+  //|UserName = ?{UserName = *}
+  |_hasEphi := false
+  |case {
+      email.attachments[0].attachmentEphi.ephiDecisionFloat > 0.5 |
+        _hasEphi := true;
+      email.attachments[1].attachmentEphi.ephiDecisionFloat > 0.5 |
+           _hasEphi := true;
+      email.attachments[2].attachmentEphi.ephiDecisionFloat > 0.5 |
+        _hasEphi := true;
+      email.attachments[3].attachmentEphi.ephiDecisionFloat > 0.5 |
+        _hasEphi := true;
+      email.attachments[4].attachmentEphi.ephiDecisionFloat > 0.5 |
+        _hasEphi := true;
+      email.attachments[5].attachmentEphi.ephiDecisionFloat > 0.5 |
+        _hasEphi := true;
+      email.attachments[6].attachmentEphi.ephiDecisionFloat > 0.5 |
+        _hasEphi := true;
+
+  }
+  // Query filter
+  |_hasEphi = true
+  //|groupBy([hostName, _hasEphi])

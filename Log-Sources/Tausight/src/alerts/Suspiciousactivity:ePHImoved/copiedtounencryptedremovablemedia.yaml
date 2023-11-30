@@ -1,0 +1,21 @@
+name: 'Suspicious activity: ePHI moved/copied to unencrypted removable media'
+description: Triggered when a creator/owner moved/copied ePHI files to unencrypted
+  removable media
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1h
+queryString: |-
+  $tausight/ephi-risk-posture:Tausight_ePHIMovement(HostName=?{HostName=*}, UserName=?{UserName=*})
+
+  |encrypted!=true
+  |Type = "USB Drive"
+  |Activity = "File Copied" or Activity="File Moved"
+
+  |groupBy([UserName], function=count(field=FileName, as= "Files"), limit=10)
+  |sort(Files, order=desc)
+
+  |Files>=1
+  //Severity:=High
+throttleField: UserName
+actionNameReferences: []

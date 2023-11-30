@@ -1,0 +1,32 @@
+name: Tausight_EmailHasEphi
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.4.0
+timeInterval:
+  isLive: false
+  start: 30d
+queryString: |
+  email
+  |lower(hostName,as=HostName)
+  //|HostName=?{HostName = *}
+
+  |lower("email.sender", as=Sender)
+  |case{regex(field=Sender, regex="^.+@(?<DomainFrom>.+)$")|*;*|Sender:="Unknown"}
+  //|Sender = ?{Sender=*}
+
+  |lower("email.processInfo.userName",as=UserName)
+  //|UserName = ?{UserName = *}
+
+  |(email.attachments[0].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.attachments[1].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.attachments[2].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.attachments[3].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.attachments[4].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.attachments[5].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.attachments[6].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.attachments[7].attachmentEphi.ephiDecisionFloat > 0.5 or
+    email.messageEphi.ephiDecisionFloat > 0.5)

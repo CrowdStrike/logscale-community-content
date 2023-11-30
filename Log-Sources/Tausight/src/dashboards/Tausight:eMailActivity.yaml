@@ -1,0 +1,300 @@
+name: 'Tausight: eMail Activity'
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 60d
+widgets:
+  d95d992c-26ca-4c3d-8f21-9ce9f5f8b672:
+    x: 4
+    height: 6
+    queryString: |
+      email
+      |lower(hostName,as=HostName)
+      |HostName=?{HostName = *}
+
+      |lower("email.sender", as=Sender)
+      |case{regex(field=Sender, regex="^.+@(?<DomainTo>.+)$")|*;*|Sender:="Unknown"}
+      |Sender = ?{Sender=*}
+
+      |lower("email.processInfo.userName",as=UserName)
+      |UserName = ?{UserName = *}
+
+      |split(email.cc)
+      |case{regex(field=email.cc, regex="^.+@(?<DomainCc>.+)$")|*;*|email.cc:="Unknown"}
+      |split(email.to)
+      |case{regex(field=email.to, regex="^.+@(?<DomainTo>.+)$")|*;*|email.to:="Unknown"}
+      |lower("email.to", as=to_all)
+      |lower("email.cc", as=cc_all)
+      |to_all=?Recipient or cc_all=?Recipient
+
+      |split(email.attachments)
+      |email.attachments.attachmentEphi.ephiDecisionFloat > 0.5
+
+      |Attachments_all:=email.attachments.filename
+
+      |groupBy([Sender],function=[count(Attachments_all, distinct=true)])
+    end: '2023-11-17T13:38:09.165Z'
+    start: '2023-09-18T13:38:09.165Z'
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Filter by Sender
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        Sender: '["{{ fields.Sender }}"]'
+    options:
+      legendTitle: Sender
+    visualization: pie-chart
+    title: ePHI attachments by senders
+    isLive: false
+    type: query
+  d3f62a42-84ec-4321-a09f-e3b20285ce19:
+    x: 6
+    y: 14
+    height: 6
+    queryString: |-
+      email
+      |$tausight/ephi-risk-posture:Tausight_EmailHasEphi()
+      |HostName=?HostName
+      |Sender=?Sender
+      |UserName=?UserName
+      |case {email.url=* |format(as="URL", field=[email.url], "%s"); * |"URL" := "Unavailable";}
+      |case {email.source=* |format(as="Source", field=[email.source], "%s"); * |"Source" := "Unavailable";}
+      |split(email.cc)
+      |case{regex(field=email.cc, regex="^.+@(?<DomainCc>.+)$")|*;*|email.cc:="Unknown"}
+      |split(email.to)
+      |case{regex(field=email.to, regex="^.+@(?<DomainTo>.+)$")|*;*|email.to:="Unknown"}
+
+      |case{email.messageEphi.ephiDecisionFloat> 0.5| Type1:="Message";*}
+
+      |split(email.attachments)
+      |case{email.attachments.attachmentEphi.ephiDecisionFloat > 0.5| Type2:="Attachment";*}
+      |lower("email.to", as=to_all)
+      |lower("email.cc", as=cc_all)
+      |to_all=?Recipient or cc_all=?Recipient
+      |Attachments_all:=email.attachments.filename
+      |rename(to_all, as="Email_TO")
+      |rename(cc_all, as="Email_CC")
+      |rename(Attachments_all, as="Attachments")
+
+      |groupBy([UserName, Sender, URL, Source, @timestamp],function=collect([Email_TO, Email_CC, Attachments,Type1,Type2]))
+      |case{Type1=* and Type2=* |format(format="%s, %s", field=[Type1,Type2], as="ePHI_in");
+              Type1!=* and Type2=*|"ePHI_in":=Type2;
+              Type2!=* and Type1=*|"ePHI_in":=Type1;*
+             }
+
+      |groupBy([ePHI_in])
+    end: '2023-11-21T19:27:23.833Z'
+    start: '2023-09-22T19:27:23.833Z'
+    width: 6
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Total eMails by ePHI location
+    isLive: false
+    type: query
+  0d08304c-c8c5-437e-ac8b-781850f81de9:
+    x: 0
+    height: 8
+    queryString: |-
+      email
+      |$tausight/ephi-risk-posture:Tausight_EmailHasEphi()
+      |HostName=?HostName
+      |Sender=?Sender
+      |UserName=?UserName
+      |split(email.cc)
+      |case{regex(field=email.cc, regex="^.+@(?<DomainCc>.+)$")|*;*|email.cc:="Unknown"}
+      |split(email.to)
+      |case{regex(field=email.to, regex="^.+@(?<DomainTo>.+)$")|*;*|email.to:="Unknown"}
+
+      |lower("email.to", as=to_all)
+      |lower("email.cc", as=cc_all)
+      |to_all=?Recipient or cc_all=?Recipient
+      |Sender_all:=Sender
+      |sankey(source="Sender_all", target=to_all, weight=(count(timestamp, distinct=true)))
+      |sort(weight, order=desc, limit=10)
+    visualization: sankey
+    end: '2023-11-16T19:12:18.1Z'
+    start: '2023-09-17T19:12:18.1Z'
+    width: 12
+    y: 6
+    interactions:
+    - conditions: null
+      name: Show details of Emails Sent
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        Recipient: '["{{ fields.target }}"]'
+        Sender: '["{{ fields.source }}"]'
+    title: Top email traffic
+    isLive: false
+    type: query
+  09ee87d9-a437-4d97-a1ea-4629b0a12690:
+    x: 8
+    y: 0
+    height: 6
+    queryString: |+
+      email
+      |$tausight/ephi-risk-posture:Tausight_EmailHasEphi()
+      |HostName=?HostName
+      |Sender=?Sender
+      |UserName=?UserName
+      |split(email.recipientDomains)
+
+      |case{regex(field=Sender, regex="^.+@(?<DomainFrom>.+)$")|*;*|DomainFrom:="Unknown"}
+      |DomainTo:=email.recipientDomains
+
+      |top([DomainFrom, DomainTo], limit=10, rest=others)
+      //|groupBy([DomainFrom, DomainTo])
+      //|sankey(source="DomainFrom", target=DomainTo)
+
+    visualization: pie-chart
+    end: '2023-11-16T18:22:46.433Z'
+    start: '2023-09-17T18:22:46.433Z'
+    width: 4
+    title: eMail domains
+    isLive: false
+    type: query
+  7a8838fa-9f3c-4a6e-b109-55bb050daa16:
+    x: 0
+    height: 6
+    queryString: |-
+      email
+      |$tausight/ephi-risk-posture:Tausight_EmailHasEphi()
+      |HostName=?HostName
+      |Sender=?Sender
+      |UserName=?UserName
+      |split(email.cc)
+      |split(email.to)
+
+      |lower("email.to", as=to_all)
+      |lower("email.cc", as=cc_all)
+      |to_all=?Recipient or cc_all=?Recipient
+      |Sender_all:=Sender
+
+      |groupBy([OwnerName, HostName, Sender_all, @timestamp],function=collect([to_all]))
+      |select([@timestamp, HostName, OwnerName, Sender_all, to_all])
+
+      |groupBy([Sender_all],function=[count(as=Emails_sent)])
+      |sort(Emails_sent)
+    end: '2023-11-17T13:40:25.248Z'
+    start: '2023-09-18T13:40:25.248Z'
+    width: 6
+    y: 14
+    interactions:
+    - conditions: null
+      name: Filter by Sender
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        Sender: '["{{ fields.Sender_all }}"]'
+    options:
+      legendPosition: right
+      legendTitle: Sender
+      series: {}
+    visualization: pie-chart
+    title: ePHI emails sent
+    isLive: false
+    type: query
+  note-1696858709048-0:
+    x: 0
+    y: 0
+    height: 6
+    text: "### Use Case:  Identify email activity details\n        \n- *ePHI attachments\
+      \ by senders* - distribution of email senders\n- *eMail domains* - distribution\
+      \ of email domains\n- *Top email traffic* - distribution of email sent/received\n\
+      - *ePHI emails sent*  - distribution of emails sent\n- *eMail details* - details\
+      \ on individual emails\n\nParameters:\n\n- *HostName* - choose specific hostname\n\
+      - *Recipient* - choose specific recipient\n- *Sender* - choose specific sender\n\
+      - *UserName* - choose specific username\n\n\n\n        \n[tausight](https://www.tausight.com)"
+    width: 4
+    title: eMail activity
+    type: note
+  8f827324-dd62-4959-ad49-cd5f1682552e:
+    x: 0
+    y: 20
+    height: 8
+    queryString: |-
+      email
+      |$tausight/ephi-risk-posture:Tausight_EmailHasEphi()
+      |HostName=?HostName
+      |Sender=?Sender
+      |UserName=?UserName
+      |case {email.url=* |format(as="URL", field=[email.url], "%s"); * |"URL" := "Unavailable";}
+      |case {email.source=* |format(as="Source", field=[email.source], "%s"); * |"Source" := "Unavailable";}
+      |split(email.cc)
+      |case{regex(field=email.cc, regex="^.+@(?<DomainCc>.+)$")|*;*|email.cc:="Unknown"}
+      |split(email.to)
+      |case{regex(field=email.to, regex="^.+@(?<DomainTo>.+)$")|*;*|email.to:="Unknown"}
+
+      |case{email.messageEphi.ephiDecisionFloat> 0.5| Type1:="Message";*}
+
+      |split(email.attachments)
+      |case{email.attachments.attachmentEphi.ephiDecisionFloat > 0.5| Type2:="Attachment";*}
+      |lower("email.to", as=to_all)
+      |lower("email.cc", as=cc_all)
+      |to_all=?Recipient or cc_all=?Recipient
+      |Attachments_all:=email.attachments.filename
+      |rename(to_all, as="Email_TO")
+      |rename(cc_all, as="Email_CC")
+      |rename(Attachments_all, as="Attachments")
+
+      |groupBy([UserName, Sender, URL, Source, @timestamp],function=collect([Email_TO, Email_CC, Attachments,Type1,Type2]))
+      |case{Type1=* and Type2=* |format(format="%s, %s", field=[Type1,Type2], as="ePHI_in");
+              Type1!=* and Type2=*|"ePHI_in":=Type2;
+              Type2!=* and Type1=*|"ePHI_in":=Type1;*
+             }
+      |select([@timestamp, UserName, Sender, Email_TO, Email_CC, Attachments, URL, Source, "ePHI_in" ])
+      |default(field=Email_CC, value="N/A", replaceEmpty=true)
+      |default(field=Attachments, value="N/A", replaceEmpty=true)
+    end: '2023-11-20T17:41:21.353Z'
+    start: '2023-09-21T17:41:21.353Z'
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        '@timestamp':
+          render-as: value
+        UserName:
+          render-as: value
+        Sender:
+          render-as: value
+        URL:
+          render-as: value
+        Source:
+          render-as: value
+      row-numbers-enabled: true
+    visualization: table-view
+    title: eMail details
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  HostName:
+    label: HostName
+    query: email |$tausight/ephi-risk-posture:Tausight_EmailHasEphi() |UserName=?UserName
+      |top([HostName], limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: HostName
+  UserName:
+    label: UserName
+    query: email |$tausight/ephi-risk-posture:Tausight_EmailHasEphi() |HostName=?HostName
+      |top([UserName], limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserName

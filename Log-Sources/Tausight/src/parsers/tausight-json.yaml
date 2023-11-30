@@ -1,0 +1,80 @@
+name: tausight-json
+tests:
+- '{"timestamp": "2023-11-28T22:46:03.231927200Z", "hostName": "9X57K72", "sequenceNumber":
+  398981, "agentId": "t11B4081D-ED4E-489D-AAA1-F236A4B50F1B", "version": "2.3.1.172",
+  "applicationTerminated": {"mainProcessInfo": {"userName": "BH\\TTHOM011", "processId":
+  3828, "logonId": 2380315316, "processName": "teams.exe", "sid": "S-1-5-21-1390067357-1801674531-1417001333-28089",
+  "domain": "BH", "hashCode": "e580d0bcf1a8bd54b5320a5f3b805d2b", "tauProcessId":
+  122523, "tauSessionId": 105411}, "session": {"authenticationPkg": "Kerberos", "caption":
+  " ", "description": " ", "logonId": 2147483647, "logonSessionType": "LS_INTERACTIVE"},
+  "handleCount": 267, "pageFaults": 20669, "peakPagefileUsage": 24152, "peakVirtualSize":
+  "2251087192064", "peakWorkingSetSize": 79124, "threadCount": 15, "userModeTime":
+  "1250000", "kernelModeTime": "1250000"}, "domain": "BH", "domainAndHost": "BH\\9X57K72",
+  "messageId": "18ad806ff19949f9b2ea1797abb98187b5c0856d2373fa1f91b2e1cc95b49748",
+  "eventType": "application_terminated"}'
+- '{"timestamp": "2023-11-15T22:19:06.375585500Z", "hostName": "MXL04543WX", "sequenceNumber":
+  45297, "agentId": "tACDFC8DF-DAA4-4B1D-BA4D-7A31A999FC86", "version": "2.3.1.172",
+  "applicationStarted": {"mainProcess": {"caption": "LocationNotificationWindows.exe",
+  "commandLine": "\"C:\\WINDOWS\\System32\\LocationNotificationWindows.exe\"", "creationDate":
+  "2023-11-15T17:19:04.111Z", "executablePath": "C:\\WINDOWS\\System32\\LocationNotificationWindows.exe",
+  "parentProcessInfo": {"userName": "NT AUTHORITY\\SYSTEM", "processId": 988, "logonId":
+  999, "processName": "svchost.exe", "sid": "S-1-5-18", "domain": "BH", "hashCode":
+  "c638d881e8d212589716930ab1567f53", "tauProcessId": 17895, "tauSessionId": 17059},
+  "processInfo": {"userName": "BH\\MERH0212", "processId": 10900, "logonId": 553834,
+  "processName": "locationnotificationwindows.exe", "sid": "S-1-5-21-1390067357-1801674531-1417001333-7109",
+  "domain": "BH", "hashCode": "e47885ace4549854bb3e64c5cf0c4320", "tauProcessId":
+  17911, "tauSessionId": 17062}, "priority": 6, "sessionId": 1, "tokenInformation":
+  {"user": "BH\\MERH0212", "group": "BH\\Domain Users", "owner": "BH\\MERH0212", "privileges":
+  ["SHUTDOWN_NAME", "CHANGE_NOTIFY_NAME", "UNDOCK_NAME", "TIME_ZONE_NAME"], "domain":
+  "BH", "sid": "S-1-5-21-1390067357-1801674531-1417001333-7109"}, "modules": ["16936742206195011878",
+  "15475849841394368797", "15062146323322439165", "16198455381530016373", "6076196366158181602",
+  "9731097632002912118", "4843783552673659275", "15744272490807919748", "3477823691670747364",
+  "10627357059179430913", "3941938965296376195", "9778447121330518554", "3982156689471634645",
+  "335461194001984468", "5398986967105490152", "13097355104839349748", "2989934565239475258",
+  "4747588642892358920", "8232670830360589649", "16213542790019811296", "5496191912874376013",
+  "8808769858715400190", "5096449124245903253", "16991933324974096948", "8036428234314205104",
+  "13890777077388400402", "17547959282144078929", "6321530184547344324", "3130670896678525192",
+  "17972418188646170554", "12731274797778657514", "6364552970100797903", "11942305310378340015",
+  "15344198238245070909", "14324353104253424868", "16440804011291251861", "5728072677546013112",
+  "18417521538414583973", "1527308733729771871", "5765637937236277844", "5725926227810685674",
+  "6976270188366466544", "5620299035547144355", "12062615071481400615", "14038527047231215907",
+  "9658877793219501003", "17189538032147373027", "15804069926237197074", "8150928856379088450",
+  "3392381594439671387", "12449043830770320626", "3884441501437111509", "15289450831590581147",
+  "17457079630649146362", "16762529394326091140", "7967692697909794189", "1977874354450380336",
+  "9926323466519686129", "2068253973091633317", "5372463979363290731", "11524108205031904134",
+  "1311459764055923618", "17367035759339725179", "16614933329223078581", "6229110698169467111",
+  "9544895561993643442", "13312185421629450693", "10734140536465371835", "17110226208560029986",
+  "3233025372120568883", "16070293335899322576", "6146200383242126333", "1990852215035401417",
+  "16211170557513602992", "5632628727331703358", "1687631264888284218"], "executable":
+  {"fileAttributes": ["FILE_ATTRIBUTE_ARCHIVE"], "creationTime": "2019-12-07T09:09:44.320193500Z",
+  "lastAccessTime": "2023-11-15T22:19:04.247864900Z", "companyName": "Microsoft Corporation",
+  "description": "Location Notification", "fileVersion": "10.0.19041.1 (WinBuild.160101.0800)",
+  "fileSize": "71168", "productName": "LocationNotification", "productVersion": "10.0.19041.1"},
+  "signature": {}}, "session": {"authenticationPkg": "Kerberos", "caption": " ", "description":
+  " ", "logonId": 553834, "logonSessionType": "LS_INTERACTIVE"}}, "domain": "BH",
+  "domainAndHost": "BH\\MXL04543WX", "messageId": "4e42dc0dfbdc2dfd4f27aef3ed8d14150211c4088a537fd5748aa3493a7a9976",
+  "eventType": "application_started"}'
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: "// tausight-json parser for ingesting tausight sensor telemetry\n// Copyright\
+  \ tausight 2023\n\n// Drop events that are not used\ncase {\n @rawstring=\"*moduleInventory*\"\
+  \ or\n @rawstring=\"*driverInventory*\" or\n @rawstring=\"*servicesInventory*\"\
+  \ or\n @rawstring=\"*processInventory*\"\n| dropEvent();\n * }\n\n// Parse as json\
+  \ and exclude unused or arrays with excessive fields that can't be handled\n// default\
+  \ error handling is to drop the first 100 elements and then continue rather than\
+  \ stopping at the 100th.\n| parseJson(exclude=[applicationStarted.mainProcess.modules,\
+  \ tauoneStarted.drivers, tauoneStarted.productList])\n\n// drop events that are\
+  \ prior to 2.4 agent release\n//|version = /(?<versionMajor>^\\d+)\\.(?<versionMinor>\\\
+  d+)\\./i\n//| case{versionMajor<2 or (versionMajor=2 and versionMinor<3)|dropEvent();*}\n\
+  \n// Tag endpoint state events\n| case {\n    devicePoweredUp or devicePoweredDown\
+  \ or\n    tauoneStarted or tauoneShutdown or\n    encryptionChanged or deviceAttached\n\
+  \    | eventTag := \"endpoint\";\n\n    fileInspected\n    | eventTag := \"fileInspected\"\
+  ;\n\n    email\n    | eventTag := \"email\";\n\n    cloudStorage or fileDeleted\
+  \ or\n    fileCopied or fileReplaced or fileMoved or\n    clipboardActivity or fileIoActivity\n\
+  //    M365 or\n    | eventTag := \"fileActivity\";\n\n    applicationStarted\n \
+  \   | eventTag := \"application\";\n\n    sessionStarted or sessionTerminated or\
+  \ sessionEvent\n    | eventTag := \"session\";\n\n    heartbeat\n    | eventTag\
+  \ := \"heartbeat\" ;\n    *\n    |eventTag := \"others\"\n}\n\n| parseTimestamp(field=\"\
+  timestamp\", as=@timestamp, timezone=UTC) "
+tagFields:
+- eventTag

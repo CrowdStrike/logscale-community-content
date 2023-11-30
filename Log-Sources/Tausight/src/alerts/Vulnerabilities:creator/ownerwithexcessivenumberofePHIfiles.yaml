@@ -1,0 +1,16 @@
+name: 'Vulnerabilities: creator/owner with excessive number of ePHI files'
+description: Triggered when a creator/owner has an excessive number of ePHI files
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1h
+queryString: |-
+  $tausight/ephi-risk-posture:Tausight_ePHIStored(HostName=?{HostName=*})
+
+  |groupBy([OwnerName], function=count(field=FileName, as= "Files"), limit=10)
+  |sort(Files, order=desc)
+
+  |Files>=1
+  //Severity:=Medium
+throttleField: OwnerName
+actionNameReferences: []

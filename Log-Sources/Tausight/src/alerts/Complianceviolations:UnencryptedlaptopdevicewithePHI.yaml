@@ -1,0 +1,22 @@
+name: 'Compliance violations: Unencrypted laptop device with ePHI'
+description: Triggered when a laptop does not have bitlocker enabled and contain ePHI
+  files
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1h
+queryString: |-
+  $tausight/ephi-risk-posture:Tausight_ePHIStored(HostName=?{HostName=*})
+
+  |match(file="Endpoint details with encryption status.csv", field="HostName",column="HostName")
+  |case{Type=Local | Type:=DeviceType; *}
+  |encrypted:=EncryptedStatus
+  |encrypted!=true
+  |DeviceType="PC_MOBILE"
+  |groupBy([HostName], function=count(field=FileName, as= "Files"), limit=10)
+  |sort(Files, order=desc)
+
+  |Files>=1
+  //Severity:=High
+throttleField: HostName
+actionNameReferences: []

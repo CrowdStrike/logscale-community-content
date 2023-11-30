@@ -1,0 +1,293 @@
+name: 'Tausight: ePHI  Activity'
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 60d
+widgets:
+  cce87de0-f42c-404e-8c0c-7fa0e1a05ef0:
+    x: 0
+    height: 6
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins()
+      |HostName=?HostName
+      |UserName=?UserName
+      |encrypted=?Encryption
+      |in(field="Activity", values=[?Activity])
+      |DriveId=?Drive
+      |groupBy([ Activity, UserName])
+      |rename(field="_count", as="Count")
+
+      |sort([Count, Activity], limit=15)
+    end: '2023-11-14T14:05:24.982Z'
+    start: '2023-09-15T14:05:24.982Z'
+    width: 12
+    y: 11
+    interactions:
+    - conditions: null
+      name: Show Activity Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Activity Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        Activity: '["{{ fields.Activity }}"]'
+        Drive: '["{{ parameters.Drive }}"]'
+        UserName: '["{{ fields.UserName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter dashboard by UserName
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        UserName: '["{{ fields.UserName }}"]'
+    options:
+      legendTitle: Activity Count
+      colorPalette: greenRed
+      legendLocation: right
+      withLegendTitle: true
+      includeHistogram: true
+      reversePalette: false
+    visualization: heat-map
+    title: Top ePHI activities by UserName
+    isLive: false
+    type: query
+  eed44960-036c-4635-a046-0b5cbbd6064b:
+    x: 4
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins()
+
+      |HostName=?HostName
+      |UserName=?UserName
+      |encrypted=?Encryption
+      |DriveId=?Drive
+      |in(field="Activity", values=[?Activity])
+      |top([UserName], rest=Others)
+    end: now
+    start: 90d
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show Activity Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Activity Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        Activity: '["{{ parameters.Activity }}"]'
+        Drive: '["{{ parameters.Drive }}"]'
+        UserName: '["{{ fields.UserName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Show eMail Activity
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: eMail Activity'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        UserName: '["{{ fields.UserName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions:
+      - argument: Others
+        fieldName: OwnerName
+        operator: not-equal
+      name: Filter dashboard by UserName
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        UserName: '["{{ fields.UserName }}"]'
+    options:
+      legendPosition: bottom
+      series: {}
+    visualization: pie-chart
+    title: ePHI activity by UserName
+    isLive: false
+    type: query
+  note-1696858571172-0:
+    x: 0
+    y: 0
+    height: 5
+    text: "### Use Case: What ePHI risks are due to application/user activity ?\n\
+      \        \n- *ePHI activity by users* - count of ePHI files associated with\
+      \ user activities\n- *ePHI movement by activity* - count of ePHI files associated\
+      \ with activity types\n- *ePHI activity by users* - timeline for number of ePHI\
+      \ files accessed by users\n- *Top ePHI activities by users*  - distribution\
+      \ of ePHI activities  by top users\n\nParameters:\n\n- *Activity* - choose one\
+      \ or more activities\n- *Encryption* - choose encryption status\n- *HostName*\
+      \ - choose specific HostName\n- *UserName* - choose specific UserName \n\n[tausight](https://www.tausight.com)\n\
+      \        "
+    width: 4
+    title: 'ePHI activity '
+    type: note
+  0d86836f-01f3-4a1e-af4c-0e1527f53bfa:
+    x: 8
+    height: 5
+    queryString: |
+      $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins()
+
+      |HostName=?HostName
+      |UserName=?UserName
+      |encrypted=?Encryption
+      |DriveId=?Drive
+      |in(field="Activity", values=[?Activity])
+      |groupBy([Activity], function=[count(as=Count)])
+    end: now
+    start: 90d
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show Activity Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Activity Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        Activity: '["{{ fields.Activity }}"]'
+        Drive: '["{{ parameters.Drive }}"]'
+        HostName: '["{{ parameters.HostName }}"]'
+        UserName: '["{{ parameters.UserName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter dashboard by Activity
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        Activity: '["{{ fields.Activity }}"]'
+    options:
+      legendPosition: bottom
+      series: {}
+    visualization: pie-chart
+    title: ePHI movement by activity
+    isLive: false
+    type: query
+  759eeb24-8d7e-4888-85fc-a76553213209:
+    x: 0
+    height: 6
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins()
+      |HostName=?HostName
+      |UserName=?UserName
+      |encrypted=?Encryption
+      |DriveId=?Drive
+      |in(field="Activity", values=[?Activity])
+
+      |timechart(series=UserName, function=[count()], limit=10)
+    end: now
+    start: 90d
+    width: 12
+    y: 5
+    interactions:
+    - conditions: null
+      name: Show Activity Details
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: 'Tausight: ePHI Activity Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        Activity: '["{{ parameters.Activity }}"]'
+        Drive: '["{{ parameters.Drive }}"]'
+        UserName: '["{{ fields.UserName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter dashboard by UserName
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      type: updateparameters
+      arguments:
+        UserName: '["{{ fields.UserName }}"]'
+    options:
+      legendPosition: bottom
+      interpolation: linear
+      xAxisTitle: 'Event DateTime '
+      legendLabelOverflow: truncate
+      connect-points: false
+      yAxisScale: linear
+      imputation: none
+      gradient: false
+      plY: 20
+      horizontalPlotLineLabel: Standard
+      showDataPoints: true
+      yAxisTitle: Number of Files
+      stacking: none
+      regression: false
+      regressionType: linear
+    visualization: time-chart
+    title: ePHI activity by UserName
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  UserName:
+    label: UserName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |DriveId=?Drive
+      |HostName=?HostName |encrypted=?Encryption |in(field="Activity", values=[?Activity])
+      |groupBy([UserName]) |sort("_count",order=desc,limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserName
+  Drive:
+    label: Drive
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |HostName=?HostName
+      |HostName=?HostName |encrypted=?Encryption |in(field="Activity", values=[?Activity])
+      |groupBy([DriveId]) |sort("_count",order=desc,limit=25)
+    timeInterval: 60d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DriveId
+  Activity:
+    label: Activity
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |DriveId=?Drive  |HostName=?HostName
+      |UserName=?UserName |encrypted=?Encryption  |groupBy([Activity])  |select([Activity])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Activity
+  HostName:
+    label: HostName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins()|DriveId=?Drive
+      |UserName=?UserName |encrypted=?Encryption  |in(field="Activity", values=[?Activity])  |groupBy([HostName])
+      |sort("_count",order=desc,limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: HostName
+  Encryption:
+    label: Encryption
+    order: 50
+    values:
+      unecrypted: Unecrypted
+      '*': All
+      encrypted: Encrypted
+    type: list
+    defaultValue: '*'

@@ -1,0 +1,158 @@
+name: Tausight_ePHIMovement
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":274},{"type":"field","fieldName":"Type","format":"text","width":111},{"type":"field","fieldName":"Activity","format":"text","width":197},{"type":"field","fieldName":"ActivityType","format":"text","width":220},{"type":"field","fieldName":"HostName","format":"text","width":145}]'
+    newestAtBottom: 'false'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.4.0
+timeInterval:
+  isLive: false
+  start: 90d
+queryString: |-
+  // All ePHI movement
+  lower("hostName",as=HostName)
+  //|HostName= ?{HostName =*}
+  |eventType=file_copied or eventType=file_moved or eventType=file_replaced or eventType=clipboard_activity or eventType=file_io_activity or eventType=email or cloudStorage
+  |case {
+
+      eventType=file_copied
+      |(fileCopied.sourceFileInfo.ephi.ephiDecisionFloat > 0.5)
+      |case {
+          fileCopied.destinationFileInfo.driveInfo.removableMedia = true
+          |Type:="USB Drive";
+
+          length(field=fileCopied.cloudStorage.localFolder, as=_len)
+          |_len > 0
+          |cloud_source:=fileCopied.cloudStorage.shareName
+          |Type:="Cloud share";
+
+          fileCopied.destinationFileInfo.driveInfo.removableMedia != true
+          |Type:="Local";
+      }
+      |case {
+          fileCopied.destinationFileInfo.encryptedVolume = true | encrypted:=true;
+          * | encrypted:=false;
+      }
+      |Activity := "File Copied"
+      |case{Type!=""|regex(field="fileCopied.destinationFilename", regex="^(?<DriveId>..)");*|DriveId:="C:"}
+      |FileName:=fileCopied.destinationFilename
+      |LastAccessed:= fileCopied.destinationFileInfo.lastAccessTime
+      |process:=fileCopied.processInfo.processName
+      |lower("fileCopied.destinationFileInfo.ownerName", as=OwnerName)
+      |lower("fileCopied.processInfo.userName",as=UserName);
+
+      eventType=file_moved
+      |(fileMoved.newFileInfo.ephi.ephiDecisionFloat > 0.5)
+      |case {
+          fileMoved.newFileInfo.driveInfo.removableMedia = true
+          |Type := "USB Drive";
+
+          length(field=fileMoved.cloudStorage.localFolder, as=_len)
+          |_len > 0
+          |cloud_source:=fileMoved.cloudStorage.shareName
+          |Type := "Cloud share";
+
+          fileMoved.newFileInfo.driveInfo.removableMedia != true
+          |Type := "Local";
+      }
+      |case {
+          fileMoved.newFileInfo.encryptedVolume = true | encrypted:=true;
+          * | encrypted:=false;
+      }
+      |Activity:="File Moved"
+      |case{Type!=""|regex(field="fileMoved.newFilename", regex="^(?<DriveId>..)");*|DriveId:="C:"}
+      |FileName:=fileMoved.newFilename
+      |LastAccessed:= fileMoved.newFileInfo.lastAccessTime
+      |process:=fileMoved.processInfo.processName
+      |lower("fileMoved.processInfo.userName", as=UserName);
+
+      eventType=file_replaced
+      |(fileReplaced.replacementFileInfo.ephi.ephiDecisionFloat > 0.5)
+      |case {
+          fileReplaced.replacementFileInfo.driveInfo.removableMedia = true
+          |Type := "USB Drive";
+
+          length(field=fileReplaced.cloudStorage.localFolder, as=_len)
+          |_len > 0
+          |cloud_source:=fileReplaced.cloudStorage.shareName
+          |Type := "Cloud share";
+
+          fileReplaced.newFileInfo.driveInfo.removableMedia != true
+          |Type := "Local";
+      }
+      |case {
+          fileReplaced.replacementFileInfo.encryptedVolume = true | encrypted:=true;
+          * | encrypted:=false;
+      }
+      |Activity:="File Replaced"
+      |case{Type!=""|regex(field="fileReplaced.replacementFilename", regex="^(?<DriveId>..)");*|DriveId:="C:"}
+      |FileName:=fileReplaced.replacementFilename
+      |LastAccessed:= fileReplaced.replacementFileInfo.lastAccessTime
+      |process:=fileReplaced.processInfo.processName
+      |lower("fileReplaced.replacementFileInfo.ownerName", as=OwnerName)
+      |lower("fileReplaced.processInfo.userName", as=UserName);
+
+      eventType=clipboard_activity
+      |(clipboardActivity.ephi.ephiDecisionFloat > 0.5)
+      |process:=clipboardActivity.destProcessInfo.processName
+      |Activity:="Clipboard copy / paste"
+      |Type:=""
+      |DriveId:="C:"
+      |lower("clipboardActivity.destProcessInfo.userName", as=UserName);
+
+      eventType=file_io_activity
+      |(fileIoActivity.ephi.ephiDecisionFloat > 0.5)
+      |case {
+          length(field=fileIoActivity.cloudStorage.localFolder, as=_len)
+          |_len > 0
+          |cloud_source:=fileIoActivity.cloudStorage.shareName
+          |Type := "Cloud share";
+          *| Type:="File Opened"
+      }
+      |case {
+          fileIoActivity.fileOpened.encryptedVolume = true | encrypted:=true;
+          * | encrypted:=false;
+      }
+      |Activity:="File IO"
+      |case{Type!=""|regex(field="fileIoActivity.fileOpened.filename", regex="^(?<DriveId>..)");*|DriveId:="C:"}
+      |FileName:=fileIoActivity.fileOpened.filename
+      |process:=fileIoActivity.fileOpened.processInfo.processName
+      |lower("fileIoActivity.fileOpened.processInfo.userName", as=UserName);
+
+
+      eventType=email
+      |split(email.attachments)
+          |process:=email.processInfo.processName
+          |lower("email.processInfo.userName", as=UserName)
+      |case{
+          email.attachments.attachmentEphi.ephiDecisionFloat > 0.5
+          |Activity := "Email Attachment";
+
+          email.messageEphi.ephiDecisionFloat> 0.5
+          |Activity := "Email";
+          }
+      |DriveId:="C:"
+      |encrypted:=true
+      |Type:="";
+
+
+      cloudStorage
+      |cloudStorage.file.fileEphi.ephiDecisionFloat > 0.5
+      |process:=cloudStorage.processInfo.processName
+      |lower("cloudStorage.processInfo.userName", as=UserName)
+      |Activity:="Upload to Cloud"
+      |FileName:=cloudStorage.file.filename
+      |DriveId:="C:"
+      |encrypted:=true
+      |Type:=""
+  }
+  |case{encrypted=true|encrypted:="encrypted"; encrypted=false|encrypted:="unencrypted";* }
+  |case{
+      Type!="" |format(format="%s - %s", field=[Activity,Type], as=ActivityType);
+      Type="" |format(format="%s", field=[Activity], as=ActivityType);*
+  }
+
+  |rename(field="process", as="ProcessName")
+  |case{in(field="Type", values=["Local","USB Drive", "Cloud share"])|format(format="%s - %s", field=[Type,encrypted],as=DestDevEnc);*|DestDevEnc:="*"}
+  |format(format="%s_%s", field=[HostName, DriveId], as=HostNameId)

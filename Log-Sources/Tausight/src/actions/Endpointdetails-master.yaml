@@ -1,0 +1,4 @@
+$schema: https://schemas.humio.com/action/v0.5.0
+fileName: Endpoint details.csv
+name: Endpoint details - master
+type: upload-file

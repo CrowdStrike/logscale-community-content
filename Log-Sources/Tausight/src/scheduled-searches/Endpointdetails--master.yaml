@@ -1,0 +1,78 @@
+name: Endpoint details --master
+description: Endpoint information with all details
+enabled: true
+queryString: |-
+  encryptionChanged or devicePoweredUp or deviceAttached
+  |lower(hostName, as=HostName)
+  | case{
+      devicePoweredUp
+      | split("devicePoweredUp.logicalDisks")
+      | EventMessage:="DevicePoweredUp"
+      | case{devicePoweredUp.logicalDisks.encryptedDrive != true |  devicePoweredUp.logicalDisks.encryptedDrive := false; *}
+      | case{devicePoweredUp.logicalDisks.driveInfo.removableMedia!=true| devicePoweredUp.logicalDisks.driveInfo.removableMedia:= false; *}
+      | rename(field=[
+          [devicePoweredUp.logicalDisks.encryptedDrive, EncryptedDrive],
+          [devicePoweredUp.logicalDisks.deviceId, DriveId],
+          [devicePoweredUp.logicalDisks.encryptionType,EncryptionType],
+          [devicePoweredUp.logicalDisks.volumeSerialNumber,VolumeSerialNumber],
+          [devicePoweredUp.logicalDisks.volumeSignature,VolumeSignature],
+          [devicePoweredUp.computerSystem.systemType,SystemType],
+          [devicePoweredUp.logicalDisks.accessMode,AccessMode],
+          [devicePoweredUp.logicalDisks.driveType,DriveType],
+          [devicePoweredUp.logicalDisks.mediaType,MediaType],
+          [devicePoweredUp.logicalDisks.driveInfo.removableMedia,RemovableMedia]]);
+      encryptionChanged
+      | EventMessage:="EncryptionChanged"
+      | case{encryptionChanged.logicalDisk.encryptedDrive != true |  encryptionChanged.logicalDisk.encryptedDrive := false; *}
+      | case{encryptionChanged.logicalDisk.driveInfo.removableMedia!=true| encryptionChanged.logicalDisk.driveInfo.removableMedia:= false; *}
+      | rename(field=[
+          [encryptionChanged.logicalDisk.encryptedDrive, EncryptedDrive],
+          [encryptionChanged.logicalDisk.deviceId, DriveId],
+          [encryptionChanged.logicalDisk.encryptionType,EncryptionType],
+          [encryptionChanged.logicalDisk.volumeSerialNumber,VolumeSerialNumber],
+          [encryptionChanged.logicalDisk.volumeSignature,VolumeSignature],
+          [encryptionChanged.logicalDisk.accessMode,AccessMode],
+          [encryptionChanged.logicalDisk.driveType,DriveType],
+          [encryptionChanged.logicalDisk.mediaType,MediaType],
+          [encryptionChanged.logicalDisk.driveInfo.removableMedia,RemovableMedia]]);
+      deviceAttached
+      | EventMessage:="DeviceAttached"
+      | case{deviceAttached.logicalDisk.encryptedDrive != true |  deviceAttached.logicalDisk.encryptedDrive := false; *}
+      | case{deviceAttached.logicalDisk.driveInfo.removableMedia!=true| deviceAttached.logicalDisk.driveInfo.removableMedia:= false; *}
+      | rename(field=[
+          [deviceAttached.logicalDisk.encryptedDrive, EncryptedDrive],
+          [deviceAttached.logicalDisk.deviceId, DriveId],
+          [deviceAttached.logicalDisk.encryptionType,EncryptionType],
+          [deviceAttached.logicalDisk.volumeSerialNumber,VolumeSerialNumber],
+          [deviceAttached.logicalDisk.volumeSignature,VolumeSignature],
+          [deviceAttached.logicalDisk.accessMode,AccessMode],
+          [deviceAttached.logicalDisk.driveType,DriveType],
+          [deviceAttached.logicalDisk.mediaType,MediaType],
+          [deviceAttached.logicalDisk.driveInfo.removableMedia,RemovableMedia]]);
+      *}
+
+  |DriveId=* and VolumeSerialNumber=*
+  |groupBy([HostName,VolumeSignature,VolumeSerialNumber], function=selectFromMax(@timestamp, include=[HostNameId, HostName, agentId, SystemType, DeviceType, DriveId, EncryptedDrive, DriveType,  EncryptionType, MediaType, VolumeSerialNumber, VolumeSignature,  VolumeName, EventMessage, @timestamp,RemovableMedia]), limit=max)
+  |case{in(field="EncryptionType", values=["BE_AES_128", "BE_AES_256", "BE_XTS_AES_128", "BE_XTS_AES_256", "BE_HARDWARE_ENCYPT", "BE_UNKNOWN_ALGO"])|EncryptedStatus:=true;
+        EncryptionType="BE_UNKNOWN"|EncryptedStatus:=EncryptedDrive;
+        EncryptionType="BE_NOT_ENCRYPTED" | EncryptedStatus:=false;
+        EncryptionType="BE_UNDEFINED"|EncryptedStatus:="undefined";
+        EncryptionType!=*|EncryptedStatus:=false;
+        *}
+  |case{EncryptedStatus=true|EncryptedStatus:="encrypted"; EncryptedStatus=false|EncryptedStatus:="unencrypted";* }
+
+  |format(format="%s_%s", field=[HostName,DriveId], as=HostNameId)
+  |formatTime(as=EventTime,field=@timestamp,"%D %R")
+
+  |case{SystemType=*|DeviceType:=SystemType;
+          *|match(file="Endpoint details with encryption status.csv", field="HostName",column="HostName",include=[DeviceType], mode=string, ignoreCase=true )}
+  |formatTime(as=EventTime,field=@timestamp,"%D %R")
+  |select([HostNameId, HostName, agentId, DeviceType, DriveId, EncryptedStatus, EncryptedDrive, DriveType,  EncryptionType, MediaType, VolumeSerialNumber, VolumeSignature,  VolumeName, EventMessage, EventTime,RemovableMedia])
+backfillLimit: 1
+schedule: '*/10 * * * *'
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC-05:00
+queryStart: 10y
+actionNameReferences:
+- Endpoint details - master

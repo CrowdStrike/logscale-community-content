@@ -1,0 +1,20 @@
+name: 'Vulnerabilities: Unencrypted laptop detected'
+description: Triggered when a laptop does not have bitlocker enabled
+enabled: true
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1d
+queryString: |-
+  devicePoweredUp
+  |split("devicePoweredUp.logicalDisks")
+  |devicePoweredUp.logicalDisks.encryptedDrive != true
+  |devicePoweredUp.computerSystem.systemType=PC_MOBILE
+  |devicePoweredUp.logicalDisks.encryptedDrive := false
+  |groupBy([hostName, devicePoweredUp.logicalDisks.deviceId], function=selectFromMax(@timestamp, include=[devicePoweredUp.logicalDisks.encryptedDrive]))
+  |rename(field="devicePoweredUp.logicalDisks.encryptedDrive", as="EncryptedStatus")
+  |rename(field="devicePoweredUp.logicalDisks.deviceId", as="DriveId")
+  |lower(hostName, as=HostName)
+  |select([HostName, DriveId, EncryptedStatus])|
+  //Severity:=Medium
+throttleField: hostName
+actionNameReferences: []
