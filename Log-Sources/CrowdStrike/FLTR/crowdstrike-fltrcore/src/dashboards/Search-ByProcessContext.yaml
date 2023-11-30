@@ -13,7 +13,8 @@ widgets:
     queryString: |-
       test(?ProcessId != "*")
       | #event_simpleName=FileDeleteInfo
-      | ContextProcessId=?ProcessId aid=?aid
+      | ContextProcessId=?ProcessId 
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | groupBy([#event_simpleName, TargetFileName], limit=max)
       | rename(_count, as="Total")
     visualization: table-view
@@ -30,7 +31,7 @@ widgets:
     queryString: |-
       test(?ProcessId != "*")
       | ContextProcessId=?ProcessId
-      | aid=?aid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
     end: now
     start: 7d
     width: 12
@@ -48,10 +49,10 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid TargetProcessId=?ProcessId
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
+      | TargetProcessId=?ProcessId
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
-      | inputFileName:=?FileName
-      | test(lower(FileName)==lower(inputFileName))
+      | wildcard(field=FileName, pattern=?FileName, ignoreCase=true)
       | $"crowdstrike/fltr-core:zComputerName"()
       | ShortCommandLine:=format("%.64s...", field=CommandLine)
       | groupBy([aid, TargetProcessId], function=collect([ComputerName, ImageFileName, ShortCommandLine], limit=1000), limit=max)
@@ -81,7 +82,8 @@ widgets:
     queryString: |-
       test(?ProcessId != "*")
       | #event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6
-      | ContextProcessId=?ProcessId aid=?aid
+      | ContextProcessId=?ProcessId 
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | groupBy([RemoteAddressIP4, RemoteAddressIP6], limit=max)
     end: now
     start: 7d
@@ -94,8 +96,10 @@ widgets:
       queryString: |-
         test(?ProcessId != "*")
         | #event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6
-        | ContextProcessId=?ProcessId aid=?aid
-        | RemoteAddressIP4=?RemoteAddressIP4 RemoteAddressIP6=?RemoteAddressIP6
+        | ContextProcessId=?ProcessId 
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | RemoteAddressIP4=?RemoteAddressIP4 
+        | RemoteAddressIP6=?RemoteAddressIP6
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
@@ -120,7 +124,8 @@ widgets:
     queryString: |-
       test(?ProcessId != "*")
       | #event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6
-      | ContextProcessId=?ProcessId aid=?aid
+      | ContextProcessId=?ProcessId 
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | case {
           Protocol=6 | aProtocol:="TCP" ;
           Protocol=1 | aProtocol:="ICMP" ;
@@ -154,8 +159,9 @@ widgets:
       titleTemplate: 'Search by Event: {{ fields.#event_simpleName }}'
       queryString: |-
         test(?ProcessId != "*")
+        | #event_simpleName=?event_simpleName
         | ContextProcessId=?ProcessId
-        | aid=?aid #event_simpleName=?event_simpleName
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
@@ -179,7 +185,8 @@ widgets:
     queryString: |-
       test(?ProcessId != "*")
       | #event_simpleName=DnsRequest
-      | ContextProcessId=?ProcessId aid=?aid
+      | ContextProcessId=?ProcessId 
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | groupBy(DomainName, limit=max)
       | rename(_count, as="Total")
     visualization: table-view
@@ -196,7 +203,8 @@ widgets:
     queryString: |-
       test(?ProcessId != "*")
       | #event_simpleName=*Written
-      | ContextProcessId=?ProcessId aid=?aid
+      | ContextProcessId=?ProcessId 
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | groupBy([#event_simpleName, TargetFileName], limit=max)
       | rename(_count, as="Total")
     visualization: table-view
@@ -213,7 +221,8 @@ widgets:
     queryString: |-
       test(?ProcessId != "*")
       | #event_simpleName=ImageHash
-      | ContextProcessId=?ProcessId aid=?aid
+      | ContextProcessId=?ProcessId 
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | groupBy(ImageFileName, limit=max)
       | rename(_count, as="Total")
     visualization: table-view

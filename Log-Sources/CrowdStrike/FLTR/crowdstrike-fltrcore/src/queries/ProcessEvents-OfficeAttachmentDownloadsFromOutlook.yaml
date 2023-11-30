@@ -14,6 +14,7 @@ queryString: |-
 
   // Create new fields when CommandLine and ImageFileName match.
   | CommandLine=/\\Content\.Outlook\\.*?\\(?<AttachmentName>.*?)"/i
+  | wildcard(field=AttachmentName, pattern=?AttachmentName, ignoreCase=true)
   | ImageFileName=/(?<AppFileName>[^\\/|\\\\]*)$/
 
   // Only look for Microsoft Office events.
@@ -26,7 +27,7 @@ queryString: |-
   | TimeString:=formatTime(field=@timestamp, format="%Y-%m-%d %H:%M:%S")
 
   // Create a string showing how everything is connected.
-  | AttachmentDetails:=format("%-20s %-13s -> %s", field=[TimeString, AppFileName, AttachmentName])
+  | AttachmentDetails:=format("%s\n\t└  %s", field=[AppFileName, AttachmentName])
 
   // Format the output.
-  | groupBy([aid, ComputerName], function=collect(AttachmentDetails, limit=1000), limit=max)
+  | groupBy([aid, ComputerName, TimeString], function=collect(AttachmentDetails, limit=1000), limit=max)

@@ -26,20 +26,23 @@ queryString: |-
   | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
 
   // Make these fields as optional inputs by putting a ? at the beginning.
-  | DomainName=~wildcard(?DomainName, ignoreCase=true)
-  | FileName=~wildcard(?FileName, ignoreCase=true)
+  | wildcard(field=DomainName, pattern=?DomainName, ignoreCase=true)
+  | wildcard(field=FileName, pattern=?FileName, ignoreCase=true)
 
   // Add the ComputerName.
   | $"crowdstrike/fltr-core:zComputerName"()
 
   // Do an IOC lookup on the domain and rename the field.
-  | ioc:lookup(DomainName, type=domain, confidenceThreshold=unverified)
+  | ioc:lookup(DomainName, type=domain, confidenceThreshold=Unverified)
   | IOC:=rename(ioc[0].labels)
 
   // Assign a value for IOC matches to make sorting easier at the end.
   | case {
-      IOC=* | iocMatch:=1;
-      *     | iocMatch:=0 | IOC:="NoMatchFound";
+      IOC=* 
+        | iocMatch:=1 ;
+      *     
+        | iocMatch:=0 
+        | IOC:="NoMatchFound" ;
     }
 
   // Group the results, sort by the ones with IOCs first.

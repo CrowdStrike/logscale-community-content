@@ -16,17 +16,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | timechart(function=count(as="Total Detections"))
     end: now
     start: 7d
@@ -43,17 +37,11 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -88,17 +76,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | sankey(target=Tactic, source=Technique)
     end: now
     start: 7d
@@ -116,18 +98,13 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
-        | Technique=?Technique Tactic=?Tactic
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -157,17 +134,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | top(ComputerName, as="Top Hosts")
     visualization: table-view
     end: now
@@ -186,17 +157,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | top(Tactic, as="Top Tactics")
     end: now
     start: 7d
@@ -213,18 +178,12 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
-        | Tactic=?Tactic
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -255,17 +214,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | top(UserName, as="Top Users")
     visualization: table-view
     end: now
@@ -284,17 +237,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | top(Technique, as="Top Techniques")
     end: now
     start: 7d
@@ -311,18 +258,12 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
-        | Technique=?Technique
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -352,17 +293,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | sankey(target=Technique, source=SeverityName)
     end: now
     start: 7d
@@ -380,18 +315,13 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
-        | SeverityName=?SeverityName Technique=?Technique
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+        | wildcard(field=SeverityName, pattern=?SeverityName, ignoreCase=true)
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -419,17 +349,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | top(SeverityName, as="Top Severities")
     end: now
     start: 7d
@@ -439,14 +363,14 @@ widgets:
     - conditions: null
       name: Search by Severity
       titleTemplate: 'Search for Severity: {{ fields.SeverityName }}'
-      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent\n\
-        | ExternalApiType=Event_DetectionSummaryEvent\n// Add the ComputerName.\n\
-        | $\"crowdstrike/fltr-core:zComputerName\"()\n\n// Check inputs and make ComputerName\
-        \ case-insensitive.\n| inputComputerName:=?ComputerName\n| case {\n    test(?ComputerName==\"\
-        *\")\n      | ComputerName=?ComputerName ;\n    test(?ComputerName==\"\")\n\
-        \      | ComputerName=* ;\n    test(lower(inputComputerName)==lower(ComputerName))\
-        \ ;\n  }\n\n// Check the remaining inputs.\n| AgentIdString=?aid CustomerIdString=?cid\
-        \ \n| SeverityName=?SeverityName"
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | ExternalApiType=Event_DetectionSummaryEvent
+        | $"crowdstrike/fltr-core:zComputerName"()
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+        | wildcard(field=SeverityName, pattern=?SeverityName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -474,17 +398,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | top(DetectName, as="Top Detections")
     visualization: table-view
     end: now
@@ -503,17 +421,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | sankey(target=FileName, source=ParentImageFileName)
     end: now
     start: 7d
@@ -531,18 +443,13 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
-        | ParentImageFileName=?ParentImageFileName FileName=?FileName
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+        | wildcard(field=ParentImageFileName, pattern=?ParentImageFileName, ignoreCase=true)
+        | wildcard(field=FileName, pattern=?FileName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -570,17 +477,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       | sankey(target=ParentImageFileName, source=GrandparentImageFileName)
     end: now
     start: 7d
@@ -598,18 +499,13 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
-        | GrandparentImageFileName=?GrandparentImageFileName ParentImageFileName=?ParentImageFileName
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+        | wildcard(field=GrandparentImageFileName, pattern=?GrandparentImageFileName, ignoreCase=true)
+        | wildcard(field=ParentImageFileName, pattern=?ParentImageFileName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -637,17 +533,11 @@ widgets:
       | $"crowdstrike/fltr-core:zComputerName"()
 
       // Check inputs and make ComputerName case-insensitive.
-      | inputComputerName:=?ComputerName
-      | case {
-          test(?ComputerName=="*")
-            | ComputerName=?ComputerName ;
-          test(?ComputerName=="")
-            | ComputerName=* ;
-          test(lower(inputComputerName)==lower(ComputerName)) ;
-        }
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
       // Check the remaining inputs.
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       // Add the UserName.
       | $"crowdstrike/fltr-core:zUserName"()
     end: now
@@ -678,17 +568,11 @@ widgets:
         | $"crowdstrike/fltr-core:zComputerName"()
 
         // Check inputs and make ComputerName case-insensitive.
-        | inputComputerName:=?ComputerName
-        | case {
-            test(?ComputerName=="*")
-              | ComputerName=?ComputerName ;
-            test(?ComputerName=="")
-              | ComputerName=* ;
-            test(lower(inputComputerName)==lower(ComputerName)) ;
-          }
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
 
         // Check the remaining inputs.
-        | AgentIdString=?aid CustomerIdString=?cid
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:

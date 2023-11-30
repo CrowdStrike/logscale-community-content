@@ -12,8 +12,7 @@ widgets:
     height: 5
     queryString: |-
       // Do a case-insensitive comparison.
-      | inputUserName:=?UserName
-      | test(lower(inputUserName)==lower(UserName))
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
 
       // aid must exist.
       | aid=*
@@ -39,8 +38,7 @@ widgets:
     height: 5
     queryString: |-
       // Do a case-insensitive comparison.
-      | inputUserName:=?UserName
-      | test(lower(inputUserName)==lower(UserName))
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
 
       // Find identity events.
       | #event_simpleName=UserLogonFailed*
@@ -67,8 +65,7 @@ widgets:
     height: 5
     queryString: |-
       // Do a case-insensitive comparison.
-      | inputUserName:=?UserName
-      | test(lower(inputUserName)==lower(UserName))
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
 
       // Find detection events.
       | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
@@ -95,8 +92,7 @@ widgets:
     height: 4
     queryString: |-
       // Do a case-insensitive comparison.
-      | inputUserName:=?UserName
-      | test(lower(inputUserName)==lower(UserName))
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
 
       // Create a chart of the top 10 events over time.
       | timeChart(#event_simpleName, limit=10)
@@ -110,8 +106,7 @@ widgets:
       titleTemplate: null
       queryString: |-
         // Do a case-insensitive comparison.
-        | inputUserName:=?UserName
-        | test(lower(inputUserName)==lower(UserName))
+        | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
@@ -135,14 +130,13 @@ widgets:
     height: 5
     queryString: |-
       // Do a case-insensitive comparison.
-      | inputUserName:=?UserName
-      | test(lower(inputUserName)==lower(UserName))
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
 
       // Find identity events.
       | #event_simpleName=UserLogon OR #event_simpleName=UserIdentity
 
       // Only include interactive logon events.
-      | LogonType=/(^2$|^7$|^10$)/
+      | LogonType=/^(2|7|10)$/
 
       // Convert the results to a readable format.
       | $"crowdstrike/fltr-core:zLogonTypeName"()
@@ -166,8 +160,7 @@ widgets:
     height: 5
     queryString: |-
       // Do a case-insensitive comparison.
-      | inputUserName:=?UserName
-      | test(lower(inputUserName)==lower(UserName))
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
 
       // Find scheduled tasks being registered.
       | #event_simpleName=ScheduledTask*
@@ -200,8 +193,7 @@ widgets:
     height: 5
     queryString: |-
       // Do a case-insensitive comparison.
-      | inputUserName:=?UserName
-      | test(lower(inputUserName)==lower(UserName))
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
 
       // Find events related to file writes.
       | #event_simpleName=*FileWritten

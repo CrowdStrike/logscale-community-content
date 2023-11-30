@@ -11,7 +11,7 @@ widgets:
     y: 0
     height: 6
     queryString: |-
-      #event_simpleName=?EventSimpleName
+      wildcard(field=#event_simpleName, pattern=?event_simpleName, ignoreCase=true)
 
       // Create buckets to get the count, then rename a field so we recognize @timestamp again.
       | bucket(field=?GroupByValue, span=1d, limit=500)

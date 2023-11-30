@@ -14,15 +14,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternal=="Yes")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternal=="No")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       // Do an IP location on the field, otherwise set default values.
@@ -46,7 +46,7 @@ widgets:
       titleTemplate: 'UserId: {{ fields.UserId }}, OperationName: {{ fields.OperationName
         }}'
       queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
-        | ExternalApiType=Event_UserActivityAuditEvent\n| UserId=?UserId\n| OperationName=?OperationName\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| wildcard(field=UserId, pattern=?UserId, ignoreCase=true)\n| wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)\n\
         | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
         \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
         %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
@@ -79,15 +79,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternalUsers=="No")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternalUsers=="Yes")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       // Do an IP location on the field, otherwise set default values.
@@ -111,7 +111,7 @@ widgets:
       titleTemplate: 'UserId: {{ fields.source }}, OperationName: {{ fields.target
         }}'
       queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
-        | ExternalApiType=Event_UserActivityAuditEvent\n| UserId=?UserId\n| OperationName=?OperationName\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| wildcard(field=UserId, pattern=?UserId, ignoreCase=true)\n| wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)\n\
         | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
         \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
         %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
@@ -140,15 +140,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternalUsers=="No")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternalUsers=="Yes")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       // Do an IP location on the field, otherwise set default values.
@@ -170,7 +170,7 @@ widgets:
       name: UserId
       titleTemplate: 'UserId: {{ fields.UserId }}'
       queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
-        | ExternalApiType=Event_UserActivityAuditEvent\n| UserId=?UserId\n| ipLocation(UserIp)\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| wildcard(field=UserId, pattern=?UserId, ignoreCase=true)\n| ipLocation(UserIp)\n\
         | default(field=[UserIp, UserIp.city, UserIp.country], value=\"N/A\") \n|\
         \ UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"%Y-%m-%d %H:%M:%S.%L\"\
         , field=UTCTimestamp, locale=en_US, timezone=Z)"
@@ -200,15 +200,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternalUsers=="No")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternalUsers=="Yes")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       // Grab additional values.
@@ -247,15 +247,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternalUsers=="No")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternalUsers=="Yes")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       // Do an IP location on the field, otherwise set default values.
@@ -277,7 +277,7 @@ widgets:
       name: OperationName
       titleTemplate: 'OperationName: {{ fields.OperationName }}'
       queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
-        | ExternalApiType=Event_UserActivityAuditEvent\n| OperationName=?OperationName\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)\n\
         | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
         \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
         %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
@@ -303,15 +303,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternalUsers=="No")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternalUsers=="Yes")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       | UserId:=lower(?UserId)
@@ -337,7 +337,7 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
         | ExternalApiType=Event_UserActivityAuditEvent
-        | UserId=?UserId
+        | wildcard(field=UserId, pattern=?UserId, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: null
       arguments:
@@ -368,15 +368,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternalUsers=="No")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternalUsers=="Yes")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       // Do an IP location on the field, otherwise set default values.
@@ -399,7 +399,7 @@ widgets:
       name: ServiceName
       titleTemplate: 'ServiceName: {{ fields.ServiceName }}'
       queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
-        | ExternalApiType=Event_UserActivityAuditEvent\n| ServiceName=?ServiceName\n\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)\n\
         | ipLocation(UserIp)\n| default(field=[UserIp, UserIp.city, UserIp.country],\
         \ value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n| TimeUTC:=formatTime(\"\
         %Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US, timezone=Z)"
@@ -421,15 +421,15 @@ widgets:
       #event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent
       | ExternalApiType=Event_UserActivityAuditEvent
 
-      | CustomerIdString=?CustomerIdString
-      | ServiceName=?ServiceName
-      | OperationName=?OperationName
+      | wildcard(field=CustomerIdString, pattern=?CustomerIdString, ignoreCase=true)
+      | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)
+      | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?ExcludeInternal=="Yes")
+          test(?IncludeInternalUsers=="No")
             | UserId=/@/ ;
-          test(?ExcludeInternal=="No")
-            | UserId=?UserId ;
+          test(?IncludeInternalUsers=="Yes")
+            | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 
       // Do an IP location on the field, otherwise set default values.
@@ -453,8 +453,8 @@ widgets:
       titleTemplate: 'OperationName: {{ fields.source }}, ServiceName: {{ fields.target
         }}'
       queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_UserActivityAuditEvent\n\
-        | ExternalApiType=Event_UserActivityAuditEvent\n| OperationName=?OperationName\n\
-        | ServiceName=?ServiceName\n| ipLocation(UserIp)\n| default(field=[UserIp,\
+        | ExternalApiType=Event_UserActivityAuditEvent\n| wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)\n\
+        | wildcard(field=ServiceName, pattern=?ServiceName, ignoreCase=true)\n| ipLocation(UserIp)\n| default(field=[UserIp,\
         \ UserIp.city, UserIp.country], value=\"N/A\") \n| UTCTimestamp:=UTCTimestamp*1000\n\
         | TimeUTC:=formatTime(\"%Y-%m-%d %H:%M:%S.%L\", field=UTCTimestamp, locale=en_US,\
         \ timezone=Z)"
@@ -497,8 +497,8 @@ parameters:
     defaultValue: '*'
     order: 50
     valueField: CustomerIdString
-  ExcludeInternal:
-    defaultValue: 'Yes'
+  IncludeInternalUsers:
+    defaultValue: 'No'
     order: 50
     type: list
     values:

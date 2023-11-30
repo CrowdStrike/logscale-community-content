@@ -11,16 +11,11 @@ widgets:
     y: 28
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=AsepKeyUpdate
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(RegObjectName, distinct=true)
     end: now
     start: 7d
@@ -37,16 +32,11 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=CommandHistory
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | replace("¶", with="\n", field=CommandHistory)
       | table([@timestamp, ApplicationName, CommandCount, CommandHistory], limit=1000)
       | sort(@timestamp, limit=1000)
@@ -60,10 +50,10 @@ widgets:
       name: Search By Application Name
       titleTemplate: null
       queryString: |-
-        #cid=?cid
+        wildcard(field=#cid, pattern=?cid, ignoreCase=true)
         | #event_simpleName=CommandHistory
-        | aid=?aid
-        | ApplicationName=?ApplicationName
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=ApplicationName, pattern=?ApplicationName, ignoreCase=true)
         | replace("¶", with="\n", field=CommandHistory)
       useWidgetTimeWindow: true
       repoOrViewName: zz-FLTR-Tutorial
@@ -82,16 +72,11 @@ widgets:
     y: 85
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=FirewallSetRule
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("App=(?<App>(.*?))\|", field=FirewallRule, strict=false)
       | regex("Action=(?<Action>(.*?))\|", field=FirewallRule, strict=false)
@@ -126,16 +111,11 @@ widgets:
     y: 31
     height: 3
     queryString: |-
-      #cid=?cid
-      #event_simpleName=BrowserInjectedThread
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | #event_simpleName=BrowserInjectedThread
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(TargetThreadId, distinct=true)
     end: now
     start: 7d
@@ -153,21 +133,16 @@ widgets:
     y: 38
     height: 7
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=ProcessRollup2
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | ParentBaseFileName!=""
       | sankey(source=ParentBaseFileName, target=ImageFileName)
     visualization: sankey
     end: now
-    start: 24h
+    start: 7d
     width: 12
     title: Parent to Child Processes
     isLive: false
@@ -177,21 +152,16 @@ widgets:
     y: 21
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=/^(NetworkConnectIP4|NetworkReceiveAcceptIP4|LocalIpAddressIP4)$/
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | LocalAddressIP4=*
       | groupBy(PhysicalAddress, function=[collect([LocalAddressIP4, aip, InterfaceAlias], limit=100)], limit=max)
     visualization: table-view
     end: now
-    start: 30d
+    start: 7d
     width: 12
     title: Local and External IPs
     isLive: false
@@ -201,17 +171,12 @@ widgets:
     y: 73
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=*FileWritten* 
       | IsOnRemovableDisk=1
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        } 
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | groupBy([@timestamp, ContextProcessId, FileName, LocalAddressIP4, TargetFileName, Size], limit=1000)
@@ -233,16 +198,11 @@ widgets:
     y: 5
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=/^(AgentOnline|FirmwareImageAnalyzed|FirmwareImageCheck)$/
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | groupBy([aid, ComputerName, SystemManufacturer, BiosReleaseDate, BiosVersion, SHA256HashData], limit=1000)
       | drop([_count])
     visualization: table-view
@@ -257,16 +217,11 @@ widgets:
     y: 31
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=DLLInjections
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(TargetThreadId, distinct=true)
     end: now
     start: 7d
@@ -286,14 +241,9 @@ widgets:
     queryString: |-
       #cid = ?cid
       | #event_simpleName=/^(ProcessRollup2|NetworkConnectIP4)$/
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | #event_simpleName match {
           ProcessRollup2    => pid:=TargetProcessId ;
           NetworkConnectIP4 => pid:=ContextProcessId ;
@@ -313,7 +263,7 @@ widgets:
       | sort(@timestamp, limit=1000)
     visualization: table-view
     end: now
-    start: 24h
+    start: 7d
     width: 12
     title: Network Connections
     isLive: false
@@ -323,17 +273,12 @@ widgets:
     y: 57
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=/^(ProcessRollup2|SyntheticProcessRollup2)$/ 
-      ImageFileName=/\\powershell(_ise)?\.exe/i
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | ImageFileName=/\\powershell(_ise)?\.exe/i
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | groupBy([@timestamp, ComputerName, UserSid, ParentProcessId, RawProcessId, TargetProcessId, CommandLine, aid], limit=1000)
@@ -351,16 +296,11 @@ widgets:
     y: 31
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=JavaInjectedThread
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(TargetThreadId, distinct=true)
     end: now
     start: 7d
@@ -378,16 +318,11 @@ widgets:
     y: 5
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=/^(LocalIpAddressIP4|LocalIpAddressIP6)$/
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-      }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | MAC=* OR PhysicalAddress=*
       | case {
           MAC=* 
@@ -413,16 +348,11 @@ widgets:
     y: 94
     height: 5
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=/^(ProcessRollup2|DnsRequest|SuspiciousDnsRequest)$/ 
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | #event_simpleName match {
           ProcessRollup2 => pid:=TargetProcessId ;
           DnsRequest     => pid:=ContextProcessId ;
@@ -442,7 +372,7 @@ widgets:
       | sort(@timestamp, limit=1000)
     visualization: table-view
     end: now
-    start: 24h
+    start: 7d
     width: 12
     title: DNS Requests
     isLive: false
@@ -454,14 +384,9 @@ widgets:
     queryString: |-
       #cid = ?cid
       | #event_simpleName=ScheduledTaskRegistered
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | TaskExecCommand=/(\/|\\)(?<FileName>\w*\.?\w*)$/i
       | replace("\\\\u000d\\\\u000a", with="", field=TaskXml)
@@ -481,16 +406,11 @@ widgets:
     y: 2
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #kind=Secondary
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | $"crowdstrike/fltr-core:zUrlFalconAid"()
       | ipLocation(field=aip, as=aip)
       | groupBy(aid, function=collect([ComputerName, RTR, aip, aip.city, aip.country, ProductType, Version, BiosManufacturer, BiosVersion, ChassisManufacturer, SystemManufacturer, SystemProductName, MachineDomain, AgentVersion, aid, #cid], limit=100), limit=1000)
@@ -507,15 +427,10 @@ widgets:
     y: 0
     height: 2
     queryString: |-
-      #cid=?cid
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | $"crowdstrike/fltr-core:zUrlFalconAid"()
       | head(1)
       | rename(field="RTR", as="Real Time Response")
@@ -533,16 +448,11 @@ widgets:
     y: 65
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=NewScriptWritten
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | groupBy([@timestamp, ContextProcessId, FileName, LocalAddressIP4, TargetFileName, size], limit=1000)
@@ -560,16 +470,11 @@ widgets:
     y: 8
     height: 3
     queryString: |+
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=InstanceMetadata
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | kvParse(field=InstanceMetadata, separator=":")
       | groupBy([aid, ComputerName, privateIp, accountId, instanceId, instanceType, imageId, availabilityZone], limit=1000)
       | drop([_count])
@@ -584,16 +489,11 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #cid=?cid
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
-      | (#event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2) aid=?aid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | (#event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2)
       | ImageFileName=/(\/|\\)(?<FileName>\w*\.?\w*)$/i
       | rename(field=ImageFileName, as=OriginalFileName) 
       | rename(field=CommandLine, as=OriginalCommandLine)
@@ -628,17 +528,12 @@ widgets:
     y: 77
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2 
       | ImageFileName=/reg.exe/i
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | groupBy([@timestamp, UserSid, FileName, CommandLine, ParentBaseFileName], limit=1000)
@@ -658,14 +553,9 @@ widgets:
     queryString: |-
       #cid = ?cid
       | #event_simpleName=InjectedThread
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(TargetThreadId, distinct=true)
     end: now
     start: 7d
@@ -686,14 +576,9 @@ widgets:
       #cid = ?cid
       | #event_simpleName=ProcessRollup2 OR #event_simpleName=SyntheticProcessRollup2
       | CommandLine=* ImageFileName=*
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | match(file="crowdstrike/fltr-core/recon_apps.csv", field=FileName, include=FileName, ignoreCase=true, strict=true)
@@ -712,16 +597,11 @@ widgets:
     y: 28
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=AsepValueUpdate
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(RegValueName, distinct=true)
     end: now
     start: 7d
@@ -739,16 +619,11 @@ widgets:
     y: 99
     height: 4
     queryString: |
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=ProcessRollup2 OR #event_simpleName=NetworkListenIP4
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       // We essentially want to join the ContextProcessId of the network events
       // with the TargetProcessId of the ProcessEvents, so we create a new
       // field 'pid' on which we can do a groupby.
@@ -786,17 +661,12 @@ widgets:
     y: 11
     height: 5
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid OR AgentIdString=?aid;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | groupBy([FileName, DetectName, Severity, SeverityName, ComputerName, UserName, MD5String, SHA256String], function=[count(as=DetectionCount)], limit=1000)
     visualization: table-view
     end: now
@@ -811,15 +681,10 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=UserLogon OR #event_simpleName=UserLogoff
-      | #cid=?cid
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | $"crowdstrike/fltr-core:zLogonTypeName"()
       | groupBy([@timestamp, UserName, LogonDomain, LogonTypeName, UserIsAdmin, LogonTime, LogoffTime], limit=1000)
       | drop(_count)
@@ -836,17 +701,12 @@ widgets:
     y: 16
     height: 5
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid OR AgentIdString=?aid;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | format("[Detection Link](%s)", field=["FalconHostLink"], as="DetectionLink")
       | groupBy([@timestamp, DetectId], function=[collect([DetectionLink, FileName, DetectName, Severity, SeverityName, ComputerName, UserName, MD5String, SHA256String], limit=100)], limit=1000)
       | drop(DetectId)
@@ -863,16 +723,11 @@ widgets:
     y: 28
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=PeFileWritten
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(TargetFileName, distinct=true)
     end: now
     start: 7d
@@ -890,16 +745,11 @@ widgets:
     y: 31
     height: 3
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=InjectedThreadFromUnsignedModule
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | count(TargetThreadId, distinct=true)
     end: now
     start: 7d
@@ -917,16 +767,11 @@ widgets:
     y: 61
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=/^(RarFileWritten|SevenZipFileWritten|ZipFileWritten)$/
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | groupBy([@timestamp, ContextProcessId, FileName, LocalAddressIP4, TargetFileName, size], limit=1000)
@@ -944,16 +789,11 @@ widgets:
     y: 69
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=/^(ExecutableDeleted|NewExecutableRenamed|NewExecutableWritten|PeFileWritten)$/
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | tail(200)
       | #event_simpleName match {
@@ -978,20 +818,15 @@ widgets:
     y: 103
     height: 5
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=NetworkConnectIP4
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | worldMap(ip=RemoteAddressIP4)
     visualization: world-map
     end: now
-    start: 24h
+    start: 7d
     width: 5
     title: Network Connection Destinations
     isLive: false
@@ -1001,16 +836,11 @@ widgets:
     y: 103
     height: 5
     queryString: |
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=NetworkConnectIP4
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
       | ipLocation(field=RemoteAddressIP4, as=RemoteAddressIP4)
       | ioc:lookup(RemoteAddressIP4, type=ip_address, confidenceThreshold=unverified)
@@ -1027,7 +857,7 @@ widgets:
       | rename(_count, as="count")
     visualization: table-view
     end: now
-    start: 24h
+    start: 7d
     width: 7
     title: External Network Connections
     isLive: false
@@ -1037,16 +867,11 @@ widgets:
     y: 45
     height: 4
     queryString: |-
-      #cid=?cid
+      wildcard(field=#cid, pattern=?cid, ignoreCase=true)
       | #event_simpleName=ServiceStarted
-      | case {
-          test(?HostName!="*") 
-            | $"crowdstrike/fltr-core:zComputerName"() 
-            | inputComputerName:=?HostName 
-            | test(lower(inputComputerName)==lower(ComputerName)) ;
-          test(?aid!="*") 
-            | aid=?aid ;
-        }
+      | $"crowdstrike/fltr-core:zComputerName"() 
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | tail(1000)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | groupBy([@timestamp, ComputerName, UserName, TargetProcessId, ServiceDisplayName, CommandLine, SHA256HashData, aid], limit=1000)

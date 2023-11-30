@@ -21,8 +21,8 @@ queryString: |-
   // Grab the ComputerName.
   | $"crowdstrike/fltr-core:zComputerName"()
 
-  // Format the two into a single line.
-  | ConnectionDetails:=format("%-36s -> %s", field=[DomainName, CommandLine])
+  // Format the two values.
+  | ConnectionDetails:=format("%-36s\n\t└ %s", field=[CommandLine, DomainName])
 
   // Format the output.
   | groupBy([aid, ComputerName], function=collect(ConnectionDetails, limit=1000), limit=max)

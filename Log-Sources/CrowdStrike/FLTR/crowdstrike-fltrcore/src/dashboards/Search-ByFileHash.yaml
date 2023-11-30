@@ -13,8 +13,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=*FileWritten
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | $"crowdstrike/fltr-core:zComputerName"()
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | table([@timestamp, aid, ComputerName, TargetFileName], limit=1000)
@@ -31,8 +31,8 @@ widgets:
     height: 3
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | count(field=aid, distinct=true)
     end: now
@@ -49,8 +49,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | timeChart(function=count(as="Hosts", field=aid, distinct=true))
     end: now
@@ -63,8 +63,8 @@ widgets:
       titleTemplate: null
       queryString: |-
         #event_simpleName=ProcessRollup2
-        | aid=?aid
-        | SHA256HashData=?SHA256
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
         | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       useWidgetTimeWindow: true
       repoOrViewName:
@@ -87,8 +87,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | $"crowdstrike/fltr-core:zComputerName"()
       | top(field=ComputerName, limit=10)
@@ -102,11 +102,11 @@ widgets:
       titleTemplate: 'Search by ComputerName: {{ fields.ComputerName }}'
       queryString: |-
         #event_simpleName=ProcessRollup2
-        | aid=?aid
-        | SHA256HashData=?SHA256
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
         | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
         | $"crowdstrike/fltr-core:zComputerName"()
-        | ComputerName=?ComputerName
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -129,8 +129,8 @@ widgets:
     height: 3
     queryString: |-
       #event_simpleName=*FileWritten
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | count(aid, distinct=true)
     end: now
@@ -150,8 +150,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=*FileWritten
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
       | $"crowdstrike/fltr-core:zComputerName"()
       | top(field=ComputerName, limit=10)
@@ -165,11 +165,11 @@ widgets:
       titleTemplate: 'Search by ComputerName: {{ fields.ComputerName }}'
       queryString: |-
         #event_simpleName=*FileWritten
-        | aid=?aid
-        | SHA256HashData=?SHA256
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
         | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
         | $"crowdstrike/fltr-core:zComputerName"()
-        | ComputerName=?ComputerName
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -200,8 +200,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | timeChart(function=count(as="Activity"))
     end: now
@@ -214,8 +214,8 @@ widgets:
       titleTemplate: null
       queryString: |-
         #event_simpleName=ProcessRollup2
-        | aid=?aid
-        | SHA256HashData=?SHA256
+        | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+        | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
         | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       useWidgetTimeWindow: true
       repoOrViewName:
@@ -239,8 +239,8 @@ widgets:
     height: 4
     queryString: |
       #event_simpleName=ProcessRollup2
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex(field=ImageFileName, regex="(?<FileName>[^/\\\]+$)")
       | groupby([SHA256HashData, FileName], function=[
           count(aid, as="Total Hosts", distinct=true),
@@ -266,8 +266,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid
-      | SHA256HashData=?SHA256
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+      | wildcard(field=SHA256HashData, pattern=?SHA256, ignoreCase=true)
       | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
       | $"crowdstrike/fltr-core:zComputerName"()
       | table([@timestamp, aid, ComputerName, ImageFileName, CommandLine], limit=1000)

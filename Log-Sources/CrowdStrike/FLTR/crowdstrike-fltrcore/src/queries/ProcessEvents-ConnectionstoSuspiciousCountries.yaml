@@ -34,7 +34,7 @@ queryString: |-
   | Country:=rename(RemoteAddressIP4.country)
 
   // Perform an IOC lookup.
-  | ioc:lookup(RemoteIP, type="ip_address", confidenceThreshold=unverified)
+  | ioc:lookup(RemoteIP, type="ip_address", confidenceThreshold=Unverified)
   | default(field=ioc[0].labels, value="NotMatched")
   | IOC:=rename(ioc[0].labels)
 

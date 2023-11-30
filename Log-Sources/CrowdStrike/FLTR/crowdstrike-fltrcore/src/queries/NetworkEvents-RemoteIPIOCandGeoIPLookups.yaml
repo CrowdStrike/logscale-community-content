@@ -17,7 +17,7 @@ queryString: |-
       // Apply when the dst_ip is a non-RFC1918 IP address.
       !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
         | ipLocation(RemoteAddressIP4)
-        | ioc:lookup(RemoteAddressIP4, type="ip_address", confidenceThreshold=Medium) ;
+        | ioc:lookup(RemoteAddressIP4, type="ip_address", confidenceThreshold=Unverified) ;
       * ;
     }
 

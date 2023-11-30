@@ -24,13 +24,16 @@ queryString: |-
   | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
 
   // Only find ones that have all of the necessary fields and exclude localhost.
-  | LocalAddressIP4=* LocalAddressIP4!=/^127\./ LocalPort=* FileName=*
+  | LocalAddressIP4=* 
+  | LocalAddressIP4!=/^127\./ 
+  | LocalPort=* 
+  | FileName=*
 
   // Add the ComputerName.
   | $"crowdstrike/fltr-core:zComputerName"()
 
   // Create a string from the values.
-  | ListenerDetails:=format("%-18s -> %s:%s", field=[FileName, LocalAddressIP4, LocalPort])
+  | ListenerDetails:=format("%-18s\n\t└ %s:%s", field=[FileName, LocalAddressIP4, LocalPort])
 
   // Group by unique combinations of values.
   | groupBy([aid, ComputerName], function=collect(ListenerDetails, limit=1000), limit=max) 
