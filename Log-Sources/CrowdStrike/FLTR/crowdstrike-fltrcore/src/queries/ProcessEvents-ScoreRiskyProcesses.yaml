@@ -22,8 +22,7 @@ queryString: |-
   // Parse flag used in "net" command.
   | regex("(sc|net1?)\s+(?<netFlag>\S+)\s+", field=CommandLine, strict=false, flags=i)
 
-  // Create evaulation criteria and weighting for process usage.
-  | default(field=behaviorWeight, value=0)
+  // Create evaluation criteria and weighting for process usage.
   | case {
       FileName=/net1?\.exe/i netFlag="start"                              | behaviorWeight := "4" ;
       FileName=/net1?\.exe/i netFlag="stop"                               | behaviorWeight := "4" ;
@@ -44,9 +43,10 @@ queryString: |-
       FileName=/ping\.exe/i                                               | behaviorWeight := "3" ;
       * ;
     }
+  | default(field=behaviorWeight, value=0)
 
   // Create FileName and CommandLine one-liner.
-  | format(format="Score: %s\t|\t%s -> %s", field=[behaviorWeight, FileName, CommandLine], as="executionDetails")
+  | format(format="Score: %s -> %s", field=[behaviorWeight, CommandLine], as="executionDetails")
 
   // Group and organize output.
   | groupby([cid, aid, dayBucket], function=[count(FileName, distinct=true, as="fileCount"), sum(behaviorWeight, as="totalScore"), collect(executionDetails, limit=1000)], limit=max)
@@ -56,7 +56,7 @@ queryString: |-
 
   // Set thresholds.
   | fileCount >= 5 OR totalScore > 30
-  | sort(totalScore)
+  | sort(totalScore, limit=1000)
 
   // Format the final output.
   | "Total Score":=rename(totalScore)

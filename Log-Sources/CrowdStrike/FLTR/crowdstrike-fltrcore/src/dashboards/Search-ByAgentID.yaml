@@ -12,8 +12,10 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i Tactic!=""
-      | AgentIdString=?aid #cid=?cid
-      | Tactic=* Technique=*
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | Tactic=* 
+      | Technique=*
       | groupBy([Tactic, Technique], function=count(AgentIdString, as="Detection Count"), limit=max)
     end: now
     start: 7d
@@ -27,8 +29,10 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent Tactic!=/^custom/i Tactic!=""
-        | AgentIdString=?aid #cid=?cid
-        | Tactic=?Tactic Technique=?Technique
+        | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+        | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true) 
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -53,7 +57,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=DnsRequest
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true)
       | ioc:lookup(DomainName, type=domain, confidenceThreshold=unverified)
       | ioc[0].labels=/^(?<iocActor>Actor\/.*?)\,/
       | top([DomainName, iocActor])
@@ -71,7 +76,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=ScheduledTaskRegistered
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | table([UserName, TaskName, TaskExecCommand, TaskExecArguments], limit=1000)
     visualization: table-view
     end: now
@@ -86,7 +92,8 @@ widgets:
     height: 3
     queryString: |-
       #event_simpleName=PeFileWritten
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | count(SHA256HashData, distinct=true)
     end: now
     start: 7d
@@ -105,7 +112,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | join(
           {#event_simpleName=NetworkListenIP4 LocalPort!=0},
           field=TargetProcessId, key=ContextProcessId,
@@ -128,7 +136,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=NetworkConnectIP4
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | worldMap(ip=RemoteAddressIP4)
     visualization: world-map
     end: now
@@ -143,7 +152,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=ServiceStarted event_platform=Win
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | table([@timestamp, UserName, ServiceDisplayName, CommandLine], limit=1000)
     visualization: table-view
     end: now
@@ -158,7 +168,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=ProcessRollup2
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | regex(field=ImageFileName, regex="(?<FileName>[^/\\\]+$)")
       | table([@timestamp, FileName, CommandLine, ParentBaseFileName], limit=1000)
     visualization: table-view
@@ -174,7 +185,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=AgentOnline
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | ipLocation(field=aip, as=aip)
       | $"crowdstrike/fltr-core:zComputerName"()
       | groupby([ComputerName, AgentVersion, aip, aip.country, aip.city, BiosManufacturer, BiosVersion, ChassisManufacturer, SystemManufacturer, SystemProductName, aid], limit=max)
@@ -192,7 +204,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=DnsRequest
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | top(DomainName)
       | rename(_count, as="Total Requests")
     visualization: table-view
@@ -209,7 +222,8 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | ExternalApiType=Event_DetectionSummaryEvent
-      | AgentIdString=?aid CustomerIdString=?cid
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true) 
+      | wildcard(field=CustomerIdString, pattern=?cid, ignoreCase=true)
       | groupby([UserName, FileName, DetectName, DetectDescription, SeverityName], function=[count(as="Total Detections")], limit=max)
     visualization: table-view
     end: now
@@ -224,7 +238,8 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=UserLogon
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | $"crowdstrike/fltr-core:zLogonTypeName"()
       | table([@timestamp, event_platform, UserName, UserSid, UserIsAdmin, LogonTypeName, ClientComputerName, LogonDomain], limit=1000)
     visualization: table-view
@@ -240,7 +255,8 @@ widgets:
     height: 3
     queryString: |-
       #event_simpleName=PackedExecutableWritten
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | count()
     end: now
     start: 7d
@@ -268,7 +284,8 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=NetworkConnectIP4
-      | aid=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=aid, pattern=?aid, ignoreCase=true) 
       | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
       | ipLocation(field=RemoteAddressIP4, as=RemoteAddressIP4)
       | top([RemoteAddressIP4, RemoteAddressIP4.country])
@@ -286,7 +303,8 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent
-      | AgentIdString=?aid #cid=?cid
+      | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true) 
       | sankey(target=Tactic, source=Technique)
     end: now
     start: 7d
@@ -300,8 +318,10 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | EventType=Event_ExternalApiEvent
-        | AgentIdString=?aid #cid=?cid
-        | Tactic=?Tactic Technique=?Technique
+        | wildcard(field=#cid, pattern=?cid, ignoreCase=true)
+        | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true) 
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true) 
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:

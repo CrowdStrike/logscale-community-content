@@ -12,9 +12,9 @@ widgets:
     queryString: |-
       #event_simpleName=UserLogon
       | event_platform=Win
-      | UserIsAdmin=?UserIsAdmin 
-      | UserName=?UserName 
-      | LogonType=?LogonType
+      | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true) 
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true) 
+      | wildcard(field=LogonType, pattern=?LogonType, ignoreCase=true)
       | $"crowdstrike/fltr-core:zLogonTypeName"()
       | timeChart(LogonTypeName, function=count(UserSid))
     end: now
@@ -25,9 +25,13 @@ widgets:
     - conditions: null
       name: Search by Time
       titleTemplate: null
-      queryString: "#event_simpleName=UserLogon \n| event_platform=Win\n| UserIsAdmin=?UserIsAdmin\
-        \ UserName=?UserName LogonType=?LogonType\n| $\"crowdstrike/fltr-core:zLogonTypeName\"\
-        ()\n| UserIsAdmin=?UserIsAdmin LogonType=?LogonType UserName=?UserName"
+      queryString: |-
+        #event_simpleName=UserLogon 
+        | event_platform=Win
+        | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true)
+        | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
+        | wildcard(field=LogonType, pattern=?LogonType, ignoreCase=true)
+        | $"crowdstrike/fltr-core:zLogonTypeName"()
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
@@ -57,7 +61,9 @@ widgets:
       #event_simpleName=UserLogon
       | event_platform=Win
       | UserSid="S-1-5-21-*"
-      | UserIsAdmin=?UserIsAdmin UserName=?UserName LogonType=?LogonType
+      | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true) 
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
+      | wildcard(field=LogonType, pattern=?LogonType, ignoreCase=true)
       | passwordAge:=(now()-(PasswordLastSet*1000))/1000/60/60/24
       | passwordAgeDays:=round("passwordAge")
       | $"crowdstrike/fltr-core:zLogonTypeName"()
@@ -89,7 +95,9 @@ widgets:
       #event_simpleName=UserLogon
       | event_platform=Win
       | UserSid="S-1-5-21-*"
-      | UserIsAdmin=?UserIsAdmin UserName=?UserName LogonType=?LogonType
+      | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true) 
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true) 
+      | wildcard(field=LogonType, pattern=?LogonType, ignoreCase=true)
       | passwordAge:=(now()-(PasswordLastSet*1000))/1000/60/60/24
       | passwordAgeDays:=round("passwordAge")
       | $"crowdstrike/fltr-core:zLogonTypeName"()
@@ -131,11 +139,10 @@ widgets:
     queryString: |-
       #event_simpleName=UserLogon
       | LogonType=10
-      | UserIsAdmin=?UserIsAdmin UserName=?UserName
+      | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true) 
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
       | RemoteAddressIP4=*
       | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
-      | UserIsAdmin=?UserIsAdmin
-      | UserName=?UserName
       | ipLocation(RemoteAddressIP4)
       | worldMap(ip=RemoteAddressIP4, magnitude=count(aid))
     end: now
@@ -166,7 +173,9 @@ widgets:
     queryString: |-
       #event_simpleName=UserLogon
       | event_platform=Win UserSid=/^S\-1\-5\-21\-.*/
-      | UserIsAdmin=?UserIsAdmin UserName=?UserName LogonType=?LogonType
+      | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true) 
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true) 
+      | wildcard(field=LogonType, pattern=?LogonType, ignoreCase=true)
       | lowercase("UserName")
       | groupby(UserSid, function=([count(UserName, distinct=true), collect(UserName, limit=1000)]), limit=max)
       | _count>1
@@ -206,7 +215,9 @@ widgets:
       #event_simpleName=UserLogon
       | event_platform=Win
       | UserSid="S-1-5-21-*"
-      | UserIsAdmin=?UserIsAdmin UserName=?UserName LogonType=?LogonType
+      | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true) 
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true) 
+      | wildcard(field=LogonType, pattern=?LogonType, ignoreCase=true)
       | passwordAge:=(now()-(PasswordLastSet*1000))/1000/60/60/24
       | passwordAgeDays:=round("passwordAge")
       | $"crowdstrike/fltr-core:zLogonTypeName"()
@@ -228,10 +239,9 @@ widgets:
     queryString: |-
       #event_simpleName=UserLogon
       | LogonType=2
-      | UserIsAdmin=?UserIsAdmin UserName=?UserName
+      | wildcard(field=UserIsAdmin, pattern=?UserIsAdmin, ignoreCase=true) 
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
       | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
-      | UserIsAdmin=?UserIsAdmin
-      | UserName=?UserName
       | ipLocation(aip)
       | worldMap(ip=aip, magnitude=count(aid))
     end: now

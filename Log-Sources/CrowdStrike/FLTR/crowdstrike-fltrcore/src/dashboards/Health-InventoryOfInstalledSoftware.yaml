@@ -12,7 +12,8 @@ widgets:
     queryString: |-
       #kind=Secondary
       | SecondaryEventType=appinfo
-      | CompanyName=?CompanyName ProductName=?ProductName
+      | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true) 
+      | wildcard(field=ProductName, pattern=?ProductName, ignoreCase=true)
       | top(ProductVersion, as="Count")
     visualization: pie-chart
     end: now
@@ -26,8 +27,9 @@ widgets:
       queryString: |-
         #kind=Secondary
         | SecondaryEventType=appinfo
-        | CompanyName=?CompanyName ProductName=?ProductName
-        | ProductVersion=?ProductVersion
+        | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true) 
+        | wildcard(field=ProductName, pattern=?ProductName, ignoreCase=true)
+        | wildcard(field=ProductVersion, pattern=?ProductVersion, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -46,7 +48,8 @@ widgets:
     queryString: |-
       #kind=Secondary
       | SecondaryEventType=appinfo
-      | CompanyName=?CompanyName ProductName=?ProductName
+      | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true) 
+      | wildcard(field=ProductName, pattern=?ProductName, ignoreCase=true)
       | top(ProductName, as="Count")
     end: now
     start: 7d
@@ -59,7 +62,8 @@ widgets:
       queryString: |-
         #kind=Secondary
         | SecondaryEventType=appinfo
-        | CompanyName=?CompanyName ProductName=?ProductName
+        | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true) 
+        | wildcard(field=ProductName, pattern=?ProductName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -84,7 +88,8 @@ widgets:
     queryString: |-
       #kind=Secondary
       | SecondaryEventType=appinfo
-      | CompanyName=?CompanyName ProductName=?ProductName
+      | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true) 
+      | wildcard(field=ProductName, pattern=?ProductName, ignoreCase=true)
       | groupBy([CompanyName, FileDescription, FileName, FileVersion, ProductName, ProductVersion], limit=max)
       | rename(_count, as="Count")
       | sort([CompanyName, ProductName, FileVersion], order=asc, limit=1000)
@@ -101,7 +106,8 @@ widgets:
     queryString: |-
       #kind=Secondary
       | SecondaryEventType=appinfo
-      | CompanyName=?CompanyName ProductName=?ProductName
+      | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true) 
+      | wildcard(field=ProductName, pattern=?ProductName, ignoreCase=true)
       | top(CompanyName, as="Count")
     visualization: bar-chart
     end: now
@@ -115,7 +121,8 @@ widgets:
       queryString: |-
         #kind=Secondary
         | SecondaryEventType=appinfo
-        | CompanyName=?CompanyName ProductName=?ProductName
+        | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true) 
+        | wildcard(field=ProductName, pattern=?ProductName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -130,7 +137,10 @@ widgets:
 $schema: https://schemas.humio.com/dashboard/v0.10.0
 parameters:
   CompanyName:
-    query: '#kind=Secondary | SecondaryEventType=appinfo | CompanyName=?CompanyName
+    query: |-
+      #kind=Secondary 
+      | SecondaryEventType=appinfo 
+      | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true)
       | groupBy(CompanyName, limit=max)'
     timeInterval: 7d
     useDashboardTimeIfSet: true
@@ -139,7 +149,10 @@ parameters:
     order: 50
     valueField: CompanyName
   ProductName:
-    query: '#kind=Secondary | SecondaryEventType=appinfo | CompanyName=?CompanyName
+    query: |-
+      #kind=Secondary 
+      | SecondaryEventType=appinfo 
+      | wildcard(field=CompanyName, pattern=?CompanyName, ignoreCase=true)
       | groupBy(ProductName, limit=max)'
     timeInterval: 7d
     useDashboardTimeIfSet: true

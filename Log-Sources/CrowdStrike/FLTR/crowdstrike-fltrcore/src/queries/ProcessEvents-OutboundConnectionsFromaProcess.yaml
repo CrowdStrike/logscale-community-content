@@ -44,16 +44,20 @@ queryString: |-
   //| RemoteAddressIP4.org!=/(MICROSOFT|AMAZON|AKAMAI|EDGECAST|GOOGLE)/i
 
   // Do an IOC lookup on the remote IP.
-  | ioc:lookup(RemoteAddressIP4, type="ip_address", confidenceThreshold=unverified)
+  | ioc:lookup(RemoteAddressIP4, type="ip_address", confidenceThreshold=Unverified)
   | case {
-      ioc.detected!=true | ioc.detected:=false ;
+      ioc.detected!=true 
+        | ioc.detected:=false ;
       * ;
     }
 
   // Calculate the first and last event times.
-  | timeDeltaDays:=((lastSeen-firstSeen)/60/60/24) | round("timeDeltaDays")
-  | firstSeen:=firstSeen*1000 | formatTime(format="%F %T", field=firstSeen, as="firstSeen")
-  | lastSeen:=lastSeen*1000   | formatTime(format="%F %T", field=lastSeen, as="lastSeen")
+  | timeDeltaDays:=((lastSeen-firstSeen)/60/60/24) 
+  | round("timeDeltaDays")
+  | firstSeen:=firstSeen*1000 
+  | formatTime(format="%F %T", field=firstSeen, as="firstSeen")
+  | lastSeen:=lastSeen*1000   
+  | formatTime(format="%F %T", field=lastSeen, as="lastSeen")
 
   // Sort the results.
   | table([Source, RemoteAddressIP4, RemotePort, protocolname, RemoteAddressIP4.asn, RemoteAddressIP4.org, RemoteAddressIP4.country, ioc.detected, firstSeen, lastSeen, timeDeltaDays, connectionCount], sortby=connectionCount, limit=1000)

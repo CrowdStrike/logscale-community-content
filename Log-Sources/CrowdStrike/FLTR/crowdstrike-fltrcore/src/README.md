@@ -18,6 +18,8 @@ Version 1.3.9
 - Reduced the CSV lookup generation to 24 hours with a 7-day lookback since `ComputerName` is now included in the FLTR data stream.
 - Changed inputs to use `wildcard()` as needed. Input something like `*HTTP*` to find `http`, `HTTPS`, `HttPs`, etc.
 - Minimum LogScale version increased to `1.103.0` to include filter alerts. 
+- Made updates to data formatting in the queries. 
+- Optimized dashboard queries related to detections.
 
 Version 1.3.8
 - Added the missing recon_apps.csv file and associated references. 

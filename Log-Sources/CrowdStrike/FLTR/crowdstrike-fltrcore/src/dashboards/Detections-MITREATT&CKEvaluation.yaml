@@ -32,8 +32,8 @@ widgets:
         | ExternalApiType=Event_DetectionSummaryEvent
         | Tactic!=/^custom/i
         | Tactic!=""
-        | Tactic=?Tactic
-        | Technique=?Technique
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true)
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: null
       arguments:
@@ -88,7 +88,7 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
-        | Tactic=?Tactic
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: null
       arguments:
@@ -147,7 +147,8 @@ widgets:
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | EventType=Event_ExternalApiEvent
         | ExternalApiType=Event_DetectionSummaryEvent
-        | Tactic=?Tactic Technique=?Technique
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true) 
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: null
       arguments:
@@ -183,7 +184,7 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | EventType=Event_ExternalApiEvent | ExternalApiType=Event_DetectionSummaryEvent
-        | Technique=?Technique
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: null
       arguments:
@@ -244,8 +245,8 @@ widgets:
         | ExternalApiType=Event_DetectionSummaryEvent
         | Tactic!=/(^custom|machine\slearning)/i
         | Tactic!=""
-        | Tactic=?Tactic
-        | Technique=?Technique
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true)
+        | wildcard(field=Technique, pattern=?Technique, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: null
       arguments:
@@ -306,7 +307,7 @@ widgets:
         | ExternalApiType=Event_DetectionSummaryEvent
         | Tactic!=/custom\s.*/i
         | Tactic!=""
-        | Tactic=?Tactic
+        | wildcard(field=Tactic, pattern=?Tactic, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: null
       arguments:

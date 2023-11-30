@@ -68,8 +68,10 @@ widgets:
     - conditions: null
       name: Search by Name
       titleTemplate: 'Search by Name: {{ fields.detectionName }}'
-      queryString: "#kind=Primary #event_simpleName!=*\n| eventType=K8SDetectionEvent\
-        \ OR EventType=K8SDetectionEvent \n| detectionName=?detectionName"
+      queryString: |-
+        #kind=Primary #event_simpleName!=*
+        | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent 
+        | wildcard(field=detectionName, pattern=?detectionName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -122,7 +124,7 @@ widgets:
         | groupBy(aid, function=selectLast(OSVersionString), limit=max)
         | OSVersionString = /^Linux\s(?<hostName>\S+)\s(?<kernelVersion>\S+)\s/i
         | kernelVersion=/(?<kernelBranch>\d+\.\d+)\./
-        | kernelBranch=?kernelBranch
+        | wildcard(field=kernelBranch, pattern=?kernelBranch, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -206,8 +208,10 @@ widgets:
     - conditions: null
       name: Search by Severity
       titleTemplate: 'Search by Severity: {{ fields.severity }}'
-      queryString: "#kind=Primary #event_simpleName!=*\n| eventType=K8SDetectionEvent\
-        \ OR EventType=K8SDetectionEvent \n| severity=?severity"
+      queryString: |-
+        #kind=Primary #event_simpleName!=*
+        | eventType=K8SDetectionEvent OR EventType=K8SDetectionEvent
+        | wildcard(field=severity, pattern=?severity, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:

@@ -22,7 +22,7 @@ widgets:
       titleTemplate: 'Search by Platform: {{ fields.event_platform }}'
       queryString: |-
         #event_simpleName=FileIntegrityMonitorRuleMatched
-        | event_platform=?event_platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -43,7 +43,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | event_platform=?Platform
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       | case {
         ObjectAccessOperationType=1 | ObjectOperation:="Create" ;
         ObjectAccessOperationType=2 | ObjectOperation:="Write" ;
@@ -63,7 +63,7 @@ widgets:
       titleTemplate: 'Search by Operation: {{ fields.ObjectOperation }}'
       queryString: |-
         #event_simpleName=FileIntegrityMonitorRuleMatched
-        | event_platform=?Platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
         | case {
           ObjectAccessOperationType=1 | ObjectOperation:="Create" ;
           ObjectAccessOperationType=2 | ObjectOperation:="Write" ;
@@ -71,7 +71,7 @@ widgets:
           ObjectAccessOperationType=4 | ObjectOperation:="Set" ;
           ObjectAccessOperationType=5 | ObjectOperation:="Rename" ;
           }
-        | ObjectOperation=?ObjectOperation
+        | wildcard(field=ObjectOperation, pattern=?ObjectOperation, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -91,7 +91,7 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | event_platform=?Platform
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       | timechart(function=count(as="Total Alerts"))
     end: now
     start: 7d
@@ -103,7 +103,7 @@ widgets:
       titleTemplate: null
       queryString: |-
         #event_simpleName=FileIntegrityMonitorRuleMatched
-        | event_platform=?Platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -131,7 +131,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | event_platform=?Platform
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       | case {
         ObjectType=1 | ObjectChanged:="File" ;
         ObjectType=2 | ObjectChanged:="Folder" ;
@@ -151,14 +151,14 @@ widgets:
       titleTemplate: 'Search by Object: {{ fields.ObjectChanged }}'
       queryString: |-
         #event_simpleName=FileIntegrityMonitorRuleMatched
-        | event_platform=?Platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
         | case {
           ObjectType=1 | ObjectChanged:="File" ;
           ObjectType=2 | ObjectChanged:="Folder" ;
           ObjectType=3 | ObjectChanged:="Value" ;
           ObjectType=4 | ObjectChanged:="Key" ;
           }
-        | ObjectChanged=?ObjectChanged
+        | wildcard(field=ObjectChanged, pattern=?ObjectChanged, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -176,7 +176,7 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | event_platform=?Platform
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       | case {
           ObjectType=1 | ObjectChanged:="File" ;
           ObjectType=2 | ObjectChanged:="Folder" ;
@@ -205,7 +205,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | event_platform=?Platform
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       | UserName!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$)/
       | top(UserName, as="Total Alerts")
     end: now
@@ -218,9 +218,9 @@ widgets:
       titleTemplate: 'Search by User: {{ fields.UserName }}'
       queryString: |-
         #event_simpleName=FileIntegrityMonitorRuleMatched
-        | event_platform=?Platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
         | UserName!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$)/
-        | UserName=?UserName
+        | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -240,7 +240,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | event_platform=?Platform
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       | case {
         PolicyRuleSeverity=1 | Severity:="Low" ;
         PolicyRuleSeverity=2 | Severity:="Medium" ;
@@ -258,14 +258,14 @@ widgets:
       titleTemplate: 'Search by Criticality: {{ fields.Severity }}'
       queryString: |-
         #event_simpleName=FileIntegrityMonitorRuleMatched
-        | event_platform=?Platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
         | case {
           PolicyRuleSeverity=1 | Severity:="Low";
           PolicyRuleSeverity=2 | Severity:="Medium";
           PolicyRuleSeverity=3 | Severity:="High";
           PolicyRuleSeverity=4 | Severity:="Critical";
         }
-        | Severity=?Severity
+        | wildcard(field=Severity, pattern=?Severity, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -295,7 +295,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=FileIntegrityMonitorRuleMatched
-      | event_platform=?Platform
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
       | top(FileName, as="Total Alerts")
     end: now
@@ -308,7 +308,7 @@ widgets:
       titleTemplate: 'Search by FileName: {{ fields.FileName }}'
       queryString: |-
         #event_simpleName=FileIntegrityMonitorRuleMatched
-        | event_platform=?Platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
         | regex("(?<FileName>[^\\/|\\\\]*)$", field=ImageFileName, strict=false)
         | FileName=?FileName
       useWidgetTimeWindow: true
@@ -329,7 +329,7 @@ widgets:
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.10.0
 parameters:
-  Platform:
+  event_platform:
     query: '#event_simpleName=FileIntegrityMonitorRuleMatched | groupBy(event_platform,
       limit=max)'
     timeInterval: 7d

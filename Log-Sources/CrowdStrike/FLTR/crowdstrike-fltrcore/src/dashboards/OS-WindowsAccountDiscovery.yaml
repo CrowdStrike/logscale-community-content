@@ -98,7 +98,8 @@ widgets:
         | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
         | netFileName:=lower("netFileName")
         | netFlag:=lower(netFlag)
-        | netFlag=?netFlag netFileName=?netFileName
+        | wildcard(field=netFlag, pattern=?netFlag, ignoreCase=true) 
+        | wildcard(field=netFileName, pattern=?netFileName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:
@@ -144,7 +145,8 @@ widgets:
         | CommandLine=/\s+(?<netFlag>ACCOUNTS|COMPUTER|CONFIG|CONTINUE|FILE|GROUP|HELP|HELPMSG|LOCALGROUP|NAME|PAUSE|PRINT|SEND|SESSION|SHARE|START|STATISTICS|STOP|TIME|USE|USER|VIEW)\s+/i
         | netFileName:=lower("netFileName")
         | netFlag:=lower(netFlag)
-        | netFlag=?netFlag netFileName=?netFileName
+        | wildcard(field=netFlag, pattern=?netFlag, ignoreCase=true) 
+        | wildcard(field=netFileName, pattern=?netFileName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName: 
       arguments:

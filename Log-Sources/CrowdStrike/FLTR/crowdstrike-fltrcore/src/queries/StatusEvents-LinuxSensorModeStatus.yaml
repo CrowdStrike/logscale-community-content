@@ -43,9 +43,9 @@ queryString: |-
   //| status != "Kernel Mode Enabled"
 
   // Create input fields and filter the results.
-  | aid=~wildcard(?aid, ignoreCase=true)
-  | hostname=~wildcard(?hostname, ignoreCase=true)
-  | status=~wildcard(?status, ignoreCase=true)
+  | wildcard(field=aid, pattern=?aid, ignoreCase=true)
+  | wildcard(field=hostname, pattern=?hostname, ignoreCase=true)
+  | wildcard(field=status, pattern=?status, ignoreCase=true)
 
   // Create shortened versions of the fields.
   | shortHostname:=format("%.20s...", field=hostname)

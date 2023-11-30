@@ -14,9 +14,11 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
-      | groupBy("preventStatus", limit=max)
+      | groupBy("preventStatus", limit=100)
     end: now
     start: 7d
     width: 4
@@ -25,11 +27,14 @@ widgets:
     - conditions: null
       name: Falcon Actions by Action
       titleTemplate: 'Search Action: {{ fields.preventStatus }}'
-      queryString: "#event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent\n\
-        | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent\
-        \ \n| ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain\n\
-        | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\\\
-        ,|\\/).*/i\n| preventStatus=?preventStatus"
+      queryString: |-
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+        | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+        | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
+        | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
+        | wildcard(field=preventStatus, pattern=?preventStatus, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -59,7 +64,9 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | count(AgentIdString,  as="Total Behaviors")
     end: now
     start: 7d
@@ -94,18 +101,12 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | UserName!="N/A"
-      | groupBy(UserName, function=[count(DetectId, distinct=true, as=count), max(Severity, as=maxSev)], limit=max)
-      | sort(["Detection Count", UserName], order=desc, limit=10)
-      | maxSev match {
-          1 => maxSev:="Informational" ;
-          2 => maxSev:="Low" ;
-          3 => maxSev:="Medium" ;
-          4 => maxSev:="High" ;
-          5 => maxSev:="Critical" ;
-      }
-      | Severity:=rename(maxSev)
+      | groupBy(UserName, function=[count(DetectId, distinct=true, as=count), sum(Severity, as=SeveritySum)], limit=max)
+      | sort(SeveritySum, order=desc, limit=100)
     visualization: table-view
     end: now
     start: 7d
@@ -120,7 +121,9 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
       | sankey(source="preventStatus", target="SeverityName", weight=count(DetectId, distinct=true))
     end: now
@@ -135,9 +138,12 @@ widgets:
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-        | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+        | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+        | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
         | PatternDispositionDescription=/(?<preventStatus>^(Prevention|Detection))(\,|\/).*/i
-        | preventStatus=?preventStatus SeverityName=?SeverityName
+        | wildcard(field=preventStatus, pattern=?preventStatus, ignoreCase=true) 
+        | wildcard(field=SeverityName, pattern=?SeverityName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -167,9 +173,11 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | MachineDomain!=""
-      | top(MachineDomain, limit=10)
+      | top(MachineDomain, limit=100)
       | count:=rename(_count)
     visualization: table-view
     end: now
@@ -185,10 +193,12 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | LocalIP=/(?<endpointSubnet>\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}/i
       | endpointSubnet!=""
-      | top(endpointSubnet, limit=10)
+      | top(endpointSubnet, limit=100)
       | count:=rename(_count)
     visualization: table-view
     end: now
@@ -205,7 +215,9 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | count(AgentIdString, distinct=true, as="Total Endpoints")
     end: now
     start: 7d
@@ -242,7 +254,9 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | PatternDispositionDescription=/would\shave/i
       | count(DetectId)
     end: now
@@ -262,20 +276,13 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | DetectId=/\S+\:(?<aid>\S+)\:(?<detectID>\S+)$/i
-      | groupBy([aid, ComputerName, detectID, DetectId, FalconHostLink], function=([max(Severity, as=maxSev), sum(Severity, as=SeveritySum)]), limit=max)
-      | sort(field=SeveritySum, order=desc, limit=10)
       | format("[Detection Link](%s)", field=FalconHostLink, as="Falcon UI Link")
-      | drop([DetectId, FalconHostLink])
-      | maxSev match {
-          1 => maxSevName := "Informational" ;
-          2 => maxSevName := "Low" ;
-          3 => maxSevName := "Medium" ;
-          4 => maxSevName := "High" ;
-          5 => maxSevName := "Critical" ;
-      }
-      | table([aid, detectID, ComputerName, maxSevName, SeveritySum, "Falcon UI Link"], limit=1000)
+      | groupBy([aid, DetectId], function=([sum(Severity, as=SeveritySum), collect([ComputerName, detectID, "Falcon UI Link", SeverityName])]), limit=max)
+      | table([aid, ComputerName, detectID, SeverityName, SeveritySum, "Falcon UI Link"], limit=100, sortby=SeveritySum)
     visualization: table-view
     end: now
     start: 7d
@@ -291,7 +298,9 @@ widgets:
     queryString: |-
       #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | count(DetectId, distinct=true, as="Total Detections")
     end: now
     start: 7d
@@ -324,20 +333,13 @@ widgets:
     description: Detection count by maximum severity.
     height: 4
     queryString: |-
-      #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
-      | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
-      | groupBy(DetectId, function=(max(Severity, as=Severity)), limit=max)
-      | groupBy(Severity, function=(count(DetectId, as="Total Detections")), limit=max)
-      | NumberSeverity:=Severity
-      | Severity match {
-          1 => Severity:="Informational" ;
-          2 => Severity:="Low" ;
-          3 => Severity:="Medium" ;
-          4 => Severity:="High" ;
-          5 => Severity:="Critical" ;
-      }
-      | sort(field="NumberSeverity", order=asc, limit=10)
+        #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
+        | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+        | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+        | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
+        | wildcard(field=SeverityName, pattern=?SeverityName, ignoreCase=true)
+        | groupby(SeverityName, limit=max)
     end: now
     start: 7d
     width: 3
@@ -345,26 +347,20 @@ widgets:
     interactions:
     - conditions: null
       name: Search Detection Severity
-      titleTemplate: 'Search Detection Severity: {{ fields.Severity }}'
+      titleTemplate: 'Search Detection Severity: {{ fields.SeverityName }}'
       queryString: |-
         #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
         | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-        | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
-        | NumberSeverity:=Severity
-        | Severity match {
-            1 => Severity:="Informational" ;
-            2 => Severity:="Low" ;
-            3 => Severity:="Medium" ;
-            4 => Severity:="High" ;
-            5 => Severity:="Critical" ;
-        }
-        | Severity=?Severity
+        | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+        | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+        | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
+        | wildcard(field=SeverityName, pattern=?SeverityName, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
         ComputerName: '["{{ parameters.ComputerName }}"]'
         MachineDomain: '["{{ parameters.MachineDomain }}"]'
-        Severity: '["{{ fields.Severity }}"]'
+        SeverityName: '["{{ fields.SeverityName }}"]'
         aid: '["{{ parameters.aid }}"]'
       openInNewTab: true
       isLive: false
@@ -386,7 +382,7 @@ widgets:
       maxLegendRows: 5
       withLegendTitle: false
     visualization: pie-chart
-    title: Detections by Max Severity
+    title: Detections by Severity
     isLive: false
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.10.0
@@ -395,7 +391,9 @@ parameters:
     query: |-
       | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | groupBy(ComputerName, limit=100)
     timeInterval: 1d
     useDashboardTimeIfSet: true
@@ -407,7 +405,9 @@ parameters:
     query: |-
       | #event_simpleName!=* OR #streamingApiEvent=Event_DetectionSummaryEvent
       | EventType=Event_ExternalApiEvent ExternalApiType=Event_DetectionSummaryEvent
-      | ComputerName=?ComputerName AgentIdString=?aid MachineDomain=?MachineDomain
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=AgentIdString, pattern=?aid, ignoreCase=true)
+      | wildcard(field=MachineDomain, pattern=?MachineDomain, ignoreCase=true)
       | groupBy(MachineDomain, limit=100)
     timeInterval: 1d
     useDashboardTimeIfSet: true

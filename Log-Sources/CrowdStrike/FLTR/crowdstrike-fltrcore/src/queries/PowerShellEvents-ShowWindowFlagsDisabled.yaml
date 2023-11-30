@@ -17,7 +17,7 @@ queryString: |-
   // Filter on the events necessary for the query
   #event_simpleName=ProcessRollup2
   | event_platform=Win
-  | ImageFileName=/(powershell|cmd).exe/i
+  | ImageFileName=/(powershell|cmd)\.exe/i
   | ShowWindowFlags=0
   | ImageFileName=*
   | CommandLine=*

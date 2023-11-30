@@ -83,7 +83,7 @@ widgets:
       titleTemplate: 'Search by Platform: {{ fields.event_platform }}'
       queryString: |-
         #event_simpleName=SensorHeartbeat
-        event_platform=?event_platform
+        | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
