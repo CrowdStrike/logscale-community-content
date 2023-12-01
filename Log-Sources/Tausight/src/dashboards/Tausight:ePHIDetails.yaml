@@ -1,0 +1,317 @@
+name: 'Tausight: ePHI Details'
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 60d
+widgets:
+  38a718b9-ef47-4f84-9477-dadec311830f:
+    x: 4
+    height: 6
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |MediaType!="MT_REMOVABLE_MEDIA"
+      |HostName=?HostName
+      |OwnerName=?OwnerName
+      |encrypted=?Encryption
+      |Extension=?Extension
+      |Type=?DeviceType
+      |FileAge:=?{FileAge=0}
+      |test(File_Age >= FileAge)
+      |DriveId=?Drive
+
+      // |groupBy([HostName, OwnerName, DriveId, File, Directory], function=selectFromMax(@timestamp, include=[Tstamp,FileName,encrypted]), limit=max)
+      |groupBy([ HostName, OwnerName, DriveId,encrypted],function=[groupBy([FileName],function=selectFromMax(@timestamp, include=[@timestamp]), limit=max)], limit=max)
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |groupBy([HostName, DriveId, encrypted], function=count(field=FileName, as= "Files"))
+
+      |rename(field="encrypted", as="Encryption Status")
+      |rename(field="DriveId", as="Drive")
+      |select([HostName, Drive, "Encryption Status", "Files"])
+      |sort(Files, order=desc, limit=50)
+    end: '2023-11-29T14:42:43.449Z'
+    start: '2023-09-30T14:42:43.449Z'
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show ePHI Ownership for device
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Ownership'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ fields[\"Encryption Status\"] }}"]'
+        HostName: '["{{ fields.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Show ePHI Activity on device
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI  Activity'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        Encryption: '["{{ fields[\"Encryption Status\"] }}"]'
+        HostName: '["{{ fields.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter Dashboard by HostName
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      type: updateparameters
+      arguments:
+        HostName: '["{{ fields.HostName }}"]'
+    - conditions: null
+      name: Filter Dashboard by HostName with Drive
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        Drive: '["{{ fields.Drive }}"]'
+        HostName: '["{{ fields.HostName }}"]'
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Encryption Status:
+          color:
+            conditions:
+            - color: '#31C45688'
+              condition:
+                arg: encrypted
+                type: Equal
+            - color: '#F5B800'
+              condition:
+                arg: undefined
+                type: Equal
+            defaultColor: '#F0424299'
+          render-as: value
+        HostName:
+          render-as: value
+      row-numbers-enabled: true
+    visualization: table-view
+    title: Top devices with ePHI
+    isLive: false
+    type: query
+  e0e2e712-6867-43ed-bdc0-19f60750182a:
+    x: 0
+    y: 6
+    height: 7
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |OwnerName=?OwnerName
+      |encrypted=?Encryption
+      |Extension=?Extension
+      |Type=?DeviceType
+      |FileAge:=?{FileAge=0}
+      |test(File_Age >= FileAge)
+      |DriveId=?Drive
+      |rename(field="encrypted", as="Encryption")
+      |rename(field="Type", as="DeviceType")
+      |rename(field="Date_Created", as="Date Created")
+      |rename(field="Date_Last_Accessed", as="Date Last Accessed")
+      |rename(field="File_Age", as="File Age (Days)")
+      |rename(field="DriveId", as="Drive")
+
+      // |groupBy([HostName, OwnerName, Drive, FileName, Directory], function=[selectFromMax(@timestamp, include=[@timestamp, File, "Date Created", "Date Last Accessed", "File Age (Days)", Archived, DeviceType, Encryption])], limit=max)
+      |groupBy([ HostName, OwnerName, Drive, DeviceType, Encryption],function=[groupBy([FileName],function=selectFromMax(@timestamp, include=[@timestamp, Directory, File, "Date Created", "Date Last Accessed", "File Age (Days)", Archived]), limit=max)], limit=max)
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |select([@timestamp,HostName, OwnerName, Drive, File, Directory,"Date Created", "Date Last Accessed", "File Age (Days)", Archived, DeviceType, Encryption])
+      |sort(@timestamp, order=desc, limit=10000)
+    end: '2023-11-29T14:59:03.759Z'
+    start: '2023-09-30T14:59:03.759Z'
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Directory:
+          render-as: value
+        File:
+          render-as: value
+        OwnerName:
+          render-as: value
+        HostName:
+          render-as: value
+        Date Created:
+          data-type: text
+      row-numbers-enabled: true
+    visualization: table-view
+    title: ePHI file details
+    isLive: false
+    type: query
+  4281c0c1-213a-4882-84ea-37725484ca03:
+    x: 0
+    y: 3
+    height: 3
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |DriveId=?Drive
+      |HostName=?HostName
+      |OwnerName=?OwnerName
+      |encrypted=?Encryption
+      |Extension=?Extension
+      |Type=?DeviceType
+      |FileAge:=?{FileAge=0}
+      |test(File_Age >= FileAge)
+      //|groupBy([HostName, OwnerName, File, Directory], function=selectFromMax(@timestamp, include=[FileName,encrypted]))
+
+      //|groupBy([HostName, encrypted], function=count(field=FileName, as= "Files"))
+      //|count()
+      |groupBy([HostName])
+      |count(field=HostName, distinct=true)
+    end: '2023-11-13T22:25:15.528Z'
+    start: '2023-09-14T22:25:15.528Z'
+    width: 4
+    options:
+      default: {}
+      text-color: '#d11f1f'
+    visualization: single-value
+    title: Devices with ePHI
+    isLive: false
+    type: query
+  note-1696858633750-0:
+    x: 0
+    y: 0
+    height: 3
+    text: "### Use Case:  Identify ePHI content that are at risk \n        \n- *Top\
+      \ devices with ePHI* - top devices with ePHI files \n- *ePHI by file type* -\
+      \ distribution of ePHI files by extension\n- *Devices with ePHI* - count of\
+      \ devices with ePHI\n- *ePHI file details*  - details of all selected ePHI files\
+      \ \n\nParameters:\n\n- *DeviceType* - choose device type\n- *Encryption* - choose\
+      \ encryption status\n- *Extension* - choose specific file extension\n- *HostName*\
+      \ - choose specific hostname\n- *OwnerName* - choose specific owner\n- *File\
+      \ Inactive Duration* - choose the inactive duration of file in days\n\n[tausight](https://www.tausight.com)\n"
+    width: 4
+    title: ePHI details
+    type: note
+  7d0ca2f8-cfc2-46bd-b325-d88e1f7275e2:
+    x: 8
+    height: 6
+    queryString: "$tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()\n|HostName=?HostName\n\
+      |OwnerName=?OwnerName\n|encrypted=?Encryption\n|Extension=?Extension\n|Type=?DeviceType\n\
+      |FileAge:=?{FileAge=0}\n|DriveId=?Drive\n|test(File_Age >= FileAge)\n\n// |groupBy([HostName,\
+      \ OwnerName, DriveId, File, Directory], function=selectFromMax(@timestamp, include=[Tstamp,FileName,encrypted]),\
+      \ limit=max)\n\n|groupBy([ HostName],function=[groupBy([FileName],function=selectFromMax(@timestamp,\
+      \ include=[@timestamp,Extension]), limit=max)], limit=max)\n\n// clear subset\
+      \ of fileDeleted events that are most recent\n//  this saved query also contains\
+      \ an alternative match query that runs 40% faster but less accurate but commented\
+      \ out\n|$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()\n\n|groupBy(Extension,\
+      \ function=[count(field=FileName,as=count, distinct=true)]) "
+    end: '2023-11-29T14:58:30.126Z'
+    start: '2023-09-30T14:58:30.126Z'
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Filter dashboard by Extension
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        Extension: '["{{ fields.Extension }}"]'
+    options:
+      legendPosition: bottom
+      legendTitle: File Extension
+    visualization: pie-chart
+    title: ePHI by file type
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  Drive:
+    label: Drive
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()  |Type=?DeviceType|
+      encrypted=?Encryption |OwnerName=?OwnerName|Extension=?Extension|HostName=?HostName
+      |groupBy([DriveId], function=count(field=FileName, distinct=true)) |sort(DriveId,
+      order=desc, limit=25) |select([DriveId])
+    timeInterval: 60d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DriveId
+  FileAge:
+    label: File Inactive Duration
+    order: 50
+    values:
+      '3650': 10 years
+      '30': 30 days
+      '180': 180 days
+      '60': 60 days
+      '1825': 5 years
+      '730': 2 years
+      '0': All
+      '365': 1 year
+    type: list
+    defaultValue: '0'
+  OwnerName:
+    label: OwnerName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins() |DriveId=?Drive
+      |Type=?DeviceType| encrypted=?Encryption |HostName=?HostName |Extension=?Extension  |groupBy([OwnerName],
+      function=count(field=FileName, distinct=true)) |sort(OwnerName, order=desc,
+      limit=25) |select([OwnerName])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: OwnerName
+  HostName:
+    label: HostName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()  |Type=?DeviceType|
+      encrypted=?Encryption |OwnerName=?OwnerName|Extension=?Extension|DriveId=?Drive
+      |groupBy([HostName], function=count(field=FileName, distinct=true)) |sort(HostName,
+      order=desc, limit=25) |select([HostName])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: HostName
+  DeviceType:
+    label: DeviceType
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins() |DriveId=?Drive|Type=?DeviceType|
+      encrypted=?Encryption |HostName=?HostName|OwnerName=?OwnerName|Extension=?Extension  |groupBy([Type])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Type
+  Encryption:
+    label: Encryption
+    order: 50
+    values:
+      '*': All
+      unencrypted: Unencrypted
+      encrypted: Encrypted
+    type: list
+    defaultValue: '*'
+  Extension:
+    label: Extension
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins() |DriveId=?Drive
+      |Type=?DeviceType| encrypted=?Encryption |HostName=?HostName|OwnerName=?OwnerName  |groupBy([Extension],
+      function=count(field=FileName, distinct=true)) |sort(Extension, order=desc,
+      limit=25) |select([Extension])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Extension

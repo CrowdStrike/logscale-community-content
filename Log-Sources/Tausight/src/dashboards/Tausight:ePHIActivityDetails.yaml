@@ -1,0 +1,325 @@
+name: 'Tausight: ePHI Activity Details'
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 60d
+widgets:
+  a4848e45-8e1d-4517-b6ac-baa261622bb8:
+    x: 6
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins()
+
+      |HostName=?HostName
+      |UserName=?UserName
+      |ProcessName=?ProcessName
+      |Activity=?Activity
+      |DestDevEnc=?DestinationDevice
+      |DriveId=?Drive
+      |groupBy([ProcessName], function=[count(as=Count)])
+      //|top([ProcessName], rest=Others)
+    end: now
+    start: 60d
+    width: 6
+    y: 0
+    interactions:
+    - conditions: null
+      name: Filter by Process Name
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        ProcessName: '["{{ fields.ProcessName }}"]'
+    options:
+      legendPosition: right
+    visualization: pie-chart
+    title: ePHI activity by process name
+    isLive: false
+    type: query
+  ee08176f-d9ba-4b30-a4cc-0fbd926a0ba8:
+    x: 0
+    y: 5
+    height: 10
+    queryString: |2-
+
+      lower("hostName",as=HostName)
+      |HostName= ?HostName
+      |eventType=file_copied or eventType=file_moved or eventType=file_replaced or eventType=clipboard_activity or eventType=file_io_activity or eventType=email or cloudStorage
+
+      |case {
+
+          eventType=file_copied
+          |Activity := "File Copied"
+          |(fileCopied.sourceFileInfo.ephi.ephiDecisionFloat > 0.5)
+          |process:=fileCopied.processInfo.processName
+          |lower("fileCopied.processInfo.userName",as=UserName)
+          |case {
+              fileCopied.destinationFileInfo.encryptedVolume = true | _encrypted:=true;
+              * | _encrypted:=false;
+          }
+          |case { length(field=_encrypted, as=_l) | _l > 0 | _encrypted := "true"; * | _encrypted := "false" }
+          |format(as=Source, field=[fileCopied.sourceFilename, fileCopied.sourceFileInfo.fileSize, fileCopied.sourceFileInfo.creationTime, fileCopied.sourceFileInfo.lastAccessTime], "%s\nSize: %d\nCreated: %s\nLast accessd: %s")
+          |format(as=Destination, field=[Activity, fileCopied.destinationFilename, fileCopied.destinationFileInfo.driveInfo.model, fileCopied.destinationFileInfo.driveInfo.serialNumber, _encrypted], "Activity: %s\n%s\nModel: %s\nSerial #: %s\nEncryption: %s")
+          |format(as="User Access", field=[fileCopied.destinationFileInfo.ownerName, fileCopied.destinationFileInfo.userAccessRights[0].userName, fileCopied.destinationFileInfo.userAccessRights[1].userName, fileCopied.destinationFileInfo.userAccessRights[2].userName], "%s\n%s\n%s\n%s")
+          |format(as=Program, field=[fileCopied.processInfo.processName, UserName, HostName], "Process: %s\nUser: %s\nHostName: %s")
+          |case {
+          fileCopied.destinationFileInfo.driveInfo.removableMedia = true
+          |Type:="USB Drive";
+
+          length(field=fileCopied.cloudStorage.localFolder, as=_len)
+          |_len > 0
+          |cloud_source:=fileCopied.cloudStorage.shareName
+          |Type:="Cloud share";
+
+          fileCopied.destinationFileInfo.driveInfo.removableMedia != true
+          |Type:="Local";
+          }
+          |case{Type!=""|regex(field="fileCopied.destinationFilename", regex="^(?<DriveId>..)");*|DriveId:="C:"};
+
+          eventType=file_moved
+          |(fileMoved.newFileInfo.ephi.ephiDecisionFloat > 0.5)
+          |Activity:="File Moved"
+          |process:=fileMoved.processInfo.processName
+          |lower("fileMoved.processInfo.userName", as=UserName)
+          |case {
+              fileMoved.newFileInfo.encryptedVolume = true | _encrypted:=true;
+              * | _encrypted:=false;
+          }
+          |format(as=Source, field=[fileMoved.existingFilename, fileMoved.existingFileInfo.fileSize, fileMoved.existingFileInfo.creationTime, fileMoved.existingFileInfo.lastAccessTime], "%s\nSize: %d\nCreated: %s\nLast accessd: %s")
+          |format(as=Destination, field=[Activity, fileMoved.newFilename, fileMoved.newFileInfo.driveInfo.model, fileMoved.newFileInfo.driveInfo.serialNumber, _encrypted], "Activity: %s\n%s\nModel: %s\nSerial #: %s\nEncryption: %s")
+          |format(as="User Access", field=[fileMoved.newFileInfo.ownerName, fileMoved.newFileInfo.userAccessRights[0].userName, fileMoved.newFileInfo.userAccessRights[1].userName, fileMoved.newFileInfo.userAccessRights[2].userName], "%s\n%s\n%s\n%s")
+          |format(as=Program, field=[fileMoved.processInfo.processName, UserName, HostName], "Process: %s\nUser: %s\nHostName: %s")
+          |case {
+              fileMoved.newFileInfo.driveInfo.removableMedia = true
+              |Type := "USB Drive";
+
+              length(field=fileMoved.cloudStorage.localFolder, as=_len)
+              |_len > 0
+              |cloud_source:=fileMoved.cloudStorage.shareName
+              |Type := "Cloud share";
+
+              fileMoved.newFileInfo.driveInfo.removableMedia != true
+              |Type := "Local";
+          }
+          |case{Type!=""|regex(field="fileMoved.newFilename", regex="^(?<DriveId>..)");*|DriveId:="C:"};
+
+          eventType=file_replaced
+          |(fileReplaced.replacementFileInfo.ephi.ephiDecisionFloat > 0.5)
+          |Activity:="File Replaced"
+          |process:=fileReplaced.processInfo.processName
+          |lower("fileReplaced.processInfo.userName", as=UserName)
+          |case {
+              fileReplaced.replacementFileInfo.encryptedVolume = true | _encrypted:=true;
+              * | _encrypted:=false;
+          }
+          |format(as=Source, field=[fileReplaced.replacedFilename, fileReplaced.replacedFileInfo.fileSize, fileReplaced.replacedFileInfo.creationTime, fileReplaced.replacedFileInfo.lastAccessTime], "%s\nSize: %d\nCreated: %s\nLast accessd: %s")
+          |format(as=Destination, field=[Activity,fileReplaced.replacementFilename, fileReplaced.replacementFileInfo.driveInfo.model, fileReplaced.replacementFileInfo.driveInfo.serialNumber, _encrypted], "Activity: %s\n%s\nModel: %s\nSerial #: %s\nEncryption: %s")
+          |format(as="User Access", field=[fileReplaced.replacementFileInfo.ownerName], "%s")
+          |format(as=Program, field=[fileReplaced.processInfo.processName, UserName, HostName], "Process: %s\nUser: %s\nHostName: %s")
+          |case {
+              fileReplaced.replacementFileInfo.driveInfo.removableMedia = true
+              |Type := "USB Drive";
+
+              length(field=fileReplaced.cloudStorage.localFolder, as=_len)
+              |_len > 0
+              |cloud_source:=fileReplaced.cloudStorage.shareName
+              |Type := "Cloud share";
+
+              fileReplaced.newFileInfo.driveInfo.removableMedia != true
+              |Type := "Local";
+          }
+          |case{Type!=""|regex(field="fileReplaced.replacementFilename", regex="^(?<DriveId>..)");*|DriveId:="C:"};
+
+
+          eventType=file_io_activity
+          |fileIoActivity.ephi.ephiDecisionFloat>0.5
+          |process:=fileIoActivity.fileOpened.processInfo.processName
+          |lower("fileIoActivity.fileOpened.processInfo.userName", as=UserName)
+          |format(as=Source, field=[fileIoActivity.fileOpened.filename, fileIoActivity.fileSize], "%s\nSize: %d")
+          |Activity:="File IO"
+              |Type:="File Opened"
+          |format(as=Destination, field=[Activity], "Activity: %s")
+          //|format(as="User Access", field=[OwnerName], "%s")
+          |case{Type!=""|regex(field="fileIoActivity.fileOpened.filename", regex="^(?<DriveId>..)");*|DriveId:="C:"}
+          |format(as=Program, field=[process, UserName, HostName], "Process: %s\nUser: %s\nHostName: %s");
+
+          eventType=clipboard_activity
+          |(clipboardActivity.ephi.ephiDecisionFloat > 0.5)
+          |process:=clipboardActivity.destProcessInfo.processName
+          |Activity:="Clipboard copy / paste"
+          |Type:=""
+          |DriveId:="C:"
+          |lower("clipboardActivity.destProcessInfo.userName", as=UserName)
+          |format(as=Source, field=[clipboardActivity.srcProcessInfo.processName], "Source Process: %s")
+          |format(as=Destination, field=[Activity,clipboardActivity.destProcessInfo.processName,clipboardActivity.destWindowTitle], "Activity: %s\nDestination Process: %s\nWindow Title: %s")
+          |format(as=Program, field=[UserName, HostName], "User: %s\nHostName: %s");
+
+          eventType=email
+          |split("email.attachments")
+          |process:=email.processInfo.processName
+          |lower("email.processInfo.userName", as=UserName)
+          |Type:=""
+          |DriveId:="C:"
+          |lower("email.sender", as=Sender)
+          |case{regex(field=Sender, regex="^.+@(?<DomainFrom>.+)$")|*;*|Sender:="Unknown"}
+
+          // |split(email.cc)
+          // |case{regex(field=email.cc, regex="^.+@(?<DomainCc>.+)$")|*;*|email.cc:="Unknown"}
+          // |split(email.to)
+          // |case{regex(field=email.to, regex="^.+@(?<DomainTo>.+)$")|*;*|email.to:="Unknown"}
+          |concatArray(email.to, separator="\n\t\t", as=Email_To)
+          |concatArray(email.cc, separator="\n\t\t", as=Email_cc)
+          |case{regex(field=Email_To, regex=".+@(?<DomainTo>.+)", repeat=true, limit=50)|*;*|Email_To:="Unknown"}
+          |case{regex(field=Email_cc, regex=".+@(?<DomainCc>.+)", repeat=true, limit=50)|*;*|Email_cc:="Unknown"}
+          |case {email.url=* |format(as="URL", field=[email.url], "%s"); * |"URL" := "Unavailable";}
+          |case {email.source=* |format(as="Source", field=[email.source], "%s"); * |"Source" := "Unavailable";}
+          |process:=Source
+          |_encrypted:=true
+          |case{
+              email.attachments.attachmentEphi.ephiDecisionFloat > 0.5
+              |Activity := "Email Attachment"
+              |FileSize:=email.attachments.size
+              |format(field=["email.attachments.filenameWithoutExtension", "email.attachments.fileExtension"], as=FileNameOnly, "%s.%s")
+              |FileName:=email.attachments.filename
+              |format(as=Source, field=[FileName, FileSize, email.sender, URL], "%s\nSize: %d\nSender: %s\nURL: %s");
+
+              email.messageEphi.ephiDecisionFloat> 0.5
+              |Activity := "Email"
+              |format(as=Source, field=[Sender, URL], "Sender: %s\nURL: %s");
+          }
+
+          |case{Email_cc!=*|format(as=Destination, field=[Activity, Email_To, _encrypted], "Activity: %s\nRecipients: %s\nEncryption: %s");
+                  * |format(as=Destination, field=[Activity, Email_To, Email_cc, _encrypted], "Activity: %s\nRecipients: %s\n%s\nEncryption: %s")}
+          |format(as=Program, field=[email.processInfo.processName, UserName, HostName], "Process: %s\nUser: %s\nHostName: %s");
+
+          cloudStorage
+          |cloudStorage.file.fileEphi.ephiDecisionFloat > 0.5
+          |process:=cloudStorage.processInfo.processName
+          |lower("cloudStorage.processInfo.userName", as=UserName)
+          |format(as=Source, field=[cloudStorage.file.filename, cloudStorage.file.size], "%s\nSize: %d")
+          |Activity:="Upload to Cloud"
+          |Type:=""
+          |DriveId:="C:"
+          |_encrypted:=true
+          |format(as=Destination, field=[Activity, cloudStorage.source, _encrypted], "Activity: %s\n Source: %s\nEncryption: %s")
+          //|format(as="User Access", field=[OwnerName], "%s")
+          |format(as=Program, field=[process, UserName, HostName], "Process: %s\nUser: %s\nHostName: %s");
+
+      }
+      |case{_encrypted=true|_encrypted:="encrypted"; _encrypted=false|_encrypted:="unencrypted";* }
+      |case{
+          Type!="" |format(format="%s - %s", field=[Activity,Type], as=ActivityType);
+          Type="" |format(format="%s", field=[Activity], as=ActivityType);
+      }
+
+      |case{in(field="Type", values=["Local","USB Drive", "Cloud share"])|format(format="%s - %s", field=[Type,_encrypted],as=DestDevEnc);*|DestDevEnc:="*"}
+      |process=?ProcessName
+      |UserName=?UserName
+      |Activity=?Activity
+      |DestDevEnc=?DestinationDevice
+      |DriveId=?Drive
+      |groupBy([@timestamp, Source, Destination, Program])
+      |select([@timestamp, Source, Destination, Program])
+    end: '2023-11-30T18:38:23.766Z'
+    start: '2023-10-01T18:38:23.766Z'
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        '@timestamp':
+          render-as: value
+        Destination:
+          render-as: value
+        Program:
+          render-as: value
+        Source:
+          render-as: value
+          width: 724
+      row-numbers-enabled: true
+    visualization: table-view
+    title: ePHI movement details
+    isLive: false
+    type: query
+  note-1696858674476-0:
+    x: 0
+    y: 0
+    height: 5
+    text: "### Use Case:  Identify activities that put ePHI at risk\n        \n- *ePHI\
+      \ activity by process name* - top processes that interact with ePHI\n- *ePHI\
+      \ movement details* - details of ePHI Movement from source to destination location\n\
+      \n\nParameters:\n\n- *Activity* - choose activity type\n- *DestinationDevice*\
+      \ - choose ePHI Moved/Copied/Replaced to Local/USB Drive with encryption\n-\
+      \ *HostName* - choose specific hostname\n- *ProcessName* - choose specific process\
+      \ name\n- *UserName* - choose specific userName associated with the activity\n\
+      \n     \n[tausight](https://www.tausight.com)"
+    width: 6
+    title: ePHI activity details
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  UserName:
+    label: UserName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |DriveId=?Drive
+      |HostName=?HostName |ProcessName=?ProcessName |Activity=?Activity |groupBy([UserName])
+      |sort("_count",order=desc,limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserName
+  Drive:
+    label: Drive
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |HostName=?HostName
+      |UserName=?UserName |ProcessName=?ProcessName |Activity=?Activity |groupBy([DriveId])
+      |sort("_count",order=desc,limit=10)
+    timeInterval: 60d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DriveId
+  DestinationDevice:
+    label: DestinationDevice
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovement() |DriveId=?Drive |HostName=?HostName
+      |UserName=?UserName |groupBy([DestDevEnc])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DestDevEnc
+  HostName:
+    label: HostName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |DriveId=?Drive
+      |UserName=?UserName |ProcessName=?ProcessName |Activity=?Activity |groupBy([HostName])
+      |sort("_count",order=desc,limit=10)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: HostName
+  Activity:
+    label: Activity
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |DriveId=?Drive  |HostName=?HostName
+      |UserName=?UserName |ProcessName=?ProcessName |groupBy([Activity]) |sort("_count",order=desc,limit=10)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Activity
+  ProcessName:
+    label: ProcessName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins() |DriveId=?Drive
+      |HostName=?HostName |UserName=?UserName |Activity=?Activity |groupBy([ProcessName])
+      |sort("_count",order=desc,limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: ProcessName

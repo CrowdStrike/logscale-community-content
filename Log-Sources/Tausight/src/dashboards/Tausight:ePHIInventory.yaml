@@ -1,0 +1,282 @@
+name: 'Tausight: ePHI Inventory'
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 60d
+widgets:
+  45f9544b-9ee2-45f4-890c-0ed0308dc549:
+    x: 0
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |encrypted=?Encryption
+      |Type=?DeviceType
+      |HostName=?HostName
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |timechart(series=encrypted, function=[count(FileName, distinct=true)])
+
+      // |timeChart(function=[{encrypted="encrypted"|count(FileName, distinct=true, as=Encrypted)}, {encrypted="unencrypted"|count(FileName, distinct=true, as=Unencrypted)}])
+    end: '2023-11-29T14:59:47.969Z'
+    start: '2023-09-30T14:59:47.969Z'
+    width: 12
+    y: 6
+    interactions:
+    - conditions: null
+      name: Filter by Encryption status
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      type: updateparameters
+      arguments:
+        Encryption: '["{{ fields.encrypted }}"]'
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: ePHI files encryption status
+    isLive: false
+    type: query
+  3782f039-1b66-478b-b735-a34ee63058fb:
+    x: 3
+    height: 6
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |encrypted=?Encryption
+      |Type=?DeviceType
+
+      |groupBy([ HostName, OwnerName, DriveId,encrypted],function=[groupBy([FileName],function=selectFromMax(@timestamp, include=[@timestamp]), limit=max)], limit=max)
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |groupBy([HostName], function=[count(FileName, distinct=true)])
+      |sum(_count)
+    end: '2023-11-29T14:59:24.244Z'
+    start: '2023-09-30T14:59:24.244Z'
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show ePHI Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+        HostName: '["{{ parameters.HostName }}"]'
+      openInNewTab: false
+      type: dashboardlink
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2000
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1000
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 500
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: threshold
+      suffix: files
+      yAxisTitle: ''
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Number of ePHI files
+    isLive: false
+    type: query
+  note-1696856644589-1:
+    x: 0
+    y: 0
+    height: 6
+    text: "### Use Case: Where and how is ePHI stored ?\n\nHIPAA Security rule requires\
+      \ a full inventory of all ePHI and a means to ensure they are protected from\
+      \ unauthorized users - usually through encryption status. \n\n- *Number of ePHI\
+      \ files* - count of ePHI files meeting filter requirements\n- *Number of ePHI\
+      \ files by device type* - count of ePHI files stored on different devices\n\
+      - *ePHI files encryption status* - timeline for the number of ePHI files that\
+      \ are encrypted/unencrypted\n- *ePHI files stored on devices* - timeline for\
+      \ the number of ePHI files stored on devices\n\nParameters:\n\n- *DeviceType*\
+      \ - choose device type\n- *Encryption* - choose encryption status\n- *HostName*\
+      \ - choose specific hostname\n\n[tausight](https://www.tausight.com)"
+    width: 3
+    title: ePHI inventory
+    type: note
+  292602c6-8673-431a-b89b-df75dd0c4d86:
+    x: 0
+    height: 5
+    queryString: |
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |encrypted=?Encryption
+      |Type=?DeviceType
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |timechart(series=HostName, function=[count(FileName, distinct=true)], limit=10)
+    end: '2023-11-29T15:00:36.98Z'
+    start: '2023-09-30T15:00:36.98Z'
+    width: 12
+    y: 11
+    interactions:
+    - conditions: null
+      name: Show ePHI Details
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: 'Tausight: ePHI Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+        HostName: '["{{ fields.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Show ePHI Ownership Details
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: 'Tausight: ePHI Ownership'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+        HostName: '["{{ fields.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter by HostName
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      type: updateparameters
+      arguments:
+        HostName: '["{{ fields.HostName }}"]'
+    options:
+      plY: 500
+      xAxisTitle: Event Time
+      connect-points: false
+      yAxisTitle: Number of Files
+      imputation: none
+      horizontalPlotLineLabel: Threshold
+      showDataPoints: true
+    visualization: time-chart
+    title: ePHI files stored on devices
+    isLive: false
+    type: query
+  4620c169-d412-4c7d-84e5-93ae6f918405:
+    x: 7
+    height: 6
+    queryString: |+
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |encrypted=?Encryption
+      |Type=?DeviceType
+
+      |groupBy([ HostName, Type],function=[groupBy([FileName],function=selectFromMax(@timestamp, include=[@timestamp]), limit=max)], limit=max)
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |groupBy([HostName, Type], function=[count(FileName, distinct=true)])
+      |groupBy([Type], function=[sum(_count)])
+
+    end: '2023-11-29T14:59:37.727Z'
+    start: '2023-09-30T14:59:37.727Z'
+    width: 5
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show ePHI Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DeviceType: '["{{ fields.Type }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+        HostName: '["{{ parameters.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Show ePHI Ownership Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Ownership'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DeviceType: '["{{ fields.Type }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+        HostName: '["{{ parameters.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter by DeviceType
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        DeviceType: '["{{ fields.Type }}"]'
+    options:
+      legendPosition: bottom
+      legendTitle: Device Type
+    visualization: pie-chart
+    title: Number of ePHI files by device type
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  DeviceType:
+    label: DeviceType
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()|HostName=?HostName
+      |case{Type=Local | Type:=DeviceType; *} |encrypted=?Encryption |groupBy([Type])  |select([Type])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Type
+  Encryption:
+    label: Encryption
+    order: 50
+    values:
+      '*': All
+      unencrypted: Unencrypted
+      encrypted: Encrypted
+    type: list
+    defaultValue: '*'
+  HostName:
+    label: HostName
+    query: '$tausight/ephi-risk-posture:Tausight_ePHIStored() |Type=?DeviceType |encrypted=?Encryption
+      |groupBy([HostName], function=count(field=FileName, distinct=true)) |sort(HostName,
+      order=desc, limit=25) |select([HostName]) '
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: HostName

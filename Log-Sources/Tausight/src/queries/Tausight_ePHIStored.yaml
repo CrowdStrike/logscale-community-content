@@ -1,0 +1,126 @@
+name: Tausight_ePHIStored
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.4.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  lower("hostName",as=HostName)
+  //|HostName= ?{HostName =*}
+  |eventType=file_inspected or eventType=email or cloudStorage
+  |case {
+
+      eventType=file_inspected
+      |fileInspected.fileInfo.ephi.ephiDecisionFloat > 0.5
+      |case {
+          fileInspected.fileInfo.removableDrive = true | Type:= "USB Drive";
+          * | Type:= "Local";
+      }
+      |case {
+          fileInspected.fileInfo.encryptedVolume = true | encrypted:=true;
+          * | encrypted:=false;
+      }
+      |case {not array:contains(array="fileInspected.fileInfo.fileAttributes[]", value="FILE_ATTRIBUTE_ARCHIVE") |  Archived:= true;
+          * | Archived:=false;
+      }
+      |Activity:="File Inspected"
+      |FileName:=fileInspected.filename
+      |lower("fileInspected.fileInfo.ownerName", as=OwnerName)
+      |format(field=[fileInspected.fileInfo.filenameWithoutExtension, fileInspected.fileInfo.fileExtension], as=FileNameOnly, "%s.%s")
+      |FileSize := fileInspected.fileInfo.fileSize
+      |LastAccessed:= fileInspected.fileInfo.lastAccessTime
+      |Extension:=fileInspected.fileInfo.fileExtension
+      |format(as="Directory",field=[fileInspected.fileInfo.filePath],"%s")
+      |format(as="File",field=[FileNameOnly, FileSize],"%s\n[%d]")
+      |parseTimestamp(field="fileInspected.fileInfo.creationTime", as=ct)
+      |formatTime(as="Date_Created",field=ct, "%D %R")
+      |parseTimestamp(field="fileInspected.fileInfo.lastAccessTime", as=lt)
+      |eval(File_Age = (now() - lt)/(24*3600*1000))
+      |math:floor("File_Age",as=File_Age)
+      |formatTime(as="Date_Last_Accessed",field=lt,"%D %R")
+      |format(as="User Access", field=["fileInspected.fileInfo.userAccessRights[0].userName", "fileInspected.fileInfo.userAccessRights[1].userName", "fileInspected.fileInfo.userAccessRights[2].userName", "fileInspected.fileInfo.userAccessRights[3].userName"], "%s\n%s\n%s\n%s");
+
+      eventType=email
+      |Activity := "Email"
+      |Type:="Email"
+      |encrypted:="encrypted"
+      |lower("email.processInfo.userName", as=UserName)
+      |case{
+          length(field=UserName, as=len)
+          |len>0
+          |part:=splitString(field=UserName, by="\\\\")
+      }
+      |case{
+          part[1]!=*
+          |OwnerName:=part[0];
+          part[1]=*
+          |OwnerName:=part[1];
+          *|OwnerName:=UserName
+      }
+      |lower("email.sender", as=Sender)
+      |case{regex(field=Sender, regex="^.+@(?<DomainFrom>.+)$")|*;*|Sender:="Unknown"}
+
+      |split("email.attachments")
+      |case{
+          email.attachments.attachmentEphi.ephiDecisionFloat > 0.5
+          |FileSize:=email.attachments.size
+          |format(field=["email.attachments.filenameWithoutExtension", "email.attachments.fileExtension"], as=FileNameOnly, "%s.%s")
+          |FileName:=email.attachments.filename
+          |Extension:=email.attachments.fileExtension
+          |case {email.url=* |format(as="URL", field=[email.url], "%s"); * |"URL" := "Unavailable";}
+          |case {email.source=* |format(as="Source", field=[email.source], "%s"); * |"Source" := "Unavailable";}
+          |format(as="Directory",field=[Activity,Sender, URL],"%s\nSender: %s\nURL: %s")
+          |format(as="File",field=[FileNameOnly, FileSize],"%s\n[%d]");
+
+          email.messageEphi.ephiDecisionFloat> 0.5
+          |FileName:="N/A"
+          |format(format="%s_%s", field=[FileName,timestamp], as=FileName)
+          |Extension:="N/A"
+          |case {email.url=* |format(as="URL", field=[email.url], "%s"); * |"URL" := "Unavailable";}
+          |case {email.source=* |format(as="Source", field=[email.source], "%s"); * |"Source" := "Unavailable";}
+          |format(as="Directory",field=[Activity,Sender, URL],"%s\nSender: %s\nURL: %s")
+          |File:="Email message contains ePHI";
+      }
+      |parseTimestamp(field="timestamp", as=ct)
+      |eval(File_Age = (now() - @timestamp)/(24*3600*1000))
+      |math:floor("File_Age",as=File_Age)
+      |formatTime(as="Date_Created",field=ct, "%D %R")
+      |Archived:=false
+      |Date_Last_Accessed:="None"
+      |"User Access":="None";
+
+      cloudStorage
+      |cloudStorage.file.fileEphi.ephiDecisionFloat > 0.5
+      |Activity:="Cloud share"
+      |Type:="Cloud share"
+      |cloud_source:=cloudStorage.source
+      |encrypted:="encrypted"
+      |lower("cloudStorage.processInfo.userName", as=UserName)
+      |OwnerName:=UserName
+      |format(field=[cloudStorage.file.filenameWithoutExtension, cloudStorage.file.fileExtension], as=FileNameOnly, "%s.%s")
+      |FileSize:=cloudStorage.file.size
+      |FileName:=cloudStorage.file.filename
+      |Extension:=cloudStorage.file.fileExtension
+      |format(as="Directory",field=[cloudStorage.file.filePath, cloud_source, cloudStorage.url],"%s \nSource: %s\nURL: %s")
+      |format(as="File",field=[FileNameOnly, FileSize],"%s\n[%d]")
+      |parseTimestamp(field="timestamp", as=ct)
+      |formatTime(as="Date_Created",field=ct, "%D %R")
+      //|parseTimestamp(field="", as=lt)
+      |eval(File_Age = (now() - @timestamp)/(24*3600*1000))
+      |math:floor("File_Age",as=File_Age)
+      //|formatTime(as="Date_Last_Accessed",field=lt,"%D %R")
+      |Date_Last_Accessed:="None"
+      |Archived:=false
+      |"User Access":="None";
+  }
+
+
+  //new
+
+  |case{Type=Local or Type= "USB Drive"|regex(field="fileInspected.filename", regex="^(?<DriveId>..)");*|DriveId:="C:"}
+  |format(format="%s_%s", field=[HostName, DriveId], as=HostNameId)

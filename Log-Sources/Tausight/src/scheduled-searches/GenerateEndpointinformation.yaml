@@ -1,0 +1,27 @@
+name: Generate Endpoint information
+description: Endpoint information with encryption status
+enabled: true
+queryString: |-
+  devicePoweredUp
+  |lower(hostName, as=HostName)
+  |split("devicePoweredUp.logicalDisks")
+  |case{devicePoweredUp.logicalDisks.driveInfo.removableMedia=true| devicePoweredUp.logicalDisks.mediaType:="MT_REMOVABLE_MEDIA"; *}
+  |groupBy([HostName,devicePoweredUp.computerSystem.systemType,devicePoweredUp.logicalDisks.deviceId,devicePoweredUp.logicalDisks.mediaType,"devicePoweredUp.logicalDisks.driveType"], function=selectFromMax(@timestamp, include=[devicePoweredUp.logicalDisks.encryptedDrive,devicePoweredUp.logicalDisks.accessMode]))
+
+  |rename(field="devicePoweredUp.computerSystem.systemType", as="DeviceType")
+  |rename(field="devicePoweredUp.logicalDisks.driveType", as="DriveType")
+  |rename(field="devicePoweredUp.logicalDisks.mediaType", as="MediaType")
+  |rename(field="devicePoweredUp.logicalDisks.deviceId", as="DriveId")
+  |rename(field="devicePoweredUp.logicalDisks.accessMode", as="AccessMode")
+  |format(format="%s_%s", field=[HostName,DriveId], as=HostNameId)
+  //|select([HostNameId, DeviceType,DriveId,DriveType,MediaType,AccessMode])
+
+  |select([HostName, DeviceType])
+backfillLimit: 1
+schedule: '*/5 * * * *'
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC-05:00
+queryStart: 10y
+actionNameReferences:
+- Endpoint details with encryption status

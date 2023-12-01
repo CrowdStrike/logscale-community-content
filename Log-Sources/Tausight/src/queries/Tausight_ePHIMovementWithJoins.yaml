@@ -1,0 +1,18 @@
+name: Tausight_ePHIMovementWithJoins
+visualization:
+  options:
+    cell-overflow: wrap-text
+    configured-columns: {}
+    row-numbers-enabled: false
+  type: table-view
+$schema: https://schemas.humio.com/query/v0.4.0
+timeInterval:
+  isLive: false
+  start: 1y
+queryString: |-
+  $tausight/ephi-risk-posture:Tausight_ePHIMovement()
+
+  |match(file="Endpoint details.csv", field="HostNameId",column="HostNameId")
+  |case{Type=Local or Type="Unknown"| Type:=DeviceType; *}
+  |case{Activity="Clipboard copy / paste" |encrypted:=EncryptedStatus;*}
+  |case{Activity="Clipboard copy / paste" |Type:=DeviceType;*}

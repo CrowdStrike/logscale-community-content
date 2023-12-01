@@ -1,0 +1,16 @@
+name: 'Compliance violations: ePHI moved to unauthorized removable media'
+description: Triggered when ePHI file moved to a USB drive
+enabled: true
+actionNameReferences: []
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1h
+timeInterval: 1h
+queryString: |-
+  fileCopied
+  |(fileCopied.sourceFileInfo.ephi.ephiDecisionFloat > 0.5)
+  |fileCopied.destinationFileInfo.driveInfo.removableMedia = true
+  |Model_copied:=fileCopied.destinationFileInfo.driveInfo.model
+  |SerialNumber_copied:=fileCopied.destinationFileInfo.driveInfo.serialNumber
+
+  |not match(file="ListOfApprovedRemovableDevices.csv", column=Model, field=Model_copied)
+  //Severity:=High

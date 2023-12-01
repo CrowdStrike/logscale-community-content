@@ -1,0 +1,383 @@
+name: 'Tausight: ePHI Ownership'
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 60d
+widgets:
+  5c3aaa25-6af9-4b87-a089-e0d7761605da:
+    x: 5
+    height: 5
+    queryString: |
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |age:=?Age
+      |encrypted=?Encryption
+      |Type=?DeviceType
+      |OwnerName=?OwnerName
+      |DriveId=?Drive
+      |case{ not in(field="Activity", values=[Email, "Cloud share"]) | parseTimestamp(as=lt, field=LastAccessed); *|parseTimestamp(as=lt, field=timestamp)}
+      |eval(curr_age = (now() - lt)/(24*3600*1000))
+      |test(curr_age >= age)
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |groupBy([HostName], function=count(FileName,distinct=true))
+
+      |sum(_count)
+    end: '2023-11-29T15:01:43.306Z'
+    start: '2023-09-30T15:01:43.306Z'
+    width: 3
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show ePHI details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        FileAge: '["{{ parameters.Age }}"]'
+        OwnerName: '["{{ parameters.OwnerName }}"]'
+        HostName: '["{{ parameters.HostName }}"]'
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+      openInNewTab: false
+      type: dashboardlink
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 500
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 300
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 100
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: threshold
+      suffix: ''
+      yAxisTitle: 'Total inactive files '
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: Number of inactive  ePHI files
+    isLive: false
+    type: query
+  note-1696858466723-0:
+    x: 0
+    y: 0
+    height: 5
+    text: "### Use Case: What are the ePHI Risks from inactive files held by owners/creators?\n\
+      \        \n- *Number of inactive ePHI files* - count of inactive ePHI files\
+      \ \n- *Number of inactive ePHI files by OwnerName* - count of ePHI files associated\
+      \ with top owners\n- *Owners of inactive ePHI files* - timeline for the number\
+      \ of inactive ePHI files held by owners\n- *Number of inactive ePHI files* -\
+      \ timeline for inactive ePHI files found on devices\n\nParameters:\n\n- *File\
+      \ Inactive Duration* - choose the inactive duration of file in days\n- *DeviceType*\
+      \ - choose device type where ePHI is stored\n- *Encryption* - choose encryption\
+      \ status\n- *HostName* - choose specific hostname where ePHI is stored\n- *OwnerName*\
+      \ - choose specific owner of ePHI files\n\n[tausight](https://www.tausight.com)"
+    width: 5
+    title: ePHI ownership
+    type: note
+  08c08df6-f550-4774-87c8-167c6fff630c:
+    x: 0
+    height: 5
+    queryString: |
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |encrypted=?Encryption
+      |Type=?DeviceType
+      |OwnerName=?OwnerName
+      |age:=?{Age=30}
+      |DriveId=?Drive
+      |case{ not in(field="Activity", values=[Email, "Cloud share"]) | parseTimestamp(as=lt, field=LastAccessed); *|parseTimestamp(as=lt, field=timestamp)}
+      |eval(curr_age = (now() - lt)/(24*3600*1000))
+      |test(curr_age >= age)
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |timechart(series=OwnerName, buckets=100, function=[count(FileName, distinct=true)], limit=10)
+    end: '2023-11-29T15:01:07.068Z'
+    start: '2023-09-30T15:01:07.068Z'
+    width: 6
+    y: 5
+    interactions:
+    - conditions: null
+      name: Show ePHI Details
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: 'Tausight: ePHI Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        FileAge: '["{{ parameters.Age }}"]'
+        OwnerName: '["{{ fields.OwnerName }}"]'
+        HostName: '["{{ parameters.HostName }}"]'
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter by OwnerName
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      type: updateparameters
+      arguments:
+        OwnerName: '["{{ fields.OwnerName }}"]'
+    options:
+      legendPosition: bottom
+      interpolation: linear
+      xAxisTitle: Event Time
+      legendLabelOverflow: full
+      connect-points: false
+      yAxisScale: linear
+      plotType: area
+      regression: false
+      imputation: none
+      gradient: false
+      plY: 500
+      horizontalPlotLineLabel: Threshold
+      showDataPoints: true
+      yAxisTitle: Number of Files
+      stacking: none
+    visualization: time-chart
+    title: Owners of inactive ePHI files
+    isLive: false
+    type: query
+  205d6a84-1d8b-49fb-b95d-b746c4ff8577:
+    x: 6
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |encrypted=?Encryption
+      |Type=?DeviceType
+      |age:=?Age
+      |OwnerName=?OwnerName
+      |DriveId=?Drive
+      |case{ not in(field="Activity", values=[Email, "Cloud share"]) | parseTimestamp(as=lt, field=LastAccessed); *|parseTimestamp(as=lt, field=timestamp)}
+      |eval(curr_age = (now() - lt)/(24*3600*1000))
+      |test(curr_age >= age)
+      |cal_age:=math:floor("curr_age")
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |groupBy([ OwnerName],function=[count(FileName,distinct=true), groupBy([FileName],function=selectFromMax(@timestamp, include=[@timestamp,cal_age]), limit=max)])
+      // |groupBy([ OwnerName],function=[groupBy([FileName],function=selectFromMax(@timestamp, include=[cal_age]))], limit=max)
+
+      |case{
+          cal_age>=0 and cal_age<=30 | series_age:=30;
+          cal_age>=31 and cal_age<=60 | series_age:=60;
+          cal_age>=61 and cal_age<=90 | series_age:=90;
+          cal_age>=91 and cal_age<=180| series_age:=180;
+          cal_age>=181 and cal_age<=365| series_age:=365;
+          cal_age>=366 and cal_age<=730| series_age:=730;
+          cal_age>=731 and cal_age<=1825| series_age:=1825;
+          cal_age>=1826 and cal_age<=3650| series_age:=3650;
+          cal_age>=3651 | series_age:=3651
+      }
+      |top([series_age, OwnerName])
+      |sort(series_age, order=asc)
+
+      |case{
+          series_age=30 | series_age:="0 - 30 days";
+          series_age=60 | series_age:="31 - 60 days";
+          series_age=90 | series_age:="61 - 90 days";
+          series_age=180| series_age:="91 - 180 days";
+          series_age=365| series_age:="181 days - 1 year";
+          series_age=730| series_age:="1 - 2 years";
+          series_age=1825| series_age:="2 - 5 years";
+          series_age=3650| series_age:="5 - 10 years";
+          series_age=3651 | series_age:="> 10 years"
+      }
+    end: '2023-11-29T15:01:54.668Z'
+    start: '2023-09-30T15:01:54.668Z'
+    width: 6
+    y: 5
+    interactions:
+    - conditions: null
+      name: Show ePHI Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        Drive: '["{{ parameters.Drive }}"]'
+        FileAge: '["{{ parameters.Age }}"]'
+        OwnerName: '["{{ fields.OwnerName }}"]'
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter by OwnerName
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        OwnerName: '["{{ fields.OwnerName }}"]'
+    options:
+      legendPosition: bottom
+      labelAngle: 0
+      valuesOnBars: true
+      xAxisTitle: Inactive ePHI file duration
+      barChartType: stacked
+      legend: true
+      yAxisTitle: Number of Files
+      inputDataFormat: ''
+    visualization: bar-chart
+    title: Number of inactive ePHI files by Owner
+    isLive: false
+    type: query
+  a14f1ec9-c2e0-4866-8978-0e9aa1cf9d09:
+    x: 8
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?HostName
+      |age:=?Age
+      |encrypted=?Encryption
+      |Type=?DeviceType
+      |OwnerName=?OwnerName
+      |DriveId=?Drive
+      |case{ not in(field="Activity", values=[Email, "Cloud share"]) | parseTimestamp(as=lt, field=LastAccessed); *|parseTimestamp(as=lt, field=timestamp)}
+      |eval(curr_age = (now() - lt)/(24*3600*1000))
+      |test(curr_age >= age)
+
+      // clear subset of fileDeleted events that are most recent
+      //  this saved query also contains an alternative match query that runs 40% faster but less accurate but commented out
+      |$tausight/ephi-risk-posture:Tausight_FileDeletedMatch()
+
+      |groupBy([OwnerName], function=count(field=FileName, distinct=true))
+      |sort(_count, order=desc, limit=15)
+    end: '2023-11-29T15:01:29.717Z'
+    start: '2023-09-30T15:01:29.717Z'
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show ePHI Details
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: 'Tausight: ePHI Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        FileAge: '["{{ parameters.Age }}"]'
+        OwnerName: '["{{ fields.OwnerName }}"]'
+        HostName: '["{{ parameters.HostName }}"]'
+        DeviceType: '["{{ parameters.DeviceType }}"]'
+        Encryption: '["{{ parameters.Encryption }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Filter by OwnerName
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      type: updateparameters
+      arguments:
+        OwnerName: '["{{ fields.OwnerName }}"]'
+    options:
+      legendPosition: bottom
+    visualization: pie-chart
+    title: Number of inactive ePHI files by OwnerName
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  Drive:
+    label: Drive
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()|OwnerName=?{OwnerName=*}
+      |HostName=?{HostName=*} |encrypted=?{Encryption=*} |Type=?{DeviceType=*} |age:=?{Age=30}
+      |case{ not in(field="Activity", values=[Email, "Cloud share"]) | parseTimestamp(as=@timestamp,
+      field=LastAccessed); *|parseTimestamp(as=@timestamp, field=@timestamp)} |eval(curr_age
+      = (now() - @timestamp)/(24*3600*1000)) |test(curr_age >= age)  |groupBy([DriveId])
+    timeInterval: 60d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: DriveId
+  Age:
+    label: File Inactive Duration
+    order: 1
+    values:
+      '3650': 10 years
+      '365': 1 year
+      '30': 30 days
+      '180': 180 days
+      '60': 60 days
+      '1825': 5 years
+      '730': 2 years
+    type: list
+    defaultValue: '30'
+  OwnerName:
+    label: OwnerName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()|DriveId=?{Drive=*}
+      |HostName=?{HostName=*} |encrypted=?{Encryption=*} |Type=?{DeviceType=*} |age:=?{Age=30}
+      |case{ not in(field="Activity", values=[Email, "Cloud share"]) | parseTimestamp(as=@timestamp,
+      field=LastAccessed); *|parseTimestamp(as=@timestamp, field=@timestamp)} |eval(curr_age
+      = (now() - @timestamp)/(24*3600*1000)) |test(curr_age >= age)  |groupBy([OwnerName],
+      function=count(field=FileName, distinct=true)) |sort(_count, order=desc, limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: OwnerName
+  HostName:
+    label: HostName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()|DriveId=?{Drive=*}  |encrypted=?{Encryption=*}
+      |Type=?{DeviceType=*} |OwnerName=?{OwnerName=*} |age:=?{Age=30} |case{ not in(field="Activity",
+      values=[Email, "Cloud share"]) | parseTimestamp(as=@timestamp, field=LastAccessed);
+      *|parseTimestamp(as=@timestamp, field=@timestamp)} |eval(curr_age = (now() -
+      @timestamp)/(24*3600*1000)) |test(curr_age >= age)  |groupBy([HostName], function=count(field=FileName,
+      distinct=true)) |sort(_count, order=desc, limit=25)
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: HostName
+  DeviceType:
+    label: DeviceType
+    query: $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()|DriveId=?{Drive=*}
+      |HostName=?{HostName=*} |encrypted=?{Encryption=*} |OwnerName=?{OwnerName=*}
+      |age:=?{Age=30} |case{ not in(field="Activity", values=[Email, "Cloud share"])
+      | parseTimestamp(as=lt, field=LastAccessed); *|parseTimestamp(as=lt, field=timestamp)}
+      |eval(curr_age = (now() - lt)/(24*3600*1000)) |test(curr_age >= age)  |groupBy([Type])
+    timeInterval: 90d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Type
+  Encryption:
+    label: Encryption
+    order: 50
+    values:
+      '*': All
+      unencrypted: Unencrypted
+      encrypted: Encrypted
+    type: list
+    defaultValue: '*'

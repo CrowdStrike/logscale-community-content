@@ -1,0 +1,178 @@
+name: 'Tausight: Alerts'
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  2fae3fa1-a9ff-47cf-9185-889b7bbfd70b:
+    x: 4
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStoredWithJoins()
+      |HostName=?{HostName=*}
+      |OwnerName=?OwnerName
+      |encrypted!="encrypted"
+      |Type="PC_MOBILE"
+
+      |timechart(series=HostName, buckets=100, function=[count(FileName, distinct=true)], limit=10)
+    end: '2023-11-14T14:12:23.016Z'
+    start: '2023-10-15T14:12:23.016Z'
+    width: 8
+    y: 0
+    interactions:
+    - conditions: null
+      name: Show ePHI details for laptop
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: 'Tausight: ePHI Inventory'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DeviceType: '["PC_MOBILE"]'
+        Encryption: '["unencrypted"]'
+        HostName: '["{{ fields.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    options:
+      xAxisTitle: Event Time
+      showDataPoints: true
+      connect-points: false
+      yAxisTitle: Number of ePHI
+      imputation: none
+    visualization: time-chart
+    title: Unencrypted laptops with ePHI
+    isLive: false
+    type: query
+  303c98df-99c7-4302-b8f4-fab33e4334e2:
+    x: 0
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIMovement()
+      |HostName=?HostName
+      |UserName=?UserName
+      |encrypted!="encrypted"
+      |Type="USB Drive"
+
+      |groupBy([HostName, UserName,FileName], function=selectFromMax(@timestamp, include=[@timestamp]))
+      |groupBy([HostName,@timestamp], function=count(field=FileName, as= "Files"))
+
+      |timechart(series=HostName, buckets=100, function=sum("Files") ,limit=10)
+    end: now
+    start: 30d
+    width: 12
+    y: 10
+    interactions:
+    - conditions: null
+      name: Show ePHI Movement Details
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: 'Tausight: ePHI Activity Details'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        DestinationDevice: '["{{\"USB Drive - unencrypted\"}}"]'
+        HostName: '["{{ fields.HostName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    options:
+      plY: 1
+      xAxisTitle: Number of ePHI
+      horizontalPlotLineLabel: Threshold
+      connect-points: false
+      yAxisTitle: Event Time
+      imputation: none
+    visualization: time-chart
+    title: ePHI movement to unencrypted removable drives
+    isLive: false
+    type: query
+  6e571ffe-6227-493a-915c-9cbb450a6b67:
+    x: 0
+    height: 5
+    queryString: |-
+      $tausight/ephi-risk-posture:Tausight_ePHIStored()
+      |HostName=?{HostName=*}
+      |OwnerName=?OwnerName
+
+      |timechart(series=OwnerName, buckets=100, function=[count(FileName, distinct=true)], limit=10)
+    end: '2023-11-14T14:10:46.918Z'
+    start: '2023-10-15T14:10:46.918Z'
+    width: 12
+    y: 5
+    interactions:
+    - conditions: null
+      name: Show ePHI Ownership details
+      titleTemplate: null
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: 'Tausight: ePHI Ownership'
+        packageSpecifier: tausight/ephi-risk-posture
+        repoOrViewName: null
+      arguments:
+        OwnerName: '["{{ fields.OwnerName }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    options:
+      plY: 500
+      xAxisTitle: Event Time
+      connect-points: false
+      yAxisTitle: Number of ePHI
+      imputation: none
+      horizontalPlotLineLabel: Threshold
+      showDataPoints: true
+    visualization: time-chart
+    title: User with excessive ePHI ownership
+    isLive: false
+    type: query
+  note-1698091389518-0:
+    x: 0
+    y: 0
+    height: 5
+    text: "### Use Case: Alerts Dashboard\n        \n- *Unencrypted laptops with ePHI*\
+      \ - timeline for alerts from unencrypted laptops with ePHI discovered\n- *User\
+      \ with excessive ePHI ownership* -  timeline for alerts from users with excessive\
+      \ number of ePHI files \n- *ePHI movement to unencrypted removable drives* -\
+      \ timeline for alerts for ePHI movement to unencrypted removable drive\n\nParameters:\n\
+      \n- *HostName* - choose hostname for specific laptop\n- *OwnerName* - choose\
+      \ specific owner of ePHI files\n- *UserName* - choose specific username associated\
+      \ with ePHI activity\n        \n\n\n[tausight](https://www.tausight.com)"
+    width: 4
+    title: ePHI Alerts
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  HostName:
+    label: HostName
+    query: '$tausight/ephi-risk-posture:Tausight_ePHIStored() |groupBy([HostName],
+      function=count(field=FileName, distinct=true)) |sort(HostName, order=desc, limit=25)
+      |select([HostName]) '
+    timeInterval: 30d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: HostName
+  OwnerName:
+    label: OwnerName
+    query: '$tausight/ephi-risk-posture:Tausight_ePHIStored() |HostName=?HostName
+      |groupBy([OwnerName], function=count(field=FileName, distinct=true)) |sort(OwnerName,
+      order=desc, limit=25) |select([OwnerName]) '
+    timeInterval: 30d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: OwnerName
+  UserName:
+    label: UserName
+    query: $tausight/ephi-risk-posture:Tausight_ePHIMovementWithJoins()|HostName=?HostName|Type="USB
+      Drive" |groupBy([UserName]) |sort("_count",order=desc,limit=25)
+    timeInterval: 30d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserName

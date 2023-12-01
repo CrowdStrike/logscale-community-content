@@ -1,0 +1,23 @@
+name: FileDeleted list
+description: FileDeleted
+enabled: true
+queryString: |-
+  eventType=file_deleted
+  | not regex(field="fileDeleted.filename", regex="Recycle|~\\$|AppData\\\\Local\\\\Temp")
+  |lower(hostName, as=HostName)
+  |parseTimestamp(field="timestamp", as=FileDeletedTstamp)
+  |format(field=[HostName, fileDeleted.filename], as=HostId, format="%s %s")
+  |format(field=[fileDeleted.fileInfo.filenameWithoutExtension, fileDeleted.fileInfo.fileExtension], as=FileNameOnly, "%s.%s")
+  |FileSize := fileDeleted.fileInfo.fileSize
+  |format(as="FileDeletedInfo",field=[FileNameOnly, FileSize],"%s %d")
+
+  | groupBy([HostName], function=[groupBy([HostId], function=[selectFromMax(field="@timestamp", include=[FileDeletedInfo,FileDeletedTstamp])])])
+  // |FileSize!=*
+backfillLimit: 1
+schedule: '*/10 * * * *'
+queryEnd: now
+$schema: https://schemas.humio.com/scheduledsearch/v0.1.0
+timeZone: UTC-05:00
+queryStart: 10y
+actionNameReferences:
+- FileDeleted list
