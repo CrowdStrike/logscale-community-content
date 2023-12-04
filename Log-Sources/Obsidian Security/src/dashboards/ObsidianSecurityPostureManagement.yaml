@@ -1,0 +1,113 @@
+name: Obsidian Security Posture Management
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  4591f8c2-e9d8-41a6-af88-191c4ad18407:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      compliant = *
+      | select(fields=[severity,summary])
+    end: now
+    start: 1y
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Compliance Drift Alert
+    isLive: false
+    type: query
+  520dfd25-3de0-4465-b948-ff99f11b3684:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      compliant = *
+
+      | groupBy(transition)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Compliance by Transition
+    isLive: false
+    type: query
+  cf5124fe-2a22-46e4-956a-27069e91d198:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      compliant = *
+
+      | groupBy(name)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      innerRadius: 0
+    visualization: pie-chart
+    title: Compliance by Name
+    isLive: false
+    type: query
+  b09e0f88-cb9c-4e3b-a597-cd2e23bf96d1:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      compliant = *
+
+      | groupBy(severity)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      innerRadius: 0
+    visualization: pie-chart
+    title: Compliance by Severity
+    isLive: false
+    type: query
+  98b903cd-26d6-468e-98ff-2d24e0e7c859:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      compliant = *
+      | groupBy(domains[0])
+    end: now
+    start: 1y
+    width: 4
+    options:
+      innerRadius: 0
+    visualization: pie-chart
+    title: Compliance By Domain
+    isLive: false
+    type: query
+  f112fa3b-e43d-4707-bcf8-184608c3ea9f:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      compliant = *
+
+      | groupBy(accepted)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      innerRadius: 0
+    visualization: pie-chart
+    title: Compliance by Status
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
