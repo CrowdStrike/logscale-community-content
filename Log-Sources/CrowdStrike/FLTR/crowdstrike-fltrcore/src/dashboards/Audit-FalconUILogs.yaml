@@ -19,9 +19,9 @@ widgets:
       | wildcard(field=OperationName, pattern=?OperationName, ignoreCase=true)
 
       | case {
-          test(?IncludeInternal=="Yes")
+          test(?IncludeInternalUsers=="Yes")
             | UserId=/@/ ;
-          test(?IncludeInternal=="No")
+          test(?IncludeInternalUsers=="No")
             | wildcard(field=UserId, pattern=?UserId, ignoreCase=true) ;
         }
 

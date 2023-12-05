@@ -22,10 +22,10 @@ queryString: |-
   | CommandLine=/\s-[e^]{1,2}[ncodema^]+\s(?<base64String>\S+)/i
 
   // Get entropy of base64 string.
-  | b64Entroy:=shannonEntropy("base64String")
+  | b64Entropy:=shannonEntropy("base64String")
 
   // Set the entropy threshold.
-  | b64Entroy>4.0
+  | b64Entropy>4.0
 
   // Decode the encoded command blob.
   | decodedCommand:=base64Decode(base64String, charset="UTF-16LE")
