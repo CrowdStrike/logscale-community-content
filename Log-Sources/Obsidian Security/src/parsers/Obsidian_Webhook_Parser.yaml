@@ -20,7 +20,7 @@ script: |
       //Threat Alert
       eventDatetime | findTimestamp(field=eventDatetime);
       //Compliance ALert
-      drift_timestamp | findTimestamp(field=drift_timestamp, timezone="UCT");
+      drift_timestamp | findTimestamp(field=drift_timestamp, timezone="UTC");
       * | parsed := "false"
   }
 tagFields: []
