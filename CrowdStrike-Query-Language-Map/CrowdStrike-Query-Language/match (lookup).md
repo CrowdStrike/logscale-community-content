@@ -10,4 +10,8 @@ to output all columns of a lookup:
 | aid =~ match(file="fdr_aidmaster.csv", column=aid, strict=false)
 ```
 
+```
+| cid =~ match(file="cid_name.csv", column=cid, strict=true)
+```
+
 [match Dcoumentation](https://library.humio.com/data-analysis/functions-match.html)
