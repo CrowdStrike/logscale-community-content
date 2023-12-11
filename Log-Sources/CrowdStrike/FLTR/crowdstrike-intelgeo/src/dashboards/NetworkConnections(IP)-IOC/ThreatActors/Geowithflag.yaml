@@ -34,14 +34,14 @@ widgets:
       // Call saved query to pull in all applicable network events with IPs
       // Update the saved query with mappings for applicable products that gen network traffic
       // If calling function locally use following syntax:
-      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+      $crowdstrike/fltr-intelgeo:zIOC_traffic_field_normalization()
 
       // Check the local address first.
       | case {
           // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
           !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(source.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | source.country := Country | source.flag := Flag | source.continent := Continent
             | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -52,7 +52,7 @@ widgets:
           // Apply when the dst_ip is a non-RFC1918 IP address.
           !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(destination.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | destination.country := Country | destination.flag := Flag | destination.continent := Continent
             | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -123,14 +123,14 @@ widgets:
       // Call saved query to pull in all applicable network events with IPs
       // Update the saved query with mappings for applicable products that gen network traffic
       // If calling function locally use following syntax:
-      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+      $crowdstrike/fltr-intelgeo:zIOC_traffic_field_normalization()
 
       // Check the local address first.
       | case {
           // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
           !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(source.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | source.country := Country | source.flag := Flag | source.continent := Continent
             | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -141,7 +141,7 @@ widgets:
           // Apply when the dst_ip is a non-RFC1918 IP address.
           !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(destination.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | destination.country := Country | destination.flag := Flag | destination.continent := Continent
             | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -235,14 +235,14 @@ widgets:
       // Call saved query to pull in all applicable network events with IPs
       // Update the saved query with mappings for applicable products that gen network traffic
       // If calling function locally use following syntax:
-      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+      $crowdstrike/fltr-intelgeo:zIOC_traffic_field_normalization()
 
       // Check the local address first.
       | case {
           // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
           !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(source.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | source.country := Country | source.flag := Flag | source.continent := Continent
             | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -253,7 +253,7 @@ widgets:
           // Apply when the dst_ip is a non-RFC1918 IP address.
           !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(destination.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | destination.country := Country | destination.flag := Flag | destination.continent := Continent
             | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -332,14 +332,14 @@ widgets:
       // Call saved query to pull in all applicable network events with IPs
       // Update the saved query with mappings for applicable products that gen network traffic
       // If calling function locally use following syntax:
-      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+      $crowdstrike/fltr-intelgeo:zIOC_traffic_field_normalization()
 
       // Check the local address first.
       | case {
           // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
           !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(source.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | source.country := Country | source.flag := Flag | source.continent := Continent
             | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -350,7 +350,7 @@ widgets:
           // Apply when the dst_ip is a non-RFC1918 IP address.
           !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(destination.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | destination.country := Country | destination.flag := Flag | destination.continent := Continent
             | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -424,14 +424,14 @@ widgets:
       // Call saved query to pull in all applicable network events with IPs
       // Update the saved query with mappings for applicable products that gen network traffic
       // If calling function locally use following syntax:
-      $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+      $crowdstrike/fltr-intelgeo:zIOC_traffic_field_normalization()
 
       // Check the local address first.
       | case {
           // Apply when the LocalAddressIP4 is a non-RFC1918 IP address.
           !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(source.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=source.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | source.country := Country | source.flag := Flag | source.continent := Continent
             | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -442,7 +442,7 @@ widgets:
           // Apply when the dst_ip is a non-RFC1918 IP address.
           !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
             | ipLocation(destination.ip)
-            | match(file="crowdstrike-lcc/ip-ioc-geoip-flag-intel/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+            | match(file="crowdstrike/fltr-intelgeo/geo_mapping.csv", column=CountryCode, field=destination.ip.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
             | destination.country := Country | destination.flag := Flag | destination.continent := Continent
             | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified);
           *
@@ -532,7 +532,7 @@ parameters:
     defaultValue: '*'
   Vendor:
     label: Vendor
-    query: $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+    query: $crowdstrike/fltr-intelgeo:zIOC_traffic_field_normalization()
       | groupBy(Vendor)
     timeInterval: 7d
     useDashboardTimeIfSet: true

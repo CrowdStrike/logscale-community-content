@@ -1,0 +1,326 @@
+name: Files Written To USB
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  8156e59c-bbb6-4b83-a4c2-19d38d9c94a5:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |
+      #event_simpleName=*FileWritten
+      | DiskParentDeviceInstanceId=USB*
+
+      // Add Mapping for Values
+      | FileCategory match {
+          0 => FileCategoryName:="Other" ;
+          1 => FileCategoryName:="Archives" ;
+          2 => FileCategoryName:="Office Documents" ;
+          3 => FileCategoryName:="Multimedia Files" ;
+          4 => FileCategoryName:="Design Files" ;
+          5 => FileCategoryName:="Source Code" ;
+          6 => FileCategoryName:="Executable Files" ;
+          7 => FileCategoryName:="Virtual Machine Files" ;
+          8 => FileCategoryName:="Email Files" ;
+          9 => FileCategoryName:="Data and Logs" ;
+          * => * ;
+        }
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Formatting values
+      | #event_simpleName=/(?<FileType>\w+)FileWritten/
+      | unit:convert(Size, as="SizeK", to="k")
+      | "Size in KBytes":= rename(SizeK)
+
+      // Additional parameters
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=FileCategoryName, pattern=?FileCategoryName, ignoreCase=true)
+      | wildcard(field=FileType, pattern=?FileType, ignoreCase=true)
+      | wildcard(field=TargetFileName, pattern=?TargetFileName, ignoreCase=true)
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
+
+      // Display values
+      // | table([@timestamp, UserName, ComputerName, FileCategoryName, FileType, "Size in KBytes", TargetFileName, Size], limit=1000)
+      | top(UserName, limit=10)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: Top User Name
+    type: query
+  1f78d5ea-121c-42a4-bd28-b4a9accc05f5:
+    x: 0
+    y: 3
+    height: 5
+    queryString: |+
+      #event_simpleName=*FileWritten
+      | DiskParentDeviceInstanceId=USB*
+
+      // Add Mapping for Values
+      | FileCategory match {
+          0 => FileCategoryName:="Other" ;
+          1 => FileCategoryName:="Archives" ;
+          2 => FileCategoryName:="Office Documents" ;
+          3 => FileCategoryName:="Multimedia Files" ;
+          4 => FileCategoryName:="Design Files" ;
+          5 => FileCategoryName:="Source Code" ;
+          6 => FileCategoryName:="Executable Files" ;
+          7 => FileCategoryName:="Virtual Machine Files" ;
+          8 => FileCategoryName:="Email Files" ;
+          9 => FileCategoryName:="Data and Logs" ;
+          * => * ;
+        }
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Formatting values
+      | #event_simpleName=/(?<FileType>\w+)FileWritten/
+      | unit:convert(Size, as="SizeK", to="k")
+      | "Size in KBytes":= rename(SizeK)
+
+      // Additional parameters
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=FileCategoryName, pattern=?FileCategoryName, ignoreCase=true)
+      | wildcard(field=FileType, pattern=?FileType, ignoreCase=true)
+      | wildcard(field=TargetFileName, pattern=?TargetFileName, ignoreCase=true)
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
+
+      // Display values
+      | table([@timestamp, UserName, ComputerName, FileCategoryName, FileType, "Size in KBytes", TargetFileName, Size], limit=1000)
+
+    visualization: table-view
+    start: 7d
+    width: 12
+    title: Files written to USB
+    type: query
+  9b22831d-be0b-4ba3-ad6a-e2201c6def66:
+    x: 6
+    y: 0
+    height: 3
+    queryString: |
+      #event_simpleName=*FileWritten
+      | DiskParentDeviceInstanceId=USB*
+
+      // Add Mapping for Values
+      | FileCategory match {
+          0 => FileCategoryName:="Other" ;
+          1 => FileCategoryName:="Archives" ;
+          2 => FileCategoryName:="Office Documents" ;
+          3 => FileCategoryName:="Multimedia Files" ;
+          4 => FileCategoryName:="Design Files" ;
+          5 => FileCategoryName:="Source Code" ;
+          6 => FileCategoryName:="Executable Files" ;
+          7 => FileCategoryName:="Virtual Machine Files" ;
+          8 => FileCategoryName:="Email Files" ;
+          9 => FileCategoryName:="Data and Logs" ;
+          * => * ;
+        }
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Formatting values
+      | #event_simpleName=/(?<FileType>\w+)FileWritten/
+      | unit:convert(Size, as="SizeK", to="k")
+      | "Size in KBytes":= rename(SizeK)
+
+      // Additional parameters
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=FileCategoryName, pattern=?FileCategoryName, ignoreCase=true)
+      | wildcard(field=FileType, pattern=?FileType, ignoreCase=true)
+      | wildcard(field=TargetFileName, pattern=?TargetFileName, ignoreCase=true)
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
+
+      // Display values
+      // | table([@timestamp, UserName, ComputerName, FileCategoryName, FileType, "Size in KBytes", TargetFileName, Size], limit=1000)
+      | top(FileCategoryName, limit=10)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: Top File Category
+    type: query
+  66926ef2-2361-4e52-b6da-2affaec29967:
+    x: 3
+    y: 0
+    height: 3
+    queryString: |
+      #event_simpleName=*FileWritten
+      | DiskParentDeviceInstanceId=USB*
+
+      // Add Mapping for Values
+      | FileCategory match {
+          0 => FileCategoryName:="Other" ;
+          1 => FileCategoryName:="Archives" ;
+          2 => FileCategoryName:="Office Documents" ;
+          3 => FileCategoryName:="Multimedia Files" ;
+          4 => FileCategoryName:="Design Files" ;
+          5 => FileCategoryName:="Source Code" ;
+          6 => FileCategoryName:="Executable Files" ;
+          7 => FileCategoryName:="Virtual Machine Files" ;
+          8 => FileCategoryName:="Email Files" ;
+          9 => FileCategoryName:="Data and Logs" ;
+          * => * ;
+        }
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Formatting values
+      | #event_simpleName=/(?<FileType>\w+)FileWritten/
+      | unit:convert(Size, as="SizeK", to="k")
+      | "Size in KBytes":= rename(SizeK)
+
+      // Additional parameters
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=FileCategoryName, pattern=?FileCategoryName, ignoreCase=true)
+      | wildcard(field=FileType, pattern=?FileType, ignoreCase=true)
+      | wildcard(field=TargetFileName, pattern=?TargetFileName, ignoreCase=true)
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
+
+      // Display values
+      // | table([@timestamp, UserName, ComputerName, FileCategoryName, FileType, "Size in KBytes", TargetFileName, Size], limit=1000)
+      | top(ComputerName, limit=10)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: Top Computer Name
+    type: query
+  a1290bfd-4efe-4749-afcb-98e6667d1446:
+    x: 9
+    y: 0
+    height: 3
+    queryString: |
+      #event_simpleName=*FileWritten
+      | DiskParentDeviceInstanceId=USB*
+
+      // Add Mapping for Values
+      | FileCategory match {
+          0 => FileCategoryName:="Other" ;
+          1 => FileCategoryName:="Archives" ;
+          2 => FileCategoryName:="Office Documents" ;
+          3 => FileCategoryName:="Multimedia Files" ;
+          4 => FileCategoryName:="Design Files" ;
+          5 => FileCategoryName:="Source Code" ;
+          6 => FileCategoryName:="Executable Files" ;
+          7 => FileCategoryName:="Virtual Machine Files" ;
+          8 => FileCategoryName:="Email Files" ;
+          9 => FileCategoryName:="Data and Logs" ;
+          * => * ;
+        }
+
+      // Add the ComputerName
+      | $"crowdstrike/fltr-core:zComputerName"()
+
+      // Formatting values
+      | #event_simpleName=/(?<FileType>\w+)FileWritten/
+      | unit:convert(Size, as="SizeK", to="k")
+      | "Size in KBytes":= rename(SizeK)
+
+      // Additional parameters
+      | wildcard(field=UserName, pattern=?UserName, ignoreCase=true)
+      | wildcard(field=ComputerName, pattern=?ComputerName, ignoreCase=true)
+      | wildcard(field=FileCategoryName, pattern=?FileCategoryName, ignoreCase=true)
+      | wildcard(field=FileType, pattern=?FileType, ignoreCase=true)
+      | wildcard(field=TargetFileName, pattern=?TargetFileName, ignoreCase=true)
+      | wildcard(field=event_platform, pattern=?event_platform, ignoreCase=true)
+
+      // Display values
+      // | table([@timestamp, UserName, ComputerName, FileCategoryName, FileType, "Size in KBytes", TargetFileName, Size], limit=1000)
+      | top(FileType, limit=10)
+      | Count:=rename(_count)
+    visualization: table-view
+    start: 7d
+    width: 3
+    title: Top File Type
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.4.0
+parameters:
+  TargetFileName:
+    defaultValue: '*'
+    label: TargetFileName
+    order: 50
+    type: text
+  UserName:
+    label: UserName
+    query: '#event_simpleName=*Written | DiskParentDeviceInstanceId=USB* | UserName=*
+      | groupBy(UserName)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserName
+  ComputerName:
+    label: ComputerName
+    query: |-
+      #event_simpleName=*FileWritten 
+      | DiskParentDeviceInstanceId=USB* 
+      | $"crowdstrike/fltr-core:zComputerName"()
+      | top(ComputerName, limit=50)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: ComputerName
+  FileCategoryName:
+    label: FileCategory
+    query: |-
+      #event_simpleName=*FileWritten | DiskParentDeviceInstanceId=USB*
+      | FileCategory match {
+          0 => FileCategoryName:="Other" ;
+          1 => FileCategoryName:="Archives" ;
+          2 => FileCategoryName:="Office Documents" ;
+          3 => FileCategoryName:="Multimedia Files" ;
+          4 => FileCategoryName:="Design Files" ;
+          5 => FileCategoryName:="Source Code" ;
+          6 => FileCategoryName:="Executable Files" ;
+          7 => FileCategoryName:="Virtual Machine Files" ;
+          8 => FileCategoryName:="Email Files" ;
+          9 => FileCategoryName:="Data and Logs" ;
+          * => * ;
+        }
+      | top(FileCategoryName, limit=50)
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: FileCategoryName
+  FileType:
+    label: FileType
+    query: |-
+      #event_simpleName=*FileWritten 
+      | DiskParentDeviceInstanceId=USB* 
+      | #event_simpleName=/(?<FileType>\w+)FileWritten/
+      | top(FileType, limit=50)
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: FileType
+  event_platform:
+    label: event_platform
+    query: |-
+      #event_simpleName=*FileWritten 
+      | DiskParentDeviceInstanceId=USB* 
+      | top(event_platform, limit=50)
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: event_platform

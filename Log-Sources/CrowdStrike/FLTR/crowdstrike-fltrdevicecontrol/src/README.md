@@ -2,10 +2,21 @@
 This package contains dashboards that highlight Falcon Device Control events. For more information on the CrowdStrike Device Control, please visit the following:
 
 https://www.crowdstrike.com/products/endpoint-security/falcon-device-control/
+
+## Dependencies
+- The `crowdstrike/fltr-core` package must be installed in the same view as this package. 
  
+## Changelog
+Version 0.1.1
+- Query optimizations. 
+- `wildcard()` all the things!
+
+Version 0.1.0
+- Initial release. 
+
 ## Package Contents
 - Saved Dashboards
- 
+
 ## Use Case
 - SecOps
  
