@@ -1,0 +1,44 @@
+name: aruba-clearpass
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |
+  // How to configure Clearpass for syslog
+  // https://www.arubanetworks.com/techdocs/ClearPass/6.8/PolicyManager/Content/CPPM_UserGuide/Admin/syslogExportFilters_add_syslog_filter_general.htm
+  // syslog events can be sent in standard, LEEF or CEF format. This parser was built for a particular engagement.
+  // LEEF format was chosen. It would make for nicer fields if "standard" format had been chosen instead.
+  // kvparse(), would then have been used instead of parseLEEF().
+  // In other words, this parser works but should be considered work in progress.
+
+  // bjorn.graabek@crowdstrike.com
+
+  case {
+    /<(?<priority>\d+)>(?<version>\d+)\s(?<@timestamp>\S+)\s+(?<host>\S+)\s+(?<app>\S+)(?<msg>.*)/ | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSS]XXX", field=@timestamp);
+
+    /(<(?<priority>\d+)>)?(?<@timestamp>\S+\s+\S+\s+\S+\s+\S+\s+\S+)\s+(?<host>\S+)\s+LEEF/ | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSS]", field=@timestamp, timezone="Europe/London") | parseLEEF("@rawstring");
+
+    /(<(?<priority>\d+)>)?(?<@timestamp>\S+\s+\S+\s+\S+)\s+(?<host>\S+)\s+LEEF/ | parseTimestamp("MMM [ ]d HH:mm:ss", field=@timestamp, timezone="Europe/London") | parseLEEF("@rawstring");
+
+    /(<(?<priority>\d+)>)?(?<@timestamp>\S+\s+\S+\s+\S+\s+\S+\s+\S+)\s+(?<host>\S+)\s+CEF/ | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSS]", field=@timestamp) | parseCEF("@rawstring");
+
+    /(<(?<priority>\d+)>)?(?<@timestamp>\S+\s+\S+\s+\S+)\s+(?<host>\S+)?\s+(?<app>[^\s\[:]+)?(\[(?<pid>[^\]]+)\]:)?(?<msg>.*)/ | parseTimestamp("MMM [ ]d HH:mm:ss", field=@timestamp, timezone="UTC");
+
+    /(<(?<priority>\d+)>)?(?<@timestamp>\S+)\s+(?<host>\S+)?\s+(?<app>[^\s\[:]+)?(\[(?<pid>\d+)\]:)?(?<msg>.*)/ | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSS]XXX", field=@timestamp);
+  } |
+
+  // ECS fields
+  ecs.version:="8.10" | Vendor:="aruba-clearpass" |
+  event.kind:="event" | event.category:="iam" |
+
+  user.name:=leef.ext.Common.Username |
+
+  // MAC addresses have no delimiter
+  upper("leef.ext.Common.Host-MAC-Address") |
+  replace("(..)(?!$)", with="$1-", field=_upper, as=source.mac) |
+
+  case {
+    "leef.ext.Common.Error-Code"=0 | event.outcome:="success";
+    ("leef.ext.Common.Error-Code">199 and "leef.ext.Common.Error-Code"<231) | event.outcome:="failure";
+  * }
+tagFields:
+- Vendor

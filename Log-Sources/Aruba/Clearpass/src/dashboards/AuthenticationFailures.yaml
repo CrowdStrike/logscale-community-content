@@ -1,0 +1,75 @@
+name: Authentication Failures
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  183fcf6a-9f66-4e4a-928a-5d31b910a1b7:
+    x: 0
+    y: 6
+    height: 7
+    queryString: |-
+      #type=aruba-clearpass ("leef.ext.Common.Error-Code">199 and "leef.ext.Common.Error-Code"<231) |
+      match(file="ClearpassErrorCodes.csv", field="leef.ext.Common.Error-Code", column=Code) |
+
+      timechart(PolicyManagerEventDescription, limit=10)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      legendPosition: right
+      series: {}
+      gradient: false
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      showDataPoints: true
+      connect-points: false
+      plotType: area
+      regression: false
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Top 10 authentication failures over time
+    isLive: false
+    type: query
+  334bbd9a-e2a7-4ac4-afda-8377156fadfc:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |-
+      #type=aruba-clearpass ("leef.ext.Common.Error-Code">199 and "leef.ext.Common.Error-Code"<231) |
+      match(file="ClearpassErrorCodes.csv", field="leef.ext.Common.Error-Code", column=Code) |
+
+      top(["leef.ext.Common.Error-Code",PolicyManagerEventDescription])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      legendPosition: right
+      series: {}
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Top 10 authentication failures
+    isLive: false
+    type: query
+  7adc0938-6fc9-4ca7-a9b9-3dae928e0b28:
+    x: 6
+    y: 0
+    height: 6
+    queryString: |-
+      #type=aruba-clearpass ("leef.ext.Common.Error-Code">199 and "leef.ext.Common.Error-Code"<231) |
+      match(file="ClearpassErrorCodes.csv", field="leef.ext.Common.Error-Code", column=Code) |
+
+      top(["leef.ext.Common.Error-Code",PolicyManagerEventDescription]) |
+      rename([["leef.ext.Common.Error-Code","Error coode"],[PolicyManagerEventDescription,Description],[_count,Count]]) |
+      table(["Error coode",Description,Count])
+    visualization: table-view
+    end: now
+    start: 1d
+    width: 6
+    title: Top 10 authentication failures
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
