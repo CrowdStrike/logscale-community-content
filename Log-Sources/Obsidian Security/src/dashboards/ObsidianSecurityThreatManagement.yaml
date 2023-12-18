@@ -1,18 +1,18 @@
 name: Obsidian Security Threat Management
-updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
-  enabled: false
+  enabled: true
   isLive: false
-  start: 1d
+  start: 7d
 widgets:
   33231037-c150-4389-a1f3-558f30a04f73:
     x: 8
     y: 0
     height: 4
     queryString: |-
-      workflowProperties.status = *
-      | groupBy(service.name)
+      #Vendor = "Obsidian Security"
+      | Vendor.type = THREAT
+      | groupBy(Vendor.service.name)
     end: now
     start: 1y
     width: 4
@@ -26,12 +26,12 @@ widgets:
     x: 0
     y: 0
     height: 4
-    queryString: |-
-      workflowProperties.status = *
-
-      | groupBy(severity)
+    queryString: |
+      #Vendor = "Obsidian Security"
+      | Vendor.type = THREAT
+      | groupBy(Vendor.severity)
     end: now
-    start: 1y
+    start: 7d
     width: 4
     options:
       innerRadius: 0
@@ -44,10 +44,13 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      workflowProperties.status = *
-      | table(fields=[severity, eventDatetime, service.name, relatedActorEmails[0], name, workflowProperties.status ])
+      #Vendor = "Obsidian Security"
+      | Vendor.type = THREAT
+      | table(fields=[Vendor.severity, Vendor.eventDatetime, Vendor.service.name, Vendor.relatedActorEmails[0], Vendor.name, Vendor.workflowProperties.status, event.risk_score ])
+      | sort(event.risk_score)
+      | drop(event.risk_score)
     end: now
-    start: 1y
+    start: 7d
     width: 12
     options:
       cell-overflow: wrap-text
@@ -62,9 +65,9 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      workflowProperties.status = *
-
-      | groupBy(workflowProperties.status)
+      #Vendor = "Obsidian Security"
+      | Vendor.type = THREAT
+      | groupBy(Vendor.workflowProperties.status)
     end: now
     start: 1y
     width: 4
