@@ -1,5 +1,37 @@
 name: Obsidian_Webhook_Parser
 tests:
+- '{"actors":[{"id":"-tYRhpOGtQxAuAzMLYMbhrPL0bBUQDRTCICwOFEKf3s=","name":"Nancette
+  Exampler"}],"eventDatetime":"2023-12-13T17:38:56Z","generatedDatetime":"2023-12-14T06:10:33.599000Z","humanReadableDescription":{"plain":"Confirm
+  with account owner if they recently login from this IPGeo location. The session
+  245f2cbb-b7e9-4b0e-9616-231f81e238c6 started at 2604:3d09:97c:4620:e8fe:987:bef6:3505
+  of ISP Shaw Communications Inc., from Calgary, Canada has shown sign of token reuse.
+  The account owner is likely phished.","tagged":"Confirm with account owner if they
+  recently login from this IPGeo location. The session 245f2cbb-b7e9-4b0e-9616-231f81e238c6
+  started at 2604:3d09:97c:4620:e8fe:987:bef6:3505 of ISP Shaw Communications Inc.,
+  from Calgary, Canada has shown sign of token reuse. The account owner is likely
+  phished."},"id":"1756855b238c1887f1e79cf18bd4153ca1d3ba42316d18478f02dd8b9223fbff","intelligenceCatalogReference":{"description":"Detect
+  Microsoft session token reuse. This is commonly seen when threat actors redistribute
+  session token after successfully obtaining a session via authentication with stolen
+  credentials.","detectionType":"RULE","mitreProperties":{"description":"Compromised
+  credentials may be used to bypass access controls placed on various resources on
+  systems within the network and may even be used for persistent access to remote
+  systems and externally available services, such as VPNs, Outlook Web Access and
+  remote desktop. Compromised credentials may also grant an adversary increased privilege
+  to specific systems or access to restricted areas of the network. Adversaries may
+  choose not to use malware or tools in conjunction with the legitimate access those
+  credentials provide to make it harder to detect their presence.","name":"Valid Accounts
+  (Initial Access)","url":"https://attack.mitre.org/wiki/Technique/T1078"},"name":"Pass-the-Cookie:
+  New Malicious Microsoft Session","taxonomy":{"behavior":"ANOMALOUS","tactic":{"name":"Account
+  Usage"},"technique":{"name":"Compromised Valid Accounts"}}},"name":"Pass-the-Cookie:
+  New Malicious Microsoft Session","relatedActorEmails":["nancy.admin@hyenacapital.org"],"relatedEmailDomains":["hyenacapital.org"],"relatedEvents":{"results":[{"id":"49fa914661c1621c478c0174755dcdf5b76eb1410bbf08d247a7b46162de8a1b_0","ipAddress":{"hostname":"shaw.ca","raw":"2604:3d09:97c:4620:e8fe:987:bef6:3505"},"rawEventName":"UserLoggedIn"},{"id":"f5c0475f4ccd000052bad141dc3debaf6b6f1ebb3013c877b8a0d0d19b61a6ad_0","ipAddress":{"hostname":"","raw":"84.252.114.1"},"rawEventName":"UserLoggedIn"}]},"relatedTargetEmails":[],"relatedTenants":["fccf267d-8661-42ed-8bd7-8a34a7cf8646"],"service":{"name":"Microsoft","serviceId":"MICROSOFT"},"severity":"HIGH","targets":[{"id":"lTwP7EKQQqndHe1lUkzmyiJuUAHnhhjrANwVHXSm7MY=","name":"Microsoft
+  Graph"},{"id":"AYJRj8I_I9cE7DPKtahpGIPGN8AsXw6TfN3Kv5qxjSc=","name":"Office365 Shell
+  WCSS-Client"},{"id":"HB7rKUWTboKHGPCdtKSVlJ_wKKwpm_O16eZ8MZ92DhE=","name":"Windows
+  Azure Active Directory"},{"id":"vqsOnkkhNo8gx48l5lifzqm-l2FN1oPpWyf_4Hf-gC8=","name":"Microsoft
+  365 Security and Compliance Center"}],"ticketId":"7323","workflowProperties":{"resolutionTag":"","resolutionTagLastUpdated":"","status":"OPEN"}}'
+- '{"accepted":false,"actor":{"entityType":"USER","name":"Andrew Latham"},"app_client_id":"","app_name":"Obsidian
+  Security Salesforce App","apps":null,"client_id":"Obsidian Security Salesforce App-token_sourced","compliant":false,"compute_compliance":null,"config_url_path":"","context":{"total_users":0},"customer_id":"","datetime":"2023-12-14T11:10:27Z","description":"","domains":null,"drift_timestamp":"","event_time":"","event_type":"SecurityReviewChange","id":"","integration":"apkExpps-sbH7Sf87KCk0jMnyH4f8AHlnn1gEUgQr6k=","is_modified":false,"is_tuned":false,"labels":{"comment":[{"label":"","type":"COMMENT","value":"This
+  is the comment"}],"from_state":[{"label":"Needs Review","type":"STATE_TRANSITION","value":"NEEDS_REVIEW"}],"to_state":[{"label":"Accepted","type":"STATE_TRANSITION","value":"ACCEPTED"}],"username":[{"label":"","type":"VALUE","value":"Andrew
+  Latham"}]},"lifecycle_state":"","name":"","old":{"accepted":false,"actor":{"entityType":"","name":""},"app_client_id":"","app_name":"","apps":null,"client_id":"","compliant":false,"compute_compliance":null,"context":{"total_users":0},"customer_id":"","datetime":"","description":"","domains":null,"event_time":"","event_type":"","id":"","integration":"","is_modified":false,"is_tuned":false,"labels":null,"lifecycle_state":"","name":"","org_id":"","overallPercentScore":null,"ownership":"","platform":"","quick_improvement":false,"recommendation":{"compliant":false,"compliant_remediation_instructions":"","compliant_summary_template":"","non_compliant_remediation_instructions":"","non_compliant_summary_template":"","remediation_instructions":"","severity":"","summary":"","value":{"boolean":null,"number":null,"percent":null,"range":null,"string":null}},"release_id":"","risk_level":"","rule_id":"","run_frequency_seconds":0,"scopes":null,"service":{"serviceId":""},"servicePercentScore":null,"settings":{"accept_forever":false,"accept_until":null,"accept_until_audit":null,"accepted_by":"","control":"","latest_update_audit":null,"severity":"","tenant":""},"severity":"","standards":null,"sub_services":null,"tenant":"","urls":"","user_email":"","value":{"boolean":null,"number":null,"percent":null,"range":null,"string":null}},"old_value":{"boolean":null,"number":null,"percent":null,"range":null,"string":null},"org_id":"awlopvvdpgvbaxgg","overallPercentScore":null,"ownership":"unknown","platform":"SALESFORCE","quick_improvement":false,"recommendation":{"compliant":false,"compliant_remediation_instructions":"","compliant_summary_template":"","non_compliant_remediation_instructions":"","non_compliant_summary_template":"","remediation_instructions":"","severity":"","summary":"","value":{"boolean":null,"number":null,"percent":null,"range":null,"string":null}},"release_id":"","risk_level":"HIGH","rule_id":"","run_frequency_seconds":0,"scopes":null,"service":{"serviceId":""},"servicePercentScore":null,"settings":{"accept_forever":false,"accept_until":null,"accept_until_audit":null,"accepted_by":"","control":"","latest_update_audit":null,"severity":"","tenant":""},"severity":"","standards":null,"sub_services":null,"summary":"","tenant":"obsidiansecurity2-dev-ed.develop.my.salesforce.com","topic_name":"service-integration-management-audit","transition":"","urls":"https://labdemo.obsec.io/integration_management/details/SALESFORCE/b2JzaWRpYW5zZWN1cml0eTItZGV2LWVkLmRldmVsb3AubXkuc2FsZXNmb3JjZS5jb20=/T2JzaWRpYW4gU2VjdXJpdHkgU2FsZXNmb3JjZSBBcHAtdG9rZW5fc291cmNlZA==","user_email":"","value":{"boolean":null,"number":null,"percent":null,"range":null,"string":null}}'
 - '{"MessageType":1,"accepted":false,"actor":{"entityType":"","name":""},"app_client_id":"","app_name":"","apps":null,"client_id":"","compliant":false,"compute_compliance":null,"config_url_path":"/posture_management/rule/view/SalesforceGhostAdmins/cGVhcnRyZWVwcm9kdWN0aW9uc3VzYS1kZXYtZWQubXkuc2FsZXNmb3JjZS5jb20=","context":{"total_users":0},"customer_id":"","datetime":"","description":"","domains":["Permission
   Security"],"drift_timestamp":"2023-11-03T19:09:00.804378","event_time":"","event_type":"","id":"SalesforceGhostAdmins","integration":"","is_modified":false,"is_tuned":true,"labels":null,"lifecycle_state":"","name":"Ghost
   administrators","old":{"accepted":false,"actor":{"entityType":"","name":""},"app_client_id":"","app_name":"","apps":null,"client_id":"","compliant":false,"compute_compliance":null,"context":{"total_users":0},"customer_id":"","datetime":"","description":"","domains":null,"event_time":"","event_type":"","id":"","integration":"","is_modified":false,"is_tuned":false,"labels":null,"lifecycle_state":"","name":"","org_id":"","overallPercentScore":null,"ownership":"","platform":"","quick_improvement":false,"recommendation":{"compliant":false,"compliant_remediation_instructions":"","compliant_summary_template":"","non_compliant_remediation_instructions":"","non_compliant_summary_template":"","remediation_instructions":"","severity":"","summary":"","value":{"boolean":null,"number":0,"percent":null,"range":null,"string":null}},"release_id":"","risk_level":"","rule_id":"","run_frequency_seconds":0,"scopes":null,"service":{"serviceId":""},"servicePercentScore":null,"settings":{"accept_forever":false,"accept_until":null,"accept_until_audit":null,"accepted_by":"","control":"","latest_update_audit":null,"severity":"","tenant":""},"severity":"","standards":null,"sub_services":null,"tenant":"","urls":"","user_email":"","value":{"boolean":null,"number":null,"percent":null,"range":null,"string":null}},"old_value":{"boolean":null,"number":0,"percent":null,"range":null,"string":null},"org":"awlopvvdpgvbaxgg","org_id":"","overallPercentScore":null,"ownership":"","platform":"","quick_improvement":false,"recommendation":{"compliant":false,"compliant_remediation_instructions":"","compliant_summary_template":"","non_compliant_remediation_instructions":"","non_compliant_summary_template":"","remediation_instructions":"","severity":"","summary":"","value":{"boolean":null,"number":0,"percent":null,"range":null,"string":null}},"release_id":"","risk_level":"","rule_id":"SalesforceGhostAdmins","run_frequency_seconds":0,"scopes":null,"service":{"serviceId":"SALESFORCE"},"servicePercentScore":null,"settings":{"accept_forever":false,"accept_until":null,"accept_until_audit":null,"accepted_by":"","control":"SalesforceGhostAdmins","latest_update_audit":null,"severity":"","tenant":"peartreeproductionsusa-dev-ed.my.salesforce.com"},"severity":"HIGH","standards":[{"author":"","control":"","link":"","name":"pci_dss_v4"},{"author":"","control":"","link":"","name":"soc_2"},{"author":"","control":"","link":"","name":"ccm4.0.7"},{"author":"","control":"","link":"","name":"nist80053"},{"author":"","control":"","link":"","name":"hipaa"},{"author":"","control":"","link":"","name":"cis_v8"}],"sub_services":null,"summary":"Configuration
@@ -15,12 +47,130 @@ tests:
 fieldsToBeRemovedBeforeParsing: []
 $schema: https://schemas.humio.com/parser/v0.2.0
 script: |
-  parseJson()
+  /*
+      Obsidian Action Logs: https://docs.obsidiansecurity.com/obsidian/action-policies/action-policies-overview
+   */
+
+  // #region PREPARSE
+  /************************************************************
+  ****** Parse timestamp
+  ****** Parse structured data
+  ************************************************************/
+
+  | parseJson(prefix="Vendor.", excludeEmpty="true", handleNull="discard")
+
   | case {
       //Threat Alert
-      eventDatetime | findTimestamp(field=eventDatetime);
-      //Compliance ALert
-      drift_timestamp | findTimestamp(field=drift_timestamp, timezone="UCT");
-      * | parsed := "false"
+      Vendor.eventDatetime = * | findTimestamp(field=Vendor.eventDatetime) | Vendor.type := "THREAT";
+      //Compliance Alert
+      Vendor.drift_timestamp = * | findTimestamp(field=Vendor.drift_timestamp, timezone="UCT") | Vendor.type := "POSTURE";
+      //Integration Alert
+      Vendor.datetime = * | findTimestamp(field=Vendor.datetime) | Vendor.type := "INTEGRATION"
+
   }
-tagFields: []
+
+  // #endregion
+
+  // #region METADATA
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser_version := "0.1.0"
+  | Vendor := "Obsidian Security"
+  | Product := "Obsidian Security Action Logs"
+  | ecs.version := "8.11.0"
+
+  // #endregion
+
+  // #region NORMALIZATION
+  /************************************************************
+  ****** Parse unstructured data (i.e. message field)
+  ****** Normalize fields to data model
+  ************************************************************/
+
+  //Common Fields
+  // *** event fields
+      |event.original := @rawstring
+      |event.kind := "alert"
+
+      //Convert RISK/SEVERITY to a normalised number
+      |case {Vendor.risk_level = * | Vendor.severity := Vendor.risk_level; *}
+      |case {
+          Vendor.severity = "INFORMATIVE" | event.risk_score := 1;
+          Vendor.severity = "LOW" | event.risk_score := 2;
+          Vendor.severity = "MEDIUM" | event.risk_score := 3;
+          Vendor.severity = "HIGH" | event.risk_score := 4;
+          Vendor.severity = "CRITICAL" | event.risk_score := 5
+      }
+
+
+  //Alert Type Fields
+  |case {
+      //Obsidian Threat type Alerts
+      Vendor.type = "THREAT"
+          //event fields
+          |event.category := "threat"
+          |event.created := Vendor.eventDatetime
+          |event.id := Vendor.id
+          |event.outcome := "success"
+          |event.reason := Vendor.humanReadableDescription.plain
+          |event.action := Vendor.humanReadableDescription.plain
+
+          //user fields
+          | user.email := Vendor.relatedTargetEmails[0]
+          | user.full_name := Vendor.actors[0].name
+          | user.id := Vendor.targets[0].id
+
+
+          //Threat fields
+          | threat.indicator.reference := Vendor.intelligenceCatalogReference.mitreProperties.url
+          | threat.feed.reference := Vendor.intelligenceCatalogReference.mitreProperties.name
+
+          |case {
+              Vendor.severity = "INFORMATIVE" | threat.indicator.confidence := "None";
+              Vendor.severity = "LOW" | threat.indicator.confidence := Vendor.severity;
+              Vendor.severity = "MEDIUM" | threat.indicator.confidence := Vendor.severity;
+              Vendor.severity = "HIGH" | threat.indicator.confidence := "High";
+              Vendor.severity = "CRITICAL" | threat.indicator.confidence := "High"
+          }
+          | threat.tactic.name := Vendor.intelligenceCatalogReference.taxonomy.tactic.name
+          | threat.technique.name := Vendor.intelligenceCatalogReference.taxonomy.technique.name
+          | threat.software.name := Vendor.service.name
+          | threat.indicator.description := Vendor.intelligenceCatalogReference.mitreProperties.description
+          | threat.indicator.name := Vendor.name
+          | threat.framework := "MITRE ATT&CK"
+          | threat.software.platforms := "SaaS";
+
+
+      //Obsidian Compliance Posture type Alerts
+      Vendor.type = "POSTURE"
+          // *** event fields
+          |event.category := "configuration"
+          |event.created := Vendor.drift_timestamp
+          |event.url := Vendor.config_url_path
+          |event.id := Vendor.id
+          |event.outcome := "success"
+          |event.reason := Vendor.transition
+          |event.action := Vendor.summary;
+
+
+      //Obsidian Integration type Alerts
+      Vendor.type = "INTEGRATION"
+          // *** event fields
+          |event.category := "configuration"
+          |event.created := Vendor.datetime
+          |event.url := Vendor.urls
+          |event.id := Vendor.integration
+          |event.outcome := "success"
+          |event.reason := Vendor.event_type
+          |event.action := Vendor.event_type
+
+          //user fields
+          | user.full_name := Vendor.labels.username[0].value;
+
+  }
+
+  // #endregion
+tagFields:
+- Vendor
+- event.outcome
