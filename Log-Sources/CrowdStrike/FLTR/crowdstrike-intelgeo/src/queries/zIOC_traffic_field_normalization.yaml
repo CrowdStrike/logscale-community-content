@@ -10,7 +10,7 @@ queryString: |-
   // zIOC_traffic_field_normalization
   // Companion to "Network Connections - IOC and GeoIP Lookups with flag"
   // Called in local queries using following syntax: $"zIOC_traffic_field_normalization"()
-  // Called when IOC package installed using following syntax: $crowdstrike-lcc/ip-ioc-geoip-flag-intel:zIOC_traffic_field_normalization()
+  // Called when IOC package installed using following syntax: $crowdstrike/fltr-intelgeo:zIOC_traffic_field_normalization()
 
   // Within this normalization:
   //    - The CRWD PaSta standards for:

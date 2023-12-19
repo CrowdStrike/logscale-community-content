@@ -1,0 +1,80 @@
+Code,PolicyManagerEventDescription,PolicyManagerEventType
+0,Success,Success
+101,Failed to perform service classification,Internal Error
+102,Failed to perform policy evaluation,Internal Error
+103,Failed to perform posture notification,Internal Error
+104,Failed to query authstatus,Internal Error
+105,Internal error in performing authentication,Internal Error
+106,Internal error in RADIUS server,Internal Error
+201,User not found,Authentication failure
+202,Password mismatch,Authentication failure
+203,Failed to contact Authentication Source,Authentication failure
+204,Failed to classify request to service,Authentication failure
+205,Authentication Source not configured for service,Authentication failure
+206,Access denied by policy,Authentication failure
+207,Failed to get client MAC Address in order to perform Web authentication,Authentication failure
+208,No response from home server,Authentication failure
+209,No password in request,Authentication failure
+210,Unknown CA in client certificate,Authentication failure
+211,Client certificate not valid,Authentication failure
+212,Client certificate has expired,Authentication failure
+213,Certificate comparison failed,Authentication failure
+214,No certificate in authentication source,Authentication failure
+215,TLS session error,Authentication failure
+216,User authentication failed,Authentication failure
+217,Search failed due to insufficient permissions,Authentication failure
+218,Authentication source timed out,Authentication failure
+219,Bad search filter,Authentication failure
+220,Search failed,Authentication failure
+221,Authentication source error,Authentication failure
+222,Password change error,Authentication failure
+223,Username not available in request,Authentication failure
+224,CallingStationID not available in request,Authentication failure
+225,User account disabled,Authentication failure
+226,User account expired or not active yet,Authentication failure
+227,User account needs approval,Authentication failure
+228,User account has exceeded bandwidth limit,Authentication failure
+229,User account has exceeded session duration limit,Authentication failure
+230,User account has exceeded session count limit,Authentication failure
+5001,Internal Error,Command and Control
+5002,Invalid MAC Address,Command and Control
+5003,Invalid request received,Command and Control
+5004,Insufficient parameters received,Command and Control
+5005,Query - No MAC address record found,Command and Control
+5006,Query - No supported actions,Command and Control
+5007,Query - Cannot fetch MAC address details,Command and Control
+5008,Request: MAC address not online,Command and Control
+5009,Request: No MAC address record found,Command and Control
+6001,Unsupported TACACS parameter in request,TACACS Protocol
+6002,Invalid sequence number,TACACS Protocol
+6003,Sequence number overflow,TACACS Protocol
+6101,Not enough inputs to perform authentication,TACACS Authentication
+6102,Authentication privilege level mismatch,TACACS Authentication
+6103,No enforcement profiles matched to perform authentication,TACACS Authentication
+6201,Authorization failed as session is not authenticated,TACACS Authorization
+6202,Authorization privilege level mismatch,TACACS Authorization
+6203,Command not allowed,TACACS Authorization
+6204,No enforcement profiles matched to perform command authorization,TACACS Authorization
+6301,New password entered does not match,TACACS Change Password
+6302,Empty password,TACACS Change Password
+6303,Change password allowed only for local users,TACACS Change Password
+6304,Internal error in performing change password,TACACS Change Password
+9001,Wrong shared secret,RADIUS Protocol
+9002,Request timed out,RADIUS Protocol
+9003,Phase 2 PAC failure,RADIUS Protocol
+9004,Client rejected after PAC provisioning,RADIUS Protocol
+9005,Client does not support posture request,RADIUS Protocol
+9006,Received error TLV from client,RADIUS Protocol
+9007,Received failure TLV from client,RADIUS Protocol
+9008,Phase 2 PAC not found,RADIUS Protocol
+9009,Unknown Phase 2 PAC,RADIUS Protocol
+9010,Invalid Phase 2 PAC,RADIUS Protocol
+9011,PAC verification failed,RADIUS Protocol
+9012,PAC binding failed,RADIUS Protocol
+9013,Session resumption failed,RADIUS Protocol
+9014,Cached session data error,RADIUS Protocol
+9015,Client does not support configured EAP methods,RADIUS Protocol
+9016,Client did not send Cryptobinding TLV,RADIUS Protocol
+9017,Failed to contact OCSP Server,RADIUS Protocol
+9018,RADIUS protocol error,RADIUS Protocol
+9019,Client sent conflicting identities,RADIUS Protocol

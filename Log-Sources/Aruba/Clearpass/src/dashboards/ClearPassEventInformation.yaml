@@ -1,0 +1,55 @@
+name: ClearPass Event Information
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  6c263446-db90-4c6f-8363-f9eed0fe4446:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |-
+      #type=aruba-clearpass |
+      match(file="ClearpassErrorCodes.csv", field="leef.ext.Common.Error-Code", column=Code) |
+
+      timechart(PolicyManagerEventType)
+    end: now
+    start: 1d
+    width: 8
+    options:
+      legendPosition: right
+      series: {}
+      gradient: false
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Event types over time
+    isLive: false
+    type: query
+  ef914c58-3433-4f06-9eda-76eb1990e1a9:
+    x: 8
+    y: 0
+    height: 6
+    queryString: |-
+      #type=aruba-clearpass |
+      match(file="ClearpassErrorCodes.csv", field="leef.ext.Common.Error-Code", column=Code) |
+
+      top(PolicyManagerEventType)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Event distribution by type
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
