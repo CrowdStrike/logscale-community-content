@@ -7,15 +7,15 @@ sharedTimeInterval:
   start: 1d
 widgets:
   4591f8c2-e9d8-41a6-af88-191c4ad18407:
-    x: 8
+    x: 7
     y: 4
     height: 4
     queryString: |-
-      compliant = *
-      | select(fields=[severity,summary])
+      Vendor.type = POSTURE
+      | select(fields=[Vendor.severity,Vendor.summary])
     end: now
     start: 1y
-    width: 4
+    width: 5
     options:
       cell-overflow: wrap-text
       configured-columns: {}
@@ -29,12 +29,11 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      compliant = *
-
-      | groupBy(transition)
+      Vendor.type = POSTURE
+      | groupBy(Vendor.transition)
     end: now
     start: 1y
-    width: 4
+    width: 3
     options:
       cell-overflow: wrap-text
       configured-columns: {}
@@ -48,9 +47,8 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      compliant = *
-
-      | groupBy(name)
+      Vendor.type = POSTURE
+      | groupBy(Vendor.name)
     end: now
     start: 1y
     width: 4
@@ -65,11 +63,10 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      compliant = *
-
-      | groupBy(severity)
+      Vendor.type = POSTURE
+      | groupBy(Vendor.severity)
     end: now
-    start: 1y
+    start: 7d
     width: 4
     options:
       innerRadius: 0
@@ -82,8 +79,8 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      compliant = *
-      | groupBy(domains[0])
+      Vendor.type = POSTURE
+      | groupBy(Vendor.domains[0])
     end: now
     start: 1y
     width: 4
@@ -98,9 +95,8 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      compliant = *
-
-      | groupBy(accepted)
+      Vendor.type = POSTURE
+      | groupBy(Vendor.accepted)
     end: now
     start: 1y
     width: 4

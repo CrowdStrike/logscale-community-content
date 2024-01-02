@@ -10,7 +10,7 @@ This package contains a parser and 2 Dashboards
 
 Within the dashboard there are multiple searches/queries that can be used to visualise data ingested from Imperva's Cloud Web Application Firewall.
 
-Imperva creates the following comprehensive and detailed logs:
+The Obsidian platform creates the following comprehensive and detailed logs:
 - Posture and Compliance Alerts
 - Threat Detection Alerts
 - Integration Risk Alerts
@@ -19,12 +19,15 @@ Log integration mode recommended for this package:
 
 Receive (Push mode): 
 Log integration is achieved via Webhook. Obsidian Alerts are pushed to your designated LogScale repository by way of the LogScale Ingest API (https://library.humio.com/integrations/api-ingest.html#api-ingest-raw-data).
-Refer to <TBD> for further information.
+Refer to https://docs.obsidiansecurity.com/obsidian/settings/workflow-integrations/webhook-integrations/crowdstrike-falcon-logscale for further information.
 
 ## Release Notes
 
 v0.1.0 
 - Initial creation
+
+v0.2.0 
+- Updated parser with OpenTelemetry Data Model https://opentelemetry.io/docs/specs/otel/logs/data-model-appendix/#elastic-common-schema (ECS 8.11.0)
 
 ## Package Contents
 

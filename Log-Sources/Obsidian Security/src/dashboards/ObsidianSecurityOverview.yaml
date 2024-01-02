@@ -1,4 +1,5 @@
 name: Obsidian Security Overview
+updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
   enabled: true
@@ -10,18 +11,19 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      intelligenceCatalogReference.taxonomy.technique.name = * intelligenceCatalogReference.taxonomy.technique.name != ""
+      #Vendor = "Obsidian Security"
+      | Vendor.intelligenceCatalogReference.taxonomy.technique.name = * Vendor.intelligenceCatalogReference.taxonomy.technique.name != ""
       | case{
-          severity = "CRITICAL" | severity_value := 5;
-          severity = "HIGH" | severity_value := 4;
-          severity = "MEDIUM" | severity_value := 3;
-          severity = "LOW" | severity_value := 2;
-          severity = "INFORMATIVE" | severity_value := 1;
+          Vendor.severity = "CRITICAL" | severity_value := 5;
+          Vendor.severity = "HIGH" | severity_value := 4;
+          Vendor.severity = "MEDIUM" | severity_value := 3;
+          Vendor.severity = "LOW" | severity_value := 2;
+          Vendor.severity = "INFORMATIVE" | severity_value := 1;
       }
-      | groupBy(field=[intelligenceCatalogReference.taxonomy.tactic.name,intelligenceCatalogReference.taxonomy.technique.name, severity_value])
+      | groupBy(field=[Vendor.intelligenceCatalogReference.taxonomy.tactic.name,Vendor.intelligenceCatalogReference.taxonomy.technique.name, severity_value])
       | total_risk := severity_value * _count
-      | rename(field=intelligenceCatalogReference.taxonomy.tactic.name, as="Tactic")
-      | rename(field=intelligenceCatalogReference.taxonomy.technique.name, as="Technique")
+      | rename(field=Vendor.intelligenceCatalogReference.taxonomy.tactic.name, as="Tactic")
+      | rename(field=Vendor.intelligenceCatalogReference.taxonomy.technique.name, as="Technique")
       | rename(field=total_risk, as="Total Risk")
       | drop([severity_value, _count])
     end: now
@@ -37,7 +39,7 @@ widgets:
     x: 4
     y: 4
     height: 4
-    queryString: timechart(service.name)
+    queryString: '#Vendor = "Obsidian Security" | timechart(Vendor.service.name)'
     end: now
     start: 1y
     width: 8
@@ -58,10 +60,11 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      intelligenceCatalogReference.taxonomy.technique.name = * intelligenceCatalogReference.taxonomy.technique.name != ""
-      | groupBy(field=[intelligenceCatalogReference.taxonomy.tactic.name,intelligenceCatalogReference.taxonomy.technique.name])
-      | rename(field=intelligenceCatalogReference.taxonomy.tactic.name, as="Tactic")
-      | rename(field=intelligenceCatalogReference.taxonomy.technique.name, as="Technique")
+      #Vendor = "Obsidian Security"
+      | Vendor.intelligenceCatalogReference.taxonomy.technique.name = * Vendor.intelligenceCatalogReference.taxonomy.technique.name != ""
+      | groupBy(field=[Vendor.intelligenceCatalogReference.taxonomy.tactic.name,Vendor.intelligenceCatalogReference.taxonomy.technique.name])
+      | rename(field=Vendor.intelligenceCatalogReference.taxonomy.tactic.name, as="Tactic")
+      | rename(field=Vendor.intelligenceCatalogReference.taxonomy.technique.name, as="Technique")
       | rename(field=_count, as="Number Detected")
     end: now
     start: 1y
@@ -77,10 +80,11 @@ widgets:
     y: 2
     height: 6
     queryString: |-
-      service.name = * |
-      groupBy([service.name], function=selectLast([eventDatetime]))
+      #Vendor = "Obsidian Security" |
+      Vendor.service.name = * |
+      groupBy([Vendor.service.name], function=selectLast([Vendor.eventDatetime]))
     end: now
-    start: 1y
+    start: 7d
     width: 4
     options:
       cell-overflow: wrap-text
@@ -94,9 +98,11 @@ widgets:
     x: 4
     y: 0
     height: 4
-    queryString: '| groupBy(severity)'
+    queryString: |-
+      #Vendor = "Obsidian Security"
+      | groupBy(Vendor.severity)
     end: now
-    start: 1y
+    start: 7d
     width: 2
     options:
       innerRadius: 0
@@ -108,9 +114,9 @@ widgets:
     x: 8
     y: 0
     height: 4
-    queryString: timechart(severity)
+    queryString: '#Vendor = "Obsidian Security" | timechart(Vendor.severity)'
     end: now
-    start: 1y
+    start: 7d
     width: 4
     options:
       connect-points: false
@@ -123,7 +129,7 @@ widgets:
     x: 6
     y: 0
     height: 4
-    queryString: timeChart(span=1d)
+    queryString: '#Vendor = "Obsidian Security" | timeChart(span=1d)'
     end: now
     start: 7d
     width: 2
