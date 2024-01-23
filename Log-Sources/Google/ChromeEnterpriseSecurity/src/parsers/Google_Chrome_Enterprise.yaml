@@ -1,99 +1,113 @@
 name: Google_Chrome_Enterprise
 tests:
-- |-
-  {
-      "event": "badNavigationEvent",
-      "time": "1683569779.791",
-      "reason": "MALWARE",
-      "result": "EVENT_RESULT_WARNED",
-      "device_name": "CrowdStrikeLogScaleTestDevice",
-      "device_user": "WINMEMBERSVR02\\Administrator",
-      "profile_user": "*****@gmail.com",
-      "url": "https://testsafebrowsing.appspot.com/s/malware_in_iframe.html",
-      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
-      "os_platform": "Windows",
-      "os_version": "10.0.14393.5125",
-      "browser_version": "113.0.5672.63",
-      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
-      "client_type": "CHROME_BROWSER",
-      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
-  }
-- |-
-  {
-      "event": "browserCrashEvent",
-      "time": "1685569750",
-      "reason": "BROWSER_CRASH",
-      "result": "DETECTED",
-      "device_name": "CrowdStrikeLogScaleTestDevice",
-      "device_user": "dan",
-      "device_id": "VDnb7S8X9rnz2bXgAdU55QWDVEY",
-      "os_platform": "Linux",
-      "os_version": "5.19.0-41-generic",
-      "browser_version": "114.0.5735.90",
-      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-      "client_type": "CHROME_BROWSER",
-      "browser_channel": "stable",
-      "report_id": "",
-      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
-  }
-- |-
-  {
-      "event": "browserExtensionInstallEvent",
-      "time": "1685808934.323",
-      "device_name": "CrowdStrikeLogScaleTestDevice",
-      "device_user": "tester@doesnotexist.com",
-      "profile_user": "tester@doesnotexist.com",
-      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
-      "os_platform": "ChromeOS",
-      "os_version": "15393.48.0",
-      "browser_version": "113.0.5672.114",
-      "user_agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
-      "client_type": "CHROME_OS_DEVICE",
-      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38",
-      "extension_name": "TestExtension",
-      "extension_id": "doesnotexist",
-      "extension_description": "TestExtension"
-  }
-- |-
-  {
-      "event": "CHROME_OS_LOGIN_EVENT",
-      "time": "1685808932.28",
-      "reason": "CHROMEOS_AFFILIATED_LOGIN",
-      "device_name": "CrowdStrikeLogScaleTestDevice",
-      "device_user": "tester@doesnotexist.com",
-      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
-      "os_platform": "ChromeOS",
-      "os_version": "15393.48.0",
-      "browser_version": "113.0.5672.114",
-      "user_agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
-      "client_type": "CHROME_OS_DEVICE",
-      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
-  }
-- |-
-  {
-      "event": "CHROME_OS_LOGIN_FAILURE_EVENT",
-      "time": "1685808926.314",
-      "reason": "CHROMEOS_AFFILIATED_LOGIN",
-      "device_name": "CrowdStrikeLogScaleTestDevice",
-      "device_user": "tester@doesnotexist.com",
-      "trigger_type": "AUTHENTICATION_ERROR",
-      "device_id": "123456-1234-abcd-test-99abcfdb3b38",
-      "os_platform": "ChromeOS",
-      "os_version": "15393.48.0",
-      "browser_version": "113.0.5672.114",
-      "user_agent": "Mozilla/5.0 (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36",
-      "client_type": "CHROME_OS_DEVICE",
-      "directory_device_id": "123456-1234-abcd-test-99abcfdb3b38"
-  }
+- '{"event":"CHROME_OS_REMOVE_USER","time":"1680651547.318","reason":"CHROMEOS_UNAFFILIATED_USER_REMOVED","device_name":"CS_test_device_name","device_user":"CS_test_user","trigger_type":"LOCAL_USER_INITIATED","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.52.0","browser_version":"111.0.5563.100","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"passwordReuseEvent","time":"1680708573.485","reason":"PASSWORD_REUSED_PHISHING_URL","result":"EVENT_RESULT_ALLOWED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","url":"https://testsafebrowsing.appspot.com/s/bad_login.html","trigger_user":"tester","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"Windows","os_version":"10.0.19045.2604","browser_version":"111.0.5563.65","user_agent":"Mozilla/5.0
+  (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_BROWSER","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROME_OS_CRD_CLIENT_DISCONNECTED","time":"1680708904.74","reason":"CHROMEOS_CRD_CLIENT_DISCONNECTED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.52.0","browser_version":"111.0.5563.100","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","event_detail":"hostIp: 9.9.9.9:19999,
+  clientIp: 10.10.10.10:55555, sessionId: CS_test_device_user@CS_test.com/chromoting_ftl_onemore-8262-441b-954b-randomGUID","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROME_OS_CRD_HOST_STARTED","time":"1680710158.408","reason":"CHROMEOS_CRD_HOST_STARTED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.52.0","browser_version":"111.0.5563.100","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROME_OS_CRD_CLIENT_CONNECTED","time":"1680710177.098","reason":"CHROMEOS_CRD_CLIENT_CONNECTED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","trigger_type":"RELAY","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.52.0","browser_version":"111.0.5563.100","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","event_detail":"hostIp: 9.9.9.9:19999,
+  clientIp: 10.10.10.10:55555, sessionId: CS_test_device_user@CS_test.com/chromoting_ftl_onemore-8262-441b-954b-randomGUID","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROME_OS_CRD_HOST_ENDED","time":"1680710200.795","reason":"CHROMEOS_CRD_HOST_ENDED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.52.0","browser_version":"111.0.5563.100","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROMEOS_PERIPHERAL_STATUS_UPDATED","time":"1683329909.458","reason":"CHROMEOS_PERIPHERAL_STATUS_UPDATED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.61.0","browser_version":"111.0.5563.150","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","event_detail":"vendor: Intel Corp.,
+  product: , vendorId: 0x8087, productId: 0x8001","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROMEOS_PERIPHERAL_ADDED","time":"1683653691.758","reason":"CHROMEOS_PERIPHERAL_ADDED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.61.0","browser_version":"111.0.5563.150","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","event_detail":"vendor: Intel Corp.,
+  product: , vendorId: 0x8087, productId: 0xa2a","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROMEOS_PERIPHERAL_REMOVED","time":"1683653691.758","reason":"CHROMEOS_PERIPHERAL_REMOVED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15329.61.0","browser_version":"111.0.5563.150","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","event_detail":"vendor: Intel Corp.,
+  product: , vendorId: 0x8087, productId: 0xa2a","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"browserCrashEvent","time":"1690386604","reason":"BROWSER_CRASH","result":"DETECTED","device_name":"CS_test_device_name","device_user":"CS_test_user","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"Linux","os_version":"5.19.0-43-generic","browser_version":"114.0.5735.90","user_agent":"Mozilla/5.0
+  (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36","client_type":"CHROME_BROWSER","browser_channel":"stable","report_id":"","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"dangerousDownloadEvent","time":"1696967893.505","reason":"UNCOMMON","result":"EVENT_RESULT_WARNED","device_name":"CS_test_device_name","device_user":"CS_test_user","profile_user":"CS_test_profile_user","url":"https://testsafebrowsing.appspot.com/s/unknown.exe","content_name":"unknown
+  (1).exe","content_size":344,"content_type":"application/x-msdownload","content_hash":"25D30642A4584B10A477FF217478C57642F4CF1C9A41220ADD478166F0B88FA6","trigger_type":"FILE_DOWNLOAD","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"Windows","os_version":"10.0.19045.3448","browser_version":"117.0.5938.150","user_agent":"Mozilla/5.0
+  (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0
+  Safari/537.36","client_type":"CHROME_BROWSER","directory_device_id":"another-4a6b-4282-84cd-randomGUID","agents":{"crowdstrike":{"agentId":"012345abcde12312300000000000abcabc","customerId":"012345abcde00000000000cdefcdef"}}}'
+- '{"event":"CHROME_OS_ADD_USER","time":"1697646859.153","reason":"CHROMEOS_AFFILIATED_USER_ADDED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15572.63.0","browser_version":"117.0.5938.157","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"badNavigationEvent","time":"1701126305.378","reason":"SOCIAL_ENGINEERING","result":"EVENT_RESULT_WARNED","device_name":"CS_test_device_name","device_user":"CS_test_user","profile_user":"CS_test_profile_user","url":"https://testsafebrowsing.appspot.com/s/phishing.html","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"Windows","os_version":"10.0.19045.3693","browser_version":"119.0.6045.160","user_agent":"Mozilla/5.0
+  (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0
+  Safari/537.36","client_type":"CHROME_BROWSER","directory_device_id":"another-4a6b-4282-84cd-randomGUID","agents":{"crowdstrike":{"agentId":"012345abcde12312300000000000abcabc","customerId":"012345abcde00000000000cdefcdef"}}}'
+- '{"event":"browserExtensionInstallEvent","time":"1703028278.004","device_name":"CS_test_device_name","device_user":"CS_test_user","profile_user":"CS_test_profile_user","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"Windows","os_version":"10.0.19045.3693","browser_version":"120.0.6099.110","user_agent":"Mozilla/5.0
+  (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0
+  Safari/537.36","client_type":"CHROME_BROWSER","directory_device_id":"another-4a6b-4282-84cd-randomGUID","extension_name":"The
+  unreleased extension, which does not exist and is for testing purposes only","extension_id":"ccmoieyrignhellodarknessmyoldfriend","extension_description":"Seriously
+  this app/extension does not exist, therefore you shouldn''t even look it up in the
+  chrome store.","agents":{"crowdstrike":{"agentId":"012345abcde12312300000000000abcabc","customerId":"012345abcde00000000000cdefcdef"}}}'
+- '{"event":"dataAccessControlEvent","time":"1702587887.69712","triggered_rules":"File
+  transfer test","result":"REPORTED","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","content_name":"slightly_malicious_file.txt","content_size":0,"content_type":"","trigger_type":"FILES","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15633.65.0","browser_version":"119.0.6045.209","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","event_detail":"rule_id: rules/00cawcawFalcon","directory_device_id":"another-4a6b-4282-84cd-randomGUID","source":"*","destination":"USB"}'
+- '{"event":"CHROME_OS_LOGIN_EVENT","time":"1702483351.423","reason":"CHROMEOS_AFFILIATED_LOGIN","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15633.65.0","browser_version":"119.0.6045.209","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROME_OS_LOGIN_FAILURE_EVENT","time":"1702481930.322","reason":"CHROMEOS_AFFILIATED_LOGIN","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","trigger_type":"AUTHENTICATION_ERROR","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15604.74.0","browser_version":"118.0.5993.164","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
+- '{"event":"CHROME_OS_LOGOUT_EVENT","time":"1702433915.66","reason":"CHROMEOS_AFFILIATED_LOGOUT","device_name":"CS_test_device_name","device_user":"CS_test_device_user@CS_test.com","device_id":"c36fd690-462c-4b90-ba25-randomGUID","os_platform":"ChromeOS","os_version":"15604.74.0","browser_version":"118.0.5993.164","user_agent":"Mozilla/5.0
+  (X11; CrOS x86_64 14541.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0
+  Safari/537.36","client_type":"CHROME_OS_DEVICE","directory_device_id":"another-4a6b-4282-84cd-randomGUID"}'
 fieldsToBeRemovedBeforeParsing: []
 $schema: https://schemas.humio.com/parser/v0.2.0
 script: |-
-  #Parser_version:="0.1.0"
-  | #Vendor:="Google"
-  | #Product:="Chrome Enterprise"
+  /************************************************************
+  ****** Parse timestamp and log headers
+  ****** Extract message field for parsing
+  ****** Parse structured data
+  ************************************************************/
+  | parseJson(prefix=Vendor.)
+  //Formatting and normalizing the time by dropping precision past seconds
+  | regex("(?<truncated_timestamp>\\d*)", field=Vendor.time)
+  | parseTimestamp(field="truncated_timestamp", format=seconds)
 
-  | parseJson()
-  | parseTimestamp(unixTimeSeconds, field=time)
+
+  // #region METADATA
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser_version := "0.1.0"
+  | Vendor := "Google"
+  | Product := "Chrome Enterprise"
+  | ecs.version := "8.11.0"
+
+
+  /************************************************************
+  ****** Parse unstructured data (i.e. message field)
+  ****** Normalize fields to data model
+  ************************************************************/
+  | event.action := Vendor.event
+  | event.reference := Vendor.event_detail
+  | device.id := Vendor.device_id
+  | device.name := Vendor.device_name
+  | device.user := Vendor.device_user
+  | url.original := Vendor.url
+  | user_agent.original := Vendor.user_agent
+
+
+  /************************************************************
+  ****** Post Normalization
+  ****** Custom parser logic needed after normalization
+  ************************************************************/
+  | case{
+    event.action = "CHROME_OS_LOGIN_FAILURE_EVENT" | event.outcome := "failure";
+    * | event.outcome := "success"
+  }
 tagFields:
 - Parser_version
 - Vendor
