@@ -10,14 +10,18 @@ widgets:
     y: 14
     height: 4
     queryString: |-
-      top(os_platform,limit=10,rest=others,as="Count")
-      |os_platform=?{os_platform="*"}
-      |rename("os_platform",as="OS Platform")
+      os.type=?{os_platform="*"}
+      |top(os.type,limit=10,rest=others,as="Count")
+      |rename(os.type,as="OS Platform")
       |select(["OS Platform","Count"])
-    visualization: table-view
     end: now
     start: 24h
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top OS Platforms with Security Events
     isLive: false
     type: query
@@ -25,8 +29,7 @@ widgets:
     x: 8
     y: 0
     height: 4
-    queryString: |-
-      groupBy("reason", function=count(as=_count))
+    queryString: groupBy("Vendor.reason")
     visualization: bar-chart
     end: now
     start: 24h
@@ -39,16 +42,20 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      event=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
-      |parseUrl(url)
+      event.action=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
+      |parseUrl(Vendor.url)
       |url.host=?{url="*"}
-      |rename(url.host, as="Domain")
-      |top(["Domain"],limit=10,rest=others,as="Count")
-    visualization: table-view
+      |rename(url.host, as="Hostname")
+      |top(["Hostname"],limit=10,rest=others,as="Count")
     end: now
     start: 30d
     width: 4
-    title: Problematic Domains
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Problematic Hostnames
     isLive: false
     type: query
   ef778174-5df1-4a13-80a9-4fcfec9901af:
@@ -56,14 +63,18 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      top("device_user",limit=10,rest=others,as="Count")
-      |device_user=?{device_user="*"}
-      |rename("device_user",as="Device User")
+      |device.user=?{device_user="*"}
+      |top(device.user,limit=10,rest=others,as="Count")
+      |rename(device.user,as="Device User")
       |select(["Device User","Count"])
-    visualization: table-view
     end: now
     start: 1d
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top Device Users with Events
     isLive: false
     type: query
@@ -71,7 +82,7 @@ widgets:
     x: 0
     y: 19
     height: 4
-    queryString: groupBy("device_user")| count()
+    queryString: count(device.user, distinct=true)
     end: now
     start: 24h
     width: 4
@@ -88,10 +99,8 @@ widgets:
     y: 14
     height: 4
     queryString: |-
-      os_platform=?{os_platform="*"}
-      |rename("os_platform",as="OS Platform")
-      |groupBy("OS Platform")
-      |count()
+      os.type=?{os_platform="*"}
+      |count(os.type, distinct=true, as="OS Platform")
     end: now
     start: 24h
     width: 4
@@ -107,17 +116,20 @@ widgets:
     x: 4
     y: 9
     height: 4
-    queryString: |-
-      event=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
-      |reason="MALWARE"
-      |url=?{url="*"}
-      |rename(url, as="URL")
-      |top([URL],limit=10,rest=others,as="Count")
-      |rename(field="_count", as="Count")
-    visualization: table-view
+    queryString: |
+      event.action=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
+      |Vendor.reason="MALWARE"
+      |Vendor.url=?{url="*"}
+      |rename(Vendor.url, as="URL")
+      |top(["URL"],limit=10,rest=others,as="Count")
     end: now
     start: 30d
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Potential Malware Websites
     isLive: false
     type: query
@@ -126,14 +138,18 @@ widgets:
     y: 24
     height: 4
     queryString: |-
-      groupBy(["device_id", "device_name", "device_user", "profile_user"])
-      |device_id=?{device_id="*"} | device_name=?{device_name="*"} | device_user=?{device_user="*"} | profile_user=?{profile_user="*"}
-      |rename(device_id, as="Device ID") |rename(device_name, as="Device Name") |rename(device_user, as="Device User") |rename(profile_user, as="Profile User")
+      device.id=?{device_id="*"} | device.name=?{device_name="*"} | device.user=?{device_user="*"} | Vendor.profile_user=?{profile_user="*"}
+      |groupBy(["device.id", "device.name", "device.user", "Vendor.profile_xuser"])
+      |rename(device.id, as="Device ID") |rename(device.name, as="Device Name") |rename(device.user, as="Device User") |rename(Vendor.profile_user, as="Profile User")
       |select(["Device Name","Device ID", "Device User", "Profile User"])
-    visualization: table-view
     end: now
     start: 24h
     width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Device ID to Host Mapping
     isLive: false
     type: query
@@ -142,9 +158,8 @@ widgets:
     y: 24
     height: 4
     queryString: |-
-      device_id=?{device_id="*"}
-      |rename(device_id, as="Device ID")
-      |groupBy("Device ID") |count(as="Count")
+      device.id=?{device_id="*"}
+      |count("device.id", distinct=true, as="Count")
     end: now
     start: 24h
     width: 4
@@ -176,8 +191,7 @@ widgets:
     x: 8
     y: 19
     height: 4
-    queryString: |-
-      groupBy("browser_version")
+    queryString: groupBy(Vendor.browser_version)
     visualization: pie-chart
     end: now
     start: 24h
@@ -190,13 +204,17 @@ widgets:
     y: 29
     height: 4
     queryString: |-
-      top("trigger_type", as="Count")
-      |rename("trigger_type",as="Trigger Type")
+      top(Vendor.trigger_type, as="Count")
+      |rename(Vendor.trigger_type,as="Trigger Type")
       |select(["Trigger Type","Count"])
-    visualization: table-view
     end: now
     start: 24h
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Security Events by Trigger Type
     isLive: false
     type: query
@@ -205,13 +223,17 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      top(result,limit=10,rest=others,as="Count")
-      |rename("result",as="Result")
+      top(Vendor.result,limit=10,rest=others,as="Count")
+      |rename(Vendor.result,as="Result")
       |select(["Result","Count"])
-    visualization: table-view
     end: now
     start: 24h
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top Security Event Results
     isLive: false
     type: query
@@ -220,12 +242,16 @@ widgets:
     y: 19
     height: 4
     queryString: |-
-      top("device_user", as="Count")
-      |rename("device_user",as="Device User")
-    visualization: table-view
+      top(device.user, as="Count")
+      |rename(device.user,as="Device User")
     end: now
     start: 24h
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Users with Events
     isLive: false
     type: query
@@ -261,8 +287,11 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      device_user=?{device_user="*"}
-      |sankey(source="Device User", target="Device User")
+      |device.user=?{device_user="*"}
+      |device.id=?{device_id="*"}
+      |rename(device.user, as="Device User")
+      |rename(device.id, as="Device ID")
+      |sankey(source="Device User", target="Device ID")
     visualization: sankey
     end: now
     start: 1d
@@ -274,7 +303,7 @@ widgets:
     x: 0
     y: 29
     height: 4
-    queryString: groupBy("trigger_type") |count(as="Count")
+    queryString: count(Vendor.trigger_type, distinct=true)
     end: now
     start: 24h
     width: 4
@@ -291,16 +320,19 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      event=/^(badNavigationEvent|passwordReuseEvent)$/
-      |reason="SOCIAL_ENGINEERING"
-      |url=?{url="*"}
-      |rename(url, as="URL")
-      |top([URL],limit=10,rest=others,as="Count")
-      |rename(field="_count", as="Count")
-    visualization: table-view
+      event.action=/^(badNavigationEvent|passwordReuseEvent)$/
+      |Vendor.reason="SOCIAL_ENGINEERING"
+      |url.original=?{url="*"}
+      |rename(url.original, as="URL")
+      |top(["URL"],limit=10,rest=others,as="Count")
     end: now
     start: 30d
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Potential Credential Leak Websites
     isLive: false
     type: query
@@ -309,15 +341,19 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      profile_user!=""
-      |top(profile_user,limit=10,rest=others,as="Count")
-      |profile_user=?{profile_user="*"}
-      |rename("profile_user",as="Profile User")
+      Vendor.profile_user!=""
+      |Vendor.profile_user=?{profile_user="*"}
+      |top(Vendor.profile_user,limit=10,rest=others,as="Count")
+      |rename(profile_user,as="Profile User")
       |select(["Profile User", "Count"])
-    visualization: table-view
     end: now
     start: 24h
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Security Events by Chrome User
     isLive: false
     type: query
@@ -326,9 +362,9 @@ widgets:
     y: 14
     height: 4
     queryString: |-
-      os_platform=?{os_platform="*"}
-      |rename("os_platform",as="OS Platform")
-      |groupBy("OS Platform")
+      os.type=?{os.type="*"}
+      |groupBy(os.type)
+      |rename(os.type,as="OS Platform")
     visualization: pie-chart
     end: now
     start: 24h
@@ -341,79 +377,83 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      top(event,limit=10,rest=others,as="Count")
-      |event=?{event=*}
-      |rename(event, as="Event Type")
+      event.action=?{event=*}
+      |top(event.action,limit=10,rest=others,as="Count")
+      |rename(event.action, as="Event Type")
       |select(["Event Type","Count"])
-    visualization: table-view
     end: now
     start: 24h
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Security Events by Event Type
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.11.0
+$schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
   device_name:
     label: Device Name
-    query: groupBy("device_name")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: device_name
+    valueField: device.name
   device_id:
     label: Device ID
-    query: groupBy("device_id")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: device_id
+    valueField: device.id
   event:
     label: Event Type
-    query: groupBy("event")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: event
+    valueField: event.action
   device_user:
     label: Device User
-    query: groupBy("device_user")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: device_user
+    valueField: device.user
   os_platform:
     label: Operating System
-    query: groupBy("os_platform")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: os_platform
+    valueField: os.type
   profile_user:
     label: Profile User
-    query: groupBy("profile_user")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: profile_user
+    valueField: Vendor.profile_user
   url:
     label: URL
-    query: groupBy("url")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: url
+    valueField: url.original

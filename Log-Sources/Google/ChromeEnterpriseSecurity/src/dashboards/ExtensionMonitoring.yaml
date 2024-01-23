@@ -10,20 +10,24 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      event="browserExtensionInstallEvent"
-      |match(file="google/chrome-enterprise-security-events/chrome_extensions_blocklist.csv", field="extension_id")
-      |extension_id=?{extension_id="*"}
-      |extension_name=?{extension_name="*"}
-      |rename(extension_id, as="Extension ID")
-      |rename(extension_name, as="Extension Name")
-      |rename(device_id, as="Device ID")
-      |rename(device_user, as="Device User")
-      |rename(os_platform, as="OS Platform")
+      event.action="browserExtensionInstallEvent"
+      |match(file="chrome_extensions_blocklist.csv", field="extension_id")
+      |Vendor.extension_id=?{extension_id="*"}
+      |Vendor.extension_name=?{extension_name="*"}
+      |rename(Vendor.extension_id, as="Extension ID")
+      |rename(Vendor.extension_name, as="Extension Name")
+      |rename(device.id, as="Device ID")
+      |rename(device.user, as="Device User")
+      |rename(os.type, as="OS Platform")
       |select([extension_name, "Extension ID", "@timestamp", "Device User", "Device ID", "OS Platform"])
-    visualization: table-view
     end: now
     start: 30d
     width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Recent Blocklisted Extension Installations
     isLive: false
     type: query
@@ -31,14 +35,13 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      event="browserExtensionInstallEvent"
-      |groupby([extension_id, extension_name], function=count(as=Count)) | sort(Count, order=asc)
-      |extension_id=?{extension_id="*"}
-      |extension_name=?{extension_name="*"}
-      |rename(extension_id, as="Extension ID")
-      |rename(extension_name, as="Extension Name")
+      event.action="browserExtensionInstallEvent"
+      |Vendor.extension_id=?{extension_id="*"}
+      |Vendor.extension_name=?{extension_name="*"}
+      |groupby([Vendor.extension_id, Vendor.extension_name], function=count(as=Count)) | sort(Count, order=asc)
+      |rename(Vendor.extension_id, as="Extension ID")
+      |rename(Vendor.extension_name, as="Extension Name")
       |select(["Extension Name", "Extension ID", "Count"])
-    visualization: table-view
     end: now
     start: 30d
     width: 7
@@ -46,11 +49,17 @@ widgets:
     interactions:
     - conditions: null
       name: Open in Chrome Web Store
+      urlEncodeArgs: true
       titleTemplate: null
       urlTemplate: https://chrome.google.com/webstore/detail/{{ fields["Extension
         ID"] }}
       openInNewTab: true
       type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Least Installed Extensions over the last 30 Days
     isLive: false
     type: query
@@ -59,19 +68,22 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      event="browserExtensionInstallEvent"
-      |extension_id=?{extension_id="*"}
-      |extension_name=?{extension_name="*"}
-      |sort(ExtensionCount, limit=10, order=asc)
-      |rename(extension_id, as="Extension ID")
-      |rename(extension_name, as="Extension Name")
-      |rename(device_id, as="Device ID")
-      |rename(profile_user, as="Profile User")
+      event.action="browserExtensionInstallEvent"
+      |Vendor.extension_id=?{extension_id="*"}
+      |Vendor.extension_name=?{extension_name="*"}
+      |rename(Vendor.extension_id, as="Extension ID")
+      |rename(Vendor.extension_name, as="Extension Name")
+      |rename(device.id, as="Device ID")
+      |rename(Vendor.profile_user, as="Profile User")
       |select(["@timestamp", "Device ID", "Profile User", "Extension Name", "Extension ID"])
-    visualization: table-view
     end: now
     start: 30d
     width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Recent Extension Intallations
     isLive: false
     type: query
@@ -88,11 +100,11 @@ widgets:
     width: 4
     title: Note for Extension Blocklist
     type: note
-$schema: https://schemas.humio.com/dashboard/v0.11.0
+$schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
   extension_id:
     label: Extension ID
-    query: groupBy("extension_id")
+    query: groupBy("extension_id", function=[])
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -101,7 +113,7 @@ parameters:
     valueField: extension_id
   extension_name:
     label: Extension Name
-    query: groupBy("extension_name")
+    query: groupBy("extension_name", function=[])
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
