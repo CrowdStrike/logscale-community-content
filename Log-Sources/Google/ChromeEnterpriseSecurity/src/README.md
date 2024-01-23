@@ -1,25 +1,33 @@
 # Google Chrome Enterprise Logs
-Organizations are now able to get additional visibility into managed Google Chrome Enterprise Browsers and Devices using LogScale and Google's Chrome Enterprise Connector Framework. This package can be used to parse incoming event data making it searchable in LogScale.  The package includes four sets of dashboards which provide an overview and breakdown of important security events, in ChromeOS as well as the Chrome browser, a view of all events with custom filters, as well as breakdowns of events by type and how they vary over time.  These dashboards help get you started and exploring this valuable data source for security professionals.
+Organizations are now able to get additional visibility into managed Google Chrome Enterprise Browsers and Devices using LogScale and Google's Chrome Enterprise Connector Framework. This package can be used to parse incoming event data making it searchable in LogScale. The package includes dashboards which give different breakdowns of events, for both Chrome and ChromeOS. These dashboards help get you started and exploring this valuable data source for security professionals.
+
+## Changelog
+Version 0.1.6
+- Introducing a new dashboard: ChromeOS Data Controls
+- Adapted the parser to be compliant to our new Package Standard with ECS fieldnaming
+- Added a widget for Chrome Browser crash events in the Event Information Dashboard
+- Added additional columns to the Events widget of the Event Information Dashboard to include Crowdstrike Customer ID and Agent ID
 
 ## Package Contents
-#### Parser
+### Parser
 - Google_Chrome_Enterprise
-#### Dashboards
+### Dashboards
 - Security Overview - A summary and high level breakdown of key security events
 - Event Information - A fuller view of all logs with ability to filter and time charts showing event volumes over time
 - Extension Monitoring - A quick view to monitor extension installations for Chrome Browsers and ChromeOS
 - ChromeOS Overview - An overview for ChromeOS specific security events including logons, USB Drive logs, and Chrome Remote Desktop (CRD) usage
+- ChromeOS Data Controls - An overview for ChromeOS Data Controls allowing to enable visibility to protect users from data leakage on endpoints 
 
 
 ## Use Case
 - SecOps
-- DevOps
+- ITOps
 
 ## Technology Vendor
 Google
 
 ## Support
-Supported by LogScale https://support.humio.com/
+This package is supported by CrowdStrike. For any assistance with installing or using the package, please contact us via the [support portal](https://www.crowdstrike.com/products/observability-and-log-management/support/) or by email at logscalesupport@crowdstrike.com.
 
 ## Dependencies
 To facilitate this organizations will need a cloud managed Chrome browser or Chrome device and to connect the data feed to LogScale's HEC endpoint API as described here: [Configuring Google Chrome Enterprise Connector](https://support.google.com/chrome/a/answer/11375053)
@@ -32,4 +40,4 @@ This is a quick introduction to getting started with the package. For detailed i
 3. (Optional) Add blocklisted/unwanted Chome Browser Extensions to the lookup file "chrome_extensions_blocklist.csv" with the column name "extension_id" for the "Blocklisted Extension Installed" widget in the "Chrome Enterprise Security Extension Dashboard". Values for the "extension_id" column are the unique ID of the extension from the Chrome web store. The ID can be found in the URL of the extension in the Chrome web store. Eg: "kchfmpdcejfkipopnolndinkeoipnoia" for "User-Agent Switcher"
 
 You should now see the LogScale dashboards begin to populate and can start searching the data.
-More information about the different event types can be found here: [Google Chrome Enterprise Events](https://support.google.com/a/answer/9393909?hl=en)
+You can read up on the different [Chrome Enterprise events here](https://support.google.com/a/answer/9393909?hl=en).
