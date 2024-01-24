@@ -10,14 +10,18 @@ widgets:
     y: 5
     height: 4
     queryString: |-
-      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_AFFILIATED_LOGIN"
-      |device_name=?{device_name="*"} device_user=?{device_user="*"}
-      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_AFFILIATED_LOGIN"
+      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User"])
-    visualization: table-view
     end: now
     start: 1d
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Recent User Logons
     isLive: false
     type: query
@@ -35,14 +39,18 @@ widgets:
     y: 5
     height: 4
     queryString: |-
-      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_UNAFFILIATED_LOGIN"
-      |device_name=?{device_name="*"}
-      |rename(device_name, as="Device Name")
+      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_UNAFFILIATED_LOGIN"
+      |device.name=?{device_name="*"}
+      |rename(device.name, as="Device Name")
       |select(["@timestamp", "Device Name"])
-    visualization: table-view
     end: now
     start: 1d
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Recent Non-Company User Logons
     isLive: false
     type: query
@@ -51,14 +59,18 @@ widgets:
     y: 5
     height: 4
     queryString: |-
-      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_GUEST_SESSION_LOGIN"
-      |device_name=?{device_name="*"}
-      |rename(device_name, as="Device Name")
+      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_GUEST_SESSION_LOGIN"
+      |device.name=?{device_name="*"}
+      |rename(device.name, as="Device Name")
       |select(["@timestamp", "Device Name"])
-    visualization: table-view
     end: now
     start: 1d
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Recent Guest Account Logons
     isLive: false
     type: query
@@ -76,8 +88,8 @@ widgets:
     y: 1
     height: 4
     queryString: |-
-      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_AFFILIATED_LOGIN"
-      |device_name=?{device_name="*"} device_user=?{device_user="*"}
+      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_AFFILIATED_LOGIN"
+      |device.name=?{device_name="*"} device.user=?{device_user="*"}
       |timeChart(function=count())
     end: now
     start: 1d
@@ -102,15 +114,19 @@ widgets:
     y: 10
     height: 4
     queryString: |-
-      client_type="CHROME_OS_DEVICE" event="CHROMEOS_PERIPHERAL_ADDED"
-      |device_name=?{device_name="*"} device_user=?{device_user="*"}
-      |event_detail=/vendor:\s(?<VendorName>.*?).*product:\s(?<ProductDetail>.*?drive|storage)/i
-      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      Vendor.client_type="CHROME_OS_DEVICE" event.action="CHROMEOS_PERIPHERAL_ADDED"
+      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      |Vendor.event_detail=/vendor:\s(?<VendorName>.*?),.*product:\s(?<ProductDetail>.*?(mtp|drive|storage).*?),/i
+      |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User", "VendorName", "ProductDetail"])
-    visualization: table-view
     end: now
     start: 1d
     width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: USB Drive Connected
     isLive: false
     type: query
@@ -119,14 +135,18 @@ widgets:
     y: 15
     height: 4
     queryString: |-
-      event = "CHROME_OS_CRD_CLIENT_CONNECTED"
-      |device_name=?{device_name="*"} device_user=?{device_user="*"}
-      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      event.action="CHROME_OS_CRD_CLIENT_CONNECTED"
+      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User"])
-    visualization: table-view
     end: now
     start: 1d
     width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Client Connected
     isLive: false
     type: query
@@ -135,8 +155,8 @@ widgets:
     y: 1
     height: 4
     queryString: |-
-      event=CHROME_OS_LOGIN_EVENT reason=CHROMEOS_GUEST_SESSION_LOGIN
-      |device_name=?{device_name="*"}
+      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_GUEST_SESSION_LOGIN"
+      |device.name=?{device_name="*"}
       |timeChart(function=count())
     end: now
     start: 1d
@@ -152,8 +172,8 @@ widgets:
     y: 1
     height: 4
     queryString: |-
-      event="CHROME_OS_LOGIN_EVENT" reason="CHROMEOS_UNAFFILIATED_LOGIN"
-      |device_name=?{device_name="*"}
+      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_UNAFFILIATED_LOGIN"
+      |device.name=?{device_name="*"}
       |timeChart(function=count())
     end: now
     start: 1d
@@ -171,23 +191,27 @@ widgets:
     y: 15
     height: 4
     queryString: |-
-      event = "CHROME_OS_CRD_HOST_STARTED"
-      |device_name=?{device_name="*"} device_user=?{device_user="*"}
-      |rename(device_name, as="Device Name") |rename(device_user, as="Device User")
+      event.action="CHROME_OS_CRD_HOST_STARTED"
+      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User"])
-    visualization: table-view
     end: now
     start: 1d
     width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Host Connection Started
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.11.0
+$schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
   device_name:
     label: Device Name
     query: in(event, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
-      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name)
+      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name, function=[])
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -197,7 +221,7 @@ parameters:
   device_user:
     label: Device User
     query: in(event, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
-      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name)
+      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name, function=[])
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query

@@ -1,0 +1,177 @@
+name: ChromeOS Data Controls
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  d2a7044e-26c5-4ae5-9972-c9ac1a31ea8e:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      event.action = "dataAccessControlEvent"
+      |Vendor.triggered_rules=?{triggeredrules="*"}
+      |rename(Vendor.triggered_rules, as="Triggered Rule")
+      |groupBy(["Triggered Rule"])
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Rules Triggered Chart
+    isLive: false
+    type: query
+  9d16aa8e-1c40-4fc8-8965-64ac70bedd1b:
+    x: 6
+    y: 8
+    height: 8
+    queryString: |
+      event.action = "dataAccessControlEvent"
+      |device.user=?{deviceuser="*"} Vendor.triggered_rules=?{triggeredrules="*"}
+      |rename(device.user, as= "Device User")
+      |rename(Vendor.triggered_rules, as="Triggered Rule")
+      |sankey(source="Device User", target="Triggered Rule")
+    visualization: sankey
+    end: now
+    start: 7d
+    width: 6
+    title: User - Rules Triggered
+    isLive: false
+    type: query
+  9e3838f7-2b9d-4a2f-8b39-04433a5d2f0c:
+    x: 0
+    y: 8
+    height: 8
+    queryString: |
+      event.action = "dataAccessControlEvent"
+      | case{
+          Vendor.trigger_type="PRINTING"
+          | Vendor.destination := "PRINTING";
+          *
+      }
+      |Vendor.source=?{source="*"} Vendor.destination=?{destination="*"}
+      |rename(Vendor.source, as="Source")
+      |rename(Vendor.destination, as="Destination")
+      |sankey(source="Source", target="Destination")
+    visualization: sankey
+    end: now
+    start: 7d
+    width: 6
+    title: Source - Destination
+    isLive: false
+    type: query
+  bfaa7391-9a86-4b4c-a4d6-bb6856356f3a:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      event.action = dataAccessControlEvent
+      |device.user=?{"deviceuser"="*"} Vendor.triggered_rules=?{triggeredrules="*"} Vendor.trigger_type=?{triggertype="*"} Vendor.result=?{result="*"}
+      |rename(device.user, as= "Device User")
+      |rename(Vendor.triggered_rules, as="Triggered Rule")
+      |rename(Vendor.trigger_type, as="Trigger Type")
+      |rename(Vendor.result, as="Outcome")
+      |table(["@timestamp", "Device User", "Triggered Rule", "Trigger Type", "Outcome"])
+    end: now
+    start: 1d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Rules Triggered
+    isLive: false
+    type: query
+  20833e43-f4fa-4d0f-a9fa-85cb3e291a4e:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      event.action = "dataAccessControlEvent"
+      |Vendor.trigger_type=?{triggertype="*"}
+      |rename(Vendor.trigger_type, as="Trigger Type")
+      |groupBy(["Trigger Type"])
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Rule Trigger Types
+    isLive: false
+    type: query
+  5807bf1e-f442-4e6c-8f93-5554b18498b3:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      event.action = dataAccessControlEvent
+      |device.user=?{deviceuser="*"}
+      |rename(device.user, as= "Device User")
+      |top("Device User", as=count)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Users Triggering Data Control Rules
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  triggeredrules:
+    label: Triggered Rule
+    query: event = dataAccessControlEvent
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.triggered_rules
+  source:
+    label: Source
+    query: event = dataAccessControlEvent
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.source
+  result:
+    label: Outcome
+    query: event = dataAccessControlEvent
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.result
+  triggertype:
+    label: Trigger Type
+    query: event = dataAccessControlEvent
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.trigger_type
+  deviceuser:
+    label: Device User
+    query: event = dataAccessControlEvent
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: device.user
+  destination:
+    label: Destination
+    query: event = dataAccessControlEvent
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.destination

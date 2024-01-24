@@ -10,16 +10,42 @@ widgets:
     y: 0
     height: 8
     queryString: |-
-      client_type = ?{client_type="*"}
-      |event = ?{event="*"}
-      |os_platform = ?{os_platform="*"}
-      |reason = ?{reason="*"}
-      |select(["@timestamp","device_id","device_name","device_user","client_type","event","content_name","content_type","browser_version","os_platform","os_version","reason","result","trigger_type","url"])
-    visualization: table-view
+      Vendor.client_type = ?{client_type="*"}
+      |event.action = ?{event="*"}
+      |os.type = ?{os_platform="*"}
+      |Vendor.reason = ?{reason="*"}
+      |rename(device.id, as="Device ID") |rename(device.user, as="Device User") |rename(Vendor.client_type, as="Client Type") |rename(event.action, as="Event") |rename(Vendor.content_name, as="Content Name") |rename(Vendor.browser_version, as="Browser Version") |rename(os.type, as="OS Platform") |rename(Vendor.os_version, as="OS Version") |rename(Vendor.reason, as="Reason") |rename(Vendor.reason, as="Result") |rename(Vendor.trigger_type, as="Trigger Type") |rename(Vendor.agents.crowdstrike.agentId, as="CrowdStrike Agent ID") |rename(Vendor.agents.crowdstrike.customerId, as="CrowdStrike Customer ID")
+
+      |select(["Device ID", "Device User", "Client Type", "Event", "Content Name", "Browser Version", "OS Platform", "OS Version", "Reason", "Result", "Trigger Type", "CrowdStrike Agent ID", "CrowdStrike Customer ID"])
     end: now
-    start: 1d
+    start: 30d
     width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Events
+    isLive: false
+    type: query
+  8f4a0a32-fe3e-4bef-b7c6-1af1a9fac6b2:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      event.action = "browserCrashEvent"
+      | device.id=?{device_id="*"} | device.name=?{device_name="*"} | device.user=?{device_user="*"} | Vendor.browser_version=?{browser_version=*} | Vendor.browser_channel=?{browser_channel=*}
+      |rename(device.id, as="Device ID") |rename(device.name, as="Device Name") |rename(device.user, as="Device User") |rename(Vendor.browser_version, as="Browser Version") |rename(Vendor.browser_channel, as="Browser Channel")
+      |select(["Device Name","Device ID", "Device User", "Profile User", "Browser Version", "Browser Channel"])
+    end: now
+    start: 1y
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Chrome Browser Crash Events
     isLive: false
     type: query
   91a8bcca-d9c6-40af-9f67-1cce7db9b1f8:
@@ -27,8 +53,8 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      reason=?{reason="*"}
-      |timeChart("reason",limit=10)
+      Vendor.reason=?{reason="*"}
+      |timeChart(Vendor.reason,limit=10)
     end: now
     start: 1d
     width: 12
@@ -44,8 +70,8 @@ widgets:
     y: 12
     height: 4
     queryString: |-
-      event=?{event="*"}
-      |timeChart("event",limit=10)
+      event.action=?{event="*"}
+      |timeChart(event.action,limit=10)
     end: now
     start: 1d
     width: 12
@@ -56,41 +82,86 @@ widgets:
     title: Security Events Timechart
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.11.0
+$schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
-  client_type:
-    label: Client Type
-    query: groupBy("client_type")
+  device_name:
+    label: Device Name
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: client_type
+    valueField: device.name
+  device_id:
+    label: device_id
+    query: '*'
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: device.id
   event:
     label: Event Type
-    query: groupBy("event")
+    query: '*'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: event
-  os_platform:
-    label: Operating System
-    query: groupBy("os_platform")
-    timeInterval: 1d
-    useDashboardTimeIfSet: true
-    type: query
-    defaultValue: '*'
-    order: 50
-    valueField: os_platform
+    valueField: event.action
   reason:
     label: Reason
-    query: groupBy("reason")
+    query: *
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
     valueField: reason
+  device_user:
+    label: device_user
+    query: '*'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: device.user
+  client_type:
+    label: Client Type
+    query: *
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.client_type
+  os_platform:
+    label: Operating System
+    query: '*'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: os.type
+  browser_version:
+    label: Browser Version
+    query: '*'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.browser_version
+  browser_channel:
+    label: Browser Channel
+    query: '*'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.browser_channel
