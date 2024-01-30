@@ -1,0 +1,11 @@
+name: QumuloParser
+tests:
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  /(?<@timestamp>\w+\s\d+\s\d+:\d+:\d+)\s+(?<host>\S+)\s+(?<app>\S+)\s+(?<user_ip>\d+\.\d+\.\d+\.\d+),"(?<user_id>.*?)",(?<protocol>\S+),(?<operation>\S+),(?<error_status>\S+),(?<file_id>\S*),"(?<file_path>.*?)","(?<secondary_file_path>.*?)"/
+  | case {
+
+  }
+  | parseTimestamp("MMM [ ]d HH:mm:ss", field=@timestamp, timezone="UTC")
+tagFields: []
