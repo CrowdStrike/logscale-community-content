@@ -1,0 +1,102 @@
+#####
+## Sample configuration file for Microsoft Windows.
+## This is YAML, so structure and indentation is important.
+## Lines can be uncommented by removing the #. You should not need to change the number of spaces after that.
+## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
+#####
+
+## Uncomment dataDirectory if you need to manually set the directory.
+## Note: Not used with Data Ingest / Fleet configuration
+## dataDirectory: C:\ProgramData\LogScale Collector
+ 
+sources:
+  windows_events:
+    type: wineventlog
+    ## Add other channels by simple adding additional "name" lines.
+    ## The following command can be used to find other channels:
+    ## Get-WinEvent -ListLog * -EA silentlycontinue | sort-object -Property Recordcount -desc
+    channels:
+      - name: Application
+      - name: Security
+      - name: System
+      - name: Windows PowerShell
+      - name: ForwardedEvents
+      - name: Microsoft-Windows-Sysmon/Operational
+    ## You can manually specify a parser to be used here.
+    ## This overrides the parser specified in the LogScale UI.
+    #parser: SampleWindowsParser
+    sink: flc_windows_eventlog
+
+  file_read:
+    type: file
+    include:
+    - c:\temp\flc_files\csv_sample2.csv
+    exclude: 
+    - c:\temp\flc_files\ignore.txt
+    sink: flc_windows_fileread
+    ## You can manually specify a parser to be used here.
+    ## This overrides the parser specified in the LogScale UI.
+    #parser: SampleFileParser
+
+  syslog1:
+    type: syslog
+    mode: udp
+    port: 514
+    ## This sets the maximum receivable single event size to 2048 bytes (the default; larger events will be truncated)
+    maxEventSize: 2048
+    receiveBufferSize: 131072
+    sink: flc_windows_syslog1
+
+  syslog2:
+    type: syslog
+    mode: tcp
+    port: 514
+    ## This sets the maximum receivable single event size to ~1M (the max size allowed)
+    maxEventSize: 1048576
+    receiveBufferSize: 1048577
+    sink: flc_windows_syslog2
+ 
+sinks:
+  flc_windows_eventlog:
+    type: humio
+    token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.   
+    url: https://XXX.YYY.ZZZ
+    ## Keep this option as "none" unless you actually need a proxy.
+    proxy: none
+    ## The TLS option can be uncommented if you're using a self-signed certificate.
+    ## This generally isn't needed unless it's a self-hosted instance. 
+    #tls:
+      #insecure: true
+    ## This increases the maximum single event size to ~1M (the max size allowed)
+    #maxEventSize: 1048576
+    ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
+    #maxBatchSize: 16777216
+      #compression: gzip
+      #compressionLevel: 9
+    ## Uncomment if you want to use disk for event queue storage instead of memory.
+    #queue:
+      #type: disk
+      #fullAction: pause
+      #maxLimitInMB: 4096
+
+  flc_windows_fileread:
+    type: humio
+    token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.   
+    url: https://XXX.YYY.ZZZ
+    proxy: none
+
+  flc_windows_syslog1:
+    type: humio
+    token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.   
+    url: https://XXX.YYY.ZZZ
+    proxy: none
+
+  flc_windows_syslog2:
+    type: humio
+    token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.   
+    url: https://XXX.YYY.ZZZ
+    proxy: none
