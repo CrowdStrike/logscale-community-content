@@ -19,9 +19,9 @@ sources:
       - name: Application
       - name: Security
       - name: System
-      - name: Windows PowerShell
-      - name: ForwardedEvents
-      - name: Microsoft-Windows-Sysmon/Operational
+    #  - name: Windows PowerShell
+    #  - name: ForwardedEvents
+    #  - name: Microsoft-Windows-Sysmon/Operational
     ## You can manually specify a parser to be used here.
     ## This overrides the parser specified in the LogScale UI.
     #parser: SampleWindowsParser
@@ -44,7 +44,8 @@ sources:
     port: 514
     ## This sets the maximum receivable single event size to 2048 bytes (the default; larger events will be truncated)
     maxEventSize: 2048
-    receiveBufferSize: 131072
+    ## If “receiveBufferSize” var is not manually set, it is automatcially set to 64 times maxEventSize
+    #receiveBufferSize: 131072
     sink: flc_windows_syslog1
 
   syslog2:
@@ -53,6 +54,7 @@ sources:
     port: 514
     ## This sets the maximum receivable single event size to ~1M (the max size allowed)
     maxEventSize: 1048576
+    ## If “receiveBufferSize” var is set, it must be set higher than the maxEventSize (or FLC will not start)
     receiveBufferSize: 1048577
     sink: flc_windows_syslog2
  
@@ -72,8 +74,8 @@ sinks:
     #maxEventSize: 1048576
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
     #maxBatchSize: 16777216
-      #compression: gzip
-      #compressionLevel: 9
+    #compression: gzip
+    #compressionLevel: 9
     ## Uncomment if you want to use disk for event queue storage instead of memory.
     #queue:
       #type: disk
