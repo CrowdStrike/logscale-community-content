@@ -74,8 +74,8 @@ sinks:
     #maxEventSize: 1048576
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
     #maxBatchSize: 16777216
-      #compression: gzip
-      #compressionLevel: 9
+    #compression: gzip
+    #compressionLevel: 9
     ## Uncomment if you want to use disk for event queue storage instead of memory.
     #queue:
       #type: disk
