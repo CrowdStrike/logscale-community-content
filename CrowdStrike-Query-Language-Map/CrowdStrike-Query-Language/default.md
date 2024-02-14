@@ -6,4 +6,5 @@ The `default`  function creates a field with the name of the parameter `field` s
 
 Of note, while `replaceEmpty=true` is optional, it is necessary to populate files that are listed as `<empty_string>`.
 
+
 [default Documentation](https://library.humio.com/data-analysis/functions-default.html)
