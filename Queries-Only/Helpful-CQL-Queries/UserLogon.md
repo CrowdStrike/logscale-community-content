@@ -2,21 +2,8 @@
 #event_simpleName=UserLogon UserSid=S-1-5-21-*
 | in(LogonType, values=["2","10"])
 | ipLocation(aip)
-| case {UserIsAdmin = "1" | UserIsAdmin := "Yes" ;
-        UserIsAdmin = "0" | UserIsAdmin := "No" ;
-        * }
-| case {
-
-        LogonType = "2" | LogonType := "Interactive" ;
-        LogonType = "3" | LogonType := "Network" ;
-        LogonType = "4" | LogonType := "Batch" ;
-        LogonType = "5" | LogonType := "Service" ;
-        LogonType = "7" | LogonType := "Unlock" ;
-        LogonType = "8" | LogonType := "Network Cleartext" ;
-        LogonType = "9" | LogonType := "New Credentials" ;
-        LogonType = "10" | LogonType := "Remote Interactive" ;
-        LogonType = "11" | LogonType := "Cached Interactive" ;
-        * }
+| $falcon/helper:enrich(field=UserIsAdmin)
+| $falcon/helper:enrich(field=UserLogon)
 | PasswordLastSet := PasswordLastSet*1000
 | ContextTimeStamp := ContextTimeStamp*1000
 | PasswordLastSet := formatTime("%Y-%m-%d %H:%M:%S", field=PasswordLastSet, locale=en_US, timezone=Z)
@@ -28,24 +15,8 @@
 #event_simpleName="UserLogon"
 | UserSid=S-1-5-21-*
 | table(["@timestamp", "ClientComputerName", "UserName", "UserIsAdmin", "RemoteAccount", "LogonType", "AuthenticationPackage", "UserSid"])
-| case {UserIsAdmin = "1" | UserIsAdmin := "True" ;
-
-        UserIsAdmin = "0" | UserIsAdmin := "False" ;
-        * }
-| case {
-        LogonType = "2" | LogonType := "Interactive" ;
-        LogonType = "3" | LogonType := "Network" ;
-        LogonType = "4" | LogonType := "Batch" ;
-        LogonType = "5" | LogonType := "Service" ;
-        LogonType = "7" | LogonType := "Unlock" ;
-        LogonType = "8" | LogonType := "Network Cleartext" ;
-        LogonType = "9" | LogonType := "New Credentials" ;
-        LogonType = "10" | LogonType := "Remote Interactive" ;
-        LogonType = "11" | LogonType := "Cached Interactive" ;
-        * }
-| case {RemoteAccount = "0" | RemoteAccount := "Local" ;
-        RemoteAccount = "1" | RemoteAccount := "Remote" ;
-        * }
+| $falcon/helper:enrich(field=UserIsAdmin)
+| $falcon/helper:enrich(field=UserLogon)
 ```
 
 ```
