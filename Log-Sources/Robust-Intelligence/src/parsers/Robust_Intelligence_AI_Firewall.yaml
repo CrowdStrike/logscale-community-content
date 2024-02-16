@@ -1,0 +1,67 @@
+name: Robust_Intelligence_AI_Firewall
+tests:
+- '{"name":"firewall.server.firewall_server","message":"Firewall Validate request
+  successful.","ri_service_name":"firewall-server","asctime":"2023-12-22 23:05:36,596","utctime":"2023-12-22T23:05:36.596485+00:00","rime_host":"ri-firewall-workspace2-firewall-server-7557db5d-84j8f","level":"INFO","firewall_response":{"inputResults":{"FIREWALL_RULE_TYPE_PII_DETECTION":{"ruleName":"PII
+  Detection","action":"FIREWALL_ACTION_FLAG","riskCategory":"RISK_CATEGORY_TYPE_SECURITY_RISK"},"FIREWALL_RULE_TYPE_TOXICITY":{"ruleName":"Toxicity","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_ETHICAL_RISK"},"FIREWALL_RULE_TYPE_PROMPT_INJECTION":{"ruleName":"Prompt
+  Injection","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_SECURITY_RISK"},"FIREWALL_RULE_TYPE_INDIRECT_PROMPT_INJECTION":{"ruleName":"Indirect
+  Prompt Injection","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_SECURITY_RISK"},"FIREWALL_RULE_TYPE_DENIAL_OF_SERVICE":{"ruleName":"Denial
+  of Service","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_SECURITY_RISK"},"FIREWALL_RULE_TYPE_UNKNOWN_EXTERNAL_SOURCE":{"ruleName":"Unknown
+  External Source","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_SECURITY_RISK"}},"outputResults":{"FIREWALL_RULE_TYPE_TOXICITY":{"ruleName":"Toxicity","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_ETHICAL_RISK"},"FIREWALL_RULE_TYPE_FACTUAL_INCONSISTENCY":{"ruleName":"Factual
+  Inconsistency","action":"FIREWALL_ACTION_FLAG","riskCategory":"RISK_CATEGORY_TYPE_OPERATIONAL_HEALTH"},"FIREWALL_RULE_TYPE_DENIAL_OF_SERVICE":{"ruleName":"Denial
+  of Service","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_SECURITY_RISK"},"FIREWALL_RULE_TYPE_PII_DETECTION":{"ruleName":"PII
+  Detection","action":"FIREWALL_ACTION_ALLOW","riskCategory":"RISK_CATEGORY_TYPE_SECURITY_RISK"}}}}'
+- '{"name": "firewall.server.firewall_server", "message": "Firewall Validate request
+  successful.", "ri_service_name": "unknown", "asctime": "2023-12-21 09:43:01,955",
+  "utctime": "2023-12-21T17:43:01.955885+00:00", "mem": 111, "rime_host": "Souravs-MacBook-Pro.local",
+  "level": "INFO", "firewall_response": {"inputResults": {"FIREWALL_RULE_TYPE_PII_DETECTION":
+  {"ruleName": "PII Detection", "action": "FIREWALL_ACTION_ALLOW", "riskCategory":
+  "RISK_CATEGORY_TYPE_SECURITY_RISK"}, "FIREWALL_RULE_TYPE_TOXICITY": {"ruleName":
+  "Toxicity", "action": "FIREWALL_ACTION_ALLOW", "riskCategory": "RISK_CATEGORY_TYPE_ETHICAL_RISK"},
+  "FIREWALL_RULE_TYPE_INDIRECT_PROMPT_INJECTION": {"ruleName": "Indirect Prompt Injection",
+  "action": "FIREWALL_ACTION_ALLOW", "riskCategory": "RISK_CATEGORY_TYPE_SECURITY_RISK"},
+  "FIREWALL_RULE_TYPE_PROMPT_INJECTION": {"ruleName": "Prompt Injection", "action":
+  "FIREWALL_ACTION_ALLOW", "riskCategory": "RISK_CATEGORY_TYPE_SECURITY_RISK"}, "FIREWALL_RULE_TYPE_DENIAL_OF_SERVICE":
+  {"ruleName": "Denial of Service", "action": "FIREWALL_ACTION_ALLOW", "riskCategory":
+  "RISK_CATEGORY_TYPE_SECURITY_RISK"}, "FIREWALL_RULE_TYPE_UNKNOWN_EXTERNAL_SOURCE":
+  {"ruleName": "Unknown External Source", "action": "FIREWALL_ACTION_ALLOW", "riskCategory":
+  "RISK_CATEGORY_TYPE_SECURITY_RISK"}}, "outputResults": {"FIREWALL_RULE_TYPE_TOXICITY":
+  {"ruleName": "Toxicity", "action": "FIREWALL_ACTION_ALLOW", "riskCategory": "RISK_CATEGORY_TYPE_ETHICAL_RISK"},
+  "FIREWALL_RULE_TYPE_FACTUAL_INCONSISTENCY": {"ruleName": "Factual Inconsistency",
+  "action": "FIREWALL_ACTION_FLAG", "riskCategory": "RISK_CATEGORY_TYPE_OPERATIONAL_HEALTH"},
+  "FIREWALL_RULE_TYPE_DENIAL_OF_SERVICE": {"ruleName": "Denial of Service", "action":
+  "FIREWALL_ACTION_ALLOW", "riskCategory": "RISK_CATEGORY_TYPE_SECURITY_RISK"}, "FIREWALL_RULE_TYPE_PII_DETECTION":
+  {"ruleName": "PII Detection", "action": "FIREWALL_ACTION_ALLOW", "riskCategory":
+  "RISK_CATEGORY_TYPE_SECURITY_RISK"}}}}'
+fieldsToBeRemovedBeforeParsing:
+- log_processed_*
+- kubernetes.*
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |+
+  parseJson(field=@rawstring)
+  | parseTimestamp(field=utctime, timezone="UTC")
+  | input_rule_flagged_pii_detection := if(firewall_response.inputResults.FIREWALL_RULE_TYPE_PII_DETECTION.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | input_rule_flagged_toxicity := if(firewall_response.inputResults.FIREWALL_RULE_TYPE_TOXICITY.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | input_rule_flagged_prompt_injection :=  if(firewall_response.inputResults.FIREWALL_RULE_TYPE_PROMPT_INJECTION.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | input_rule_flagged_indirect_prompt_injection := if(firewall_response.inputResults.FIREWALL_RULE_TYPE_INDIRECT_PROMPT_INJECTION.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | input_rule_flagged_denial_of_service :=  if(firewall_response.inputResults.FIREWALL_RULE_TYPE_DENIAL_OF_SERVICE.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | input_rule_flagged_unknown_external_source := if(firewall_response.inputResults.FIREWALL_RULE_TYPE_UNKNOWN_EXTERNAL_SOURCE.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | total_input_rules_flagged :=
+                  input_rule_flagged_pii_detection +
+                  input_rule_flagged_toxicity  +
+                  input_rule_flagged_prompt_injection +
+                  input_rule_flagged_indirect_prompt_injection  +
+                  input_rule_flagged_denial_of_service +
+                  input_rule_flagged_unknown_external_source
+  | input_flagged := if(total_input_rules_flagged>0, else=0, then=1)
+  | output_rule_flagged_toxicity := if(firewall_response.outputResults.FIREWALL_RULE_TYPE_TOXICITY.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | output_rule_flagged_factual_inconsistency := if(firewall_response.outputResults.FIREWALL_RULE_TYPE_FACTUAL_INCONSISTENCY.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | output_rule_flagged_denial_of_service := if(firewall_response.outputResults.FIREWALL_RULE_TYPE_DENIAL_OF_SERVICE.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | output_rule_flagged_pii_detection := if(firewall_response.outputResults.FIREWALL_RULE_TYPE_PII_DETECTION.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
+  | total_output_rules_flagged :=
+                  output_rule_flagged_toxicity +
+                  output_rule_flagged_factual_inconsistency +
+                  output_rule_flagged_denial_of_service +
+                  output_rule_flagged_pii_detection
+  | output_flagged := if(total_output_rules_flagged>0, else=0, then=1)
+
+tagFields: []

@@ -1,0 +1,253 @@
+name: Robust Intelligence AI Firewall Results
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  b98f4d1a-88b7-4c85-9aec-c372b4a6a04b:
+    x: 8
+    y: 3
+    height: 3
+    queryString: timeChart(function=sum(input_rule_flagged_unknown_external_source,
+      as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      showOthers: true
+      legend: false
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Unknown External Source flags on Input
+    isLive: false
+    type: query
+  fe84c6df-c854-444a-b9e1-3b3574c6e811:
+    x: 8
+    y: 6
+    height: 3
+    queryString: timeChart(function=sum("output_rule_flagged_toxicity", as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      legend: false
+      plotType: line
+    visualization: time-chart
+    title: Toxicity flags on output
+    isLive: false
+    type: query
+  2c656fd1-7401-499d-804f-cb2dea58203e:
+    x: 0
+    y: 3
+    height: 3
+    queryString: timeChart(function=sum(input_rule_flagged_pii_detection, as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      legendPosition: bottom
+      interpolation: monotone
+      legend: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      extrapolate: true
+      plotType: line
+      maxSeriesCount: 50
+      regression: false
+      imputation: none
+      showOthers: false
+      lastBucketBehavior: include
+    visualization: time-chart
+    title: PII Detection flags on input
+    isLive: false
+    type: query
+  4ce608c3-bbb5-4aa2-9b66-32a566b6f6e4:
+    x: 4
+    y: 3
+    height: 3
+    queryString: |
+      timeChart(function=sum(input_rule_flagged_toxicity, as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      interpolation: linear
+      legend: false
+      showDataPoints: false
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Toxicity flags on input
+    isLive: false
+    type: query
+  317614ba-23eb-4494-a1d6-a8f64086df49:
+    x: 4
+    y: 6
+    height: 3
+    queryString: |
+      timeChart(function=sum(input_rule_flagged_denial_of_service, as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      legend: false
+      plotType: line
+    visualization: time-chart
+    title: Denial of Service flags on input
+    isLive: false
+    type: query
+  0865b390-bff9-4cc1-8da4-e6b404002b09:
+    x: 8
+    y: 9
+    height: 3
+    queryString: |
+      timeChart(function=sum("output_rule_flagged_factual_inconsistency",as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      legend: false
+      plotType: line
+    visualization: time-chart
+    title: Factual Inconsistency flags on output
+    isLive: false
+    type: query
+  ba356627-38f5-4ac0-9e55-77dea77617d4:
+    x: 8
+    y: 0
+    height: 3
+    queryString: timeChart(function=sum(field=input_rule_flagged_prompt_injection,
+      as="Firewall_Action_Flag"))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      gradient: false
+      interpolation: linear
+      legendLabelOverflow: full
+      legend: false
+      showDataPoints: false
+      connect-points: true
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      maxSeriesCount: 50
+      regression: false
+      show-utc: false
+      imputation: lerp
+      showOthers: true
+      lastBucketBehavior: include
+    visualization: time-chart
+    title: Prompt Injection flags on input
+    isLive: false
+    type: query
+  f8b7629b-b882-403b-9683-0956c20790f9:
+    x: 0
+    y: 6
+    height: 3
+    queryString: timeChart(function=sum("input_rule_flagged_indirect_prompt_injection",
+      as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+      legend: false
+      plotType: line
+    visualization: time-chart
+    title: Indirect Prompt Injection flags on input
+    isLive: false
+    type: query
+  d48f074e-c84d-458d-b831-23253116b375:
+    x: 0
+    y: 9
+    height: 3
+    queryString: timeChart(function=sum("output_rule_flagged_denial_of_service", as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      series: {}
+      showOthers: false
+      legend: false
+      showDataPoints: false
+      connect-points: true
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      maxSeriesCount: 50
+      regression: false
+      show-utc: false
+      mn: 0
+      imputation: lerp
+    visualization: time-chart
+    title: Denial of Service flags on output
+    isLive: false
+    type: query
+  5f4ffee9-0616-41ba-a87e-9a7b6f782414:
+    x: 0
+    y: 0
+    height: 3
+    queryString: timeChart(function=sum("input_flagged", as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      series: {}
+      legend: false
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Tests flagged on Input
+    isLive: false
+    type: query
+  5f859d44-47ef-43fc-817d-c4b1cbb2d5eb:
+    x: 4
+    y: 9
+    height: 3
+    queryString: timeChart(function=sum("output_rule_flagged_pii_detection",as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      series: {}
+      legend: false
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: PII Detection flags on output
+    isLive: false
+    type: query
+  0e127775-48d5-4f5a-a657-76133223bde7:
+    x: 4
+    y: 0
+    height: 3
+    queryString: timeChart(function=sum("output_flagged", as=Firewall_Action_Flag))
+    end: now
+    start: 6h
+    width: 4
+    options:
+      series: {}
+      legend: false
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Tests flagged on Output
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
