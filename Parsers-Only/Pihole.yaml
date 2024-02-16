@@ -1,5 +1,6 @@
 name: Pihole
 tests:
+- 'Feb 15 12:17:41 dnsmasq[633]: /etc/pihole/custom.list api.localtest.test is 192.168.1.201'
 - 'Feb 12 17:45:41 dnsmasq[633]: Apple iCloud Private Relay domain mask.icloud.com
   is NXDOMAIN'
 - 'Feb 12 18:11:32 dnsmasq[633]: gravity blocked events.statsigapi.net is 0.0.0.0'
@@ -17,7 +18,7 @@ fieldsToBeRemovedBeforeParsing: []
 $schema: https://schemas.humio.com/parser/v0.2.0
 script: |-
   /*
-      Pihole query log parser v0.1
+      Pihole query log parser v0.2
 
       Author: Sebastian Selig
       Date:   02/12/2024
@@ -37,6 +38,12 @@ script: |-
       To work properly, add the user to the pihole group via:
       sudo usermod -a -G pihole humio-log-collector
 
+      Changelog:
+      ----------
+      v0.2: - added custom list to log_type
+
+      v0.1: - Inital parser
+
    */
   case {
 
@@ -49,6 +56,8 @@ script: |-
     // config
     log_type := "config" | regex("^(?<timestamp>\\w+\\s+\\d+\\s+\\d+:\\d+:\\d+)\\s+dnsmasq\\[(?<process_id>\\d+)\\]:\\s+read\\s+(?<file_path>.+?)\\s+-\\s+(?<names_count>\\d+)\\s+names$");
 
+    // custom list
+    log_type := "custom_list" | regex("^(?<timestamp>\\w+\\s+\\d+\\s+\\d+:\\d+:\\d+)\\s+dnsmasq\\[(?<process_id>\\d+)\\]:\\s+(?<file_path>\\/etc\\/pihole\\/[^\\s]+)\\s+(?<domain>[^\\s]+)\\sis\\s(?<ip_address>[^\\s]+)$");
 
     // other
     log_type := "other" | regex("^(?<timestamp>\\w+\\s+\\d+\\s+\\d+:\\d+:\\d+)\\s+dnsmasq\\[(?<process_id>\\d+)\\]:\\s+Pi-hole\\s+hostname\\s+(?<hostname>.+?)\\s+is\\s+(?<ip_address>\\d+\\.\\d+\\.\\d+\\.\\d+)$");
