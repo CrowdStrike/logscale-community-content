@@ -1,0 +1,15 @@
+// Domain Controller Resource Utilization - Filter for Past 7 Days
+| groupBy(aid, function=selectLast([ComputerName, AgentVersion, Version, MachineDomain, SiteName, CpuProcessorName, PhysicalCoreCount, LogicalCoreCount, AverageCpuUsage, MaxCpuUsage, MemoryTotal, AverageUsedRam, UsedDiskSpace, AvailableDiskSpace]), limit=max)
+| join({
+  $falcon/investigate:aid_base()
+  | groupBy(aid, function=selectLast([SystemProductName,Version,Architecture, ConfigIDBuild, ProductType, MachineDomain, SiteName]), limit=max)
+}, field=aid, include=[SystemProductName,Version,Architecture, ConfigIDBuild, ProductType, MachineDomain, SiteName], mode=left, start=12h) 
+| ProductType = 2 // domain controllers
+| AverageUsedRam := AverageUsedRam/1024
+| format("%.0f",field=["AverageUsedRam"], as="AverageUsedRam")
+| TotalRam := MemoryTotal/1074000000
+| format("%.0f",field=["TotalRam"], as="TotalRam")
+| PercentDiskUsed := (UsedDiskSpace / (UsedDiskSpace + AvailableDiskSpace))*100
+| format("%.2f",field=["PercentDiskUsed"], as="PercentDiskUsed")
+| default(field=[ComputerName, SystemProductName,Version,AgentVersion, Architecture, ConfigIDBuild, CpuProcessorName, PhysicalCoreCount, LogicalCoreCount, AverageCpuUsage, MaxCpuUsage,TotalRam, AverageUsedRam, UsedDiskSpace, AvailableDiskSpace,PercentDiskUsed],value="--",replaceEmpty="true")
+| table([aid, ComputerName, AgentVersion, Version, MachineDomain, SiteName, CpuProcessorName, PhysicalCoreCount, LogicalCoreCount, AverageCpuUsage, MaxCpuUsage, TotalRam, AverageUsedRam, UsedDiskSpace, AvailableDiskSpace, PercentDiskUsed])
