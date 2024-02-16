@@ -1,0 +1,11 @@
+name: '[Alert] Robust Intelligence AI Firewall flagged output string'
+description: 'Robust Intelligence AI Firewall flagged the Output string '
+enabled: true
+$schema: https://schemas.humio.com/filteralert/v0.1.0
+triggerLimit: 1
+queryString: |-
+  case{
+      total_output_rules_flagged>0
+    }
+labels: []
+actionNameReferences: []
