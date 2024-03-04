@@ -38,6 +38,10 @@ fieldsToBeRemovedBeforeParsing:
 $schema: https://schemas.humio.com/parser/v0.2.0
 script: |+
   parseJson(field=@rawstring)
+  | Vendor := "Robust Intelligence"
+  | LogType := "AI Firewall Logs"
+  | @mh_schema_error:=false
+  | @mh_event_error:=false
   | parseTimestamp(field=utctime, timezone="UTC")
   | input_rule_flagged_pii_detection := if(firewall_response.inputResults.FIREWALL_RULE_TYPE_PII_DETECTION.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
   | input_rule_flagged_toxicity := if(firewall_response.inputResults.FIREWALL_RULE_TYPE_TOXICITY.action == "FIREWALL_ACTION_FLAG", else=0, then=1)
