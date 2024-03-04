@@ -10,8 +10,9 @@ widgets:
     y: 5
     height: 4
     queryString: |-
-      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_AFFILIATED_LOGIN"
-      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_LOGIN_EVENT" | event.reason="CHROMEOS_AFFILIATED_LOGIN"
+      |device.name=?device_name | device.user=?device_user
       |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User"])
     end: now
@@ -39,8 +40,10 @@ widgets:
     y: 5
     height: 4
     queryString: |-
-      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_UNAFFILIATED_LOGIN"
-      |device.name=?{device_name="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_LOGIN_EVENT" 
+      |event.reason="CHROMEOS_UNAFFILIATED_LOGIN"
+      |device.name=?device_name
       |rename(device.name, as="Device Name")
       |select(["@timestamp", "Device Name"])
     end: now
@@ -59,8 +62,10 @@ widgets:
     y: 5
     height: 4
     queryString: |-
-      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_GUEST_SESSION_LOGIN"
-      |device.name=?{device_name="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_LOGIN_EVENT" 
+      |event.reason="CHROMEOS_GUEST_SESSION_LOGIN"
+      |device.name=?device_name
       |rename(device.name, as="Device Name")
       |select(["@timestamp", "Device Name"])
     end: now
@@ -88,8 +93,11 @@ widgets:
     y: 1
     height: 4
     queryString: |-
-      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_AFFILIATED_LOGIN"
-      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_LOGIN_EVENT"
+      | event.reason="CHROMEOS_AFFILIATED_LOGIN"
+      | device.name=?device_name 
+      | device.user=?device_user
       |timeChart(function=count())
     end: now
     start: 1d
@@ -114,9 +122,10 @@ widgets:
     y: 10
     height: 4
     queryString: |-
-      Vendor.client_type="CHROME_OS_DEVICE" event.action="CHROMEOS_PERIPHERAL_ADDED"
-      |device.name=?{device_name="*"} device.user=?{device_user="*"}
-      |Vendor.event_detail=/vendor:\s(?<VendorName>.*?),.*product:\s(?<ProductDetail>.*?(mtp|drive|storage).*?),/i
+      #Vendor="google"
+      |Vendor.client_type="CHROME_OS_DEVICE" event.action="CHROMEOS_PERIPHERAL_ADDED"
+      |device.name=?device_name | device.user=?device_user
+      |Vendor.event_detail=/vendor:\s(?<VendorName>.*?),.*product:\s(?<ProductDetail>.*?),/i
       |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User", "VendorName", "ProductDetail"])
     end: now
@@ -127,7 +136,7 @@ widgets:
       configured-columns: {}
       row-numbers-enabled: false
     visualization: table-view
-    title: USB Drive Connected
+    title: Peripheral Connected
     isLive: false
     type: query
   8f8a915f-55ff-4ce2-b640-1952c52404dd:
@@ -135,8 +144,9 @@ widgets:
     y: 15
     height: 4
     queryString: |-
-      event.action="CHROME_OS_CRD_CLIENT_CONNECTED"
-      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_CRD_CLIENT_CONNECTED"
+      |device.name=?device_name | device.user=?device_user
       |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User"])
     end: now
@@ -155,8 +165,9 @@ widgets:
     y: 1
     height: 4
     queryString: |-
-      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_GUEST_SESSION_LOGIN"
-      |device.name=?{device_name="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_LOGIN_EVENT" | event.reason="CHROMEOS_GUEST_SESSION_LOGIN"
+      |device.name=?device_name
       |timeChart(function=count())
     end: now
     start: 1d
@@ -172,8 +183,9 @@ widgets:
     y: 1
     height: 4
     queryString: |-
-      event.action="CHROME_OS_LOGIN_EVENT" Vendor.reason="CHROMEOS_UNAFFILIATED_LOGIN"
-      |device.name=?{device_name="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_LOGIN_EVENT" | event.reason="CHROMEOS_UNAFFILIATED_LOGIN"
+      |device.name=?device_name
       |timeChart(function=count())
     end: now
     start: 1d
@@ -191,8 +203,9 @@ widgets:
     y: 15
     height: 4
     queryString: |-
-      event.action="CHROME_OS_CRD_HOST_STARTED"
-      |device.name=?{device_name="*"} device.user=?{device_user="*"}
+      #Vendor="google"
+      |event.action="CHROME_OS_CRD_HOST_STARTED"
+      |device.name=?device_name | device.user=?device_user
       |rename(device.name, as="Device Name") |rename(device.user, as="Device User")
       |select(["@timestamp", "Device Name", "Device User"])
     end: now
@@ -210,21 +223,21 @@ $schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
   device_name:
     label: Device Name
-    query: in(event, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
-      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name, function=[])
+    query: '#Vendor = "google" | in(event.action, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
+      "CHROME_OS_CRD_HOST_*"])| groupBy(device.name, function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: device_name
+    valueField: device.name
   device_user:
     label: Device User
-    query: in(event, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
-      "CHROME_OS_CRD_HOST_*"])| groupBy(device_name, function=[])
+    query: '#Vendor = "google" | in(event.action, values=["CHROME_OS_LOGIN_EVENT", "CHROMEOS_PERIPHERAL_ADDED",
+      "CHROME_OS_CRD_HOST_*"])| groupBy(device.user, function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: device_name
+    valueField: device.user

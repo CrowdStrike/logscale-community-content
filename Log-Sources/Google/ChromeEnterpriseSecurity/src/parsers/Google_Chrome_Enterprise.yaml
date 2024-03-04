@@ -71,10 +71,10 @@ script: |-
   ****** Extract message field for parsing
   ****** Parse structured data
   ************************************************************/
-  | parseJson(prefix=Vendor.)
+  | parseJson(prefix="Vendor.", excludeEmpty="true", handleNull="discard")
   //Formatting and normalizing the time by dropping precision past seconds
-  | regex("(?<truncated_timestamp>\\d*)", field=Vendor.time)
-  | parseTimestamp(field="truncated_timestamp", format=seconds)
+  | regex("(?<@timestamp>\\d*)", field=Vendor.time)
+  | parseTimestamp(field="@timestamp", format=seconds)  
 
 
   // #region METADATA
@@ -82,7 +82,7 @@ script: |-
   ****** Static Metadata Definitions
   ************************************************************/
   | Parser_version := "0.1.0"
-  | Vendor := "Google"
+  | Vendor := "google"
   | Product := "Chrome Enterprise"
   | ecs.version := "8.11.0"
 
@@ -93,12 +93,15 @@ script: |-
   ************************************************************/
   | event.action := Vendor.event
   | event.reference := Vendor.event_detail
+  | event.reason := Vendor.reason
   | device.id := Vendor.device_id
   | device.name := Vendor.device_name
   | device.user := Vendor.device_user
   | url.original := Vendor.url
+  | parseUrl(url.original, as="url")
   | user_agent.original := Vendor.user_agent
-
+  | os.type := Vendor.os_platform
+  | os.version := Vendor.os_version
 
   /************************************************************
   ****** Post Normalization
@@ -108,7 +111,10 @@ script: |-
     event.action = "CHROME_OS_LOGIN_FAILURE_EVENT" | event.outcome := "failure";
     * | event.outcome := "success"
   }
+  | case{
+    event.action = "browserExtensionInstallEvent" | event.reason := "-";
+    *
+  }
 tagFields:
-- Parser_version
 - Vendor
-- Product
+- event.outcome

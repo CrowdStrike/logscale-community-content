@@ -10,7 +10,8 @@ widgets:
     y: 14
     height: 4
     queryString: |-
-      os.type=?{os_platform="*"}
+      #Vendor="google"
+      |os.type=?os_platform
       |top(os.type,limit=10,rest=others,as="Count")
       |rename(os.type,as="OS Platform")
       |select(["OS Platform","Count"])
@@ -29,7 +30,9 @@ widgets:
     x: 8
     y: 0
     height: 4
-    queryString: groupBy("Vendor.reason")
+    queryString: |-
+      #Vendor="google"
+      |groupBy("event.reason")
     visualization: bar-chart
     end: now
     start: 24h
@@ -42,9 +45,9 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      event.action=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
-      |parseUrl(Vendor.url)
-      |url.host=?{url="*"}
+      #Vendor="google"
+      |event.action=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
+      |url.host=?url
       |rename(url.host, as="Hostname")
       |top(["Hostname"],limit=10,rest=others,as="Count")
     end: now
@@ -63,7 +66,8 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      |device.user=?{device_user="*"}
+      #Vendor="google"
+      |device.user=?device_user
       |top(device.user,limit=10,rest=others,as="Count")
       |rename(device.user,as="Device User")
       |select(["Device User","Count"])
@@ -99,7 +103,8 @@ widgets:
     y: 14
     height: 4
     queryString: |-
-      os.type=?{os_platform="*"}
+      #Vendor="google"
+      |os.type=?os_platform
       |count(os.type, distinct=true, as="OS Platform")
     end: now
     start: 24h
@@ -116,11 +121,12 @@ widgets:
     x: 4
     y: 9
     height: 4
-    queryString: |
-      event.action=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
-      |Vendor.reason="MALWARE"
-      |Vendor.url=?{url="*"}
-      |rename(Vendor.url, as="URL")
+    queryString: |-
+      #Vendor="google"
+      |event.action=/^(badNavigationEvent|passwordReuseEvent|dangerousDownloadEvent)$/
+      |event.reason="MALWARE"
+      |url.original=?url
+      |rename(url.original, as="URL")
       |top(["URL"],limit=10,rest=others,as="Count")
     end: now
     start: 30d
@@ -138,8 +144,9 @@ widgets:
     y: 24
     height: 4
     queryString: |-
-      device.id=?{device_id="*"} | device.name=?{device_name="*"} | device.user=?{device_user="*"} | Vendor.profile_user=?{profile_user="*"}
-      |groupBy(["device.id", "device.name", "device.user", "Vendor.profile_xuser"])
+      #Vendor="google"
+      |device.id=?device_id | device.name=?device_name | device.user=?device_user | Vendor.profile_user=?profile_user
+      |groupBy(["device.id", "device.name", "device.user", "Vendor.profile_user"])
       |rename(device.id, as="Device ID") |rename(device.name, as="Device Name") |rename(device.user, as="Device User") |rename(Vendor.profile_user, as="Profile User")
       |select(["Device Name","Device ID", "Device User", "Profile User"])
     end: now
@@ -158,7 +165,8 @@ widgets:
     y: 24
     height: 4
     queryString: |-
-      device.id=?{device_id="*"}
+      #Vendor="google"
+      |device.id=?device_id
       |count("device.id", distinct=true, as="Count")
     end: now
     start: 24h
@@ -191,7 +199,9 @@ widgets:
     x: 8
     y: 19
     height: 4
-    queryString: groupBy(Vendor.browser_version)
+    queryString: |-
+      #Vendor="google"
+      |groupBy(Vendor.browser_version)
     visualization: pie-chart
     end: now
     start: 24h
@@ -204,7 +214,8 @@ widgets:
     y: 29
     height: 4
     queryString: |-
-      top(Vendor.trigger_type, as="Count")
+      #Vendor="google"
+      |top(Vendor.trigger_type, as="Count")
       |rename(Vendor.trigger_type,as="Trigger Type")
       |select(["Trigger Type","Count"])
     end: now
@@ -223,7 +234,8 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      top(Vendor.result,limit=10,rest=others,as="Count")
+      #Vendor="google"
+      |top(Vendor.result,limit=10,rest=others,as="Count")
       |rename(Vendor.result,as="Result")
       |select(["Result","Count"])
     end: now
@@ -242,7 +254,8 @@ widgets:
     y: 19
     height: 4
     queryString: |-
-      top(device.user, as="Count")
+      #Vendor="google"
+      |top(device.user, as="Count")
       |rename(device.user,as="Device User")
     end: now
     start: 24h
@@ -287,8 +300,9 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      |device.user=?{device_user="*"}
-      |device.id=?{device_id="*"}
+      #Vendor="google"
+      |device.user=?device_user
+      |device.id=?device_id
       |rename(device.user, as="Device User")
       |rename(device.id, as="Device ID")
       |sankey(source="Device User", target="Device ID")
@@ -320,9 +334,10 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      event.action=/^(badNavigationEvent|passwordReuseEvent)$/
-      |Vendor.reason="SOCIAL_ENGINEERING"
-      |url.original=?{url="*"}
+      #Vendor="google"
+      |event.action=/^(badNavigationEvent|passwordReuseEvent)$/
+      |event.reason="SOCIAL_ENGINEERING"
+      |url.original=?url
       |rename(url.original, as="URL")
       |top(["URL"],limit=10,rest=others,as="Count")
     end: now
@@ -341,10 +356,11 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      Vendor.profile_user!=""
-      |Vendor.profile_user=?{profile_user="*"}
+      #Vendor="google"
+      |Vendor.profile_user!=""
+      |Vendor.profile_user=?profile_user
       |top(Vendor.profile_user,limit=10,rest=others,as="Count")
-      |rename(profile_user,as="Profile User")
+      |rename(Vendor.profile_user,as="Profile User")
       |select(["Profile User", "Count"])
     end: now
     start: 24h
@@ -362,7 +378,8 @@ widgets:
     y: 14
     height: 4
     queryString: |-
-      os.type=?{os.type="*"}
+      #Vendor="google"
+      |os.type=?os_platform
       |groupBy(os.type)
       |rename(os.type,as="OS Platform")
     visualization: pie-chart
@@ -377,7 +394,8 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      event.action=?{event=*}
+      #Vendor="google"
+      |event.action=?{event=*}
       |top(event.action,limit=10,rest=others,as="Count")
       |rename(event.action, as="Event Type")
       |select(["Event Type","Count"])
@@ -396,7 +414,7 @@ $schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
   device_name:
     label: Device Name
-    query: '*'
+    query: '#Vendor = "google" | groupBy("device.name", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -405,7 +423,7 @@ parameters:
     valueField: device.name
   device_id:
     label: Device ID
-    query: '*'
+    query: '#Vendor = "google" | groupBy("device.id", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -414,7 +432,7 @@ parameters:
     valueField: device.id
   event:
     label: Event Type
-    query: '*'
+    query: '#Vendor = "google" | groupBy("event.action", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -423,7 +441,7 @@ parameters:
     valueField: event.action
   device_user:
     label: Device User
-    query: '*'
+    query: '#Vendor = "google" | groupBy("device.user", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -432,7 +450,7 @@ parameters:
     valueField: device.user
   os_platform:
     label: Operating System
-    query: '*'
+    query: '#Vendor = "google" | groupBy("os.type", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -441,7 +459,7 @@ parameters:
     valueField: os.type
   profile_user:
     label: Profile User
-    query: '*'
+    query: '#Vendor = "google" | groupBy("Vendor.profile_user", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -450,7 +468,7 @@ parameters:
     valueField: Vendor.profile_user
   url:
     label: URL
-    query: '*'
+    query: '#Vendor = "google" | groupBy("url.original", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
