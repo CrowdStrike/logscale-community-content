@@ -10,8 +10,9 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      event.action = "dataAccessControlEvent"
-      |Vendor.triggered_rules=?{triggeredrules="*"}
+      #Vendor="google"
+      |event.action = "dataAccessControlEvent"
+      |Vendor.triggered_rules=?triggeredrules
       |rename(Vendor.triggered_rules, as="Triggered Rule")
       |groupBy(["Triggered Rule"])
     visualization: pie-chart
@@ -25,9 +26,11 @@ widgets:
     x: 6
     y: 8
     height: 8
-    queryString: |
-      event.action = "dataAccessControlEvent"
-      |device.user=?{deviceuser="*"} Vendor.triggered_rules=?{triggeredrules="*"}
+    queryString: |-
+      #Vendor="google"
+      |event.action = "dataAccessControlEvent"
+      |device.user=?deviceuser 
+      |Vendor.triggered_rules=?triggeredrules
       |rename(device.user, as= "Device User")
       |rename(Vendor.triggered_rules, as="Triggered Rule")
       |sankey(source="Device User", target="Triggered Rule")
@@ -42,14 +45,16 @@ widgets:
     x: 0
     y: 8
     height: 8
-    queryString: |
-      event.action = "dataAccessControlEvent"
+    queryString: |-
+      #Vendor="google"
+      |event.action = "dataAccessControlEvent"
       | case{
           Vendor.trigger_type="PRINTING"
           | Vendor.destination := "PRINTING";
           *
       }
-      |Vendor.source=?{source="*"} Vendor.destination=?{destination="*"}
+      | Vendor.source=?source
+      | Vendor.destination=?destination
       |rename(Vendor.source, as="Source")
       |rename(Vendor.destination, as="Destination")
       |sankey(source="Source", target="Destination")
@@ -65,8 +70,12 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      event.action = dataAccessControlEvent
-      |device.user=?{"deviceuser"="*"} Vendor.triggered_rules=?{triggeredrules="*"} Vendor.trigger_type=?{triggertype="*"} Vendor.result=?{result="*"}
+      #Vendor="google"
+      |event.action = "dataAccessControlEvent"
+      |device.user=?deviceuser 
+      | Vendor.triggered_rules=?triggeredrules 
+      | Vendor.trigger_type=?triggertype 
+      | Vendor.result=?result
       |rename(device.user, as= "Device User")
       |rename(Vendor.triggered_rules, as="Triggered Rule")
       |rename(Vendor.trigger_type, as="Trigger Type")
@@ -88,8 +97,9 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      event.action = "dataAccessControlEvent"
-      |Vendor.trigger_type=?{triggertype="*"}
+      #Vendor="google"
+      |event.action = "dataAccessControlEvent"
+      |Vendor.trigger_type=?triggertype
       |rename(Vendor.trigger_type, as="Trigger Type")
       |groupBy(["Trigger Type"])
     visualization: pie-chart
@@ -104,8 +114,9 @@ widgets:
     y: 4
     height: 4
     queryString: |-
-      event.action = dataAccessControlEvent
-      |device.user=?{deviceuser="*"}
+      #Vendor="google"
+      |event.action = "dataAccessControlEvent"
+      |device.user=?deviceuser
       |rename(device.user, as= "Device User")
       |top("Device User", as=count)
     end: now
@@ -123,7 +134,7 @@ $schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
   triggeredrules:
     label: Triggered Rule
-    query: event = dataAccessControlEvent
+    query: '#Vendor = "google" | event.action = "dataAccessControlEvent" | groupBy([Vendor.triggered_rules], function=[])'
     timeInterval: 7d
     useDashboardTimeIfSet: true
     type: query
@@ -132,7 +143,7 @@ parameters:
     valueField: Vendor.triggered_rules
   source:
     label: Source
-    query: event = dataAccessControlEvent
+    query: '#Vendor = "google" | event.action = "dataAccessControlEvent" | groupBy([Vendor.source], function=[])'
     timeInterval: 7d
     useDashboardTimeIfSet: true
     type: query
@@ -141,7 +152,7 @@ parameters:
     valueField: Vendor.source
   result:
     label: Outcome
-    query: event = dataAccessControlEvent
+    query: '#Vendor = "google" | event.action = "dataAccessControlEvent" | groupBy([Vendor.result], function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -150,7 +161,7 @@ parameters:
     valueField: Vendor.result
   triggertype:
     label: Trigger Type
-    query: event = dataAccessControlEvent
+    query: '#Vendor = "google" | event.action = "dataAccessControlEvent" | groupBy([Vendor.trigger_type], function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
@@ -159,7 +170,7 @@ parameters:
     valueField: Vendor.trigger_type
   deviceuser:
     label: Device User
-    query: event = dataAccessControlEvent
+    query: '#Vendor = "google" | event.action = "dataAccessControlEvent" | groupBy([device.user], function=[])'
     timeInterval: 7d
     useDashboardTimeIfSet: true
     type: query
@@ -168,7 +179,7 @@ parameters:
     valueField: device.user
   destination:
     label: Destination
-    query: event = dataAccessControlEvent
+    query: '#Vendor = "google" | event.action = "dataAccessControlEvent" | groupBy([Vendor.destination], function=[])'
     timeInterval: 7d
     useDashboardTimeIfSet: true
     type: query

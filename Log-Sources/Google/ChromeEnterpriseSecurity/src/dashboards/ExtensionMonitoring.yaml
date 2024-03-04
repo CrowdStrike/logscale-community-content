@@ -10,16 +10,17 @@ widgets:
     y: 8
     height: 4
     queryString: |-
-      event.action="browserExtensionInstallEvent"
+      #Vendor="google"
+      |event.action="browserExtensionInstallEvent"
       |match(file="chrome_extensions_blocklist.csv", field="extension_id")
-      |Vendor.extension_id=?{extension_id="*"}
-      |Vendor.extension_name=?{extension_name="*"}
+      |Vendor.extension_id=?extension_id
+      |Vendor.extension_name=?extension_name
       |rename(Vendor.extension_id, as="Extension ID")
       |rename(Vendor.extension_name, as="Extension Name")
       |rename(device.id, as="Device ID")
       |rename(device.user, as="Device User")
       |rename(os.type, as="OS Platform")
-      |select([extension_name, "Extension ID", "@timestamp", "Device User", "Device ID", "OS Platform"])
+      |select(["Extension Name", "Extension ID", "@timestamp", "Device User", "Device ID", "OS Platform"])
     end: now
     start: 30d
     width: 8
@@ -35,9 +36,10 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      event.action="browserExtensionInstallEvent"
-      |Vendor.extension_id=?{extension_id="*"}
-      |Vendor.extension_name=?{extension_name="*"}
+      #Vendor="google"
+      |event.action="browserExtensionInstallEvent"
+      |Vendor.extension_id=?extension_id
+      |Vendor.extension_name=?extension_name
       |groupby([Vendor.extension_id, Vendor.extension_name], function=count(as=Count)) | sort(Count, order=asc)
       |rename(Vendor.extension_id, as="Extension ID")
       |rename(Vendor.extension_name, as="Extension Name")
@@ -68,9 +70,10 @@ widgets:
     y: 0
     height: 4
     queryString: |-
-      event.action="browserExtensionInstallEvent"
-      |Vendor.extension_id=?{extension_id="*"}
-      |Vendor.extension_name=?{extension_name="*"}
+      #Vendor="google"
+      |event.action="browserExtensionInstallEvent"
+      |Vendor.extension_id=?extension_id
+      |Vendor.extension_name=?extension_name
       |rename(Vendor.extension_id, as="Extension ID")
       |rename(Vendor.extension_name, as="Extension Name")
       |rename(device.id, as="Device ID")
@@ -104,19 +107,19 @@ $schema: https://schemas.humio.com/dashboard/v0.15.0
 parameters:
   extension_id:
     label: Extension ID
-    query: groupBy("extension_id", function=[])
+    query: '#Vendor = "google" | groupBy("Vendor.extension_id", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: extension_id
+    valueField: Vendor.extension_id
   extension_name:
     label: Extension Name
-    query: groupBy("extension_name", function=[])
+    query: '#Vendor = "google" | groupBy("Vendor.extension_name", function=[])'
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     order: 50
-    valueField: extension_name
+    valueField: Vendor.extension_name
