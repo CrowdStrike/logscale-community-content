@@ -17,13 +17,12 @@ widgets:
     queryString: |-
       #category=ScheduledSearch subCategory=User | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
       | groupby([dataspace, scheduledSearchName], function=tail(1))
-      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename(@timestamp, as="Last failed")
       | rename("dataspace", as="Repository/view")
       | rename("scheduledSearchName", as="Scheduled search name")
       | rename("message", as="Message")
       | rename("suggestion", as="Suggestion")
-      | table(["Repository/view", "Scheduled search name", "Last failed", "Message", "Suggestion"], sortby=["Repository/view","Scheduled search name"], order=[asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Scheduled search name", "Last failed", "Message", "Suggestion", "scheduledSearchId"], sortby=["Repository/view", "Scheduled search name"], order=[asc,asc], limit=1000)
     end: now
     start: 24h
     width: 12
@@ -42,6 +41,26 @@ widgets:
         scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: User Problems
     isLive: true
     type: query
@@ -54,15 +73,14 @@ widgets:
       #category=ScheduledSearch | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
       | groupby([dataspace, scheduledSearchName], function=[tail(1), count(as="No. of times failed")])
       | subCategory != User message != "Problem firing action"
-      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename(@timestamp, as="Last failed")
       | rename("dataspace", as="Repository/view")
       | rename("scheduledSearchName", as="Scheduled search name")
       | rename("suggestion", as="Last suggestion")
       | rename("message", as="Last message")
       | rename("warnings", as="Last warnings")
       | rename("exceptionMessage", as="Last exceptionMessage")
-      | table(["Repository/view", "Scheduled search name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last warnings"], sortby=["No. of times failed", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Scheduled search name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last warnings", "scheduledSearchId"], sortby=["No. of times failed", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 12
@@ -81,6 +99,26 @@ widgets:
         scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: Other Problems
     isLive: true
     type: query
@@ -148,12 +186,11 @@ widgets:
     height: 4
     queryString: |-
       #category=ScheduledSearch | message="Scheduled search lagged behind and had to be rescheduled" | dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
-      | groupby([dataspace, scheduledSearchName], function=[selectLast(@timestamp), count(as="No. of times lagging behind")])
-      | rename(@timestamp, as="Last lagging behind") | formatTime(field="Last lagging behind", format="%Y/%m/%d %H:%M:%S %Z", as="Last lagging behind")
+      | groupby([dataspace, scheduledSearchName], function=[selectLast([@timestamp, scheduledSearchId]), count(as="No. of times lagging behind")])
+      | rename(@timestamp, as="Last lagging behind")
       | rename("dataspace", as="Repository/view")
       | rename("scheduledSearchName", as="Scheduled search name")
-      | table(["Repository/view", "Scheduled search name", "No. of times lagging behind", "Last lagging behind"], sortby=["No. of times lagging behind", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Scheduled search name", "No. of times lagging behind", "Last lagging behind", "scheduledSearchId"], sortby=["No. of times lagging behind", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 12
@@ -172,6 +209,26 @@ widgets:
         scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last lagging behind:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: Scheduled Searches Lagging Behind
     isLive: true
     type: query
@@ -182,13 +239,12 @@ widgets:
     height: 6
     queryString: |-
       #category=ScheduledSearch message="Scheduled search successfully triggered at least one action" dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
-      | groupby([dataspace, scheduledSearchName], function=[selectLast(["@timestamp", actionIds]), count(as="No. of times triggered")])
-      | rename(@timestamp, as="Last triggered") | formatTime(field="Last triggered", format="%Y/%m/%d %H:%M:%S %Z", as="Last triggered")
+      | groupby([dataspace, scheduledSearchName], function=[selectLast(["@timestamp", actionIds, scheduledSearchId]), count(as="No. of times triggered")])
+      | rename(@timestamp, as="Last triggered")
       | rename("dataspace", as="Repository/view")
       | rename("scheduledSearchName", as="Scheduled search name")
       | rename("actionIds", as="Action ids")
-      | table(["Repository/view", "Scheduled search name", "Action ids", "No. of times triggered", "Last triggered"], sortby=["No. of times triggered", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Scheduled search name", "Action ids", "No. of times triggered", "Last triggered", "scheduledSearchId"], sortby=["No. of times triggered", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 7
@@ -207,6 +263,26 @@ widgets:
         scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last triggered:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: Scheduled Searches Triggered
     isLive: true
     type: query
@@ -219,13 +295,12 @@ widgets:
     queryString: |-
       #category=ScheduledSearch #severity = "Warning" message = "Problem firing action" dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
       | groupby([dataspace, scheduledSearchName, actionName], function=[tail(1), count(as="No. of times failed")])
-      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename(@timestamp, as="Last failed")
       | rename("dataspace", as="Repository/view")
       | rename("scheduledSearchName", as="Scheduled search name")
       | rename("actionName", as="Action name")
       | rename("exceptionMessage", as="Last exceptionMessage")
-      | table(["Repository/view", "Scheduled search name", "Action name", "No. of times failed", "Last failed", "Last exceptionMessage"], sortby=["No. of times failed", "Repository/view","Scheduled search name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Scheduled search name", "Action name", "No. of times failed", "Last failed", "Last exceptionMessage", "scheduledSearchId"], sortby=["No. of times failed", "Repository/view","Scheduled search name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 12
@@ -244,6 +319,26 @@ widgets:
         scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: Action Invocation Problems
     isLive: true
     type: query

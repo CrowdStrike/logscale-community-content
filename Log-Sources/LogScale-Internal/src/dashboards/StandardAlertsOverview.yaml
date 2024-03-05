@@ -15,15 +15,14 @@ widgets:
       #category=Alert | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} alertName=?{alertName=*}
       | groupby([dataspace, alertName], function=[tail(1), count(as="No. of times failed")])
       | subCategory != User message != "Problem invoking action"
-      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename(@timestamp, as="Last failed")
       | rename("dataspace", as="Repository/view")
       | rename("alertName", as="Alert name")
       | rename("suggestion", as="Last suggestion")
       | rename("message", as="Last message")
       | rename("warnings", as="Last warnings")
       | rename("exceptionMessage", as="Last exceptionMessage")
-      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last warnings"], sortby=["No. of times failed", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last warnings", "alertId"], sortby=["No. of times failed", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 12
@@ -42,6 +41,28 @@ widgets:
         repository: '["{{ fields[\"Repository/view\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        alertId:
+          hidden: true
+        Repository/view:
+          render-as: value
+        No. of times failed:
+          data-type: number
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+      row-numbers-enabled: false
+    visualization: table-view
     title: Other Problems
     isLive: true
     type: query
@@ -54,12 +75,11 @@ widgets:
     height: 6
     queryString: |-
       #category = Alert message="Query started" dataspace=?{repository=*} alertName=?{alertName=*}
-      | groupby([dataspace, alertName], function=[ { selectLast(@timestamp) }, count(as="No. of times restarted")])
-      | rename(@timestamp, as="Last restarted") | formatTime(field="Last restarted", format="%Y/%m/%d %H:%M:%S %Z", as="Last restarted")
+      | groupby([dataspace, alertName], function=[ { selectLast([@timestamp, alertId]) }, count(as="No. of times restarted")])
+      | rename(@timestamp, as="Last restarted")
       | rename("dataspace", as="Repository/view")
       | rename("alertName", as="Alert name")
-      | table(["Repository/view", "Alert name", "No. of times restarted", "Last restarted"], sortby=["No. of times restarted", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Alert name", "No. of times restarted", "Last restarted", "alertId"], sortby=["No. of times restarted", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 7
@@ -78,6 +98,26 @@ widgets:
         repository: '["{{ fields[\"Repository/view\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last restarted:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: Alert Query Restarts
     isLive: true
     type: query
@@ -143,13 +183,12 @@ widgets:
     height: 6
     queryString: |-
       #category=Alert message="Alert triggered and invoked at least one action and will be throttled" dataspace=?{repository=*} alertName=?{alertName=*}
-      | groupby([dataspace, alertName], function=[selectLast(["@timestamp", actionIds]), count(as="No. of times triggered")])
-      | rename(@timestamp, as="Last triggered") | formatTime(field="Last triggered", format="%Y/%m/%d %H:%M:%S %Z", as="Last triggered")
+      | groupby([dataspace, alertName], function=[selectLast(["@timestamp", actionIds, alertId]), count(as="No. of times triggered")])
+      | rename(@timestamp, as="Last triggered")
       | rename("dataspace", as="Repository/view")
       | rename("alertName", as="Alert name")
       | rename("actionIds", as="Action ids")
-      | table(["Repository/view", "Alert name", "Action ids", "No. of times triggered", "Last triggered"], sortby=["No. of times triggered", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Alert name", "Action ids", "No. of times triggered", "Last triggered", "alertId"], sortby=["No. of times triggered", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 7
@@ -168,6 +207,26 @@ widgets:
         repository: '["{{ fields[\"Repository/view\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last triggered:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: Alerts Triggered
     isLive: true
     type: query
@@ -180,13 +239,12 @@ widgets:
     queryString: |-
       #category=Alert #severity = "Warning" message = "Problem invoking action" dataspace=?{repository=*} alertName=?{alertName=*}
       | groupby([dataspace, alertName, actionName], function=[tail(1), count(as="No. of times failed")])
-      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename(@timestamp, as="Last failed")
       | rename("dataspace", as="Repository/view")
       | rename("alertName", as="Alert name")
       | rename("actionName", as="Action name")
       | rename("exceptionMessage", as="Last exceptionMessage")
-      | table(["Repository/view", "Alert name", "Action name", "No. of times failed", "Last failed", "Last exceptionMessage"], sortby=["No. of times failed", "Repository/view","Alert name"], order=[desc,asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Alert name", "Action name", "No. of times failed", "Last failed", "Last exceptionMessage", "alertId"], sortby=["No. of times failed", "Repository/view","Alert name"], order=[desc,asc,asc], limit=1000)
     end: now
     start: 24h
     width: 12
@@ -205,6 +263,28 @@ widgets:
         repository: '["{{ fields[\"Repository/view\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        alertId:
+          hidden: true
+        Repository/view:
+          render-as: value
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Action name:
+          render-as: value
+      row-numbers-enabled: false
+    visualization: table-view
     title: Action Invocation Problems
     isLive: true
     type: query
@@ -240,13 +320,12 @@ widgets:
     queryString: |-
       #category=Alert subCategory=User | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} alertName=?{alertName=*}
       | groupby([dataspace, alertName], function=tail(1))
-      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename(@timestamp, as="Last failed")
       | rename("dataspace", as="Repository/view")
       | rename("alertName", as="Alert name")
       | rename("message", as="Message")
       | rename("suggestion", as="Suggestion")
-      | table(["Repository/view", "Alert name", "Last failed", "Message", "Suggestion"], sortby=["Repository/view","Alert name"], order=[asc,asc], limit=1000)
-    visualization: table-view
+      | table(["Repository/view", "Alert name", "Last failed", "Message", "Suggestion", "alertId"], sortby=["Repository/view","Alert name"], order=[asc,asc], limit=1000)
     end: now
     start: 24h
     width: 12
@@ -265,6 +344,26 @@ widgets:
         repository: '["{{ fields[\"Repository/view\"] }}"]'
       openInNewTab: true
       type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: User Problems
     isLive: true
     type: query

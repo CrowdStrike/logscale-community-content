@@ -1,0 +1,15 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.3.0
+interaction:
+  conditions:
+  - argument: ScheduledSearch
+    fieldName: '#category'
+    operator: equal
+  - argument: ''
+    fieldName: scheduledSearchId
+    operator: present
+  name: Edit Scheduled Search
+  urlEncodeArgs: true
+  titleTemplate: Edit Scheduled Search
+  urlTemplate: '{{fields.dataspace}}/scheduledSearches/{{fields.scheduledSearchId}}'
+  openInNewTab: true
+  type: customlink

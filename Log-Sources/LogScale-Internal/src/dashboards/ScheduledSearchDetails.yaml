@@ -36,22 +36,40 @@ widgets:
     type: query
   79258630-c4b0-4349-8f51-679e0f72e987:
     x: 0
-    y: 12
     description: Overview of problems with the scheduled search.
     height: 4
     queryString: |-
       #category=ScheduledSearch dataspace=?repository scheduledSearchName=?scheduledSearchName | #severity =~ in(values=["Warning", "Error"])
       | groupby(message, function=[tail(1), count(as="No. of times failed")])
-      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename(@timestamp, as="Last failed")
       | rename("suggestion", as="Last suggestion")
       | rename("message", as="Message")
       | rename("warnings", as="Last warnings")
       | rename("exceptionMessage", as="Last exceptionMessage")
-      | table(["Message", "No. of times failed", "Last failed", "Last suggestion", "Last exceptionMessage", "Last warnings"], sortby=Message, order=asc)
-    visualization: table-view
+      | table(["Message", "No. of times failed", "Last failed", "Last suggestion", "Last exceptionMessage", "Last warnings", "scheduledSearchId"], sortby=Message, order=asc)
     end: now
     start: 24h
     width: 10
+    y: 12
+    interactions:
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{parameters.repository}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Message:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
     title: Problems
     isLive: false
     type: query
@@ -116,7 +134,7 @@ parameters:
     label: Scheduled Search name
     query: '#category=ScheduledSearch dataspace=?{repository=*} | groupBy(scheduledSearchName,
       function=[])'
-    timeInterval: 1h
+    timeInterval: 24h
     useDashboardTimeIfSet: true
     type: query
     order: 2
