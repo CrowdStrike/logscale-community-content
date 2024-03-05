@@ -1,0 +1,13 @@
+name: LogScale Log Collector Errors >5 in 30 minute window
+description: ''
+enabled: false
+actionNameReferences: []
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 30m
+timeInterval: 30m
+queryString: |-
+  #repo=humio-fleet
+  | diagnostics[0].error = *
+  | split(diagnostics)
+  | groupBy([hostname,diagnostics.error],function=[count(as="Error Count"),collect([version,diagnostics.description]),min(@timestamp,as="First Seen"),selectLast([lastActivity])])
+  | "Error Count" > 5

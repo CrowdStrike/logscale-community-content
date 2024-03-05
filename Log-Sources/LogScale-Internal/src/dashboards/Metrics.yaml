@@ -1,0 +1,122 @@
+name: Metrics
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  c019bdb4-c908-4f38-9bfa-5da186eabff2:
+    x: 6
+    y: 0
+    description: A Repository can only have a maximum of 10000 Datasources before
+      Humio stops ingesting data.
+    height: 4
+    queryString: name=datasource-count| value>0 | timechart(repo,function=max(value),
+      limit=50)
+    end: now
+    start: 24h
+    width: 6
+    options:
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: Number of Datasources Per Repo
+    isLive: true
+    type: query
+  d0f9d7a8-e5c2-4c46-900f-35166e3a7037:
+    x: 0
+    y: 0
+    height: 4
+    queryString: "name=ingest-parsing\n| groupby([repo, parser, @host], function=[avg(mean,\
+      \ as=timePerEvent), avg(m1, as=eventsPerSecond), {time:=m1 * mean| avg(time,\
+      \ as=time)}])\n| groupby([repo, parser], function=[sum(time, as=timeInParserPerSecond),\
+      \ avg(timePerEvent, as=timePerEvent), sum(eventsPerSecond, as=eventsPerSecond)])\n\
+      | parser:=format(\"%s/%s\", field=[repo, parser])\n| timeInParser:= format(\"\
+      %d\", field=timeInParserPerSecond)\n| timePerEvent:= format(\"%,.2f\", field=timePerEvent)\n\
+      | eventsPerSecond:= format(\"%,.2f\", field=eventsPerSecond)\n| table([parser,\
+      \ timeInParser, eventsPerSecond, timePerEvent], sortby=timeInParserPerSecond,\
+      \ limit=20) "
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 6
+    title: Parsers Taking The Most Time (ms)
+    isLive: true
+    type: query
+  255301ce-19a3-4075-8b4e-be8dfeaabd98:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      name="event-latency-repo"
+      | timechart(function=[avg(max, as=max),avg(median, as=median)], limit=30)
+      | median:=median/1000 | max:=max/1000
+    end: now
+    start: 7d
+    width: 6
+    options:
+      legendPosition: right
+      series: {}
+      interpolation: natural
+      legend: true
+      stacking: normal
+      yAxisScale: linear
+      plotType: line
+    visualization: time-chart
+    title: Event Latency (s)
+    isLive: true
+    type: query
+  0aad8046-be2e-4e4d-af14-b9df6db45f05:
+    x: 6
+    y: 8
+    height: 4
+    queryString: |-
+      name="query-delta-total-cost"
+      | timechart(function={groupby(@host, function=max(mean)) | sum(_max, as=mean)})
+    visualization: time-chart
+    end: now
+    start: 24h
+    width: 6
+    title: Query Total Cost
+    isLive: true
+    type: query
+  96698f9f-1d00-443d-8695-dc39bf9c1a1e:
+    x: 6
+    y: 4
+    height: 4
+    queryString: "name=data-ingester-errors\n| timechart(repo, function={groupby(@host,\
+      \ function=avg(m1)) | sum(_avg)}, limit=30) "
+    end: now
+    start: 24h
+    width: 6
+    options:
+      series: {}
+      interpolation: natural
+    visualization: time-chart
+    title: Ingest Errors (Errors/second)
+    isLive: true
+    type: query
+  39290eb8-2754-428b-82ef-45aedff9f27c:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      name="event-latency-repo"
+      | timechart(repo,function=[avg(max, as=max)], limit=30)
+      | max:=max/1000
+    end: now
+    start: 24h
+    width: 6
+    options:
+      legendPosition: right
+      series: {}
+      interpolation: natural
+      legend: true
+      stacking: normal
+      yAxisScale: linear
+      plotType: line
+    visualization: time-chart
+    title: Event Latency Per Repo (s)
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0

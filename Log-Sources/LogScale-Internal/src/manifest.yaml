@@ -1,0 +1,9 @@
+author:
+  name: crowdstrike
+name: crowdstrike/logscale-monitoring
+description: LogScale Cloud Monitoring Dashboards
+version: 0.1.2
+minHumioVersion: 1.20.0
+type: application
+$schema: https://schemas.humio.com/manifest/v2.0.0
+licenseUrl: https://www.apache.org/licenses/LICENSE-2.0

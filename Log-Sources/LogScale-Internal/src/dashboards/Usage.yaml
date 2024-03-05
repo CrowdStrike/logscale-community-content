@@ -1,0 +1,133 @@
+name: Usage
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  eaf849f3-5196-421a-afe5-f46910e68b0a:
+    x: 0
+    y: 4
+    height: 5
+    queryString: '#repo = humio-measurements #measurement = "segment_save" | timeChart(series=repositoryName,
+      function=sum("byteCount"), span="1d", limit=50, unit="bytes")'
+    end: now
+    start: 30d
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+      legend: false
+      stacking: normal
+      yAxisScale: linear
+    visualization: time-chart
+    title: 'Ingest Distribution Last 30 days '
+    isLive: true
+    type: query
+  ab83f49c-b089-437c-b3f0-971721106573:
+    x: 4
+    y: 0
+    height: 4
+    queryString: '#repo = humio-usage #sampleType = organization | selectLast(["contractedUsers"])'
+    end: now
+    start: 4h
+    width: 2
+    options:
+      col: true
+      cur: 1.01
+      cuy: 0.95
+    visualization: simple-gauge
+    title: Contracted User Count
+    isLive: true
+    type: query
+  a7d45d02-08e6-4a20-b15b-dde87e392bb2:
+    x: 8
+    y: 0
+    description: The total storage size used in Humio, this is the size after parsing.
+    height: 4
+    queryString: |-
+      #repo = humio-usage #sampleType = organization |
+      timechart(span=1h,
+             function=avg(storageSize),
+             unit="bytes") | _avg != 0
+    end: now
+    start: 30d
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+      legend: false
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      imputation: lerp
+    visualization: time-chart
+    title: Storage size
+    isLive: true
+    type: query
+  fd1235d9-dc5b-4e4d-81ac-1098e1d533a5:
+    x: 8
+    y: 4
+    height: 9
+    queryString: |-
+      #repo = humio-usage
+      | #sampleType = repository | groupBY("repo", function=selectLast(storageSize)) | sort(storageSize) | storageSize := storageSize / 1073741824
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 4
+    title: Disk usage (GB)
+    isLive: true
+    type: query
+  caad9fce-e6a2-4571-80f9-53556c322e98:
+    x: 6
+    y: 0
+    height: 4
+    queryString: '#repo = humio-usage #sampleType = organization | selectLast(["userCount"])'
+    visualization: simple-gauge
+    end: now
+    start: 4h
+    width: 2
+    title: User count
+    isLive: true
+    type: query
+  a12975b1-a6ac-40d9-b2b4-5511f58e48ee:
+    x: 4
+    y: 4
+    height: 9
+    queryString: '#repo = humio-measurements #measurement = "segment_save" | groupBy("repositoryName",
+      function={sum(byteCount, as=ingest) | ingest := ingest / 1073741824}) | sort(ingest)'
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 4
+    title: Ingest Distribution (GB) last 24 hours
+    isLive: true
+    type: query
+  3658fac1-8553-462f-a79a-877946945fa8:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #repo = humio-usage #sampleType = organization |
+      timechart(span=1d,
+             function=[sum(segmentWriteBytes, as="daily")],
+             unit="bytes")
+    end: now
+    start: 30d
+    width: 4
+    options:
+      plotType: line
+      series:
+        _avg:
+          color: '#53b106'
+          title: 30 day rolling average
+        _sum:
+          color: '#20237e'
+          title: daily average
+      interpolation: step-after
+    visualization: time-chart
+    title: Daily Ingest Last 30 days
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0

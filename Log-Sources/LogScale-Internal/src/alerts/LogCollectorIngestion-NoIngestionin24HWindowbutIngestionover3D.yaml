@@ -1,0 +1,14 @@
+name: Log Collector Ingestion - No Ingestion in 24H Window but Ingestion over 3D
+description: ''
+enabled: false
+actionNameReferences: []
+$schema: https://schemas.humio.com/alert/v0.3.0
+throttleTime: 1d
+timeInterval: 3d
+queryString: |-
+  split(logSources)
+  | bucket(field=logSources.sourceName,function=sum(logSources.collectedBytes),span=1d,limit=500)
+  | time := formatTime("%Y/%m/%d %H:%M:%S", field=_bucket, locale=en_US, timezone=UTC)
+  | groupby(logSources.sourceName,function=[sum(_sum,as="Total"),min(_sum,as="MinDay")])
+  | Total != 0
+  | MinDay = 0

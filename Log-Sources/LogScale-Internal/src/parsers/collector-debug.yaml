@@ -1,0 +1,14 @@
+name: collector-debug
+tests:
+- "\t{\"level\":\"warn\",\"HOSTNAME\":\"BLRPRDCM01\",\"GOOS\":\"windows\",\"GOARCH\"\
+  :\"amd64\",\"GOVERSION\":\"go1.20.10\",\"PID\":\"10076\",\"MACHINEID\":\"ae26086c-0fc1-401c-9be1-2c40b1dea13b\"\
+  ,\"VERSION\":\"1.5.3\",\"GITCOMMIT\":\"dd147ec30607f529b035ad94cf5727a0fdf8e721\"\
+  ,\"GITDATE\":\"2023-10-13T06:28:41Z\",\"COMPILEDAT\":\"2023-10-13T08:25:33Z\",\"\
+  error\":\"winHttpGetProxyForUrl: The parameter is incorrect.\",\"time\":1700490928172,\"\
+  caller\":\"go.crwd.dev/lc/log-collector/internal/sinks/util/proxy/config.go:46\"\
+  ,\"message\":\"Automatic proxy detection failed for URL https://bloorhomes.ingest.logscale.us-1.crowdstrike.com/api/v1/ingest/humio-unstructured\"\
+  }"
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: parseJson() | findTimestamp(field=time)
+tagFields: []

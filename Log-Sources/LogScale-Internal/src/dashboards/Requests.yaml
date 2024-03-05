@@ -1,0 +1,198 @@
+name: Requests
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  a03687c2-252b-4fd6-ace4-dcd12dbcd9e8:
+    x: 8
+    y: 0
+    height: 4
+    queryString: '#category=Request status>=400 | timechart(status, unit="1/s")'
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: Statuscode >=400 (Per Second)
+    isLive: false
+    type: query
+  fc09b132-242d-4767-8eb7-7e7af20fa332:
+    x: 0
+    y: 0
+    height: 4
+    queryString: '#category=Request | timechart(unit="1/s")'
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Requests Per Second
+    isLive: false
+    type: query
+  3a25fe02-e403-4168-82b5-6d9803d937d0:
+    x: 4
+    y: 8
+    height: 4
+    queryString: |-
+      #category=Request (uri=/api\/v1\/ingest\// or uri=/services\/collector/)
+      | timechart(function=percentile(time))
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Ingest Request Responsetime (Millis)
+    isLive: false
+    type: query
+  1463ddfa-69f8-479b-aef4-37c79e607afd:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      #category=Request (uri=/api\/v1\/ingest\// or uri=/services\/collector/)
+      |uri match{
+        /collector/ => kind:= "hec";
+        /hec/ => kind:= "hec";
+        /elastic-bulk/ => kind:="elastic_bulk";
+        /logplex/ => kind:="logplex";
+        /humio-structured/ => kind:="humio-structured";
+        /humio-unstructured/ => kind:="humio-unstructured";
+        /raw/ => kind:="raw";
+        * => kind:=uri
+      }
+      | timechart(kind, unit="1/s")
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: Ingest endpoint Usage (Per Second)
+    isLive: false
+    type: query
+  e99710f8-3204-4878-aa65-243a16a485bf:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      #category=Request
+      | timechart(function=percentile(time, percentiles=[50, 90, 99, 100]))
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Response Times (Millis)
+    isLive: false
+    type: query
+  a010b980-c34e-4c1c-a99c-bbe13aa0ef91:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #category=Request(uri=/api\/v1\/ingest\// or uri=/services\/collector/)
+      | timechart(function=percentile(contentLength))
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Ingest Request Size (Bytes)
+    isLive: false
+    type: query
+  b6ae0736-c489-43b3-b7f6-f156d7f07c9c:
+    x: 8
+    y: 4
+    height: 4
+    queryString: '#category=Request (uri=/api\/v1\/ingest\// or uri=/services\/collector/)
+      status>=400 | timechart(status, unit="1/s")'
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: Ingest Requests With Statuscode >= 400
+    isLive: false
+    type: query
+  15a7a284-15c9-43ac-a80a-f3ff92cf82c3:
+    x: 0
+    y: 4
+    height: 4
+    queryString: '#category=Request (uri=/api\/v1\/ingest\// or uri=/services\/collector/)
+      | timechart(unit="1/s")'
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      lastBucketBehavior: exclude
+      legend: false
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Ingest Requests (Per Second)
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
