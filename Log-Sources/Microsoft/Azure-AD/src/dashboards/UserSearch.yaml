@@ -1,0 +1,219 @@
+name: User Search
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  bd2052aa-6de6-497e-a511-06e6472135da:
+    x: 0
+    y: 7
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | timechart(Vendor.properties.appDisplayName)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Sign Ins Over Time
+    isLive: false
+    type: query
+  75749ded-de98-422a-9b54-9072f8997a1d:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |
+      regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | collect([Vendor.properties.deviceDetail.displayName,Vendor.properties.deviceDetail.browser,Vendor.properties.deviceDetail.operatingSystem,Vendor.properties.deviceDetail.isCompliant,Vendor.properties.deviceDetail.isManaged,Vendor.properties.deviceDetail.trustType])
+    end: now
+    start: 1d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Device Information
+    isLive: false
+    type: query
+  61613e1f-4844-4b97-93c3-48c8ba56c4ba:
+    x: 3
+    y: 3
+    height: 4
+    queryString: |-
+      regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | groupBy([Vendor.properties.riskLevelAggregated])
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 3
+    title: Risk Level
+    isLive: false
+    type: query
+  690af962-084d-4592-a964-760f31333a83:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |-
+      regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | top(Vendor.properties.appDisplayName)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 3
+    title: Top Apps
+    isLive: false
+    type: query
+  e9472d10-dde3-4a76-bcba-a6a30d42f0e6:
+    x: 6
+    y: 3
+    height: 4
+    queryString: |-
+      regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | worldMap(ip=Vendor.callerIpAddress)
+    visualization: world-map
+    end: now
+    start: 1d
+    width: 6
+    title: Location
+    isLive: false
+    type: query
+  7f3a13e6-d5e0-4dda-b053-7fddfa37cf0a:
+    x: 0
+    y: 23
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=GroupManagement
+
+      | $"microsoft/azuread:Parse Target Resource AzureAD"()
+      | parseJson(Vendor.properties.targetResources,prefix=Vendor.properties.targetResources)
+      | top([Vendor.operationName,Vendor.properties.targetResources[0].displayName])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.properties.targetResources","format":"text","width":49592}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Top Changes
+    isLive: false
+    type: query
+  e4f48ea8-1ffa-486a-a2b1-e129ad0badee:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | timechart()
+    end: now
+    start: 1d
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Failed Sign Ins
+    isLive: false
+    type: query
+  c0a82bcb-c35f-4ee7-b866-2985d84c22a7:
+    x: 0
+    y: 11
+    height: 4
+    queryString: |-
+      regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | groupBy([Vendor.properties.riskEventTypes],function=collect([Vendor.properties.riskDetail,Vendor.properties.riskLevelAggregated,Vendor.properties.riskState]))
+    end: now
+    start: 1d
+    width: 8
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Risk
+    isLive: false
+    type: query
+  fa4ee039-dcc1-4df2-be37-31dc0260c1ad:
+    x: 8
+    y: 11
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | count()
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Failed Sign In Count
+    isLive: false
+    type: query
+  e9157a7c-4610-4e8b-aebd-c5919c32e988:
+    x: 8
+    y: 15
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | worldMap(ip=Vendor.callerIpAddress)
+    visualization: world-map
+    end: now
+    start: 1d
+    width: 4
+    title: Failed Sign In Location
+    isLive: false
+    type: query
+  e00616cf-ed80-45e0-89a9-8e288a3a9a8d:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+      | groupBy([Vendor.properties.clientAppUsed])
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Client App Used
+    isLive: false
+    type: query
+  b6459ac7-6b13-4be1-a0a6-f845fa85df00:
+    x: 0
+    y: 19
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | regex(?Username,field=Vendor.properties.isInteractive,flags="i")
+    end: now
+    start: 1d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.callerIpAddress","format":"text","width":197},{"type":"field","fieldName":"Vendor.properties.userPrincipalName","format":"text","width":302},{"type":"field","fieldName":"Vendor.properties.appDisplayName","format":"text","width":272},{"type":"field","fieldName":"Vendor.properties.clientAppUsed","format":"text","width":265},{"type":"field","fieldName":"Vendor.properties.isInteractive","format":"text","width":265},{"type":"field","fieldName":"Vendor.properties.status.failureReason","format":"text","width":677},{"type":"field","fieldName":"Vendor.properties.signInIdentifier","format":"text","width":287}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Failed Sign Ins Events
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  Username:
+    defaultValue: .*
+    label: Username
+    order: 50
+    type: text
