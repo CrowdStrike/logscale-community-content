@@ -1,0 +1,190 @@
+name: Fleet Errors & Log Source Ingestion
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  1b07895b-2af9-42eb-a1ce-794f55f0d999:
+    x: 6
+    y: 8
+    height: 4
+    queryString: |-
+      hostname=?Hostname | diagnostics[0].error = *
+      | split(diagnostics)
+      | timechart(hostname,function=count(diagnostics.error))
+    end: now
+    start: 1d
+    width: 6
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Errors Over Time
+    isLive: false
+    type: query
+  004d51b0-3998-4f4f-914d-8e4657f1202e:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      hostname=?Hostname
+      | split(logSources)
+      | logSources.sourceName=?LogSourceName
+      | bucket(field=logSources.sourceName,function=sum(logSources.collectedBytes),span=1h,limit=500)
+      | time := formatTime("%Y/%m/%d %H:%M:%S", field=_bucket, locale=en_US, timezone=UTC)
+      | _sum = 0
+      | table([time,logSources.sourceName,_sum])
+      | sort(time,order=desc)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Log Sources Ingesting 0 bytes last hour
+    isLive: false
+    type: query
+  af593062-9b8a-4e9f-b060-90f81286dba6:
+    x: 8
+    y: 0
+    height: 4
+    queryString: hostname=?Hostname | logSources.sourceName=?LogSourceName | split(logSources)
+      | groupBy([logSources.sourceType],function=(sum(logSources.collectedBytes)))
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Log Source Type Split based on Ingest Bytes
+    isLive: false
+    type: query
+  8e2b005d-7315-4e17-b5b3-80b2c5272ede:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |-
+      #repo=humio-fleet
+      | diagnostics[0].error = *
+      | split(diagnostics)
+      | groupBy([hostname,diagnostics.error],function=[count(as="Error Count"),collect([version,diagnostics.description]),min(@timestamp,as="First Seen"),selectLast([lastActivity])])
+      | "Error Count" > 5
+    end: now
+    start: 30m
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: LogScale Log Collector Errors >5 in 30 minute window
+    isLive: false
+    type: query
+  beff8585-79fd-430b-af57-dbf739a1b9c9:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      hostname=?Hostname  | diagnostics[0].error = *
+      | split(diagnostics)
+      | groupBy([hostname,diagnostics.error],function=[count(as="Error Count"),collect([version,diagnostics.description]),min(@timestamp,as="First Seen"),selectLast([lastActivity])])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Fleet Errors Overview
+    isLive: false
+    type: query
+  ccbc9804-36e4-4e83-9052-71fb291de216:
+    x: 0
+    y: 0
+    height: 4
+    queryString: hostname=?Hostname | groupBy([hostname],function=[collect([ipAddress,machineId,system,version]),selectLast([lastActivity])])
+    end: now
+    start: 1d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Hosts Overview
+    isLive: false
+    type: query
+  fbaa7ebe-bda5-4e22-a838-d6c8951de99d:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      hostname=?Hostname
+      | split(logSources)
+      | logSources.sourceName=?LogSourceName
+      //| bucket(field=logSources.sourceName,function=sum(logSources.collectedBytes),span=1h,limit=500)
+      //| time := formatTime("%Y/%m/%d %H:%M:%S", field=_bucket, locale=en_US, timezone=UTC)
+      //| _sum = 0
+      //| table([time,logSources.sourceName,_sum])
+      //| sort(time,order=desc)
+      | timechart(logSources.sourceName,function=sum(logSources.collectedBytes))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Log Source Ingestion Over Time
+    isLive: false
+    type: query
+  78f80a77-e495-461e-a7a6-a8d7501ada16:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      hostname=?Hostname
+      | split(logSources)
+      | logSources.sourceName=?LogSourceName
+      //| groupBy([logSources.sourceType],function=(sum(logSources.collectedBytes)))
+      | groupby(logSources.sourceName,function=[collect(logSources.sourceType),sum(logSources.collectedBatches,as="Total Batches Last 24h"),sum(logSources.collectedBytes,as="Total Bytes Last 24h"),sum(logSources.collectedEvents,as="Total Events Last 24h")])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Log Sources Overview
+    isLive: false
+    type: query
+  602fe883-6038-4384-92b3-66efe44bbaf9:
+    x: 6
+    y: 4
+    height: 4
+    queryString: |-
+      hostname=?Hostname
+      | split(logSources)
+      | logSources.sourceName=?LogSourceName
+      | timechart(logSources.sourceName,function=sum(logSources.collectedBytes),span=6h)
+    end: now
+    start: 2d
+    width: 6
+    options:
+      series: {}
+      interpolation: step-after
+      showDataPoints: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      regression: false
+      show-utc: false
+      imputation: none
+    visualization: time-chart
+    title: Log Source Total Bytes Last 2D
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0

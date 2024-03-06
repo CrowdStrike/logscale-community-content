@@ -1,0 +1,141 @@
+name: Scheduled Search Details
+description: Detailed information about a single scheduled search.
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  5e6648eb-2fc5-4e7d-82d8-1cef8a057d9a:
+    x: 0
+    y: 6
+    description: This chart displays when the scheduled search successfully triggered.
+    height: 6
+    queryString: |-
+      #category=ScheduledSearch dataspace=?repository scheduledSearchName=?scheduledSearchName
+      | message="Scheduled search successfully triggered at least one action"
+      | timechart(scheduledSearchName)
+    end: now
+    start: 24h
+    width: 10
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Successful Scheduled Search Triggers
+    isLive: false
+    type: query
+  79258630-c4b0-4349-8f51-679e0f72e987:
+    x: 0
+    description: Overview of problems with the scheduled search.
+    height: 4
+    queryString: |-
+      #category=ScheduledSearch dataspace=?repository scheduledSearchName=?scheduledSearchName | #severity =~ in(values=["Warning", "Error"])
+      | groupby(message, function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Message", "No. of times failed", "Last failed", "Last suggestion", "Last exceptionMessage", "Last warnings", "scheduledSearchId"], sortby=Message, order=asc)
+    end: now
+    start: 24h
+    width: 10
+    y: 12
+    interactions:
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{parameters.repository}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Message:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Problems
+    isLive: false
+    type: query
+  ef838308-042f-41e5-8b56-b3c229465a9b:
+    x: 0
+    y: 0
+    description: Shows the status of the scheduled search over time.
+    height: 6
+    queryString: |
+      #category=ScheduledSearch dataspace=?repository scheduledSearchName=?scheduledSearchName
+      | status=*
+      | case {
+          test(message=="Scheduled search successfully triggered at least one action") | successfulPoll:="true";
+          test(message=="Scheduled search query is still running")                     | successfulPoll:="true";
+          test(message=="Scheduled search found no results and will not trigger")      | successfulPoll:="true";
+          *                                                                            | *;
+      }
+      | timeChart(span=1m, function={
+          [
+            {status=Failure                      | count(as=failureCount)},
+            {status=Success successfulPoll=true  | count(as=successPollCount)},
+            {status=Success successfulPoll!=true | count(as=successCount)}
+          ]
+        })
+      | case {
+          test(successPollCount>0) | "Success":=1 | "Failure":=0;
+          test(failureCount>0)     | "Success":=0 | "Failure":=1;
+          test(successCount>0)     | "Success":=1 | "Failure":=0;
+          *                        | "Success":=0 | "Failure":=0;
+        }
+      | drop([successPollCount, failureCount, successCount])
+    end: now
+    start: 24h
+    width: 10
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Status over Time
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  repository:
+    label: Repository/view
+    query: '#category=ScheduledSearch | groupBy(dataspace, function=[])'
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    order: 1
+    valueField: dataspace
+  scheduledSearchName:
+    label: Scheduled Search name
+    query: '#category=ScheduledSearch dataspace=?{repository=*} | groupBy(scheduledSearchName,
+      function=[])'
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    order: 2
+    valueField: scheduledSearchName

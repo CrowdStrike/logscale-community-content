@@ -1,0 +1,468 @@
+name: Collector Overview
+updateFrequency: never
+timeSelector:
+  defaultTimeJumpInMs: 30000
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+widgets:
+  539a67b5-611f-4cd6-ad9e-56b5f6cb147d:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action="ingest"
+      | status = 200
+
+      | timechart(function=[percentile(time, percentiles=[50, 75, 99], as=responseTime), min(time), max(time)])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      interpolation: monotone
+      connect-points: false
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+      yAxisUnit: ms
+      series: {}
+      yAxisTitle: Response time
+      stacking: none
+    visualization: time-chart
+    title: Ingest response times
+    isLive: false
+    type: query
+  adfbd43c-b101-4c80-812c-2faa41c8e467:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | status = 200
+      | userAgent = /^humio-log-collector\/(?<version>[^-]+-.{4})/
+      | groupby([version], function=[
+          count(remote, distinct=true, as=remoteIPs),
+          count(logcollectorId, distinct=true, as=enrolledCollectors),
+          sum(contentLength, as=IngestedTotal),
+          sum(decodedContentLength, as=IngestedDecodedTotal)
+      ])
+
+      | compressionRatio := IngestedDecodedTotal/IngestedTotal | format("%,.2f", field=compressionRatio, as = cRatio)
+      | table([version, remoteIPs, enrolledCollectors, IngestedTotal, IngestedDecodedTotal, cRatio], sortby=IngestedDecodedTotal)
+    visualization: table-view
+    end: now
+    start: 1h
+    width: 4
+    title: Collectors by version
+    isLive: false
+    type: query
+  9ba443e1-39b1-4469-9f17-5c52e2ba7c9b:
+    x: 10
+    y: 0
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | status != 200
+      | timechart(function=count(), unit="1/s")
+    end: now
+    start: 1m
+    width: 2
+    options:
+      default: {}
+      suffix: rps
+      value-format: metric
+    visualization: single-value
+    title: Activity with errors
+    isLive: false
+    type: query
+  fa3f87e1-c06e-419c-b33f-819bb021dcc5:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action=ingest
+      | status = 200
+      | userAgent = /^humio-log-collector\/(?<version>[^-]+-.{4})/
+      | timechart("version", function=count(remote, distinct=true, as=remoteHosts), limit=15)
+    end: now
+    start: 1h
+    width: 4
+    options:
+      interpolation: monotone
+      connect-points: false
+      yAxisScale: linear
+      imputation: none
+      yAxisTitle: Remote IPs
+      stacking: normal
+    visualization: time-chart
+    title: Remote IPs/version
+    isLive: false
+    type: query
+  698e3556-d1a4-44c7-b9ee-0cc9a34c0b52:
+    x: 4
+    y: 16
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | timechart("action")
+    end: now
+    start: 1d
+    width: 4
+    options:
+      interpolation: monotone
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Actions over time
+    isLive: false
+    type: query
+  482b2261-513e-429b-9fad-390ed1e8f2ab:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action != "ingest"
+      | timechart(function=count(), unit="1/s")
+    end: now
+    start: 1m
+    width: 2
+    options:
+      default: {}
+      suffix: rps
+      value-format: metric
+    visualization: single-value
+    title: Non ingest activity
+    isLive: false
+    type: query
+  288bb013-4fba-4ed6-9de6-c3bf842a7efb:
+    x: 8
+    y: 20
+    height: 4
+    queryString: |
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | status != 200
+      | userAgent = /^humio-log-collector\/(?<version>[^-]+-.{2})/
+      // Errors
+      | groupby(["version", "status"])
+    end: now
+    start: 1m
+    width: 4
+    options:
+      yScaleType: linear
+      barChartType: stacked
+      labelLimit: 44
+      sortOrder: descending
+      withYAxisTitle: false
+    visualization: bar-chart
+    title: Error codes grouped per version
+    isLive: false
+    type: query
+  f1ee6132-63e7-4a65-ad5b-9534459ae84b:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action = "metrics-v2"
+      | timechart(function=count(logcollectorId, distinct=true, as=enrolledCollectors))
+    end: now
+    start: 1h
+    width: 2
+    options:
+      default: {}
+      yAxisTitle: ''
+      trend-value: abs
+      value-format: metric
+    visualization: single-value
+    title: Collectors enrolled to Fleet Mgmt.
+    isLive: false
+    type: query
+  39b9f66e-9ac0-4ac3-9cfa-ab063ecda52a:
+    x: 6
+    y: 0
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action = "ingest"
+      | timechart(function=count(), unit="1/s")
+    end: now
+    start: 1m
+    width: 2
+    options:
+      default: {}
+      suffix: rps
+      value-format: metric
+    visualization: single-value
+    title: Ingest Activity
+    isLive: false
+    type: query
+  0933448d-552d-4e9b-aa50-3669ff82c5dc:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action=ingest
+      | status = 200
+      | userAgent = /^humio-log-collector\/(?<version>[^-]+-.{4})/
+      | timechart("version", function=sum(decodedContentLength, as=IngestedDataDecodedTotal), unit="B/span to B/day", limit=20)
+    end: now
+    start: 1h
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      connect-points: false
+      stacking: normal
+      imputation: none
+    visualization: time-chart
+    title: Ingest/day version
+    isLive: false
+    type: query
+  fde8cff3-6cd0-47fc-ba09-481ef1e1192d:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action="ingest"
+      | timechart(function=count(as=IngestRequests), unit="1/s")
+    end: now
+    start: 1h
+    width: 4
+    options:
+      yAxisUnit: /s
+      interpolation: monotone
+      connect-points: false
+      yAxisTitle: Request rate
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Ingest rate
+    isLive: false
+    type: query
+  951e71ff-6d00-454b-8118-e9aa130bd00f:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | groupby(["action", status], function=count())
+    end: now
+    start: 1m
+    width: 4
+    options:
+      series: {}
+      withYAxisTitle: false
+      yScaleType: log
+    visualization: bar-chart
+    title: All status codes grouped per action
+    isLive: false
+    type: query
+  30ac21e8-d09f-4297-b0fc-bdb5d51925e0:
+    x: 4
+    y: 12
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | status != 200
+      // Errors
+      | timechart("status")
+    end: now
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: 'All error codes over time '
+    isLive: false
+    type: query
+  7edabcbb-3629-4725-8573-9a0a96a84a2b:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | status != 200
+      | groupby(["action", status], function=count())
+    end: now
+    start: 1m
+    width: 4
+    options:
+      withYAxisTitle: false
+      yScaleType: log
+    visualization: bar-chart
+    title: Errors codes grouped per action
+    isLive: false
+    type: query
+  bf6cc1b9-ea1d-4597-9b70-6918edb91802:
+    x: 4
+    y: 20
+    height: 4
+    queryString: |
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | status != 200
+
+      // Errors
+      | groupby(["status", "action"])
+    end: now
+    start: 1m
+    width: 4
+    options:
+      series: {}
+      yScaleType: log
+      barChartType: stacked
+      sortOrder: descending
+      withYAxisTitle: false
+    visualization: bar-chart
+    title: Error codes stacked per action
+    isLive: false
+    type: query
+  1f471c4b-46cc-406e-a5e2-bb0898e01f77:
+    x: 2
+    y: 0
+    height: 4
+    queryString: |
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | timechart(function=count(remote, distinct=true, as=remoteHosts))
+    end: now
+    start: 1h
+    width: 2
+    options:
+      trend-value: abs
+      suffix: ''
+      yAxisTitle: ''
+      value-format: metric
+      default: {}
+    visualization: single-value
+    title: Remote IPs
+    isLive: false
+    type: query
+  9ffe7ae0-2dc7-4362-ac0b-60c876cd17bb:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | status != 200
+      | timechart("action")
+    end: now
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: All errors per activity
+    isLive: false
+    type: query
+  7b6634b7-95dc-4dd1-a9b6-731b72a1f837:
+    x: 8
+    y: 12
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action="ingest"
+      | status != 200
+      | timechart(status, function=[count(as=statusCode)])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      interpolation: monotone
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Ingest error codes over time
+    isLive: false
+    type: query
+  58a3d1de-ec6c-4d01-8a3a-2bcc3f63cbe6:
+    x: 8
+    y: 16
+    height: 4
+    queryString: |
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | in(field="action", values=["refresh","enroll","pull","push","report-config"])
+      | timechart(action, function=count())
+    end: now
+    start: 1d
+    width: 4
+    options:
+      interpolation: step-after
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: Fleet mgmt activity
+    isLive: false
+    type: query
+  e52297ec-9815-4e98-b518-5afcecabb72b:
+    x: 4
+    y: 8
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action="ingest"
+      | timechart(function=[percentile(decodedContentLength, percentiles=[50, 75, 99], as=contentSize), min(decodedContentLength), max(decodedContentLength)])
+    end: now
+    start: 1h
+    width: 4
+    options:
+      yAxisUnit: B
+      plY: 33554432
+      interpolation: monotone
+      horizontalPlotLineLabel: Default limit
+      connect-points: false
+      yAxisScale: logarithmic
+      plotType: line
+      imputation: none
+      yAxisTitle: Ingest size
+      stacking: none
+    visualization: time-chart
+    title: Ingest size percentiles (decoded)
+    isLive: false
+    type: query
+  878562c8-cbd6-41b5-aaa8-5c17961d17ea:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      $crowdstrike/logscale-monitoring:LogScaleCollectorRequestsAll()
+      | action="ingest"
+      | status=200
+      | timechart(function=sum(decodedContentLength, as=IngestedDataDecodedTotal), unit="B/span to B/day")
+    end: now
+    start: 1m
+    width: 2
+    options:
+      default: {}
+      value-format: metric
+    visualization: single-value
+    title: Ingest/day decoded
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0

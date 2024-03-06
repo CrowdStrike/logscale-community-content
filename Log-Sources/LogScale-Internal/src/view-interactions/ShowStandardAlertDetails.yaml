@@ -1,0 +1,21 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.3.0
+interaction:
+  conditions:
+  - argument: Alert
+    fieldName: '#category'
+    operator: equal
+  - argument: ''
+    fieldName: alertName
+    operator: present
+  name: Show Standard Alert Details
+  titleTemplate: Show Alert Details
+  useWidgetTimeWindow: false
+  dashboardReference:
+    name: Standard Alert Details
+    packageSpecifier: humio/activity
+    repoOrViewName: humio-activity
+  arguments:
+    alertName: '["{{fields.alertName}}"]'
+    repository: '["{{fields.dataspace}}"]'
+  openInNewTab: true
+  type: dashboardlink

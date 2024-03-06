@@ -1,0 +1,365 @@
+name: Scheduled Searches Overview
+description: Overview of all active scheduled searches
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  3ed05523-e541-4b5c-a1cb-21981b1c864e:
+    x: 0
+    description: Overview of problems with running scheduled searches due to either
+      the user having been deleted or the user not having permissions to run the scheduled
+      search. Fix this by either granting the user the missing permissions, save the
+      scheduled search as another user, or change the scheduled search to run on behalf
+      of the organization.
+    height: 4
+    queryString: |-
+      #category=ScheduledSearch subCategory=User | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
+      | groupby([dataspace, scheduledSearchName], function=tail(1))
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("scheduledSearchName", as="Scheduled search name")
+      | rename("message", as="Message")
+      | rename("suggestion", as="Suggestion")
+      | table(["Repository/view", "Scheduled search name", "Last failed", "Message", "Suggestion", "scheduledSearchId"], sortby=["Repository/view", "Scheduled search name"], order=[asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 8
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Scheduled Search Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Scheduled Search Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+        scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: User Problems
+    isLive: true
+    type: query
+  79258630-c4b0-4349-8f51-679e0f72e987:
+    x: 0
+    description: Overview of other problems with running scheduled searches than the
+      two lists above.
+    height: 4
+    queryString: |-
+      #category=ScheduledSearch | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
+      | groupby([dataspace, scheduledSearchName], function=[tail(1), count(as="No. of times failed")])
+      | subCategory != User message != "Problem firing action"
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("scheduledSearchName", as="Scheduled search name")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Last message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Scheduled search name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last warnings", "scheduledSearchId"], sortby=["No. of times failed", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 12
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Scheduled Search Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Scheduled Search Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+        scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Other Problems
+    isLive: true
+    type: query
+  02c137f4-18f9-44c6-91f9-8f6294365cec:
+    x: 0
+    y: 0
+    description: This chart displays how many distinct scheduled searches had problems
+      over time per repository or view.
+    height: 4
+    queryString: |-
+      #category=ScheduledSearch | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
+      | timechart(dataspace, limit=50, function=count(field=scheduledSearchName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 12
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Scheduled Searches Problems by Repository/View
+    isLive: true
+    type: query
+  5e6648eb-2fc5-4e7d-82d8-1cef8a057d9a:
+    x: 0
+    y: 20
+    description: This chart displays how many distinct scheduled searches triggered
+      over time per repository or view.
+    height: 6
+    queryString: |-
+      #category=ScheduledSearch | message="Scheduled search successfully triggered at least one action" dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
+      | timechart(dataspace, limit=50, function=count(field=scheduledSearchName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 5
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Successful Scheduled Searches Triggers by Repository/View
+    isLive: true
+    type: query
+  2acf30c8-782a-4354-946b-0edb3a5a47ac:
+    x: 0
+    description: Overview of scheduled searches which cannot keep up with the schedule
+      and where a planned execution was skipped. Scheduled searches that are on this
+      list should first be checked if they have other problems. Second, if the time
+      they lagged behind was a time where Humio was not running optimally. If neither
+      is the case, the query might need to be optimized.
+    height: 4
+    queryString: |-
+      #category=ScheduledSearch | message="Scheduled search lagged behind and had to be rescheduled" | dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
+      | groupby([dataspace, scheduledSearchName], function=[selectLast([@timestamp, scheduledSearchId]), count(as="No. of times lagging behind")])
+      | rename(@timestamp, as="Last lagging behind")
+      | rename("dataspace", as="Repository/view")
+      | rename("scheduledSearchName", as="Scheduled search name")
+      | table(["Repository/view", "Scheduled search name", "No. of times lagging behind", "Last lagging behind", "scheduledSearchId"], sortby=["No. of times lagging behind", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 16
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Scheduled Search Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Scheduled Search Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+        scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last lagging behind:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Scheduled Searches Lagging Behind
+    isLive: true
+    type: query
+  d7c6c551-af92-45e5-b211-31a97915db80:
+    x: 5
+    description: Overview of scheduled searches that triggered and successfully invoked
+      at least one action.
+    height: 6
+    queryString: |-
+      #category=ScheduledSearch message="Scheduled search successfully triggered at least one action" dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
+      | groupby([dataspace, scheduledSearchName], function=[selectLast(["@timestamp", actionIds, scheduledSearchId]), count(as="No. of times triggered")])
+      | rename(@timestamp, as="Last triggered")
+      | rename("dataspace", as="Repository/view")
+      | rename("scheduledSearchName", as="Scheduled search name")
+      | rename("actionIds", as="Action ids")
+      | table(["Repository/view", "Scheduled search name", "Action ids", "No. of times triggered", "Last triggered", "scheduledSearchId"], sortby=["No. of times triggered", "Repository/view", "Scheduled search name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 7
+    y: 20
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Scheduled Search Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Scheduled Search Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+        scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last triggered:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Scheduled Searches Triggered
+    isLive: true
+    type: query
+  1774a2b0-d73f-4551-bc55-ddac99d125b7:
+    x: 0
+    description: Overview of problems with invoking actions when a scheduled search
+      is run. Note that if the scheduled search has multiple actions attached and
+      at least one succeeds, it is considered to have run successfully.
+    height: 4
+    queryString: |-
+      #category=ScheduledSearch #severity = "Warning" message = "Problem firing action" dataspace=?{repository=*} scheduledSearchName=?{scheduledSearchName=*}
+      | groupby([dataspace, scheduledSearchName, actionName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("scheduledSearchName", as="Scheduled search name")
+      | rename("actionName", as="Action name")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Scheduled search name", "Action name", "No. of times failed", "Last failed", "Last exceptionMessage", "scheduledSearchId"], sortby=["No. of times failed", "Repository/view","Scheduled search name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 4
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Scheduled Search Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Scheduled Search Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+        scheduledSearchName: '["{{ fields[\"Scheduled search name\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Scheduled Search
+      urlTemplate: '{{fields["Repository/view"]}}/scheduledSearches/{{fields.scheduledSearchId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        Scheduled search name:
+          render-as: value
+        scheduledSearchId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Action Invocation Problems
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  repository:
+    label: Repository/view
+    query: '#category=ScheduledSearch | groupBy(dataspace, function=[])'
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 1
+    valueField: dataspace
+  scheduledSearchName:
+    label: Scheduled search name
+    query: '#category=ScheduledSearch dataspace=?{repository=*} | groupBy(scheduledSearchName,
+      function=[])'
+    timeInterval: 1h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 2
+    valueField: scheduledSearchName

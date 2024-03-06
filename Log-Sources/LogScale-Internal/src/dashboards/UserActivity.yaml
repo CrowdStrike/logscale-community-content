@@ -1,0 +1,310 @@
+name: User Activity
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  75c56cb6-7d45-4822-8c01-52fe80d47866:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      actor.user.username=?Username|repoName=?Repository| type=datasource.delete | top([timestamp,actor.user.username,repoName,tags])
+      | table([timestamp,actor.user.username,repoName,tags])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Datasource Deleted
+    isLive: true
+    type: query
+  086610bf-0cb5-446f-926b-63effd07f9cd:
+    x: 8
+    y: 21
+    height: 4
+    queryString: actor.user.username=?Username | type=*parser* | groupby([type,actor.user.username])
+      | sort(_count)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Parser Activity by User
+    isLive: true
+    type: query
+  4e727668-91ea-4258-a327-45ea682088cf:
+    x: 8
+    y: 4
+    height: 4
+    queryString: actor.user.username=?Username | type=user.signin | worldMap(ip=actor.ip)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      projectionRotationX: '0'
+      projection: mercator
+      normalize: 'false'
+      centerLatitude: '0'
+      autoRotate: 'false'
+      centerLongitude: '0'
+      projectionRotationZ: '0'
+      maxSize: '6'
+      opacityMode: 'false'
+      zLevel: '0'
+      projectionRotationY: '0'
+      opacity: '0.25'
+    visualization: world-map
+    title: Logins from the Last Week
+    isLive: true
+    type: query
+  c68dadee-b6c7-4007-9e1d-f848e957cbc4:
+    x: 8
+    y: 13
+    height: 4
+    queryString: actor.user.username=?Username| type=view.delete | top([timestamp,actor.user.username,repoName,userMessage])
+      | table([timestamp,actor.user.username,repoName,userMessage])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Views Deleted
+    isLive: true
+    type: query
+  1b350924-1394-49bc-8c6e-2015d221b85a:
+    x: 4
+    y: 0
+    height: 8
+    queryString: actor.user.username=?Username | type=user.signin | top(actor.user.username,as="Number
+      of Sign Ins",limit=20)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Top 20 Sign Ins by Users
+    isLive: true
+    type: query
+  3a36ce4d-973e-4f6f-8d6d-70bfc2cd789a:
+    x: 8
+    y: 0
+    height: 4
+    queryString: actor.user.username=?Username | type=user.signin | timechart(actor.user.username,limit=20,span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+      interpolation: step-after
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      imputation: zero
+    visualization: time-chart
+    title: User Sign Ins per Day in the Last Week
+    isLive: true
+    type: query
+  0f6f19b4-3fe9-41f1-bb2a-69751e5731ba:
+    x: 8
+    y: 25
+    height: 4
+    queryString: actor.user.username=?Username | type=*alert* | groupby([type,actor.user.username])
+      | sort(_count)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Alert Activity by User
+    isLive: true
+    type: query
+  73f3c8cb-1729-4889-8bb9-a4e6f439adb8:
+    x: 0
+    y: 0
+    height: 4
+    queryString: actor.user.username=?Username | type=user.signin | count(actor.user.username,distinct=true)
+    visualization: simple-gauge
+    end: now
+    start: 7d
+    width: 4
+    title: Unique User Sign In's in the Last Week
+    isLive: true
+    type: query
+  401321ae-c2e4-4a13-80da-4f91662f1d24:
+    x: 4
+    y: 21
+    height: 4
+    queryString: actor.user.username=?Username | type=*parser* | timechart(type,span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: Parser Activity by Type
+    isLive: true
+    type: query
+  bffd8733-2992-4606-a470-101bdecbb178:
+    x: 0
+    y: 29
+    description: Not Including Dataspace Queries. Filter by the username parameter
+      to see per user
+    height: 4
+    queryString: actor.user.username = ?Username | type!=dataspace.query | timechart(type,span=1d)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      series: {}
+    visualization: time-chart
+    title: 'User Activity '
+    isLive: true
+    type: query
+  acf2122b-1638-44c7-98cd-b5f3ed2fec90:
+    x: 0
+    y: 21
+    height: 4
+    queryString: actor.user.username=?Username | type=*parser* | timechart(actor.user.username,span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: Parser Activity By User
+    isLive: true
+    type: query
+  418859d2-f046-4e1d-8716-30ff4f49e706:
+    x: 0
+    y: 13
+    height: 4
+    queryString: |-
+      actor.user.username=?Username| repoName=?Repository | type=delete.events
+      | top([actor.user.username,repoName,userMessage,query.queryString])
+      | table([actor.user.username,repoName,userMessage,query.queryString])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Events Deleted
+    isLive: true
+    type: query
+  f79e78a3-ca3b-41d9-b11b-be033a01f625:
+    x: 0
+    y: 8
+    height: 5
+    queryString: actor.user.username=?Username | type=dataspace.query | repoName=?Repository
+      | timechart(actor.user.username,span=1d,limit=20)
+    end: now
+    start: 7d
+    width: 8
+    options:
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: Number of Queries Run by Users per Day in the Last Week
+    isLive: true
+    type: query
+  f1d7b702-edac-400b-a972-6bf3a18cdc69:
+    x: 4
+    y: 13
+    height: 8
+    queryString: actor.user.username=?Username |type=*delete* | top([type,actor.user.username],limit=20)
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Top Deletes by User
+    isLive: true
+    type: query
+  ae00766f-353e-4313-abeb-2df61005da61:
+    x: 0
+    y: 4
+    height: 4
+    queryString: actor.user.username=?Username | type="user.accept-terms" | timechart(actor.user.username,span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: New Users per Day in the Last Week
+    isLive: true
+    type: query
+  3b9a6965-50b6-4974-b9dd-a228daf961a1:
+    x: 8
+    y: 8
+    height: 5
+    queryString: actor.user.username=?Username | type=dataspace.query | repoName=?Repository
+      | top(actor.user.username)
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 4
+    title: Number of Queries Run by Users
+    isLive: true
+    type: query
+  16264ca9-14c4-4837-bbd0-aee772e60800:
+    x: 8
+    y: 17
+    height: 4
+    queryString: actor.user.username=?Username | repoName=?Repository | type=parser.delete
+      | top([timestamp,actor.user.username,parserName,repoName])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 4
+    title: Parsers Deleted
+    isLive: true
+    type: query
+  ff213918-5fa0-4eea-acb5-bc893a490117:
+    x: 4
+    y: 25
+    height: 4
+    queryString: actor.user.username=?Username | type=*alert* | timechart(type,span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: Alert Activity by Type
+    isLive: true
+    type: query
+  1b7acc2c-cef5-4e83-a045-40c6b46d8998:
+    x: 0
+    y: 25
+    height: 4
+    queryString: actor.user.username=?Username | type=*alert* | timechart(actor.user.username,span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: Alert Activity by User
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  Repository:
+    label: Repository
+    query: top(repoName,limit=50)
+    timeInterval: 24h
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: repoName
+  Username:
+    label: Username
+    query: 'top(actor.user.username,limit=50) '
+    timeInterval: 24h
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: actor.user.username

@@ -1,0 +1,15 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.3.0
+interaction:
+  conditions:
+  - argument: Alert
+    fieldName: '#category'
+    operator: equal
+  - argument: ''
+    fieldName: alertId
+    operator: present
+  name: Edit Standard Alert
+  urlEncodeArgs: true
+  titleTemplate: Edit Alert
+  urlTemplate: '{{fields.dataspace}}/alerts/standard/{{fields.alertId}}'
+  openInNewTab: true
+  type: customlink

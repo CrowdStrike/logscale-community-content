@@ -1,0 +1,4 @@
+$schema: https://schemas.humio.com/action/v0.5.0
+fileName: collector-id-hostname.csv
+name: Upload Collector ID Hostname CSV
+type: upload-file

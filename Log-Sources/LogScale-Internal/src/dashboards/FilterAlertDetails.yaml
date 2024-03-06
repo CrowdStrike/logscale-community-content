@@ -1,0 +1,177 @@
+name: Filter Alert Details
+description: Detailed information about a single filter alert
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  79258630-c4b0-4349-8f51-679e0f72e987:
+    x: 0
+    y: 12
+    description: Overview of errors with the filter alert.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity=Error dataspace=?repository alertName=?alertName
+      | groupby(message, function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Message", "No. of times failed", "Last failed", "Last suggestion", "Last exceptionMessage", "Last warnings"], sortby=Message, order=asc)
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 10
+    title: Errors
+    isLive: false
+    type: query
+  ef838308-042f-41e5-8b56-b3c229465a9b:
+    x: 2
+    y: 0
+    description: Shows the status of the alert over time.
+    height: 6
+    queryString: |
+      #category=FilterAlert dataspace=?repository alertName=?alertName
+      | status=*
+      | case {
+          test(message=="Alert triggered on event and invoked at least one action") | successfulPoll:="true";
+          test(message=="Alert found no results and will not trigger")              | successfulPoll:="true";
+          *                                                                         | *;
+      }
+      | timeChart(span=1m, function={
+          [
+            {status=Failure                      | count(as=failureCount)},
+            {status=Success successfulPoll=true  | count(as=successPollCount)},
+            {status=Success successfulPoll!=true | count(as=successCount)}
+          ]
+        })
+      | case {
+          test(successPollCount>0) | "Success":=1 | "Failure":=0 | "Not Running":=0;
+          test(failureCount>0)     | "Success":=0 | "Failure":=1 | "Not Running":=0;
+          test(successCount>0)     | "Success":=1 | "Failure":=0 | "Not Running":=0;
+          *                        | "Success":=0 | "Failure":=0 | "Not Running":=1;
+        }
+      | drop([failureCount, successPollCount, successCount])
+    end: now
+    start: 24h
+    width: 8
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Status over Time
+    isLive: false
+    type: query
+  5e6648eb-2fc5-4e7d-82d8-1cef8a057d9a:
+    x: 0
+    y: 6
+    description: This chart displays when the alert successfully triggered.
+    height: 6
+    queryString: |-
+      #category=FilterAlert dataspace=?repository alertName=?alertName
+      | message="Alert triggered on event and invoked at least one action"
+      | timechart(alertName)
+    end: now
+    start: 24h
+    width: 10
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Successful Alert Triggers
+    isLive: false
+    type: query
+  a75ef6cc-9944-4f71-9dc1-aa4cf4028e8c:
+    x: 0
+    y: 0
+    description: |-
+      Shows the status of the alert within the last minute.
+      If the alert was successfully polled, it is green.
+      Otherwise, if the alert had a failure, it is red.
+      Otherwise, if the alert had a success, it is green.
+      Otherwise, the alert is grey.
+    height: 6
+    queryString: |-
+      #category=FilterAlert dataspace=?repository alertName=?alertName
+      | status=*
+      | case {
+        test(message=="Alert triggered on event and invoked at least one action") | successfulPoll:="true";
+        test(message=="Alert found no results and will not trigger")              | successfulPoll:="true";
+        *                                                                         | *;
+      }
+      | [{status=Failure | count(as=failureCount)}, {status=Success successfulPoll=true | count(as=successPollCount)}, {status=Success successfulPoll!=true | count(as=successCount)}]
+      | case {
+        test(successPollCount>0) | aggStatus:="🟢";
+        test(failureCount>0)     | aggStatus:="🔴";
+        test(successCount>0)     | aggStatus:="🟢";
+        *                        | aggStatus:="⚪";
+      }
+      | select(aggStatus)
+    end: now
+    start: 1m
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Current Status
+    isLive: false
+    type: query
+  2aa64fae-1933-4b50-aa0a-82f9bdedbb57:
+    x: 0
+    y: 16
+    description: Overview of warnings with the filter alert.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity=Warning dataspace=?repository alertName=?alertName
+      | groupby(message, function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed") | formatTime(field="Last failed", format="%Y/%m/%d %H:%M:%S %Z", as="Last failed")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Message", "No. of times failed", "Last failed", "Last suggestion", "Last exceptionMessage", "Last warnings"], sortby=Message, order=asc)
+    visualization: table-view
+    end: now
+    start: 24h
+    width: 10
+    title: Warnings
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  alertName:
+    label: Filter Alert name
+    query: '#category=FilterAlert dataspace=?{repository=*} | groupBy(alertName, function=[])'
+    timeInterval: 1h
+    useDashboardTimeIfSet: true
+    type: query
+    order: 2
+    valueField: alertName
+  repository:
+    label: Repository/view
+    query: '#category=FilterAlert | groupBy(dataspace, function=[])'
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    order: 1
+    valueField: dataspace

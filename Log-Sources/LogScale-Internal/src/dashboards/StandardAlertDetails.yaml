@@ -1,0 +1,204 @@
+name: Standard Alert Details
+description: Detailed information about a single standard alert
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  679ba7a6-77e0-44cd-92b0-2a389dc490c5:
+    x: 0
+    y: 6
+    description: Shows how many times the standard alert query was restarted over
+      time. If this happens more than a few times, it could indicate that the query
+      is getting killed or has another problem.
+    height: 6
+    queryString: |-
+      #category = Alert dataspace=?repository alertName=?alertName
+      | message="Query started"
+      | timeChart(alertName, limit=50)
+    end: now
+    start: 24h
+    width: 4
+    options:
+      series: {}
+      interpolation: step-after
+      legend: false
+      showDataPoints: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: Alert Query Restarts over Time
+    isLive: false
+    type: query
+  79258630-c4b0-4349-8f51-679e0f72e987:
+    x: 0
+    description: Overview of problems with the standard alert.
+    height: 4
+    queryString: |-
+      #category=Alert dataspace=?repository alertName=?alertName | #severity =~ in(values=["Warning", "Error"])
+      | groupby(message, function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Message", "No. of times failed", "Last failed", "Last suggestion", "Last exceptionMessage", "Last warnings", "alertId"], sortby=Message, order=asc)
+    end: now
+    start: 24h
+    width: 10
+    y: 12
+    interactions:
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{parameters.repository}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Last failed:
+          data-type: datetime
+        Message:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Problems
+    isLive: false
+    type: query
+  ef838308-042f-41e5-8b56-b3c229465a9b:
+    x: 2
+    y: 0
+    description: Shows the status of the alert over time.
+    height: 6
+    queryString: |
+      #category=Alert dataspace=?repository alertName=?alertName
+      | status=*
+      | case {
+          test(message=="Alert triggered and invoked at least one action and will be throttled")         | successfulPoll:="true";
+          test(message=="Alert found results, but no actions were invoked since the alert is throttled") | successfulPoll:="true";
+          test(message=="Alert found no results and will not trigger")                                   | successfulPoll:="true";
+          *                                                                                              | *;
+      }
+      | timeChart(span=1m, function={
+          [
+            {status=Failure                      | count(as=failureCount)},
+            {status=Success successfulPoll=true  | count(as=successPollCount)},
+            {status=Success successfulPoll!=true | count(as=successCount)}
+          ]
+        })
+      | case {
+          test(successPollCount>0) | "Success":=1 | "Failure":=0 | "Not Running":=0;
+          test(failureCount>0)     | "Success":=0 | "Failure":=1 | "Not Running":=0;
+          test(successCount>0)     | "Success":=1 | "Failure":=0 | "Not Running":=0;
+          *                        | "Success":=0 | "Failure":=0 | "Not Running":=1;
+        }
+      | drop([failureCount, successPollCount, successCount])
+    end: now
+    start: 24h
+    width: 8
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Status over Time
+    isLive: false
+    type: query
+  5e6648eb-2fc5-4e7d-82d8-1cef8a057d9a:
+    x: 4
+    y: 6
+    description: This chart displays when the alert successfully triggered.
+    height: 6
+    queryString: |-
+      #category=Alert dataspace=?repository alertName=?alertName
+      | message="Alert triggered and invoked at least one action and will be throttled"
+      | timechart(alertName)
+    end: now
+    start: 24h
+    width: 6
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Successful Alert Triggers
+    isLive: false
+    type: query
+  a75ef6cc-9944-4f71-9dc1-aa4cf4028e8c:
+    x: 0
+    y: 0
+    description: |-
+      Shows the status of the alert within the last minute.
+      If the alert was successfully polled, it is green.
+      Otherwise, if the alert had a failure, it is red.
+      Otherwise, if the alert had a success, it is green.
+      Otherwise, the alert is grey.
+    height: 6
+    queryString: |-
+      #category=Alert dataspace=?repository alertName=?alertName
+      | status=*
+      | case {
+        test(message=="Alert triggered and invoked at least one action and will be throttled")         | successfulPoll:="true";
+        test(message=="Alert found results, but no actions were invoked since the alert is throttled") | successfulPoll:="true";
+        test(message=="Alert found no results and will not trigger")                                   | successfulPoll:="true";
+        *                                                                                              | *;
+      }
+      | [{status=Failure | count(as=failureCount)}, {status=Success successfulPoll=true | count(as=successPollCount)}, {status=Success successfulPoll!=true | count(as=successCount)}]
+      | case {
+        test(successPollCount>0) | aggStatus:="🟢";
+        test(failureCount>0)     | aggStatus:="🔴";
+        test(successCount>0)     | aggStatus:="🟢";
+        *                        | aggStatus:="⚪";
+      }
+      | select(aggStatus)
+    end: now
+    start: 1m
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Current Status
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  alertName:
+    label: Alert name
+    query: '#category=Alert dataspace=?{repository=*} | groupBy(alertName, function=[])'
+    timeInterval: 1h
+    useDashboardTimeIfSet: true
+    type: query
+    order: 2
+    valueField: alertName
+  repository:
+    label: Repository/view
+    query: '#category=Alert | groupBy(dataspace, function=[])'
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    order: 1
+    valueField: dataspace

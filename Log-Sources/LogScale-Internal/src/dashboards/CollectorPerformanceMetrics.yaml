@@ -1,0 +1,101 @@
+name: Collector Performance Metrics
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  3929cb1b-098c-4097-bcc5-1dab647f24fc:
+    x: 0
+    y: 4
+    height: 6
+    queryString: |-
+      #repo="humio-fleet"
+      | #kind=collectorCpuUsage
+      | match(file="collector-id-hostname.csv",field=id,include=hostname)
+      | hostname=?Hostname
+      | timechart(hostname,function=[avg(avg,as="Average CPU Usage"),max("avg",as="Max CPU Usage"),min("avg",as="Min CPU Usage")])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      series: {}
+      interpolation: natural
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: CPU Usage
+    isLive: false
+    type: query
+  863d2257-853a-4f8a-8bcc-2385465a66fd:
+    x: 6
+    y: 4
+    height: 6
+    queryString: |-
+      #repo="humio-fleet"
+      | #kind=collectorMemoryUsage
+      | match(file="collector-id-hostname.csv",field=id,include=hostname)
+      | hostname=?Hostname
+      | timechart(hostname,function=[avg(max,as="Average Memory Usage"),max("max",as="Max Memory Usage"),min("max",as="Min Memory Usage")])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      series: {}
+      gradient: false
+      interpolation: natural
+      showDataPoints: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: Memory Usage
+    isLive: false
+    type: query
+  f1f9b46d-1935-4491-abbd-2eaadfd859fe:
+    x: 0
+    y: 10
+    height: 6
+    queryString: |-
+      #repo="humio-fleet"
+      | #kind=hostDiskUsage
+      //| groupBy([#kind])
+      | match(file="collector-id-hostname.csv",field=id,include=hostname)
+      | hostname=?Hostname
+      | timechart(hostname,function=[avg(max,as="Average Disk Usage"),max("max",as="Max Disk Usage"),min("max",as="Min Disk Usage")])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      interpolation: natural
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Disk Usage
+    isLive: false
+    type: query
+  ffad24df-deb7-4a0e-83de-6501a84c8908:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #repo="humio-fleet" | #kind=system
+      | match(file="collector-id-hostname.csv",field=id,include=hostname)
+      | hostname=?Hostname
+      | groupby([hostname],function=[collect([id,ipAddress,version,system,mode,machineId]),selectLast([startTime,bootTime])])
+    visualization: table-view
+    end: now
+    start: 7d
+    width: 12
+    title: Host Information
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0

@@ -1,0 +1,389 @@
+name: Standard Alerts Overview
+description: Overview of all standard alerts running
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  79258630-c4b0-4349-8f51-679e0f72e987:
+    x: 0
+    description: Overview of other problems with running standard alerts than the
+      two lists above.
+    height: 4
+    queryString: |-
+      #category=Alert | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=[tail(1), count(as="No. of times failed")])
+      | subCategory != User message != "Problem invoking action"
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Last message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last warnings", "alertId"], sortby=["No. of times failed", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 12
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Standard Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        alertId:
+          hidden: true
+        Repository/view:
+          render-as: value
+        No. of times failed:
+          data-type: number
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Other Problems
+    isLive: true
+    type: query
+  88b0552f-e4e9-4333-ad5a-463c23e059d8:
+    x: 5
+    description: Lists all the times standard alert queries restarted in time descending
+      order. "No. of times restarted" represents how many times the query has restarted
+      in the search window. If this number is high, it could indicate that the query
+      is getting killed or has another problem.
+    height: 6
+    queryString: |-
+      #category = Alert message="Query started" dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=[ { selectLast([@timestamp, alertId]) }, count(as="No. of times restarted")])
+      | rename(@timestamp, as="Last restarted")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | table(["Repository/view", "Alert name", "No. of times restarted", "Last restarted", "alertId"], sortby=["No. of times restarted", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 7
+    y: 16
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Standard Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last restarted:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Alert Query Restarts
+    isLive: true
+    type: query
+  02c137f4-18f9-44c6-91f9-8f6294365cec:
+    x: 0
+    y: 0
+    description: This chart displays how many distinct standard alerts had problems
+      over time per repository or view.
+    height: 4
+    queryString: |-
+      #category=Alert | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} alertName=?{alertName=*}
+      | timechart(dataspace, limit=50, function=count(field=alertName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 12
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Alert Problems by Repository/View
+    isLive: true
+    type: query
+  5e6648eb-2fc5-4e7d-82d8-1cef8a057d9a:
+    x: 0
+    y: 22
+    description: This chart displays how many distinct standard alerts triggered over
+      time per repository or view.
+    height: 6
+    queryString: |-
+      #category=Alert | message="Alert triggered and invoked at least one action and will be throttled" dataspace=?{repository=*} alertName=?{alertName=*}
+      | timechart(dataspace, limit=50, function=count(field=alertName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 5
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      stacking: normal
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Successful Alert Triggers by Repository/View
+    isLive: true
+    type: query
+  d7c6c551-af92-45e5-b211-31a97915db80:
+    x: 5
+    description: Overview of standard alerts that triggered and successfully invoked
+      at least one action. After an event like this, it is common to see throttled
+      alert events for the alert that was triggered.
+    height: 6
+    queryString: |-
+      #category=Alert message="Alert triggered and invoked at least one action and will be throttled" dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=[selectLast(["@timestamp", actionIds, alertId]), count(as="No. of times triggered")])
+      | rename(@timestamp, as="Last triggered")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("actionIds", as="Action ids")
+      | table(["Repository/view", "Alert name", "Action ids", "No. of times triggered", "Last triggered", "alertId"], sortby=["No. of times triggered", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 7
+    y: 22
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Standard Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last triggered:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Alerts Triggered
+    isLive: true
+    type: query
+  1774a2b0-d73f-4551-bc55-ddac99d125b7:
+    x: 0
+    description: Overview of problems with invoking actions when a standard alert
+      triggers. Note that if the alert has multiple actions attached and at least
+      one succeeds, it is considered to have triggered.
+    height: 4
+    queryString: |-
+      #category=Alert #severity = "Warning" message = "Problem invoking action" dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName, actionName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("actionName", as="Action name")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "Action name", "No. of times failed", "Last failed", "Last exceptionMessage", "alertId"], sortby=["No. of times failed", "Repository/view","Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 4
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Standard Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        alertId:
+          hidden: true
+        Repository/view:
+          render-as: value
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Action name:
+          render-as: value
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Action Invocation Problems
+    isLive: true
+    type: query
+  679ba7a6-77e0-44cd-92b0-2a389dc490c5:
+    x: 0
+    y: 16
+    description: Shows how many times standard alert queries were restarted over time.
+      If this number is high, it could indicate that the query is getting killed or
+      has another problem.
+    height: 6
+    queryString: |-
+      #category = Alert message="Query started" dataspace=?{repository=*} alertName=?{alertName=*}
+      | dataspaceAlertName := format("%s: %s", field=[dataspace, alertName])
+      | timeChart(dataspaceAlertName, limit=50)
+    end: now
+    start: 24h
+    width: 5
+    options:
+      stacking: normal
+      yAxisScale: linear
+      series: {}
+    visualization: time-chart
+    title: Alert Query Restarts over Time
+    isLive: true
+    type: query
+  3ed05523-e541-4b5c-a1cb-21981b1c864e:
+    x: 0
+    description: Overview of problems with running standard alerts due to either the
+      user having been deleted or the user not having permissions to run the alert.
+      Fix this by either granting the user the missing permissions, save the alert
+      as another user, or change the alert to run on behalf of the organization.
+    height: 4
+    queryString: |-
+      #category=Alert subCategory=User | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=tail(1))
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("message", as="Message")
+      | rename("suggestion", as="Suggestion")
+      | table(["Repository/view", "Alert name", "Last failed", "Message", "Suggestion", "alertId"], sortby=["Repository/view","Alert name"], order=[asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 8
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Standard Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/standard/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: User Problems
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  alertName:
+    label: Alert name
+    query: '#category=Alert dataspace=?{repository=*} | groupBy(alertName, function=[])'
+    timeInterval: 1h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 2
+    valueField: alertName
+  repository:
+    label: Repository/view
+    query: '#category=Alert | groupBy(dataspace, function=[])'
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 1
+    valueField: dataspace

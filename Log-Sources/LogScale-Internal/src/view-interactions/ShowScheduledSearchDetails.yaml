@@ -1,0 +1,21 @@
+$schema: https://schemas.humio.com/viewinteraction/v0.3.0
+interaction:
+  conditions:
+  - argument: ScheduledSearch
+    fieldName: '#category'
+    operator: equal
+  - argument: ''
+    fieldName: scheduledSearchName
+    operator: present
+  name: Show Scheduled Search Details
+  titleTemplate: Show Scheduled Search Details
+  useWidgetTimeWindow: false
+  dashboardReference:
+    name: Scheduled Search Details
+    packageSpecifier: humio/activity
+    repoOrViewName: humio-activity
+  arguments:
+    repository: '["{{fields.dataspace}}"]'
+    scheduledSearchName: '["{{fields.scheduledSearchName}}"]'
+  openInNewTab: true
+  type: dashboardlink

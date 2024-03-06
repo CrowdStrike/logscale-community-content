@@ -1,0 +1,28 @@
+name: LogScaleCollectorRequestsAll
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"timestamp","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'true'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.4.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  // LogScale Collector request uris
+  #category=Request
+  | userAgent = "humio-log-collector/*" or (userAgent= "Go-http-client/2.0" and uri = /\/api\/v1\/log-collector\//)
+  | case {
+      uri="*/api/v1/ingest/*"                     | action := "ingest";
+
+      uri="*/api/v1/log-collector/metrics-v2"     | action := "metrics-v2";
+      uri="*/api/v1/log-collector/metrics"        | action := "metrics";
+
+      uri="*/api/v1/log-collector/refresh"        | action := "refresh";
+      uri="*/api/v1/log-collector/enroll"         | action := "enroll";
+      uri="*/api/v1/log-collector/poll"           | action := "poll";
+      uri="*/api/v1/log-collector/pull"           | action := "pull";
+      uri="*/api/v1/log-collector/push"           | action := "push";
+      uri="*/api/v1/log-collector/report-config"  | action := "report-config";
+  }

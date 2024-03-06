@@ -1,0 +1,629 @@
+name: Filter Alerts Overview
+description: Overview of all filter alerts running
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  3ed05523-e541-4b5c-a1cb-21981b1c864e:
+    x: 0
+    description: Overview of errors with running filter alerts due to either the user
+      having been deleted or the user not having permissions to run the filter alert.
+      Fix this by either granting the user the missing permissions, change the alert
+      to run as another user, or change the alert to run on behalf of the organization.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Error" subCategory=User dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=tail(1))
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("message", as="Message")
+      | rename("suggestion", as="Suggestion")
+      | table(["Repository/view", "Alert name", "Last failed", "Message", "Suggestion", "alertId"], sortby=["Repository/view", "Alert name"], order=[asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 8
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Errors with User
+    isLive: false
+    type: query
+  ca493053-d8d6-42ee-be89-31447d1b9c5a:
+    x: 0
+    y: 20
+    description: This chart displays how many distinct filter alerts had warnings
+      over time per repository or view.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Warning" dataspace=?{repository=*} alertName=?{alertName=*}
+      | timechart(dataspace, limit=50, function=count(field=alertName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 12
+    options:
+      gradient: false
+      tension: 0
+      legend: true
+      connect-points: false
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Filter Alert Warnings by Repository/View
+    isLive: false
+    type: query
+  02c137f4-18f9-44c6-91f9-8f6294365cec:
+    x: 0
+    y: 0
+    description: This chart displays how many distinct filter alerts had errors over
+      time per repository or view.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Error" dataspace=?{repository=*} alertName=?{alertName=*}
+      | timechart(dataspace, limit=50, function=count(field=alertName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 12
+    options:
+      gradient: false
+      tension: 0
+      legend: true
+      connect-points: false
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Filter Alert Errors by Repository/View
+    isLive: false
+    type: query
+  edbfc532-005c-4940-b41c-b14b1bf069e0:
+    x: 0
+    description: Overview of warnings with running the filter alert queries.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Warning" subCategory=Query dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Last message")
+      | rename("queryWarning", as="Last query warning")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last query warning", "alertId"], sortby=["No. of times failed", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 28
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Query Warnings
+    isLive: false
+    type: query
+  5e6648eb-2fc5-4e7d-82d8-1cef8a057d9a:
+    x: 0
+    y: 44
+    description: This chart displays how many distinct filter alerts triggered over
+      time per repository or view.
+    height: 6
+    queryString: |-
+      #category=FilterAlert | message="Alert triggered on event and invoked at least one action" dataspace=?{repository=*} alertName=?{alertName=*}
+      | timechart(dataspace, limit=50, function=count(field=alertName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 5
+    options:
+      gradient: false
+      tension: 0
+      legend: true
+      connect-points: false
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Successful Filter Alert Triggers by Repository/View
+    isLive: false
+    type: query
+  4a6f19be-306e-4f62-9bc9-32fe564ab19b:
+    x: 0
+    description: Overview of warnings with invoking actions when a filter alert triggers.
+      Note that if the filter alert has multiple actions attached and at least one
+      succeeds, it is considered to have triggered.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Warning" subCategory=Action dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName, actionName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("actionName", as="Action name")
+      | rename("message", as="Last message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "Action name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "alertId"], sortby=["No. of times failed", "Repository/view","Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 24
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Action Invocation Warnings
+    isLive: false
+    type: query
+  9a6cf9a0-a808-439d-abe0-4581c52130de:
+    x: 0
+    y: 36
+    description: 'This chart displays how many distinct filter alerts over time per
+      repository/view are running historic queries to catch up and not reacting to
+      new events in the meantime. '
+    height: 4
+    queryString: |-
+      #category=FilterAlert isLiveQuery=false dataspace=?{repository=*} alertName=?{alertName=*}
+      | timechart(dataspace, limit=50, function=count(field=alertName, distinct=true), span=10m)
+    end: now
+    start: 24h
+    width: 12
+    options:
+      series: {}
+      gradient: false
+      interpolation: linear
+      tension: 0
+      legend: true
+      showDataPoints: false
+      connect-points: false
+      plotType: area
+      regression: false
+      show-utc: true
+      imputation: none
+    visualization: time-chart
+    title: Filter Alerts Lagging Behind by Repository/View
+    isLive: false
+    type: query
+  d7c6c551-af92-45e5-b211-31a97915db80:
+    x: 5
+    description: Overview of filter alerts that triggered and successfully invoked
+      at least one action.
+    height: 6
+    queryString: |-
+      #category=FilterAlert message="Alert triggered on event and invoked at least one action" dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=[selectLast(["@timestamp", actionIds, alertId]), count(as="No. of times triggered")])
+      | rename(@timestamp, as="Last triggered")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("actionIds", as="Action ids")
+      | table(["Repository/view", "Alert name", "Action ids", "No. of times triggered", "Last triggered", "alertId"], sortby=["No. of times triggered", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 7
+    y: 44
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last triggered:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Filter Alerts Triggered
+    isLive: false
+    type: query
+  430a4b49-f47b-49c0-8222-de59f9ade86f:
+    x: 0
+    description: Overview of other errors with running filter alerts than the three
+      lists above.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Error" subCategory=Alert dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName, actionName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("message", as="Last message")
+      | rename("warnings", as="Last warnings")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "alertId"], sortby=["No. of times failed", "Repository/view","Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 16
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Other Errors
+    isLive: false
+    type: query
+  ffeb3aa7-7aec-4843-a693-b150bf894502:
+    x: 0
+    description: Overview of errors with running filter alert queries. This can either
+      be due to an error in the query or due to problems in the cluster causing errors
+      when trying to run the query.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Error" subCategory=Query dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName, actionName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Last message")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "alertId"], sortby=["No. of times failed", "Repository/view","Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 12
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Errors with Query
+    isLive: false
+    type: query
+  79258630-c4b0-4349-8f51-679e0f72e987:
+    x: 0
+    description: Overview of other warnings with running filter alerts than the two
+      lists above.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Warning" subCategory!=Action subCategory!=Query dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Last message")
+      | rename("queryWarning", as="Last query warning")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "Last query warning", "alertId"], sortby=["No. of times failed", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 32
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Other Warnings
+    isLive: false
+    type: query
+  9baf0949-6027-4718-bc2d-9252f12572da:
+    x: 0
+    description: Overview over filter alerts that are running historic queries to
+      catch up and not reacting to new events in the meantime.
+    height: 4
+    queryString: |-
+      #category=FilterAlert isLiveQuery=false dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName], function=tail(1))
+      | rename(@timestamp, as="Last lagging behind")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | table(["Repository/view", "Alert name", "Last lagging behind", "alertId"], sortby=["Last lagging behind", "Repository/view", "Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 40
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last lagging behind:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Filter Alerts Lagging Behind
+    isLive: false
+    type: query
+  1774a2b0-d73f-4551-bc55-ddac99d125b7:
+    x: 0
+    description: Overview of errors with invoking actions when a filter alert triggers.
+    height: 4
+    queryString: |-
+      #category=FilterAlert #severity="Error" subCategory=Action dataspace=?{repository=*} alertName=?{alertName=*}
+      | groupby([dataspace, alertName, actionName], function=[tail(1), count(as="No. of times failed")])
+      | rename(@timestamp, as="Last failed")
+      | rename("dataspace", as="Repository/view")
+      | rename("alertName", as="Alert name")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Last message")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository/view", "Alert name", "No. of times failed", "Last failed", "Last message", "Last suggestion", "Last exceptionMessage", "alertId"], sortby=["No. of times failed", "Repository/view","Alert name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 4
+    interactions:
+    - conditions: null
+      name: Details
+      titleTemplate: Show Alert Details
+      useWidgetTimeWindow: false
+      dashboardReference:
+        name: Filter Alert Details
+        packageSpecifier: humio/activity
+        repoOrViewName: null
+      arguments:
+        alertName: '["{{ fields[\"Alert name\"] }}"]'
+        repository: '["{{ fields[\"Repository/view\"] }}"]'
+      openInNewTab: true
+      type: dashboardlink
+    - conditions: null
+      name: Edit
+      urlEncodeArgs: true
+      titleTemplate: Edit Alert
+      urlTemplate: '{{fields["Repository/view"]}}/alerts/filter/{{fields.alertId}}'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Alert name:
+          render-as: value
+        Last failed:
+          data-type: datetime
+        Repository/view:
+          render-as: value
+        alertId:
+          hidden: true
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Errors due to Action Invocation
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  alertName:
+    label: Filter Alert name
+    query: '#category=FilterAlert dataspace=?{repository=*} | groupBy(alertName, function=[])'
+    timeInterval: 1h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 2
+    valueField: alertName
+  repository:
+    label: Repository/view
+    query: '#category=FilterAlert | groupBy(dataspace, function=[])'
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 1
+    valueField: dataspace

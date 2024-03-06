@@ -1,0 +1,137 @@
+name: FDR Ingest Status
+description: Description
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  02c137f4-18f9-44c6-91f9-8f6294365cec:
+    x: 0
+    y: 0
+    description: How many distinct FDR feeds had problems per repository.
+    height: 4
+    queryString: |-
+      #category=Fdr | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} fdrFeedName=?{fdrFeedName=*}
+      | timechart(dataspace, limit=50, function=count(field=fdrFeedName, distinct=true))
+    end: now
+    start: 24h
+    width: 12
+    options:
+      gradient: false
+      interpolation: step-after
+      tension: 0
+      legend: true
+      yAxisScale: linear
+      plotType: area
+      show-utc: true
+      imputation: none
+      yAxisUnit: ''
+      series: {}
+      yAxisTitle: No. of feeds
+      stacking: normal
+    visualization: time-chart
+    title: FDR Ingest Problems by Repository
+    isLive: true
+    type: query
+  79258630-c4b0-4349-8f51-679e0f72e987:
+    x: 0
+    description: Number of error or warning logs per feed as well as the number of
+      restarts. Unless the feed configuration is changed, a restart suggests some
+      sort of problem with the feed. Also shows information about the last problem.
+    height: 4
+    queryString: |-
+      #category=Fdr | #severity =~ in(values=["Warning", "Error"]) | dataspace=?{repository=*} fdrFeedName=?{fdrFeedName=*}
+      | groupby([dataspace, fdrFeedName], function=[tail(1), count(as="No. of problems"), count(field=streamId, distinct=true, as="restarts")])
+      | restarts := restarts - 1
+      | rename(@timestamp, as="Last problem at")
+      | rename("dataspace", as="Repository")
+      | rename("fdrFeedName", as="FDR feed name")
+      | rename("restarts", as="No. of restarts")
+      | rename("suggestion", as="Last suggestion")
+      | rename("message", as="Last message")
+      | rename("exceptionMessage", as="Last exceptionMessage")
+      | table(["Repository", "FDR feed name", "No. of problems", "No. of restarts", "Last problem at", "Last message", "Last suggestion", "Last exceptionMessage"], sortby=["No. of problems", "Repository", "FDR feed name"], order=[desc,asc,asc], limit=1000)
+    end: now
+    start: 24h
+    width: 12
+    y: 4
+    interactions:
+    - conditions: null
+      name: Navigate
+      urlEncodeArgs: true
+      titleTemplate: Goto FDR Feed
+      urlTemplate: '{{fields.Repository}}/settings/crowdstrike-fdr'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        FDR feed name:
+          render-as: value
+        Last problem at:
+          data-type: datetime
+        Repository:
+          render-as: value
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Problems
+    isLive: true
+    type: query
+  c7635449-6535-45ed-ba8b-5371fb51ea56:
+    x: 0
+    description: SQS messages that failed and have not yet been successfully retried.
+    height: 4
+    queryString: |-
+      #category=Fdr | dataspace=?{repository=*} fdrFeedName=?{fdrFeedName=*} | message="SQS message ignored because of an error, it will be retried later as long as it stays on the SQS queue" OR message="SQS message ingested and deleted" |
+      groupBy([dataspace, fdrFeedName, messageId], function=tail(1)) |
+      message="SQS message ignored because of an error, it will be retried later as long as it stays on the SQS queue" |
+      groupBy([dataspace, fdrFeedName]) |
+      rename("dataspace",as="Repository") |
+      rename("fdrFeedName",as="FDR feed name") |
+      rename("_count",as="No. of messages") |
+      table(["Repository", "FDR feed name", "No. of messages"])
+    end: now
+    start: 24h
+    width: 4
+    y: 8
+    interactions:
+    - conditions: null
+      name: Navigate
+      urlEncodeArgs: true
+      titleTemplate: Goto FDR Feed
+      urlTemplate: '{{fields.Repository}}/settings/crowdstrike-fdr'
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        FDR feed name:
+          render-as: value
+        Repository:
+          render-as: value
+      row-numbers-enabled: false
+    visualization: table-view
+    title: SQS Messages Waiting for Retry
+    isLive: true
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  fdrFeedName:
+    label: FDR feed name
+    query: dataspace=?{repository=*} | groupBy(fdrFeedName)
+    timeInterval: 1h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 2
+    valueField: fdrFeedName
+  repository:
+    label: Repository
+    query: groupBy(dataspace)
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 1
+    valueField: dataspace
