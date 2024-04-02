@@ -40,10 +40,6 @@ sinks:
     url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/v1/
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
-    ## The TLS option can be uncommented if you're using a self-signed certificate.
-    ## This generally isn't needed unless it's a self-hosted instance. 
-    #tls:
-      #insecure: true     
     ## This sets the maximum single event size to 8 MB. You can change as needed.
     #maxEventSize: 8388608
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
