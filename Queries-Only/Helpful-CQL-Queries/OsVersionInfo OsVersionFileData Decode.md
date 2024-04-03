@@ -1,6 +1,5 @@
 ```
 #event_simpleName=OsVersionInfo event_platform=Lin
-
 | OSVersionFileData=*
 | replace("([0-9A-Fa-f]{2})", with="%$1", field=OSVersionFileData, as=OSVersionFileData)
 | OSVersionFileData:=urlDecode("OSVersionFileData")
