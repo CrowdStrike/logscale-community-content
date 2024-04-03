@@ -45,21 +45,22 @@ sinks:
     url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/v1/
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
-    ## The TLS option can be uncommented if you're using a self-signed certificate.
-    ## This generally isn't needed unless it's a self-hosted instance. 
-    #tls:
-      #insecure: true
-    ## This increases the maximum single event size to ~1M (the max size allowed)
-    #maxEventSize: 1048576
+    ## This sets the maximum single event size to 8 MB. You can change as needed.
+    #maxEventSize: 8388608
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
     #maxBatchSize: 16777216
     #compression: gzip
     #compressionLevel: 9
     ## Uncomment if you want to use disk for event queue storage instead of memory.
+    ## Please note this will be much slower than a memory queue.
     #queue:
       #type: disk
       #fullAction: pause
       #maxLimitInMB: 4096
+    ## Add more workers to processing. The default is 4 workers. 
+    ## This can be increased if FLC is falling behind on processing.
+    #workers: 8
+
   next-gen-siem-fileRead:
     type: hec
     # Replace with your specified ingest token.
@@ -69,6 +70,7 @@ sinks:
     url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY/v1/
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
+    
   next-gen-siem-syslog:
     type: hec
     # Replace with your specified ingest token.
