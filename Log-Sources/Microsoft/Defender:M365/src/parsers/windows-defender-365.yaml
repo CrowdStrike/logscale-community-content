@@ -1,0 +1,331 @@
+name: windows-defender-365
+tests: []
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |-
+  // CrowdStrike Falcon Complete LogScale
+  // Windows Defender 365 Parser
+  // Copyright: CrowdStrike 2023
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser_version:="2.2.0"
+  | Vendor:="Microsoft"
+  | Product:="Windows Defender 365"
+  | ecs.version:="8.9.0"
+  | event.kind:="event"
+  | event.type[0]:="info"
+  | event.dataset := "m365_defender.event"
+
+  | case {
+          // Check if data is coming in using CrowdStrike OTel standards and don't add any prefix
+          @rawstring = /^\{"labels":\{[^\}]+"product":"defender"/
+                  | parseJson();
+          *
+                  | parseJson(field=@rawstring, prefix="Vendor.")
+          }
+
+  // CASE STATEMENT TO GRAB CORRECT TIMESTAMP
+  // Vendor.CreationTime if M365 Activity Management API
+  // Vendor.StartDate if M365 Message Trace
+  | case {
+      Vendor.CreationTime=* | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss", field=Vendor.CreationTime, timezone=UTC) ;
+      Vendor.StartDate=* | parseTimestamp(field=Vendor.StartDate, timezone=UTC) ;
+      Vendor.properties.Timestamp=* | findTimestamp(field=Vendor.properties.Timestamp, timezone=UTC);
+      @timestamp=*; //Segway ingestion will already have the timestamp, don't need to do anything.
+      * | parseTimestamp(field="@ingesttimestamp", format=milliseconds);
+  }
+
+  // Check for Advanced Hunting Logs
+  | Vendor.Workload := splitString(field=Vendor.category, by="-", index=1)
+
+  //Note: Not all Workloads were streaming when this parser was first built.
+  //Some of these Workloads will need additional formatting
+  | case {
+      //*********** DeviceProcessEvents Event Splitting and Normalization
+      Vendor.Workload=DeviceProcessEvents
+                  | source.user.name:=Vendor.properties.AccountName
+                  | source.user.domain:=Vendor.properties.AccountDomain
+                  | file.hash.sha1:=Vendor.properties.SHA1
+                  | file.hash.md5:=Vendor.properties.MD5
+                  | file.hash.sha256:=Vendor.properties.SHA256
+                  | file.size:=Vendor.properties.FileSize
+                  | file.path:=Vendor.properties.FolderPath
+                  | fle.name:=Vendor.properties.FileName
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | host.id:=Vendor.properties.DeviceId
+                  | event.id:=Vendor.properties.ReportId
+                  | event.action:=Vendor.properties.ActionType
+                  | event.category[0]:="process"
+                  | process.command_line:=Vendor.properties.InitiatingProcessCommandLine
+                  | process.name:=Vendor.properties.InitiatingProcessFileName
+                  | process.pid:=Vendor.properties.InitiatingProcessId
+                  | process.parent.pid:=Vendor.properties.InitiatingProcessParentId
+                  | process.user.name:=Vendor.properties.InitiatingProcessAccountName
+                  | process.user.domain:=Vendor.properties.InitiatingProcessAccountDomain
+                  | process.executable:=Vendor.properties.InitiatingProcessFolderPath
+                  | process.start:=Vendor.properties.InitiatingProcessCreationTime
+                  | process.hash.md5:=Vendor.properties.InitiatingProcessMD5
+                  | process.hash.sha1:=Vendor.properties.InitiatingProcessSHA1
+                  | process.hash.sha256:=Vendor.properties.InitiatingProcessSHA256 ;
+
+      //*********** DeviceFileEvents Event Splitting and Normalization
+      Vendor.Workload=DeviceFileEvents | source.ip:=Vendor.properties.RequestSourceIP
+                  | source.user.name:=Vendor.properties.RequestAccountName
+                  | file.hash.sha1:=Vendor.properties.SHA1
+                  | file.hash.md5:=Vendor.properties.MD5
+                  | file.hash.sha256:=Vendor.properties.SHA256
+                  | file.size:=Vendor.properties.FileSize
+                  | file.path:=Vendor.properties.FolderPath
+                  | fle.name:=Vendor.properties.FileName
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | host.id:=Vendor.properties.DeviceId
+                  | event.id:=Vendor.properties.ReportId
+                  | event.action:=Vendor.properties.ActionType
+                  | event.category[0]:="file"
+                  | process.command_line:=Vendor.properties.InitiatingProcessCommandLine
+                  | process.name:=Vendor.properties.InitiatingProcessFileName
+                  | process.pid:=Vendor.properties.InitiatingProcessId
+                  | process.parent.pid:=Vendor.properties.InitiatingProcessParentId
+                  | process.user.name:=Vendor.properties.InitiatingProcessAccountName
+                  | process.user.domain:=Vendor.properties.InitiatingProcessAccountDomain
+                  | process.executable:=Vendor.properties.InitiatingProcessFolderPath
+                  | process.start:=Vendor.properties.InitiatingProcessCreationTime
+                  | process.hash.md5:=Vendor.properties.InitiatingProcessMD5
+                  | process.hash.sha1:=Vendor.properties.InitiatingProcessSHA1
+                  | process.hash.sha256:=Vendor.properties.InitiatingProcessSHA256 ;
+
+      //*********** DeviceEvents Event Splitting and Normalization
+      Vendor.Workload=DeviceEvents
+                  | source.ip:=Vendor.properties.RemoteIP
+                  | source.user.name:=Vendor.properties.AccountName
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | host.id:=Vendor.properties.DeviceId
+                  | event.id:=Vendor.properties.ReportId
+                  | event.action:=Vendor.properties.ActionType
+                  | event.category[0]:="host"
+                  | fle.name:=Vendor.properties.FileName
+                  | process.start:=Vendor.properties.InitiatingProcessCreationTime
+                  | process.pid:=Vendor.properties.InitiatingProcessId
+                  | file.hash.sha256:=Vendor.properties.SHA256 ;
+
+      //*********** DeviceFileCertificateInfo Event Splitting and Normalization
+      Vendor.Workload=DeviceFileCertificateInfo
+                  | host.id:=Vendor.properties.DeviceId
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | event.category[0]:="configuration" ;
+
+      //*********** DeviceImageLoadEvents Event Splitting and Normalization
+      Vendor.Workload=DeviceImageLoadEvents
+                  | host.id:=Vendor.properties.DeviceId
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | file.name:=Vendor.properties.FileName
+                  | event.action:=Vendor.properties.ActionType
+                  | event.category[0]:="library" ;
+
+      //*********** DeviceInfo Event Splitting and Normalization
+      Vendor.Workload=DeviceInfo
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | host.id:=Vendor.properties.DeviceId
+                  | event.id:=Vendor.properties.ReportId
+                  | event.action:=Vendor.properties.ActionType
+                  | event.category[0]:="host"
+                  | host.os.name:=Vendor.properties.OSDistribution
+                  | host.os.version:=Vendor.properties.OSVersionInfo
+                  | lower(field="Vendor.properties.OSPlatform", as="host.os.type")
+                  | host.ip := Vendor.properties.PublicIP ;
+
+      //*********** DeviceLogonEvents Event Splitting and Normalization
+      Vendor.Workload=DeviceLogonEvents
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | host.id:=Vendor.properties.DeviceId
+                  | event.id:=Vendor.properties.ReportId
+                  | event.action:=Vendor.properties.ActionType
+                  | event.category[0]:="authentication"
+                  | source.user.name:=Vendor.properties.AccountName
+                  | source.user.domain:=Vendor.properties.AccountDomain
+                  | process.command_line:=Vendor.properties.InitiatingProcessCommandLine
+                  | process.name:=Vendor.properties.InitiatingProcessFileName
+                  | process.pid:=Vendor.properties.InitiatingProcessId
+                  | process.parent.pid:=Vendor.properties.InitiatingProcessParentId
+                  | process.user.name:=Vendor.properties.InitiatingProcessAccountName
+                  | process.user.domain:=Vendor.properties.InitiatingProcessAccountDomain
+                  | process.executable:=Vendor.properties.InitiatingProcessFolderPath
+                  | process.start:=Vendor.properties.InitiatingProcessCreationTime
+                  | process.hash.md5:=Vendor.properties.InitiatingProcessMD5
+                  | process.hash.sha1:=Vendor.properties.InitiatingProcessSHA1
+                  | process.hash.sha256:=Vendor.properties.InitiatingProcessSHA256 ;
+
+      //*********** DeviceNetworkEvents Event Splitting and Normalization
+      Vendor.Workload=DeviceNetworkEvents
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | host.id:=Vendor.properties.DeviceId
+                  | event.id:=Vendor.properties.ReportId
+                  | event.action:=Vendor.properties.ActionType
+                  | event.category[0]:="network"
+                  | source.user.name:=Vendor.properties.AccountName
+                  | source.user.domain:=Vendor.properties.AccountDomain∂ƒ
+                  | process.command_line:=Vendor.properties.InitiatingProcessCommandLine
+                  | process.name:=Vendor.properties.InitiatingProcessFileName
+                  | process.pid:=Vendor.properties.InitiatingProcessId
+                  | process.parent.pid:=Vendor.properties.InitiatingProcessParentId
+                  | process.user.name:=Vendor.properties.InitiatingProcessAccountName
+                  | process.user.domain:=Vendor.properties.InitiatingProcessAccountDomain
+                  | process.executable:=Vendor.properties.InitiatingProcessFolderPath
+                  | process.start:=Vendor.properties.InitiatingProcessCreationTime
+                  | process.hash.md5:=Vendor.properties.InitiatingProcessMD5
+                  | process.hash.sha1:=Vendor.properties.InitiatingProcessSHA1
+                  | process.hash.sha256:=Vendor.properties.InitiatingProcessSHA256
+                  | source.ip:=Vendor.properties.LocalIP
+                  | source.port:=Vendor.properties.LocalPort
+                  | destination.ip:=Vendor.properties.RemoteIP
+                  | destination.port:=Vendor.properties.RemotePort ;
+
+      //*********** DeviceNetworkInfo Event Splitting and Normalization
+      Vendor.Workload=DeviceNetworkInfo
+                  | host.hostname:=Vendor.properties.DeviceName
+                  | host.id:=Vendor.properties.DeviceId
+                  | event.id:=Vendor.properties.ReportId
+                  | event.category[0]:="network"
+                  | host.mac:=Vendor.properties.MacAddress
+                  // IP Addresses field can have multiple IPs in both IPv4 and IPv6
+                  | tmpIP := replace("\\[?\\{.*?\"IPAddress\":\"([^\"]+)\"[^}]*?\\}(,*)\\]?", with="$1$2", field=Vendor.properties.IPAddresses)
+                  | splitString(by=",", field=tmpIP, as=host.ip)
+                  | drop(tmpIP) ;
+
+      //*********** CloudAppEvents Event Splitting and Normalization
+      // Vendor.Workload = CloudAppEvents OR IdentityDirectoryEvents OR IdentityInfo OR IdentityLogonEvents OR IdentityQueryEvents
+      Vendor.Workload = /(Identity|Cloud)/
+                  // event.category
+                  | case { Vendor.Workload = IdentityLogonEvents
+                                  | "event.category[0]" := "authentication"
+                                  // event.outcome
+                                  | case { Vendor.properties.FailureReason = null OR Vendor.properties.FailureReason = "" | event.outcome := "success";
+                                          Vendor.properties.FailureReason != null OR Vendor.properties.FailureReason != "" | event.outcome := "failure";
+                                  * };
+                          Vendor.Workload = IdentityDirectoryEvents OR Vendor.Workload = IdentityQueryEvents | "event.category[0]" := "iam";
+                  * }
+                  | case { Vendor.properties.TargetDeviceName=* Vendor.properties.TargetDeviceName != null | destination.domain := Vendor.properties.TargetDeviceName; * }
+                  | case { Vendor.properties.DestinationIPAddress=* Vendor.properties.DestinationIPAddress != null | destination.ip := Vendor.properties.DestinationIPAddress; * }
+                  | case { Vendor.properties.DestinationPort=* Vendor.properties.DestinationPort != null | destination.port := Vendor.properties.DestinationIPAddress; * }
+                  | event.action := lower(Vendor.properties.ActionType)
+                  | event.id := Vendor.properties.ReportId
+                  | host.ip := Vendor.properties.IPAddress
+                  | host.name := lower(Vendor.properties.DeviceName)
+                  | host.os.name := Vendor.properties.OSPlatform
+                  | host.type := Vendor.properties.DeviceType
+                  | case { Vendor.properties.Protocol = * Vendor.properties.Protocol != null | network.protocol := lower(Vendor.properties.Protocol); * }
+                  | source.geo.city_name := Vendor.properties.City
+                  | source.geo.country_iso_code := Vendor.properties.CountryCode
+                  | source.ip := Vendor.properties.IPAddress
+                  | source.user.domain := Vendor.properties.AccountDomain
+                  | case { Vendor.Workload=CloudAppEvents Vendor.properties.AccountId != null | source.user.id := Vendor.properties.AccountId;
+                          Vendor.properties.AccountSid = * Vendor.properties.AccountSid != null | source.user.id := Vendor.properties.AccountSid;
+                          * }
+                  | case { Vendor.properties.AccountName = * | source.user.name := Vendor.properties.AccountName;
+                          Vendor.properties.AccountDisplayName = * | source.user.name := Vendor.properties.AccountDisplayName;
+                          * }
+                  | user_agent.original:=Vendor.properties.UserAgent;
+
+     //*********** DeviceRegistryEvents Event Splitting and Normalization
+      Vendor.Workload=DeviceRegistryEvents
+                  | host.id := Vendor.properties.DeviceId
+                  | host.hostname:=Vendor.properties.DeviceName
+                  |  event.action := Vendor.properties.ActionType
+                  | event.category[0]:="registry";
+
+      //*********** Email & URLClick Event Splitting and Normalization
+      // Vendor.Workload = EmailAttachmentInfo OR EmailEvents OR EmailPostDeliveryEvents OR EmailUrlInfo OR UrlClickEvents
+      Vendor.Workload = /(Email|UrlClickEvents)/
+                  // event.category
+                  | event.category[0]:="email"
+                  | case { Vendor.properties.FileName=*
+                              | event.category[1]:="file"
+                              | file.extension := Vendor.properties.FileType
+                              | file.hash.sha256 := Vendor.properties.SHA256
+                              | file.name := Vendor.properties.FileName
+                              | file.size := Vendor.properties.FileSize;
+                  * }
+                  // parse additional fields
+                  | case { Vendor.properties.AdditionalFields != null | parseJson(field=Vendor.properties.AdditionalFields, prefix=Vendor.properties.AdditionalFields.); * }
+                  | case { Vendor.properties.ConfidenceLevel != null | parseJson(field=Vendor.properties.ConfidenceLevel, prefix=Vendor.properties.ConfidenceLevel.); * }
+                  | case { Vendor.properties.DetectionMethods != null | parseJson(field=Vendor.properties.DetectionMethods, prefix=Vendor.properties.DetectionMethods.); * }
+                  | case { Vendor.properties.AuthenticationDetails != null | parseJson(field=Vendor.properties.AuthenticationDetails, prefix=Vendor.properties.AuthenticationDetails.); * }
+                  | event.action := lower(Vendor.properties.ActionType)
+                  | email.direction := Vendor.properties.EmailDirection
+                  | email.local_id := Vendor.properties.InternetMessageId
+                  | email.message_id := Vendor.properties.NetworkMessageId
+                  | email.sender.address := Vendor.properties.SenderFromAddress
+                  | email.subject := Vendor.properties.Subject
+                  | email.to.address := Vendor.properties.RecipientEmailAddress
+                  | case { Vendor.properties.SenderIPv4=* | source.ip := Vendor.properties.SenderIPv4;
+                          Vendor.properties.SenderIPv6=* | source.ip := Vendor.properties.SenderIPv6;
+                          Vendor.properties.IPAddress=* | source.ip := Vendor.properties.IPAddress; *}
+                  | source.user.name := Vendor.properties.AccountUpn
+                  | url.original := Vendor.properties.Url
+                  | url.domain := Vendor.properties.UrlDomain;
+
+  //*********** Alert Event Splitting and Normalization
+  // Vendor.Workload = AlertEvidence OR AlertInfo
+      Vendor.Workload=/Alert/
+                  | case { Vendor.properties.AdditionalFields != null | parseJson(field=Vendor.properties.AdditionalFields, prefix=Vendor.properties.AdditionalFields.); * }
+                  | event.kind := "alert"
+                  // event.category
+                  | case { Vendor.properties.EntityType =~ wildcard("file", ignoreCase=true) | event.category[0] := "file";
+                          Vendor.properties.EntityType =~ wildcard("process", ignoreCase=true) | event.category[0] := "process";
+                          Vendor.properties.EntityType =~ wildcard("device", ignoreCase=true) | event.category[0] := "host";
+                          Vendor.properties.EntityType =~ wildcard("user", ignoreCase=true) | event.category[0] := "iam";
+                          Vendor.properties.EntityType = /(malware|ransomware)/i | event.category[0] := "malware";
+                          Vendor.category = "AdvancedHunting-AlertInfo" OR Vendor.properties.EntityType = /(persistence|privilegeescalation|suspiciousactivity|threatmanagement)/i
+                              | event.category[0] := "threat"
+                              | event.type := "indicator"
+                              // threat fields
+                              | threat.indicator.registry.key := Vendor.properties.RegistryKey
+                              | threat.indicator.registry.data := Vendor.properties.RegistryValueData
+                              | threat.indicator.registry.value := Vendor.properties.RegistryValueName
+                              | threat.indicator.file.directory := Vendor.properties.FolderPath
+                              | threat.indicator.file.hash.sha1 := Vendor.properties.SHA1
+                              | threat.indicator.file.hash.sha256 := Vendor.properties.SHA256
+                              | threat.indicator.file.name := Vendor.properties.FileName
+                              | threat.indicator.file.size := Vendor.properties.FileSize
+                              | threat.group.name := Vendor.properties.ThreatFamily
+                              | case { Vendor.properties.AttackTechniques=/^[\["]+(?<threat.technique.name>[^\(]+)\s*?\((?<threat.technique.id>[^\)\.]+)(\.(?<threat.subtechnique.id>\d{3}))?\)/ ; * }
+  ;
+                  * }
+                  | destination.ip := Vendor.properties.RemoteIP
+                  | email.subject := Vendor.properties.EmailSubject
+                  | email.message_id := Vendor.properties.NetworkMessageId
+                  | case { event.type[0] =*; * | event.type[0] := "info" }
+                  | event.id := Vendor.properties.AlertId
+                  | event.provider := Vendor.properties.ServiceSource
+                  | event.reference := Vendor.properties.RemoteUrl
+                  | case { Vendor.Severity = /informational/i | event.severity := "1";
+                          Vendor.Severity = /low/i | event.severity := "2";
+                          Vendor.Severity = /medium/i | event.severity := "3";
+                          Vendor.Severity = /high/i | event.severity := "4"; *}
+                  | host.name := lower(Vendor.properties.DeviceName)
+                  | host.id := Vendor.properties.DeviceId
+                  | network.direction := lower(Vendor.properties.EvidenceDirection)
+                  | process.command_line := Vendor.properties.ProcessCommandLine
+                  // file and registry is mapped differently when event.category[0] := "threat"
+                  | case { event.category[0] != "threat"
+                          | registry.key := Vendor.properties.RegistryKey
+                          | registry.data := Vendor.properties.RegistryValueData
+                          | registry.value := Vendor.properties.RegistryValueName
+                          | file.directory := Vendor.properties.FolderPath
+                          | file.hash.sha1 := Vendor.properties.SHA1
+                          | file.hash.sha256 := Vendor.properties.SHA256
+                          | file.name := Vendor.properties.FileName
+                          | file.size := Vendor.properties.FileSize;
+                  * }
+                  | source.ip := Vendor.properties.LocalIP
+                  | url.original := Vendor.properties.RemoteUrl
+                  | user.domain := Vendor.properties.AccountDomain
+                  | case { Vendor.properties.AccountSid=* | user.id := Vendor.properties.AccountSid;
+                          Vendor.properties.AccountObjectId=* | user.id := Vendor.properties.AccountObjectId; * }
+                  | user.name := Vendor.properties.AccountName;
+      * ;
+  }
+tagFields:
+- event.outcome
+- Vendor

@@ -1,0 +1,173 @@
+name: Defender - Search By UserName
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  7413482d-4556-4717-a304-bf3ef4d34e1c:
+    x: 6
+    y: 4
+    height: 5
+    queryString: |-
+      // Do a case-insensitive comparison.
+      regex(?Username,field=Vendor.properties.AccountName,flags="i")
+      // Find identity events.
+      | Vendor.Workload=*Logon*
+      Vendor.properties.ActionType=LogonFailed
+
+      // Only include interactive logon events.
+      | Vendor.properties.LogonType=/interactive/i
+
+      // Group the results.
+      | groupBy(Vendor.properties.DeviceId, function=[collect([Vendor.properties.DeviceName, Vendor.properties.LogonType], limit=1000), count(as="Total Events")], limit=max)
+      | sort("Total Events", limit=1000)
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Failed Logon Events
+    isLive: false
+    type: query
+  6e91bca2-18e0-4ef4-9828-283dafcd9194:
+    x: 0
+    y: 9
+    height: 5
+    queryString: |-
+      // Do a case-insensitive comparison.
+      regex(?Username,field=Vendor.properties.AccountName,flags="i")
+
+      // Find detection events.
+      | Vendor.Workload=AlertEvidence
+
+      // These fields must exist.
+      | Vendor.properties.Categories=* AND Vendor.properties.AttackTechniques=*
+      | table([Vendor.properties.AccountName, Vendor.properties.Title, Vendor.properties.Categories, Vendor.properties.AttackTechniquees,Vendor.properties.AlertId], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Defender Alert Events
+    isLive: false
+    type: query
+  9ff1add8-114f-4312-9c43-1bfaa3bbcffc:
+    x: 4
+    height: 4
+    queryString: |-
+      // Do a case-insensitive comparison.
+      regex(?Username,field=Vendor.properties.AccountName,flags="i")
+
+      // Create a chart of the top 10 events over time.
+      | timeChart(Vendor.Workload, limit=10)
+    end: now
+    start: 7d
+    width: 8
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        // Do a case-insensitive comparison.
+        | inputUserName:=?UserName
+        | test(lower(inputUserName)==lower(UserName))
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        UserName: '["{{ parameters.UserName }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      showDataPoints: true
+      connect-points: false
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Top Events Over Time
+    isLive: false
+    type: query
+  bc1c1477-3f32-401b-bea3-77b69f295ec2:
+    x: 0
+    y: 4
+    height: 5
+    queryString: |-
+      // Do a case-insensitive comparison.
+      regex(?Username,field=Vendor.properties.AccountName,flags="i")
+      // Find identity events.
+      | Vendor.Workload=*Logon*
+      Vendor.properties.ActionType=LogonSuccess
+
+      // Only include interactive logon events.
+      | Vendor.properties.LogonType=/interactive/i
+
+      // Group the results.
+      | groupBy(Vendor.properties.DeviceId, function=[collect([Vendor.properties.DeviceName, Vendor.properties.LogonType], limit=1000), count(as="Total Events")], limit=max)
+      | sort("Total Events", limit=1000)
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Successful Interactive Logon Events
+    isLive: false
+    type: query
+  note-1671923344231-0:
+    x: 0
+    y: 0
+    height: 4
+    text: |-
+      - Enter a value for the `UserName` input parameter.
+      - The input is case-insensitive, e.g. "USER" will match both "User" and "user" in the results.
+    width: 4
+    title: Workflow
+    type: note
+  bf4a371b-e36b-4b3b-821a-18e3444f57a9:
+    x: 0
+    y: 14
+    height: 5
+    queryString: |-
+      // Do a case-insensitive comparison.
+      regex(?Username,field=Vendor.properties.AccountName,flags="i")
+
+      // Find events related to file writes.
+      | Vendor.Workload=DeviceFileEvents
+      | in(field=Vendor.properties.ActionType,values=[FileCreated,FileRenamed,FileModified])
+
+      // Grab the relevant data.
+      | groupBy([Vendor.properties.DeviceId, Vendor.properties.DeviceName, Vendor.properties.ActionType, Vendor.properties.FileName], function=[collect(Vendor.properties.PreviousFileName, limit=1000), count(as="Total Events")], limit=max)
+      | sort("Total Events", limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: File Write Events
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  UserName:
+    order: 50
+    type: text
+  Username:
+    defaultValue: .*
+    label: Username
+    order: 50
+    type: text

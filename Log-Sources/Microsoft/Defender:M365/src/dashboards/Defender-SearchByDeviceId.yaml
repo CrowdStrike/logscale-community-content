@@ -1,0 +1,232 @@
+name: Defender - Search By DeviceId
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  7a22925e-2091-4291-9959-1641c9fa4d93:
+    x: 6
+    y: 11
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | host.id=?DeviceId
+      | ioc:lookup(Vendor.properties.AdditionalFields.query, type=domain, confidenceThreshold=unverified)
+      | ioc[0].labels=/^(?<iocActor>Actor\/.*?)\,/
+      | top([Vendor.properties.AdditionalFields.query, iocActor])
+      | rename(_count, as="Total Requests")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top DNS IOC Hits
+    isLive: false
+    type: query
+  df473744-13a0-423c-9ffd-2631b70009e0:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      | Vendor.Workload=DeviceFileEvents
+      | in(field=Vendor.properties.ActionType,values=[FileCreated,FileRenamed,FileModified])
+      | Vendor.properties.AdditionalFields.FileType=*Executable
+      | Vendor.properties.DeviceId=?DeviceId
+      | count(file.hash.sha256, distinct=true)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique Executables Written
+    isLive: false
+    type: query
+  430d57e9-b25b-420c-8e1b-21fc2046c6a3:
+    x: 0
+    y: 25
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceProcessEvents
+      | host.id=?DeviceId
+      | join(
+          {Vendor.Workload=DeviceNetworkEvents  source.port!=0},
+          field=process.pid, key=process.pid,
+          include=[source.ip, source.port], limit=200000
+        )
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | source.ip=* source.port=* FileName=*
+      | table([aid, host.hostname, FileName, source.ip, source.port], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: List of Listening Processes
+    isLive: false
+    type: query
+  8a2df0ba-ce56-43bc-97f2-c0a7baed6585:
+    x: 0
+    y: 7
+    height: 4
+    queryString: |-
+      | Vendor.Workload=*Logon*
+      | Vendor.properties.DeviceId=?DeviceId
+      Vendor.properties.ActionType=LogonSuccess
+      | table([@timestamp, source.user.name, Vendor.properties.AccountSid, Vendor.properties.IsLocalAdmin, Vendor.properties.LogonType, host.hostname, source.user.domain], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: User Logon Events
+    isLive: false
+    type: query
+  2296f7d9-25e0-4dd4-8b60-25c00bdb46a1:
+    x: 6
+    y: 16
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents
+      | host.id=?DeviceId
+      | worldMap(ip=destination.ip)
+    visualization: world-map
+    end: now
+    start: 7d
+    width: 6
+    title: Geographic Connection Destinations
+    isLive: false
+    type: query
+  e3a9d2e6-7833-4281-ae13-6fc588596bbb:
+    x: 0
+    y: 21
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceProcessEvents
+      | host.id=?DeviceId
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | ShortCommandLine:=format("%.64s...", field=Vendor.properties.ProcessCommandLine)
+      | table([@timestamp, FileName, ShortCommandLine, Vendor.properties.InitiatingProcessFileName], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: List of Processes
+    isLive: false
+    type: query
+  a469227a-2755-4855-8927-6cd1ad919ebc:
+    x: 0
+    y: 16
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents
+      | host.id=?DeviceId
+      | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(field=destination.ip, as=destination.ip)
+      | top([destination.ip, destination.ip.country])
+      | rename(_count, as="Total Connections")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Network Connections by IP and Country
+    isLive: false
+    type: query
+  fbb84b70-9e0d-42b3-ad1a-86e67a28dcb1:
+    x: 0
+    y: 3
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceInfo
+      | Vendor.properties.DeviceId=?DeviceId
+      | ipLocation(field=host.ip, as=host.ip)
+      | groupby([host.hostname, AgentVersion, host.ip, host.ip.country, host.ip.city, host.os.name,host.os.version,Vendor.properties.DeviceCategory,Vendor.properties.ClientVersion,Vendor.properties.SensorHealthState], limit=max)
+      | drop(_count)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Host Information
+    isLive: false
+    type: query
+  538450b2-4613-4ea4-895b-2e28fc4572a0:
+    x: 0
+    y: 11
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | host.id=?DeviceId
+      | top(Vendor.properties.AdditionalFields.query)
+      | rename(_count, as="Total Requests")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top DNS Requests
+    isLive: false
+    type: query
+  b89d56ee-7e80-4f51-a1a9-b8c6cf92939a:
+    x: 4
+    y: 0
+    height: 3
+    queryString: |-
+      | Vendor.Workload=DeviceFileEvents
+      | in(field=Vendor.properties.ActionType,values=[FileCreated,FileRenamed,FileModified])
+      | Vendor.properties.AdditionalFields.FileType=*Executable
+      | Vendor.properties.DeviceId=?DeviceId
+      | count()
+    end: now
+    start: 7d
+    width: 4
+    options:
+      color-method: static
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Total Packed Executable Written
+    isLive: false
+    type: query
+  note-1671481558493-0:
+    x: 0
+    y: 0
+    height: 3
+    text: "- Dashboard does not return results by default. \n- You must input an `aid`\
+      \ into the parameter. \n- The default time range is 7 days."
+    width: 4
+    title: Workflow Note
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  aid:
+    label: aid
+    order: 50
+    type: text

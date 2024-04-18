@@ -1,0 +1,16 @@
+name: Parse Target Resource AzureAD
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.properties.targetResources","format":"text","width":49592}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 7d
+queryString: |-
+  | replace(field=Vendor.properties.targetResources,regex="\"",with="")
+  | replace(field=Vendor.properties.targetResources,regex="\'",with="\"")
+  | replace(field=Vendor.properties.targetResources,regex="\: None",replacement="\: \"None\"")
+  //| parseJson(Vendor.properties.targetResources,prefix=Vendor.properties.targetResources)

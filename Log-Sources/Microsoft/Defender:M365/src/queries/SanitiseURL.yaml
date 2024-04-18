@@ -1,0 +1,14 @@
+name: Sanitise URL
+visualization:
+  options:
+    columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+    newestAtBottom: 'true'
+    showOnlyFirstLine: 'false'
+  type: list-view
+$schema: https://schemas.humio.com/query/v0.3.0
+timeInterval:
+  isLive: false
+  start: 1d
+queryString: |-
+  replace(regex="https://",field=Vendor.properties.AdditionalFields.Url,with="\(https\:\/\/\)")
+  | replace(regex="http://",field=Vendor.properties.AdditionalFields.Url,with="\(http\:\/\/\)")

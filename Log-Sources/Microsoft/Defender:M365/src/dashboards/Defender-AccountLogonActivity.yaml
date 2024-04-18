@@ -1,0 +1,186 @@
+name: Defender - Account Logon Activity
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  9df4615a-895c-4710-8050-1d5013e7e161:
+    x: 3
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceLogonEvents
+      | Vendor.properties.AccountSid="S-1-5-21-*"
+      | Vendor.properties.IsLocalAdmin=?UserIsAdmin Vendor.properties.AccountName=?UserName Vendor.properties.LogonType=?LogonType Vendor.properties.MachineGroup=?DeviceGroup
+      | timeChart(Vendor.properties.LogonType, function=count(Vendor.properties.AccountSid))
+    end: now
+    start: 7d
+    width: 9
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: "#event_simpleName=UserLogon \n| event_platform=Win\n| UserIsAdmin=?UserIsAdmin\
+        \ UserName=?UserName LogonType=?LogonType\n| $\"crowdstrike/fltr-core:zLogonTypeName\"\
+        ()\n| UserIsAdmin=?UserIsAdmin LogonType=?LogonType UserName=?UserName"
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        LogonType: '["{{ parameters.LogonType }}"]'
+        UserIsAdmin: '["{{ parameters.UserIsAdmin }}"]'
+        UserName: '["{{ parameters.UserName }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      lastBucketBehavior: exclude
+      showDataPoints: true
+      connect-points: false
+      imputation: none
+      regression: false
+      regressionType: exp
+    visualization: time-chart
+    title: Logon Trends by Logon Type
+    isLive: false
+    type: query
+  d77a6257-f17d-49c1-94bc-294c982cb06b:
+    x: 0
+    y: 4
+    height: 6
+    queryString: |
+      Vendor.Workload=DeviceLogonEvents
+      | Vendor.properties.AccountSid="S-1-5-21-*"
+      | Vendor.properties.IsLocalAdmin=?UserIsAdmin Vendor.properties.AccountName=?UserName Vendor.properties.LogonType=?LogonType Vendor.properties.MachineGroup=?DeviceGroup
+      //| table([LogonTime, ClientComputerName, UserName, passwordAgeDays, UserSid, LogonTypeName, LogonDomain, LogonServer, RemoteAccount, UserIsAdmin], limit=1000)
+      | table([@timestamp, Vendor.properties.DeviceName, Vendor.properties.AccountName, Vendor.properties.AccountSid, Vendor.properties.LogonType, Vendor.properties.AccountDomain,Vendor.properties.IsLocalAdmin], limit=1000)
+    end: '2023-11-14T10:46:24.933Z'
+    start: '2023-11-07T10:46:24.933Z'
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Logon Table
+    isLive: false
+    type: query
+  dea3387b-f0ec-4e5a-9991-f4bd02d1a08c:
+    x: 0
+    y: 10
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceLogonEvents
+      | Vendor.properties.LogonType=RemoteInteractive
+      | Vendor.properties.IsLocalAdmin=?UserIsAdmin Vendor.properties.AccountName=?UserName Vendor.properties.MachineGroup=?DeviceGroup
+      | Vendor.properties.RemoteIP=*
+      | !cidr(Vendor.properties.RemoteIP, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(Vendor.properties.RemoteIP)
+      | worldMap(ip=Vendor.properties.RemoteIP, magnitude=count(Vendor.properties.DeviceId))
+    end: now
+    start: 7d
+    width: 6
+    options:
+      maxOpacity: 100
+      autoRotate: false
+      rotZ: 0
+      norm: true
+      opacity: 100
+      rotY: 0
+      fixedOpacity: 66
+      maxSize: 21
+      minSize: 5
+      minOpacity: 33
+      magnitudeMode: size
+      opacityMode: size
+      zLevel: 1.1
+    visualization: world-map
+    title: RDP Connections by Destination IP
+    isLive: false
+    type: query
+  e0030889-7dc2-4474-9696-663735135434:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceLogonEvents
+      | Vendor.properties.AccountSid=/^S\-1\-5\-21\-.*/
+      | Vendor.properties.IsLocalAdmin=?UserIsAdmin Vendor.properties.AccountName=?UserName Vendor.properties.LogonType=?LogonType Vendor.properties.MachineGroup=?DeviceGroup
+      | lowercase("Vendor.properties.AccountName")
+      | groupby(Vendor.properties.AccountSid, function=([count(Vendor.properties.AccountName, distinct=true), collect(Vendor.properties.AccountName, limit=1000)]), limit=max)
+      | _count>1
+      | count(Vendor.properties.AccountName)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 3
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: SID Collisions
+    isLive: false
+    type: query
+  c9fe662e-39f4-44ed-bf10-8863215a2e24:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | sankey(source=Vendor.properties.InitiatingProcessFileName,target=Vendor.properties.FileName)
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 4
+    title: Initiating Filename -> Target Filename
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  LogonType:
+    label: Logon Type
+    query: '#event_simpleName=UserLogon | event_platform=Win | groupBy(LogonType,
+      limit=max)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: LogonType
+  UserIsAdmin:
+    label: Is Admin
+    query: '#event_simpleName=UserLogon | event_platform=Win | groupBy(UserIsAdmin,
+      limit=max)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserIsAdmin
+  UserName:
+    label: UserName
+    query: '#event_simpleName=UserLogon | event_platform=Win | groupBy(UserName, limit=max)'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: UserName

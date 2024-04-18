@@ -1,0 +1,391 @@
+name: Alert Investigation
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  ab87870d-c3c8-4fa0-94d8-f7f01c90bbb3:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=Url
+      | replace(regex="https://",field=Vendor.properties.AdditionalFields.Url,with="\(https\:\/\/\)")
+      | groupBy([Vendor.properties.Title],function=collect([Vendor.properties.AdditionalFields.Url]))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Alert Info URL
+    isLive: false
+    type: query
+  29c25f6c-8562-482e-a063-ec1bdd604d89:
+    x: 0
+    y: 33
+    height: 3
+    queryString: |-
+      Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=CloudApp*
+      | timechart(Vendor.properties.Title)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Cloud Application Threat over time
+    isLive: false
+    type: query
+  b288727d-5aff-4276-8945-12be91281959:
+    x: 0
+    y: 48
+    height: 3
+    queryString: |
+      *|Vendor.category="AdvancedHunting-AlertEvidence"|Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=File
+      | Vendor.properties.AdditionalFields.MalwareFamily=*
+      | groupby([Vendor.properties.FileName,Vendor.properties.AdditionalFields.MalwareFamily,Vendor.properties.AdditionalFields.LastRemediationState,Vendor.properties.AdditionalFields.LastVerdict,Vendor.properties.AdditionalFields.FirstSeen])
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: File Threat Intel & Remediation Status
+    isLive: false
+    type: query
+  17074637-b805-4e30-aaaa-66b5cb4a9e62:
+    x: 0
+    y: 31
+    height: 2
+    queryString: |-
+      Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=CloudApplication
+      | groupby(Vendor.properties.AdditionalFields.InstanceName,function=collect([Vendor.properties.Severity,Vendor.properties.Categories,Vendor.properties.AttackTechniques]))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Cloud Application Threat Info
+    isLive: false
+    type: query
+  e6f1a651-f3e7-49cd-97b7-5b388668a2ae:
+    x: 0
+    y: 40
+    height: 2
+    queryString: |-
+      *|Vendor.category="AdvancedHunting-AlertEvidence"|Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type Vendor.properties.EntityType=Ip
+      | groupby([Vendor.properties.RemoteIP],function=[collect([Vendor.properties.AdditionalFields.Location.City,Vendor.properties.AdditionalFields.Location.CountryCode,Vendor.properties.AdditionalFields.Location.State,Vendor.properties.AdditionalFields.LastVerdict])])
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: IP Info
+    isLive: false
+    type: query
+  0793c0ac-3fd7-40d9-8d31-0cd3c7fba4c8:
+    x: 8
+    y: 36
+    height: 4
+    queryString: |-
+      *|Vendor.category="AdvancedHunting-AlertEvidence"|Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type Vendor.properties.EntityType=Ip
+      | worldMap(ip=Vendor.properties.RemoteIP)
+    visualization: world-map
+    end: now
+    start: 7d
+    width: 4
+    title: IP Location
+    isLive: false
+    type: query
+  6e979cfe-13fe-46ae-ba87-faaeecffad1f:
+    x: 0
+    y: 28
+    height: 3
+    queryString: |-
+      *|Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=CloudLogon*
+      | timechart(Vendor.properties.EntityType)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Cloud Logon Threat Over Time
+    isLive: false
+    type: query
+  606d9860-9a60-4b6f-b839-a365cd94c136:
+    x: 9
+    y: 0
+    height: 4
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | groupby(Vendor.properties.EntityType)
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 3
+    title: Evidence Types Associated to Alert
+    isLive: false
+    type: query
+  96ff23fb-6379-4043-bc93-ffecab8b6a0c:
+    x: 0
+    y: 36
+    height: 4
+    queryString: |-
+      Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=Ip
+      | groupby([Vendor.properties.RemoteIP],function=[collect([Vendor.properties.Title,Vendor.properties.Severity,Vendor.properties.Categories,Vendor.properties.AttackTechniques])])
+    end: now
+    start: 7d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: IP Threat Info
+    isLive: false
+    type: query
+  fb5e13a9-8074-477c-ae6f-0dcea974db32:
+    x: 8
+    y: 4
+    height: 4
+    queryString: '*|Vendor.category="AdvancedHunting-AlertEvidence"|Vendor.properties.AlertId=?AlertId
+      Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type | sankey(source=Vendor.properties.Title,target=Vendor.properties.Categories)'
+    visualization: sankey
+    end: now
+    start: 7d
+    width: 4
+    title: Alert Title to Attack Category
+    isLive: false
+    type: query
+  f3309c4c-7a38-400a-8973-2408b36dbda4:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | groupBy([Vendor.properties.AlertId],function=[collect([Vendor.properties.Title,Vendor.properties.EntityType,Vendor.properties.Categories])])
+    end: now
+    start: 7d
+    width: 9
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Alert Info
+    isLive: false
+    type: query
+  1a9ca9d5-7e81-4d39-aa8c-6d5cb3e1e984:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=Url
+      | replace(regex="https://",field=Vendor.properties.AdditionalFields.Url,with="\(https\:\/\/\)")
+      | replace(regex="http://",field=Vendor.properties.AdditionalFields.Url,with="\(http\:\/\/\)")
+      | groupBy([Vendor.properties.Title],function=collect([Vendor.properties.AdditionalFields.Url]))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: URL Info (Sanitised)
+    isLive: false
+    type: query
+  3ca2e980-53b4-45ba-bf3f-1a1f370de711:
+    x: 6
+    y: 20
+    height: 3
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=Url
+      | replace(regex="https://",field=Vendor.properties.AdditionalFields.Url,with="\(https\:\/\/\)")
+      | sum(Vendor.properties.AdditionalFields.EmailCount,as="Email Count")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      default: {}
+    visualization: single-value
+    title: Email Count
+    isLive: false
+    type: query
+  1c296758-14c8-48db-bf4a-bddd3f758c47:
+    x: 0
+    y: 42
+    height: 3
+    queryString: |-
+      *|Vendor.category="AdvancedHunting-AlertEvidence"|Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=File
+      | groupby([Vendor.properties.FileName,Vendor.properties.Severity,Vendor.properties.Title,Vendor.properties.AttackTechniques])
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: File Threat Info
+    isLive: false
+    type: query
+  af9fd2e9-3db5-4e88-b7ef-04c8217f7b58:
+    x: 0
+    y: 25
+    height: 3
+    queryString: |-
+      *|Vendor.category="AdvancedHunting-AlertEvidence"|Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type| Vendor.properties.EntityType=CloudLogon*
+      | groupby(Vendor.properties.EntityType,function=collect([Vendor.properties.Severity,Vendor.properties.Categories,Vendor.properties.AttackTechniques]))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Cloud Logon Threat Info
+    isLive: false
+    type: query
+  1d6bd564-9cf2-4b02-9ad8-e4ecc69ac21b:
+    x: 0
+    y: 20
+    height: 3
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=Url
+      | replace(regex="https://",field=Vendor.properties.AdditionalFields.Url,with="\(https\:\/\/\)")
+      | sum(Vendor.properties.AdditionalFields.ClickCount,as="Click Count")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      default: {}
+    visualization: single-value
+    title: URL Click Count
+    isLive: false
+    type: query
+  3e943c1a-5743-4521-affd-29b6b0136884:
+    x: 0
+    y: 23
+    height: 2
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=Url
+      | replace(regex="https://",field=Vendor.properties.AdditionalFields.Url,with="\(https\:\/\/\)")
+      //| table([Vendor.properties.AdditionalFields.LastVerdict])
+    end: now
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.properties.AdditionalFields.LastVerdict","format":"text","width":377},{"type":"field","fieldName":"Vendor.properties.AdditionalFields.LastRemediationState","format":"text","width":445},{"type":"field","fieldName":"Vendor.properties.AdditionalFields.Url","format":"text","width":4090},{"type":"field","fieldName":"Vendor.properties.AdditionalFields.Urn","format":"text","width":377}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: URL Threat Intel
+    isLive: false
+    type: query
+  6402c1f6-3749-4001-84cd-dfb67793064f:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | timechart(Vendor.properties.EntityType)
+    end: now
+    start: 7d
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Alert Evidence Type Over Time
+    isLive: false
+    type: query
+  89d2000b-798a-4ed9-86f2-ae1adeedf30f:
+    x: 0
+    y: 45
+    height: 3
+    queryString: |-
+      *|Vendor.category="AdvancedHunting-AlertEvidence"|Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=File
+      | groupby([Vendor.properties.FileName,Vendor.properties.AdditionalFields.FileHashes])
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: File Hashes
+    isLive: false
+    type: query
+  2ae94985-57f9-4650-814b-ffbe1b662f66:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | Vendor.properties.EntityType=User
+      | groupby([Vendor.properties.AdditionalFields.UserPrincipalName],function=collect([Vendor.properties.AdditionalFields.DisplayName,Vendor.properties.AdditionalFields.NTDomain,Vendor.properties.AdditionalFields.AadUserId,Vendor.properties.AdditionalFields.CloudAppAccountId
+      ]))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: User Information
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  AlertId:
+    label: AlertId
+    query: top(Vendor.properties.AlertId)
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    order: 50
+    valueField: Vendor.properties.AlertId

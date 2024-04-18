@@ -1,0 +1,183 @@
+name: Failed Sign Ins
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  345b9794-e712-46b6-80aa-298c0ab1cc29:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | timechart(Vendor.properties.userPrincipalName)
+    end: now
+    start: 30d
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Failed Sign Ins Over Time by UserName
+    isLive: false
+    type: query
+  74a15133-547b-4068-9c3d-febd3b64769f:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | count()
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Failed Sign Ins
+    isLive: false
+    type: query
+  58bbcc64-25a8-4aef-ad31-9c8094f3ed01:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | timechart()
+    end: now
+    start: 30d
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Failed Sign Ins Over Time
+    isLive: false
+    type: query
+  3629401d-52ff-4309-ad79-f3a967f9f073:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | top(Vendor.properties.appDisplayName)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Top Apps Failed Sign In
+    isLive: false
+    type: query
+  3b0aa5a1-8a02-403d-b4de-34074b7b4f5e:
+    x: 3
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | top(Vendor.properties.status.failureReason)
+    end: now
+    start: 1d
+    width: 9
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Failed Sign In Reason
+    isLive: false
+    type: query
+  2c4da3d3-9660-4ad2-ae64-7628c88cb677:
+    x: 0
+    y: 40
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | timechart(Vendor.properties.userPrincipalName)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top Failed Sign Ins by Username over Time
+    isLive: false
+    type: query
+  3617f95c-c0b0-4b3b-ba06-b73c478c893e:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+    end: now
+    start: 1d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.callerIpAddress","format":"text","width":197},{"type":"field","fieldName":"Vendor.properties.userPrincipalName","format":"text","width":302},{"type":"field","fieldName":"Vendor.properties.appDisplayName","format":"text","width":272},{"type":"field","fieldName":"Vendor.properties.clientAppUsed","format":"text","width":265},{"type":"field","fieldName":"Vendor.properties.isInteractive","format":"text","width":265},{"type":"field","fieldName":"Vendor.properties.status.failureReason","format":"text","width":677},{"type":"field","fieldName":"Vendor.properties.signInIdentifier","format":"text","width":287}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Failed Sign In Raw Events
+    isLive: false
+    type: query
+  9286d4e4-e7d0-4fe9-a8e6-532759f6048c:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | top(Vendor.properties.userPrincipalName)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Failed Sign Ins by Username
+    isLive: false
+    type: query
+  659752b0-68c5-4bfc-aaf0-99304f38f8fe:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | worldMap(ip=Vendor.callerIpAddress)
+    visualization: world-map
+    end: now
+    start: 1d
+    width: 4
+    title: Failed Sign In Map
+    isLive: false
+    type: query
+  d7436b1b-b973-49fc-b3eb-07b33db03786:
+    x: 4
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode != 0
+      | timechart(Vendor.properties.appDisplayName)
+    end: now
+    start: 1d
+    width: 8
+    options:
+      connect-points: false
+    visualization: time-chart
+    title: Top Apps Failed Sign In Over time
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
