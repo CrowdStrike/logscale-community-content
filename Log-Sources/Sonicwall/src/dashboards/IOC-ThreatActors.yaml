@@ -1,0 +1,332 @@
+name: IOC - Threat Actors
+updateFrequency: never
+description: ''
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  a241235f-783d-44ad-bdd4-1614105d442a:
+    x: 4
+    y: 0
+    description: A world map of detected IOC threat Actor Locations
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      //IOC / Threat Actor / World Map
+      // a world map of detected IOC threat Actor Locations
+
+      // IOC lookup on IP Addresses
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold, strict=true)
+      | split("ioc")
+
+      // Parameter selections
+      | ioc.malicious_confidence = ?Malicious_Confidence
+
+      // Filter out any IOCs not associated with Threat Actors
+      | ioc.labels = /^Actor\/(?<iocActor>\w+)\W+/
+
+      // Parameter selections
+      | iocActor = ?IOC_Actor
+
+      // IOC Geo lookups
+      | ipLocation(ioc.indicator)
+      | ioc.indicator.country = ?IOC_Country
+
+      // Display the results
+      | worldMap(ip=ioc.indicator)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      maxOpacity: 81
+      projection: orthographic
+      autoRotate: true
+      norm: true
+      opacity: 81
+      minOpacity: 21
+      magnitudeMode: opacity
+      opacityMode: opacity
+      zLevel: 3.6
+    visualization: world-map
+    title: Threat Actors - Associated Locations
+    isLive: false
+    type: query
+  78774ed1-9309-46d6-b482-68a3147d1066:
+    x: 0
+    y: 11
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+
+      // a world map of detected IOC threat locations
+
+      // IOC lookup on IP Addresses
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold, strict=true)
+      | split(ioc)
+
+      // Parameter selections
+      | ioc.malicious_confidence = ?Malicious_Confidence
+
+      | ioc.labels != "Actor*"
+
+      // IOC Geo lookups
+      | ipLocation(ioc.indicator)
+      | ioc.indicator.country = ?IOC_Country
+
+      // Display the results
+      | worldMap(ip=ioc.indicator)
+    end: '2023-10-18T10:30:03.791Z'
+    start: '2023-09-18T10:30:03.791Z'
+    width: 4
+    options:
+      maxOpacity: 81
+      projection: orthographic
+      autoRotate: true
+      norm: true
+      opacity: 81
+      minOpacity: 21
+      magnitudeMode: opacity
+      opacityMode: opacity
+      zLevel: 3.6
+    visualization: world-map
+    title: IOCs without Threat Actors - Associated Locations
+    isLive: false
+    type: query
+  0645e4ad-17f9-45ec-9da8-6efb6cc33019:
+    x: 0
+    height: 6
+    queryString: |
+      #repo=net-firewall #type=sonicwall
+
+      // IOC / Threat Actor / GeoIP with flag
+
+      // IOC lookup on IP Addresses
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold, strict=true)
+      | split("ioc")
+
+      // Parameter selection
+      | ioc.malicious_confidence = ?Malicious_Confidence
+
+      // Parse out threat actor information. Default to "None Listed" if no Actor information is available.
+      | case {
+          ioc.labels = "Actor*" | ioc.labels = /^Actor\/(?<iocActor>\w+)\W+/;
+          * | iocActor := "None Listed"
+      }
+
+      // Parameter selection
+      | iocActor = ?IOC_Actor
+
+      // IOC Geo lookups
+      | ipLocation(ioc.indicator)
+      | ioc.indicator.country = ?IOC_Country
+      | match(file="crowdstrike_fltr-firewall-adversaries_geo_mapping.csv", column=CountryCode, field=ioc.indicator.country, include=["Country", "Continent", "Flag"], ignoreCase=true, strict=false)
+
+      // Formatting of fields for ease of use.
+      | replace(",", with="\n", field=ioc.labels, as="IOC Details")
+    end: '2023-11-07T10:52:09.411Z'
+    start: '2022-11-07T10:52:09.411Z'
+    width: 12
+    y: 5
+    interactions:
+    - conditions: null
+      name: Query Falcon for the Threat Actor
+      urlEncodeArgs: true
+      titleTemplate: null
+      urlTemplate: '{{fields.rootURL}}intelligence-v2/actors/{{fields.iocActor}}/summary'
+      openInNewTab: true
+      type: customlink
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"source.ip","format":"text","header":"Source
+        IP","width":145},{"type":"field","fieldName":"destination.ip","format":"text","header":"Destination
+        IP","width":145},{"type":"field","fieldName":"ioc.malicious_confidence","format":"text","header":"IOC
+        Confidence","width":150},{"type":"field","fieldName":"ioc.indicator","format":"text","header":"IOC
+        IP Address","width":145},{"type":"field","fieldName":"Flag","format":"text","header":"Flag","width":100},{"type":"field","fieldName":"Country","format":"text","header":"Country","width":120},{"type":"link","openInNewBrowserTab":true,"style":"button","hrefTemplate":"{{fields.rootURL}}intelligence-v2/actors/{{fields.iocActor}}/summary","textTemplate":"{{fields.iocActor}}","header":"IOC
+        Actor","width":200},{"type":"field","fieldName":"IOC Details","format":"text"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: IOC Actor Details
+    isLive: false
+    type: query
+  5ba81242-8475-4633-96be-bf40bc9432ff:
+    x: 0
+    description: A pie chart of detected IOCs by associated Threat Actor groups
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+
+      // a pie chart of detected IOCs by associated Threat Actor groups
+      // IOC lookup on IP Addresses
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold, strict=true)
+      | split("ioc")
+
+      // Parameter selections
+      | ioc.malicious_confidence = ?Malicious_Confidence
+      // Parse out and show only results with threat actor information.
+      | ioc.labels = /^Actor\/(?<iocActor>\w+)\W+/
+
+      // Parameter selections
+      | iocActor = ?IOC_Actor
+
+      // IOC Geo lookups
+      | ipLocation(ioc.indicator)
+      | ioc.indicator.country = ?IOC_Country
+
+      // Display the results
+      | top(iocActor)
+    end: '2023-10-18T09:19:35.735Z'
+    start: '2023-09-18T09:19:35.735Z'
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Query Falcon for the Threat Actor
+      urlEncodeArgs: true
+      titleTemplate: null
+      urlTemplate: '{{fields.rootURL}}/intelligence-v2/actors/{{fields.iocActor}}/summary'
+      openInNewTab: true
+      type: customlink
+    options:
+      innerRadius: 0
+      legendPosition: right
+      legendTitle: IOC Actor
+    visualization: pie-chart
+    title: Threat Actors
+    isLive: false
+    type: query
+  d520b898-c8ba-4f45-b107-1d75084adce0:
+    x: 8
+    description: A time series chart indicating IOC associated country
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+
+      //IOC / Threat Actor / Times Series by Country
+      // a time series chart indicating IOC associated country
+
+      // IOC lookup on IP Addresses
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold, strict=true)
+      | split("ioc")
+
+      // Filter only IOCs associated with Threat Actors
+      | ioc.labels = /^Actor\/(?<iocActor>\w+)\W+/
+
+      // Parameter selections
+      | ioc.malicious_confidence = ?Malicious_Confidence
+      | iocActor = ?IOC_Actor
+
+      // IOC Geo lookups
+      | ipLocation(ioc.indicator)
+      | ioc.indicator.country = ?IOC_Country
+      | match(file="crowdstrike_fltr-firewall-adversaries_geo_mapping.csv", column=CountryCode, field=ioc.indicator.country, include=["Country"], ignoreCase=true, strict=false)
+
+      // Display the results
+      | timeChart(span=1d, function=count(), series=Country)
+    end: now
+    start: 7d
+    width: 4
+    y: 0
+    interactions:
+    - conditions: null
+      name: Query Falcon for the Threat Actor
+      urlEncodeArgs: true
+      titleTemplate: null
+      urlTemplate: '{{fields.rootURL}}/intelligence-v2/actors/{{fields.iocActor}}/summary'
+      openInNewTab: true
+      type: customlink
+    options:
+      legendPosition: right
+      series: {}
+      connect-points: false
+      stacking: normal
+      yAxisScale: linear
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Threat Actors - Hits by Country
+    isLive: false
+    type: query
+  a9c9798e-95b8-42b8-9500-469410702581:
+    x: 4
+    y: 11
+    height: 5
+    queryString: |
+      #repo=net-firewall #type=sonicwall
+
+      //IOC lookup on IP Addresses
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold, strict=true)
+      | split(ioc)
+
+      // Parameter selections
+      | ioc.malicious_confidence = ?Malicious_Confidence
+
+      // Remove any IOCs attributed to threat actors
+      | ioc.labels != "Actor*"
+
+      // IOC Geo lookups
+      | ipLocation(ioc.indicator)
+      | ioc.indicator.country = ?IOC_Country
+      | match(file="crowdstrike_fltr-firewall-adversaries_geo_mapping.csv", column=CountryCode, field=ioc.indicator.country, include=["Country", "Flag"], ignoreCase=true, strict=false)
+
+      // Formatting of fields for ease of use.
+      | replace(",", with="\n", field=ioc.labels, as="IOC Details")
+    end: now
+    start: 7d
+    width: 8
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"source.ip","format":"text","header":"Source
+        IP","width":120},{"type":"field","fieldName":"destination.ip","format":"text","header":"Destination
+        IP","width":140},{"type":"field","fieldName":"ioc.malicious_confidence","format":"text","header":"IOC
+        Confidence","width":150},{"type":"field","fieldName":"ioc.indicator","format":"text","header":"IOC
+        IP Address","width":145},{"type":"field","fieldName":"Flag","format":"text","header":"Flag","width":75},{"type":"field","fieldName":"Country","format":"text","header":"Country","width":120},{"type":"field","fieldName":"IOC
+        Details","format":"text"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: IOCs without Attribution
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  Confidence_Threshold:
+    label: Confidence Threshold
+    order: 10
+    values:
+    - high
+    - medium
+    - low
+    - unverified
+    type: list
+    defaultValue: unverified
+  IOC_Actor:
+    label: IOC Actor
+    query: ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold,
+      strict=true) | split("ioc") | ioc.malicious_confidence = ?Malicious_Confidence
+      | ioc.labels=/^Actor\/(?<iocActor>\w+)\W+/ | groupBy([iocActor], function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 30
+    valueField: iocActor
+  IOC_Country:
+    label: IOC Country
+    valueFilters: {}
+    fileName: crowdstrike/fltr-firewall-adversaries/geo_mapping.csv
+    defaultValue: '*'
+    order: 40
+    valueField: CountryCode
+    type: file
+    labelField: Country
+  Malicious_Confidence:
+    label: Malicious Confidence
+    query: ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=?Confidence_Threshold,
+      strict=true) | split(ioc) | groupBy([ioc.malicious_confidence], function=[])
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    order: 20
+    valueField: ioc.malicious_confidence

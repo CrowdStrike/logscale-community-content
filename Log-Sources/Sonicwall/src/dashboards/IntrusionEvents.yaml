@@ -1,0 +1,161 @@
+name: Intrusion Events
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  cf05c668-2741-4704-84b6-274847e8ed59:
+    x: 6
+    y: 10
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |split(event.category)
+      |event.category="intrusion_detection"
+      |rename(field="Vendor.msg", as="Intrusion Name")
+      |groupBy([destination.ip,"Intrusion Name"])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Intrusions by Destinaiton IPs
+    isLive: false
+    type: query
+  25424805-fed9-4c8d-aa89-45f1741481cc:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |split(event.category)
+      |event.category="intrusion_detection"
+      |rename(field="Vendor.msg", as="Intrusion Name")
+      |groupBy(["Intrusion Name"])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Intrusions Detected
+    isLive: false
+    type: query
+  c659c950-f649-4972-9455-0489c53ba55f:
+    x: 0
+    y: 6
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |split(event.category)
+      |groupBy([source.ip])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Intrusion Source IPs
+    isLive: false
+    type: query
+  6650235d-a659-4336-b97a-958df9caab49:
+    x: 0
+    y: 10
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |split(event.category)
+      |event.category="intrusion_detection"
+      //|rename(field="Vendor.msg", as="Intrusion Name")
+      |groupBy([destination.ip])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Intrusions Destination IPs
+    isLive: false
+    type: query
+  08fb5aa9-bc1d-4ece-a70e-3b80ef7727fb:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |split(event.category)
+      |event.category="intrusion_detection"
+      |ipLocation(source.ip)
+      |groupBy([source.ip.country])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Intrusion - Source Countries
+    isLive: false
+    type: query
+  0408405f-04b7-414d-b668-e6534e871970:
+    x: 6
+    y: 15
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |split(event.category)
+      |event.category="intrusion_detection"
+      |ipLocation(destination.ip)
+      |groupBy([destination.ip.country])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Intrusions Destination Countries
+    isLive: false
+    type: query
+  62c6dd80-26e2-48d3-95e8-60c6ab2b6fcb:
+    x: 6
+    y: 6
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |split(event.category)
+      |event.category="intrusion_detection"
+      |rename(field="Vendor.msg", as="Intrusion Name")
+      |groupBy([source.ip,"Intrusion Name"])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Intrusions by Source IPs
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
