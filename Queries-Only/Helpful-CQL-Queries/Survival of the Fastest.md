@@ -16,7 +16,7 @@ ExternalApiType=Event_EppDetectionSummaryEvent | detect_time:=@timestamp;
 // Perform aggregation against detectID to get required values
 | groupBy([detectID], function=([count(ExternalApiType, distinct=true), selectLast([Hostname, Attributes.update_status]), max(Severity, as=Severity), collect([Tactic, Technique, FalconHostLink, Attributes.add_tag]), min(detect_time, as=FirstDetect), min(assign_time, as=FirstAssign), min(response_time, as=ResolvedTime)]), limit=200000)
 
-// Check to make sure ComputerName value is not null; makes sure there isn't only a detection update event.
+// Check to make sure Hostname value is not null; makes sure there isn't only a detection update event.
 | Hostname=*
 
 // This handles when an alert was closed and then reopened
