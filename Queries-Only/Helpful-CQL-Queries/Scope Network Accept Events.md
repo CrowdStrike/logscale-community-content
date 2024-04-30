@@ -5,7 +5,8 @@
 | communityId(proto=Protocol, sourceip=LocalAddressIP4, destinationip=RemoteAddressIP4, as=communityId)
 | groupBy([communityId, RemoteAddressIP4, LocalPort], function=([count(aid, distinct=true, as=uniqueEndpoints), count(aid, as=totalConnections)])) 
 | ipLocation(RemoteAddressIP4)  
-| rdns("RemoteAddressIP4") 
 | select([RemoteAddressIP4, hostname, LocalPort, RemoteAddressIP4.country, RemoteAddressIP4.city, uniqueEndpoints, totalConnections, communityId]) 
+| rdns(RemoteAddressIP4, as=rdsn) 
+| asn(RemoteAddressIP4, as=asn)
 | sort(uniqueEndpoints, order=desc, limit=5000)
 ```
