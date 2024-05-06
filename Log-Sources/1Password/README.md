@@ -11,7 +11,7 @@ This is an early pre-alpha version Package only containing the parser and a look
 Version 0.0.1
 
 - Initial Release
-- Contains CPS compliant parser & lookup file for 
+- Contains CPS compliant parser & lookup file for 1Password API events
 
 ## Package Contents
 
