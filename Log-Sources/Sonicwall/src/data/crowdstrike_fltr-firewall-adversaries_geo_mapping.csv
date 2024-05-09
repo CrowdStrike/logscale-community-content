@@ -1,0 +1,251 @@
+CountryCode,Country,ContinentCode,Continent,Flag
+AD,Andorra,EU,Europe,🇦🇩
+AE,United Arab Emirates,AS,Asia,🇦🇪
+CA,Canada,NA,North America,🇨🇦
+CN,China,AS,Asia,🇨🇳
+DE,Germany,EU,Europe,🇩🇪
+DK,Denmark,EU,Europe,🇩🇰
+FR,France,EU,Europe,🇫🇷
+GB,United Kingdom,EU,Europe,🇬🇧
+KZ,Kazakhstan,AS,Asia,🇰🇿
+RU,Russia,EU,Europe,🇷🇺
+UA,Ukraine,EU,Europe,🇺🇦
+US,United States,NA,North America,🇺🇸
+AF,Afghanistan,AS,Asia,🇦🇫
+AG,Antigua and Barbuda,NA,North America,🇦🇬
+AI,Anguilla,NA,North America,NoFlagAvail
+AL,Albania,EU,Europe,🇦🇱
+AM,Armenia,AS,Asia,🇦🇲
+AO,Angola,AF,Africa,🇦🇴
+AQ,Antarctica,AN,Antarctica,🇦🇶
+AR,Argentina,SA,South America,🇦🇷
+AS,American Samoa,OC,Oceania,🇦🇸
+AT,Austria,EU,Europe,🇦🇹
+AU,Australia,OC,Oceania,🇦🇺
+AW,Aruba,NA,North America,🇦🇼
+AX,Åland,EU,Europe,NoFlagAvail
+AZ,Azerbaijan,AS,Asia,🇦🇿
+BA,Bosnia and Herzegovina,EU,Europe,🇧🇦
+BB,Barbados,NA,North America,🇧🇧
+BD,Bangladesh,AS,Asia,🇧🇩
+BE,Belgium,EU,Europe,🇧🇪
+BF,Burkina Faso,AF,Africa,🇧🇫
+BG,Bulgaria,EU,Europe,🇧🇬
+BH,Bahrain,AS,Asia,🇧🇭
+BI,Burundi,AF,Africa,🇧🇮
+BJ,Benin,AF,Africa,🇧🇯
+BL,Saint Barthélemy,NA,North America,NoFlagAvail
+BM,Bermuda,NA,North America,🇧🇲
+BN,Brunei,AS,Asia,🇧🇳
+BO,Bolivia,SA,South America,🇧🇴
+BQ,"Bonaire, Sint Eustatius, and Saba",NA,North America,NoFlagAvail
+BR,Brazil,SA,South America,🇧🇷
+BS,Bahamas,NA,North America,🇧🇸
+BT,Bhutan,AS,Asia,🇧🇹
+BV,Bouvet Island,AN,Antarctica,🇧🇻
+BW,Botswana,AF,Africa,🇧🇼
+BY,Belarus,EU,Europe,🇧🇾
+BZ,Belize,NA,North America,🇧🇿
+CC,Cocos (Keeling) Islands,AS,Asia,🇨🇨
+CD,DR Congo,AF,Africa,🇨🇩
+CF,Central African Republic,AF,Africa,🇨🇫
+CG,Congo Republic,AF,Africa,NoFlagAvail
+CH,Switzerland,EU,Europe,🇨🇭
+CI,Ivory Coast,AF,Africa,NoFlagAvail
+CK,Cook Islands,OC,Oceania,🇨🇰
+CL,Chile,SA,South America,🇨🇱
+CM,Cameroon,AF,Africa,🇨🇲
+CO,Colombia,SA,South America,🇨🇴
+CR,Costa Rica,NA,North America,🇨🇷
+CU,Cuba,NA,North America,🇨🇺
+CV,Cabo Verde,AF,Africa,NoFlagAvail
+CW,Curaçao,NA,North America,NoFlagAvail
+CX,Christmas Island,OC,Oceania,🇨🇽
+CY,Cyprus,EU,Europe,🇨🇾
+CZ,Czechia,EU,Europe,🇨🇿
+DJ,Djibouti,AF,Africa,🇩🇯
+DM,Dominica,NA,North America,🇩🇲
+DO,Dominican Republic,NA,North America,🇩🇴
+DZ,Algeria,AF,Africa,🇩🇿
+EC,Ecuador,SA,South America,🇪🇨
+EE,Estonia,EU,Europe,🇪🇪
+EG,Egypt,AF,Africa,🇪🇬
+EH,Western Sahara,AF,Africa,🇪🇭
+ER,Eritrea,AF,Africa,🇪🇷
+ES,Spain,EU,Europe,🇬🇶
+ET,Ethiopia,AF,Africa,🇪🇹
+FI,Finland,EU,Europe,🇫🇮
+FJ,Fiji,OC,Oceania,🇫🇯
+FK,Falkland Islands,SA,South America,🇫🇰
+FM,Micronesia,OC,Oceania,🇫🇲
+FO,Faroe Islands,EU,Europe,🇫🇴
+GA,Gabon,AF,Africa,🇬🇦
+GD,Grenada,NA,North America,🇬🇩
+GE,Georgia,AS,Asia,🇬🇪
+GF,French Guiana,SA,South America,🇬🇫
+GG,Guernsey,EU,Europe,🇬🇬
+GH,Ghana,AF,Africa,🇬🇭
+GI,Gibraltar,EU,Europe,🇬🇮
+GL,Greenland,NA,North America,🇬🇱
+GM,The Gambia,AF,Africa,🇬🇲
+GN,Guinea,AF,Africa,🇬🇳
+GP,Guadeloupe,NA,North America,🇬🇵
+GQ,Equatorial Guinea,AF,Africa,🇬🇶
+GR,Greece,EU,Europe,🇬🇷
+GS,South Georgia and South Sandwich Islands,AN,Antarctica,🇬🇸
+GT,Guatemala,NA,North America,🇬🇹
+GU,Guam,OC,Oceania,🇬🇺
+GW,Guinea-Bissau,AF,Africa,🇬🇼
+GY,Guyana,SA,South America,🇬🇾
+HK,Hong Kong,AS,Asia,🇭🇰
+HM,Heard and McDonald Islands,AN,Antarctica,🇭🇲
+HN,Honduras,NA,North America,🇭🇳
+HR,Croatia,EU,Europe,🇭🇷
+HT,Haiti,NA,North America,🇭🇹
+HU,Hungary,EU,Europe,🇭🇺
+ID,Indonesia,AS,Asia,🇮🇩
+IE,Ireland,EU,Europe,🇮🇪
+IL,Israel,AS,Asia,🇮🇱
+IM,Isle of Man,EU,Europe,🇮🇲
+IN,India,AS,Asia,🇮🇳
+IO,British Indian Ocean Territory,AS,Asia,🇮🇴
+IQ,Iraq,AS,Asia,🇮🇶
+IR,Iran,AS,Asia,🇮🇷
+IS,Iceland,EU,Europe,🇮🇸
+IT,Italy,EU,Europe,🇮🇹
+JE,Jersey,EU,Europe,🇯🇪
+JM,Jamaica,NA,North America,🇯🇲
+JO,Jordan,AS,Asia,🇯🇴
+JP,Japan,AS,Asia,🇯🇵
+KE,Kenya,AF,Africa,🇰🇪
+KG,Kyrgyzstan,AS,Asia,🇰🇬
+KH,Cambodia,AS,Asia,🇰🇭
+KI,Kiribati,OC,Oceania,🇰🇮
+KM,Comoros,AF,Africa,🇰🇲
+KN,St Kitts and Nevis,NA,North America,🇰🇳
+KP,North Korea,AS,Asia,🇰🇵
+KR,South Korea,AS,Asia,🇰🇷
+KW,Kuwait,AS,Asia,🇰🇼
+KY,Cayman Islands,NA,North America,🇰🇾
+LA,Laos,AS,Asia,🇱🇦
+LB,Lebanon,AS,Asia,🇱🇧
+LC,Saint Lucia,NA,North America,🇱🇨
+LI,Liechtenstein,EU,Europe,🇱🇮
+LK,Sri Lanka,AS,Asia,🇱🇰
+LR,Liberia,AF,Africa,🇱🇷
+LS,Lesotho,AF,Africa,🇱🇸
+LT,Lithuania,EU,Europe,🇱🇹
+LU,Luxembourg,EU,Europe,🇱🇺
+LV,Latvia,EU,Europe,🇱🇻
+LY,Libya,AF,Africa,🇱🇾
+MA,Morocco,AF,Africa,🇲🇦
+MC,Monaco,EU,Europe,🇲🇨
+MD,Moldova,EU,Europe,🇲🇩
+ME,Montenegro,EU,Europe,🇲🇪
+MF,Saint Martin,NA,North America,🇲🇫
+MG,Madagascar,AF,Africa,🇲🇬
+MH,Marshall Islands,OC,Oceania,🇲🇭
+MK,North Macedonia,EU,Europe,🇲🇰
+ML,Mali,AF,Africa,🇲🇱
+MM,Myanmar,AS,Asia,🇲🇲
+MN,Mongolia,AS,Asia,🇲🇳
+MO,Macao,AS,Asia,🇲🇴
+MP,Northern Mariana Islands,OC,Oceania,🇲🇵
+MQ,Martinique,NA,North America,🇲🇶
+MR,Mauritania,AF,Africa,🇲🇷
+MS,Montserrat,NA,North America,🇲🇸
+MT,Malta,EU,Europe,🇲🇹
+MU,Mauritius,AF,Africa,🇲🇺
+MV,Maldives,AS,Asia,🇲🇻
+MW,Malawi,AF,Africa,🇲🇼
+MX,Mexico,NA,North America,🇲🇽
+MY,Malaysia,AS,Asia,🇲🇾
+MZ,Mozambique,AF,Africa,🇲🇿
+NA,Namibia,AF,Africa,🇳🇦
+NC,New Caledonia,OC,Oceania,🇳🇨
+NE,Niger,AF,Africa,🇳🇪
+NF,Norfolk Island,OC,Oceania,🇳🇫
+NG,Nigeria,AF,Africa,🇳🇬
+NI,Nicaragua,NA,North America,🇳🇮
+NL,Netherlands,EU,Europe,🇳🇱
+NO,Norway,EU,Europe,🇳🇴
+NP,Nepal,AS,Asia,🇳🇵
+NR,Nauru,OC,Oceania,🇳🇷
+NU,Niue,OC,Oceania,🇳🇺
+NZ,New Zealand,OC,Oceania,🇳🇿
+OM,Oman,AS,Asia,🇴🇲
+PA,Panama,NA,North America,🇵🇦
+PE,Peru,SA,South America,🇵🇪
+PF,French Polynesia,OC,Oceania,🇵🇫
+PG,Papua New Guinea,OC,Oceania,🇵🇬
+PH,Philippines,AS,Asia,🇵🇭
+PK,Pakistan,AS,Asia,🇵🇰
+PL,Poland,EU,Europe,🇵🇱
+PM,Saint Pierre and Miquelon,NA,North America,🇵🇲
+PN,Pitcairn Islands,OC,Oceania,🇵🇳
+PR,Puerto Rico,NA,North America,🇵🇷
+PS,Palestine,AS,Asia,NoFlagAvail
+PT,Portugal,EU,Europe,🇵🇹
+PW,Palau,OC,Oceania,🇵🇼
+PY,Paraguay,SA,South America,🇵🇾
+QA,Qatar,AS,Asia,🇶🇦
+RE,Réunion,AF,Africa,NoFlagAvail
+RO,Romania,EU,Europe,🇷🇴
+RS,Serbia,EU,Europe,🇷🇸
+RW,Rwanda,AF,Africa,🇷🇼
+SA,Saudi Arabia,AS,Asia,🇸🇦
+SB,Solomon Islands,OC,Oceania,🇸🇧
+SC,Seychelles,AF,Africa,🇸🇨
+SD,Sudan,AF,Africa,🇸🇩
+SE,Sweden,EU,Europe,🇸🇪
+SG,Singapore,AS,Asia,🇸🇬
+SH,Saint Helena,AF,Africa,🇸🇭
+SI,Slovenia,EU,Europe,🇸🇮
+SJ,Svalbard and Jan Mayen,EU,Europe,🇸🇯
+SK,Slovakia,EU,Europe,🇸🇰
+SL,Sierra Leone,AF,Africa,🇸🇱
+SM,San Marino,EU,Europe,🇸🇲
+SN,Senegal,AF,Africa,🇸🇳
+SO,Somalia,AF,Africa,🇸🇴
+SR,Suriname,SA,South America,🇸🇷
+SS,South Sudan,AF,Africa,🇸🇸
+ST,São Tomé and Príncipe,AF,Africa,NoFlagAvail
+SV,El Salvador,NA,North America,🇸🇻
+SX,Sint Maarten,NA,North America,🇸🇽
+SY,Syria,AS,Asia,🇸🇾
+SZ,Eswatini,AF,Africa,🇸🇿
+TC,Turks and Caicos Islands,NA,North America,🇹🇨
+TD,Chad,AF,Africa,🇹🇩
+TF,French Southern Territories,AN,Antarctica,🇹🇫
+TG,Togo,AF,Africa,🇹🇬
+TH,Thailand,AS,Asia,🇹🇭
+TJ,Tajikistan,AS,Asia,🇹🇯
+TK,Tokelau,OC,Oceania,🇹🇰
+TL,Timor-Leste,OC,Oceania,🇹🇱
+TM,Turkmenistan,AS,Asia,🇹🇲
+TN,Tunisia,AF,Africa,🇹🇳
+TO,Tonga,OC,Oceania,🇹🇴
+TR,Turkey,AS,Asia,🇹🇷
+TT,Trinidad and Tobago,NA,North America,🇹🇹
+TV,Tuvalu,OC,Oceania,🇹🇼
+TW,Taiwan,AS,Asia,🇹🇼
+TZ,Tanzania,AF,Africa,🇹🇿
+UG,Uganda,AF,Africa,🇺🇬
+UM,U.S. Outlying Islands,OC,Oceania,🇺🇲
+UY,Uruguay,SA,South America,🇺🇾
+UZ,Uzbekistan,AS,Asia,🇺🇿
+VA,Vatican City,EU,Europe,🇻🇦
+VC,St Vincent and Grenadines,NA,North America,🇻🇨
+VE,Venezuela,SA,South America,🇻🇪
+VG,British Virgin Islands,NA,North America,🇻🇬
+VI,U.S. Virgin Islands,NA,North America,🇻🇮
+VN,Vietnam,AS,Asia,🇻🇳
+VU,Vanuatu,OC,Oceania,🇻🇺
+WF,Wallis and Futuna,OC,Oceania,🇼🇫
+WS,Samoa,OC,Oceania,🇼🇸
+XK,Kosovo,EU,Europe,🇽🇰
+YE,Yemen,AS,Asia,🇾🇪
+YT,Mayotte,AF,Africa,🇾🇹
+ZA,South Africa,AF,Africa,🇿🇦
+ZM,Zambia,AF,Africa,🇿🇲
+ZW,Zimbabwe,AF,Africa,🇿🇼

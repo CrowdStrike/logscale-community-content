@@ -1,0 +1,98 @@
+name: Device Enrollment
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  6961f4ec-1da0-49f4-b102-c894f95115b4:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=OperationalLogs Vendor.operationName=/Enrollment/i
+      | Vendor.properties.AADDeviceId = ?ADDeviceID Vendor.properties.IntuneDeviceId=?IntuneDeviceID Vendor.properties.Os=?OperatingSystem
+      | Vendor.resultType = Fail
+      | count(as="Succesfull Enrollments")
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Failed Enrollments
+    isLive: false
+    type: query
+  a0a5479c-777f-4aad-9d50-ef4323958788:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.category=OperationalLogs Vendor.operationName=/Enrollment/i
+      | Vendor.properties.AADDeviceId = ?ADDeviceID Vendor.properties.IntuneDeviceId=?IntuneDeviceID Vendor.properties.Os=?OperatingSystem
+      | Vendor.resultType = Fail
+      | groupby(Vendor.properties.IntuneDeviceId,function=[collect([Vendor.properties.FailureCategory,Vendor.properties.FailureReason]),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Enrollment Fail Reasons
+    isLive: false
+    type: query
+  da9e9b62-fd86-40e6-a1d6-e6fbe22b8876:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=OperationalLogs Vendor.operationName=/Enrollment/i
+      | Vendor.properties.AADDeviceId = ?ADDeviceID Vendor.properties.IntuneDeviceId=?IntuneDeviceID Vendor.properties.Os=?OperatingSystem
+      | groupby(Vendor.properties.EnrollmentType)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Enrollment Type
+    isLive: false
+    type: query
+  11d42a82-16f6-4f6f-8fc5-7391443c3c2a:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.category=OperationalLogs Vendor.operationName=/Enrollment/i
+      | Vendor.properties.AADDeviceId = ?ADDeviceID Vendor.properties.IntuneDeviceId=?IntuneDeviceID Vendor.properties.Os=?OperatingSystem
+      | Vendor.resultType = Fail
+      | timechart(Vendor.properties.IntuneDeviceId)
+    end: now
+    start: 30d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Failed Device Enrollment Over Time
+    isLive: false
+    type: query
+  341f9c3a-c0fe-49e1-82f5-99acac3f9f1e:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=OperationalLogs Vendor.operationName=/Enrollment/i
+      | Vendor.properties.AADDeviceId = ?ADDeviceID Vendor.properties.IntuneDeviceId=?IntuneDeviceID Vendor.properties.Os=?OperatingSystem
+      | Vendor.resultType = Success
+      | count(as="Succesfull Enrollments")
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Successful Enrollments
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

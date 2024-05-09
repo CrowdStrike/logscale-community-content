@@ -1,0 +1,206 @@
+name: Devices Overview
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  b62c5382-b911-485a-8940-8f14d3b127bc:
+    x: 0
+    y: 0
+    height: 3
+    queryString: Vendor.operationName=Devices | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Devices Count
+    isLive: false
+    type: query
+  23c5719c-9736-4d99-84a9-81b440c14b8a:
+    x: 3
+    y: 3
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.DeviceState=Managed
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Managed Devices
+    isLive: false
+    type: query
+  9e6f6a14-86fb-4179-889a-db133cb2b322:
+    x: 6
+    y: 6
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.DeviceRegisteredState=*
+      | Vendor.properties.DeviceRegisteredState!=Registered
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Non-Registered Devices
+    isLive: false
+    type: query
+  7299b306-44c6-49eb-adc6-c075bde2fc2c:
+    x: 9
+    y: 3
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.EncryptionStatusString=True
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Encrypted Devices
+    isLive: false
+    type: query
+  a3a7d112-9008-4ef2-ad51-dbab626862a4:
+    x: 0
+    y: 9
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.JailBroken = True
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Jailbroken Devices
+    isLive: false
+    type: query
+  74c1c30b-2d5e-41ca-a2d9-d37df9f633e4:
+    x: 9
+    y: 6
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.EncryptionStatusString=False
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: 'Unencrypted Devices #2'
+    isLive: false
+    type: query
+  9e6a588e-aabd-401a-b845-6219ba1944f2:
+    x: 3
+    y: 6
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      Vendor.properties.DeviceState=*
+      | Vendor.properties.DeviceState!=Managed
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: 'Unmanaged Devices #2'
+    isLive: false
+    type: query
+  4982c9fd-768e-4cd5-901a-ef1114b0cf41:
+    x: 0
+    y: 6
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.CompliantState=Noncompliant
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Non Compliant Devices
+    isLive: false
+    type: query
+  8a0d3033-7a58-4a0f-9f0e-e5bb44f53b91:
+    x: 4
+    y: 0
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | groupby(Vendor.properties.OS)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: OS
+    isLive: false
+    type: query
+  40feeae3-0c94-4024-a014-1dd8c42faf5a:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | groupby([Vendor.properties.Manufacturer])
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Manufacturer
+    isLive: false
+    type: query
+  055644d1-b338-4042-84b2-e3c499a3ad0a:
+    x: 6
+    y: 3
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.DeviceRegisteredState=Registered
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Registered Devices
+    isLive: false
+    type: query
+  10d66baf-3c2c-44d9-b9c7-4708eb5555e0:
+    x: 0
+    y: 3
+    height: 3
+    queryString: |-
+      Vendor.operationName=Devices
+      | Vendor.properties.CompliantState=Compliant
+      | count(Vendor.properties.DeviceId,distinct=true)
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Compliant Devices
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

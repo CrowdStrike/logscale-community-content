@@ -1,0 +1,153 @@
+name: Successful Sign Ins
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  0ec8d529-6dab-4bde-9c13-b5bbb43e0127:
+    x: 4
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.operationName="Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | groupBy([Vendor.properties.riskLevelAggregated])
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Risk Level
+    isLive: false
+    type: query
+  00cfaefc-679d-4312-a152-4935612eb88c:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.operationName="Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | groupby([Vendor.properties.deviceDetail.browser])
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Sign Ins by Browser
+    isLive: false
+    type: query
+  6f08c7a6-f732-4164-b8fd-612ecc953226:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.operationName="Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | timechart()
+    end: now
+    start: 1d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Sign Ins Over Time
+    isLive: false
+    type: query
+  d10f1c14-d3dc-4ff4-b79a-da0c28c8ffad:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | groupBy(Vendor.properties.isInteractive)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Sign In Interactive/Non Interactive
+    isLive: false
+    type: query
+  ab148741-6801-4c95-beb6-c94e469c0496:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.operationName = "Sign-in activity"
+      | groupBy(Vendor.properties.mfaDetail.authMethod)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: MFA Method
+    isLive: false
+    type: query
+  06f9e4c9-63d2-4b38-8445-a9487c1f33bd:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.operationName="Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | groupby([Vendor.properties.userPrincipalName],function=[count(as="Count"),selectLast(@timestamp)])
+      | sort(Count,order=desc)
+      | rename(@timestamp,as="Last Login")
+      | formatTime("%Y/%m/%d %H:%M:%S", field="Last Login", locale=en_US, timezone=Z,as="Last Login")
+    end: now
+    start: 1d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top User Sign Ins
+    isLive: false
+    type: query
+  e4427c21-2117-4c20-897a-726f2d7dd7b6:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.operationName="Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | groupby([Vendor.properties.deviceDetail.operatingSystem])
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Sign Ins by OS
+    isLive: false
+    type: query
+  f1f3ec1e-9a66-4816-9c01-69b0f287af11:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.operationName="Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | groupby([Vendor.properties.appDisplayName])
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Sign Ins by App Name
+    isLive: false
+    type: query
+  2a786cd7-b7ea-499f-ba53-26d3641f2a2b:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.operationName="Sign-in activity"
+      | Vendor.properties.status.errorCode = 0
+      | worldMap(ip=Vendor.callerIpAddress)
+    visualization: world-map
+    end: now
+    start: 1d
+    width: 4
+    title: Location of Sign Ins
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

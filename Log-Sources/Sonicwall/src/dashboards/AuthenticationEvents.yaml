@@ -1,0 +1,191 @@
+name: Authentication Events
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  7626b94b-9673-4646-9394-0a70ee52e5a1:
+    x: 0
+    y: 12
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=authentication
+      |rename(field="Vendor.msg", as="Authentication Event Name")
+      | wildcard(field=user.name, pattern=?UserName, ignoreCase=true)
+      |groupBy(["Authentication Event Name"])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Authentication Events
+    isLive: false
+    type: query
+  effaf9e7-0e58-4b7e-8a63-83cbdb1d1ac8:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=authentication
+      |rename(field="Vendor.msg", as="Authentication Event Name")
+      | wildcard(field=user.name, pattern=?UserName, ignoreCase=true)
+      | wildcard(field="Authentication Event Name", pattern=?EventName, ignoreCase=true)
+      |groupBy([user.name,"Authentication Event Name"])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Auth details by Users
+    isLive: false
+    type: query
+  8907e192-f1ad-4f36-82b7-1f2d87965afe:
+    x: 0
+    y: 7
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=authentication
+      |rename(field="Vendor.msg", as="Authentication Event Name")
+      | wildcard(field=user.name, pattern=?UserName, ignoreCase=true)
+      | wildcard(field="Authentication Event Name", pattern=?EventName, ignoreCase=true)
+      |timeChart(user.name)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      series: {}
+      interpolation: catmull-rom
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: User Auth Time Lines - Time Chart
+    isLive: false
+    type: query
+  3579b51f-2dce-4970-a611-0e8f51fa7484:
+    x: 0
+    y: 25
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=authentication
+      |rename(field="Vendor.msg", as="Authentication Event Name")
+      | wildcard(field=user.name, pattern=?UserName, ignoreCase=true)
+      | wildcard(field="Authentication Event Name", pattern=?EventName, ignoreCase=true)
+      |ipLocation(field=source.ip,as="IPLoc")
+      //|groupBy([IPLoc.country,user.name])
+      |groupBy([IPLoc.country,user.name],function=collect(["Authentication Event Name"]))
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Locations for Auth users with Event Names
+    isLive: false
+    type: query
+  07727516-0337-490a-897b-5e1c0e7081c7:
+    x: 7
+    y: 21
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=authentication
+      |rename(field="Vendor.msg", as="Authentication Event Name")
+      | wildcard(field=user.name, pattern=?UserName, ignoreCase=true)
+      | wildcard(field="Authentication Event Name", pattern=?EventName, ignoreCase=true)
+      |ipLocation(field=source.ip,as="IPLoc")
+      |groupBy([IPLoc.country,user.name])
+      //|groupBy([IPLoc.country,user.name,"Authentication Event Name"])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 5
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Location of Users for Auth events
+    isLive: false
+    type: query
+  88c90144-a6a4-40c0-8201-71b6e75f1a70:
+    x: 0
+    y: 0
+    height: 7
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=authentication
+      |groupBy([user.name])
+      |sort(_count,limit=50)
+    visualization: bar-chart
+    end: now
+    start: 1d
+    width: 12
+    title: Top 50 Auth Users
+    isLive: false
+    type: query
+  e119a8bd-5f1a-4627-a99d-babbd8935965:
+    x: 0
+    y: 21
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=authentication
+      |rename(field="Vendor.msg", as="Authentication Event Name")
+      | wildcard(field=user.name, pattern=?UserName, ignoreCase=true)
+      | wildcard(field="Authentication Event Name", pattern=?EventName, ignoreCase=true)
+      |ipLocation(field=source.ip,as="IPLoc")
+      |groupBy([IPLoc.country,"Authentication Event Name"])
+      //|groupBy([IPLoc.country,user.name,"Authentication Event Name"])
+      |sort(_count)
+    end: now
+    start: 1d
+    width: 7
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: 'Location of Auth Events '
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  EventName:
+    label: Event Name
+    query: '#repo=net-firewall #type=sonicwall |split(event.category) | event.category=authentication
+      |groupBy([Vendor.msg]) |drop([_count])'
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: Vendor.msg
+  UserName:
+    label: User Name
+    query: '#repo=net-firewall #type=sonicwall |groupBy([user.name]) |drop([_count])'
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    order: 50
+    valueField: user.name

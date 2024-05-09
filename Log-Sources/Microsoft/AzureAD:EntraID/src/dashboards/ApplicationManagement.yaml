@@ -1,0 +1,84 @@
+name: Application Management
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  0f4eee3f-5417-4d4a-a696-1e64812d1fa3:
+    x: 0
+    y: 13
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=ApplicationManagement
+
+      | $"microsoft/azuread:Parse Target Resource AzureAD"()
+      | parseJson(Vendor.properties.targetResources,prefix=Vendor.properties.targetResources)
+      | top([Vendor.operationName,Vendor.properties.targetResources[0].displayName])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.properties.targetResources","format":"text","width":49592}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Top Changes on Application
+    isLive: false
+    type: query
+  4c967ee9-83a1-4f60-a16e-94151b74bc3d:
+    x: 0
+    y: 21
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=ApplicationManagement
+      | top([Vendor.properties.initiatedBy.app.displayName])
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Top changes by another Application
+    isLive: false
+    type: query
+  9593afdd-43d3-4376-8d94-c8c13b397db2:
+    x: 0
+    y: 5
+    height: 8
+    queryString: |-
+      Vendor.category=AuditLogs | Vendor.properties.category=ApplicationManagement
+      //| split(Vendor.properties.targetResources)
+      //Vendor.properties.targetResources=/^\[(?<json>.*)\]$/i
+      //| parseJson(json)
+      //| replace(field=Vendor.properties.targetResources,regex="\'",with="\"")
+      //| replace(field=Vendor.properties.targetResources,regex="\"\"",with="\"")
+      | $"microsoft/azuread:Parse Target Resource AzureAD"()
+      | json:prettyPrint(Vendor.properties.targetResources)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.operationName","format":"text","width":302},{"type":"field","fieldName":"Vendor.properties.result","format":"text","width":212},{"type":"field","fieldName":"Vendor.properties.targetResources","format":"text","width":15497}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: App Changes Events
+    isLive: false
+    type: query
+  ac47d678-7e2b-4c20-a110-c8cd826b2aa3:
+    x: 0
+    y: 25
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=ApplicationManagement
+      | top([Vendor.properties.initiatedBy.user.userPrincipalName])
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Top Users Making Changes
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

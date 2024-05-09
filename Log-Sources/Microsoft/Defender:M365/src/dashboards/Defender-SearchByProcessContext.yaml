@@ -1,0 +1,253 @@
+name: Defender - Search By Process Context
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  92cd5969-698e-4e19-b30d-f4f4d4726a26:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | Vendor.Workload=DeviceFileEvents
+      | Vendor.properties.ActionType=FileDeleted
+      | Vendor.properties.InitiatingProcessId=?ProcessId Vendor.properties.DeviceId=?DeviceId
+      | groupBy([Vendor.properties.ActionType, Vendor.properties.FileName], limit=max)
+      | rename(_count, as="Total")
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Files Deleted
+    isLive: false
+    type: query
+  0d2176e4-9d84-4f42-90a8-b947d8292211:
+    x: 0
+    y: 24
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | (Vendor.Workload=DeviceProcessEvents Vendor.properties.ProcessId=?ProcessId) OR (Vendor.Workload!=DeviceProcessEvents Vendor.properties.InitiatingProcessId=?ProcessId)
+      | Vendor.properties.DeviceId=?DeviceId
+    end: '2023-11-14T11:50:09.437Z'
+    start: '2023-11-07T11:50:09.437Z'
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":198},{"type":"field","fieldName":"Vendor.Workload","format":"text","width":182},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'true'
+    visualization: list-view
+    title: All Process Context Events
+    isLive: false
+    type: query
+  40ff1bf7-a2d6-4f49-b561-212293f347ef:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.ProcessId=?ProcessId
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | ShortCommandLine:=format("%.64s...", field=Vendor.properties.ProcessCommandLine)
+      | groupBy([Vendor.properties.DeviceId, Vendor.properties.ProcessId], function=collect([Vendor.properties.DeviceName, Vendor.properties.FileName, ShortCommandLine], limit=1000), limit=max)
+    end: now
+    start: 7d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Processes by Host
+    isLive: false
+    type: query
+  33f1942d-9699-4683-9acb-db55b817b75a:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | Vendor.Workload=DeviceFileEvents
+      | in(field=Vendor.properties.ActionType,values=[FileCreated,FileRenamed,FileModified])
+      | Vendor.properties.InitiatingProcessId=?ProcessId Vendor.properties.DeviceId=?DeviceId
+      | groupBy([Vendor.properties.ActionType, Vendor.properties.FileName], limit=max)
+      | rename(_count, as="Total")
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Files Written/Renamed/Modified
+    isLive: false
+    type: query
+  note-1645495162547-0:
+    x: 0
+    y: 0
+    height: 4
+    text: "1. Input a value into the `FileName` parameter. This is case insensitive.\
+      \ The input must include the full filename including the extension, e.g. `crowdstrike.exe`.\
+      \ \n2. Input the value `*` into the `ProcessId` parameter. \n2. Click \"Apply\
+      \ parameters\". \n3. Copy and paste the `TargetProcessId` of interest into the\
+      \ `ProcessId` parameter. \n4. Click \"Apply parameters\" again. \n\nThe `aid`\
+      \ input parameter is optional but will improve performance."
+    width: 4
+    title: Workflow
+    type: note
+  aab1aa78-b6a8-4f6e-ba3b-e5ec9f3e8890:
+    x: 4
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | Vendor.Workload=DeviceNetworkEvents
+      | Vendor.properties.InitiatingProcessId=?ProcessId Vendor.properties.DeviceId=?DeviceId
+      | groupBy([Vendor.properties.RemoteIP], limit=max)
+    end: now
+    start: 7d
+    width: 4
+    y: 4
+    interactions:
+    - conditions: null
+      name: Search by RemoteAddress
+      titleTemplate: 'Search by RemoteAddress: {{ fields.RemoteAddressIP4 }}'
+      queryString: |-
+        test(?ProcessId != "*")
+        | #event_simpleName=NetworkConnectIP4 OR #event_simpleName=NetworkConnectIP6
+        | ContextProcessId=?ProcessId aid=?aid
+        | RemoteAddressIP4=?RemoteAddressIP4 RemoteAddressIP6=?RemoteAddressIP6
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        ProcessId: '["{{ parameters.ProcessId }}"]'
+        RemoteAddressIP4: '["{{ fields.RemoteAddressIP4 }}"]'
+        RemoteAddressIP6: '["{{ fields.RemoteAddressIP4 }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: false
+      isLive: false
+      type: searchlink
+    options:
+      maxLegendRows: 2
+      series: {}
+    visualization: pie-chart
+    title: Destination IPs
+    isLive: false
+    type: query
+  04d6a24b-bc44-4769-9b92-ecf37d07be04:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | Vendor.Workload=DeviceNetworkEvents
+      | Vendor.properties.InitiatingProcessId=?ProcessId Vendor.properties.DeviceId=?DeviceId
+      | table([@timestamp, Vendor.properties.DeviceId, Vendor.properties.DeviceName, Vendor.properties.Protocol, Vendor.properties.LocalIP, Vendor.properties.LocalPort, Vendor.properties.RemoteIP, Vendor.properties.RemotePort], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network Events
+    isLive: false
+    type: query
+  ebd407aa-bcfb-40ee-829d-aa32f5d279e8:
+    x: 0
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | (Vendor.Workload=DeviceProcessEvents Vendor.properties.ProcessId=?ProcessId) OR (Vendor.Workload!=DeviceProcessEvents Vendor.properties.InitiatingProcessId=?ProcessId)
+      | groupBy([Vendor.properties.DeviceId, Vendor.Workload], limit=max)
+    end: now
+    start: 1d
+    width: 4
+    y: 4
+    interactions:
+    - conditions: null
+      name: Search by Event
+      titleTemplate: 'Search by Event: {{ fields.#event_simpleName }}'
+      queryString: |-
+        test(?ProcessId != "*")
+        | ContextProcessId=?ProcessId
+        | aid=?aid #event_simpleName=?event_simpleName
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        ProcessId: '["{{ parameters.ProcessId }}"]'
+        aid: '["{{ fields.aid }}"]'
+        event_simpleName: '["{{ fields.#event_simpleName }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      maxLegendRows: 2
+    visualization: pie-chart
+    title: Context Events by Type
+    isLive: false
+    type: query
+  f950e475-0668-48f3-ad61-4ef225fbd1c1:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | Vendor.Workload=DeviceRegistryEvents
+      | Vendor.properties.InitiatingProcessId=?ProcessId Vendor.properties.DeviceId=?DeviceId
+      | table([@timestamp,Vendor.properties.RegistryKey, Vendor.properties.RegistryValueName,Vendor.properties.RegistryValueData,Vendor.properties.PreviousRegistryKey,Vendor.properties.PreviousRegistryValueName,Vendor.properties.PreviousRegistryValueData], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Registry Events
+    isLive: false
+    type: query
+  c5d600cf-dc34-4658-b240-97d35c4797dd:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | Vendor.properties.InitiatingProcessId=?ProcessId Vendor.properties.DeviceId=?DeviceId
+      | groupBy(Vendor.properties.AdditionalFields.query, limit=max)
+      | rename(_count, as="Total")
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DNS Requests
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  FileName:
+    label: FileName
+    order: 50
+    type: text
+  ProcessId:
+    label: ProcessId
+    order: 50
+    type: text
+  aid:
+    defaultValue: '*'
+    label: aid
+    order: 1
+    type: text

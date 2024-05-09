@@ -1,0 +1,7 @@
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+name: Overview
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+timeSelector: {}

@@ -1,0 +1,377 @@
+name: Defender - Search by File Hash
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  4933bc82-83d1-4b21-9faa-12125d1a647b:
+    x: 0
+    y: 21
+    description: This widget only shows result if a ComputerName is specified)
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceFileEvents Vendor.properties.ActionType=FileCreated
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | table([@timestamp, Vendor.properties.DeviceId, Vendor.properties.DeviceName, Vendor.properties.FileName, process.command_line], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: File Write Details
+    isLive: false
+    type: query
+  b7e47912-8ab8-48ed-ae82-6f0b01143cc6:
+    x: 4
+    y: 0
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | count(field=Vendor.properties.DeviceId, distinct=true)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Unique Hosts With File Execution
+    isLive: false
+    type: query
+  c9d12054-53dc-4585-b07e-aaeae936195c:
+    x: 0
+    height: 4
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | timeChart(function=count(as="Hosts", field=Vendor.properties.DeviceId, distinct=true))
+    end: now
+    start: 7d
+    width: 6
+    y: 3
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName=ProcessRollup2
+        | aid=?aid
+        | SHA256HashData=?SHA256
+        | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        SHA256: '["{{ parameters.SHA256 }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+      legend: false
+    visualization: time-chart
+    title: Unique Host with File Execution
+    isLive: false
+    type: query
+  279ea4ce-614e-45e8-991c-6b71fb594ac3:
+    x: 0
+    height: 5
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | top(field=Vendor.properties.DeviceName, limit=10)
+    end: now
+    start: 7d
+    width: 6
+    y: 7
+    interactions:
+    - conditions: null
+      name: Search by ComputerName
+      titleTemplate: 'Search by ComputerName: {{ fields.ComputerName }}'
+      queryString: |-
+        #event_simpleName=ProcessRollup2
+        | aid=?aid
+        | SHA256HashData=?SHA256
+        | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
+        | $"crowdstrike/fltr-core:zComputerName"()
+        | ComputerName=?ComputerName
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        ComputerName: '["{{ fields.ComputerName }}"]'
+        SHA256: '["{{ parameters.SHA256 }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendLabelOverflow: truncate
+      series: {}
+    visualization: pie-chart
+    title: Top Hosts for File Execution
+    isLive: false
+    type: query
+  576d36cf-170b-4c59-bde4-8f8722a59cc3:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=DeviceFileEvents Vendor.properties.ActionType=FileCreated
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | count(field=Vendor.properties.DeviceId, distinct=true)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      color-method: static
+      ct: []
+      default: {}
+      use-colorised-thresholds: false
+    visualization: single-value
+    title: Unique Hosts with File Write
+    isLive: false
+    type: query
+  2a4bfa67-bfe9-4c42-b2b5-79046661dc25:
+    x: 6
+    height: 5
+    queryString: |-
+      * | Vendor.Workload=DeviceFileEvents Vendor.properties.ActionType=FileCreated
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | top(field=Vendor.properties.DeviceName, limit=10)
+    end: now
+    start: 7d
+    width: 6
+    y: 7
+    interactions:
+    - conditions: null
+      name: Search by ComputerName
+      titleTemplate: 'Search by ComputerName: {{ fields.ComputerName }}'
+      queryString: |-
+        #event_simpleName=*FileWritten
+        | aid=?aid
+        | SHA256HashData=?SHA256
+        | regex("(?<FileName>[^/\\\]+$)", field=TargetFileName, strict=false)
+        | $"crowdstrike/fltr-core:zComputerName"()
+        | ComputerName=?ComputerName
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        ComputerName: '["{{ fields.ComputerName }}"]'
+        SHA256: '["{{ parameters.SHA256 }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendLabelOverflow: truncate
+      series: {}
+    visualization: pie-chart
+    title: Top Hosts for File Write Events
+    isLive: false
+    type: query
+  note-1659518722023-0:
+    x: 0
+    y: 0
+    height: 3
+    text: |-
+      - Enter a value for the `SHA256` parameter.
+      - `aid` can be used to further refine the results.
+    width: 4
+    title: Workflow
+    type: note
+  4bbc08df-3fa4-4e53-aef7-6ee970a15353:
+    x: 0
+    y: 29
+    height: 4
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | groupby(Vendor.properties.SHA256,function=collect([Vendor.properties.InitiatingProcessFileName,Vendor.properties.InitiatingProcessFileSize,Vendor.properties.InitiatingProcessProcessVersionInfoFileDescription,Vendor.properties.InitiatingProcessProcessVersionInfoCompanyName
+      ,Vendor.properties.InitiatingProcessProcessVersionInfoInternalFileName,Vendor.properties.InitiatingProcessProcessVersionInfoOriginalFileName,Vendor.properties.InitiatingProcessProcessVersionInfoProductName,Vendor.properties.InitiatingProcessProcessVersionInfoProductVersion]))
+      | transpose(column=Field)
+    end: '2023-11-14T11:25:29.147Z'
+    start: '2023-11-07T11:25:29.147Z'
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Initiating Process File Information
+    isLive: false
+    type: query
+  17c6534e-f1d1-45d6-a49b-6555ecdc13cc:
+    x: 0
+    y: 26
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | sankey(source=Vendor.properties.InitiatingProcessFileName,target=Vendor.properties.FileName)
+    visualization: sankey
+    end: '2023-11-14T11:24:48.105Z'
+    start: '2023-11-07T11:24:48.105Z'
+    width: 12
+    title: Initiating Filename -> Target Filename
+    isLive: false
+    type: query
+  cf7629f4-0772-491e-b818-ae291a1906df:
+    x: 0
+    height: 4
+    queryString: |-
+      test(?ProcessId != "*")
+      | (Vendor.Workload=DeviceProcessEvents Vendor.properties.ProcessId=?ProcessId) OR (Vendor.Workload!=DeviceProcessEvents Vendor.properties.InitiatingProcessId=?ProcessId)
+      | groupBy([Vendor.properties.DeviceId, Vendor.Workload], limit=max)
+    end: now
+    start: 1d
+    width: 4
+    y: 33
+    interactions:
+    - conditions: null
+      name: Search by Event
+      titleTemplate: 'Search by Event: {{ fields.#event_simpleName }}'
+      queryString: |-
+        test(?ProcessId != "*")
+        | ContextProcessId=?ProcessId
+        | aid=?aid #event_simpleName=?event_simpleName
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        ProcessId: '["{{ parameters.ProcessId }}"]'
+        aid: '["{{ fields.aid }}"]'
+        event_simpleName: '["{{ fields.#event_simpleName }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      maxLegendRows: 2
+    visualization: pie-chart
+    title: ProccessID by Event Type
+    isLive: false
+    type: query
+  17bee9b5-4b58-42cc-85d3-b0eada94e545:
+    x: 6
+    y: 29
+    height: 4
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | groupby(Vendor.properties.SHA256,function=collect([Vendor.properties.FileName,Vendor.properties.FileSize,Vendor.properties.ProcessVersionInfoFileDescription,Vendor.properties.ProcessVersionInfoCompanyName
+      ,Vendor.properties.ProcessVersionInfoInternalFileName,Vendor.properties.ProcessVersionInfoOriginalFileName,Vendor.properties.ProcessVersionInfoProductName,Vendor.properties.ProcessVersionInfoProductVersion]))
+      | transpose(column=Field)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Executing File Information
+    isLive: false
+    type: query
+  663aece7-00e7-4a14-8ba5-0e1243cddd3d:
+    x: 6
+    height: 4
+    queryString: |-
+      * | Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | timeChart(function=count(as="Activity"))
+    end: now
+    start: 7d
+    width: 6
+    y: 3
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName=ProcessRollup2
+        | aid=?aid
+        | SHA256HashData=?SHA256
+        | regex("(?<FileName>[^/\\\]+$)", field=ImageFileName, strict=false)
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        SHA256: '["{{ parameters.SHA256 }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+      legend: false
+    visualization: time-chart
+    title: File Execution Events
+    isLive: false
+    type: query
+  b255f4bf-d175-4ea5-a18a-72dd653a8b50:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | groupby([Vendor.properties.SHA256, FileName], function=[
+          count(Vendor.properties.DeviceId, as="Total Hosts", distinct=true),
+          {selectLast([process.start, Vendor.properties.DeviceId]) | LastExecutionDateTime:=rename(process.start) | LastExecutedOn:=rename(Vendor.properties.DeviceId)},
+          {head(1) | select([process.start, Vendor.properties.DeviceId]) | FirstExecutionDateTime:=rename(process.start) | FirstExecutedOn:=rename(Vendor.properties.DeviceId)}
+        ], limit=max)
+      | LastExecutionDateTime:=LastExecutionDateTime*1000
+      | FirstExecutionDateTime:=FirstExecutionDateTime*1000
+      | LastExecutionDateTime:=formatTime(field=LastExecutionDateTime, format="%Y/%m/%d %H:%M:%S")
+      | FirstExecutionDateTime:=formatTime(field=FirstExecutionDateTime, format="%Y/%m/%d %H:%M:%S")
+      | drop(@timestamp)
+      | table([Vendor.properties.SHA256, FileName, "Total Hosts", FirstExecutedOn, FirstExecutionDateTime, LastExecutedOn, LastExecutionDateTime], limit=100, sortby="Total Hosts")
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Execution History
+    isLive: false
+    type: query
+  26ba54ee-6fb6-444a-b3de-eb7e7621f0a9:
+    x: 0
+    y: 16
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceProcessEvents
+      | Vendor.properties.DeviceId=?DeviceId Vendor.properties.DeviceName=?DeviceName Vendor.properties.SHA256=?SHA256
+      | regex("(?<FileName>[^/\\\]+$)", field=Vendor.properties.FileName, strict=false)
+      | table([@timestamp, Vendor.properties.DeviceId, Vendor.properties.DeviceName, Vendor.properties.FileName, process.command_line], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: File Execution Details
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  SHA256:
+    label: SHA256
+    order: 50
+    type: text

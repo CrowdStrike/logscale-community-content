@@ -1,0 +1,73 @@
+name: Overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  8a6934dd-74ba-4f69-8bbe-548d5afb03b0:
+    x: 0
+    y: 4
+    height: 4
+    queryString: groupBy(Vendor.category)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Log Category Count
+    isLive: false
+    type: query
+  ba205991-500a-409b-824b-f6612ec2e7d0:
+    x: 3
+    y: 0
+    height: 4
+    queryString: timechart(Vendor.operationName)
+    end: now
+    start: 1d
+    width: 7
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Operations Over Time
+    isLive: false
+    type: query
+  4716f08f-7177-43af-befe-135bd73c5720:
+    x: 4
+    y: 4
+    height: 4
+    queryString: worldMap(ip=Vendor.callerIpAddress)
+    visualization: world-map
+    end: now
+    start: 1d
+    width: 6
+    title: Location of Events
+    isLive: false
+    type: query
+  9d144787-cbc6-4092-b504-902a0a9cdc60:
+    x: 10
+    y: 0
+    height: 4
+    queryString: groupBy(Vendor.Level)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 2
+    title: Log Levels
+    isLive: false
+    type: query
+  39fa47fa-47e2-4daf-a8c2-f0a653741ed0:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      groupby(Vendor.operationName)
+      | sort(_count)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 3
+    title: OperationName Frequency
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

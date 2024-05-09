@@ -1,0 +1,198 @@
+name: Alert Summary
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  9a4fd89f-d4ca-4f94-a92b-ce7ba4f53724:
+    x: 0
+    y: 3
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      | groupby(Vendor.properties.Category)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 6
+    title: Alert Category
+    isLive: false
+    type: query
+  5f626635-02a1-4a7e-bba3-96a61ddb922a:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      Vendor.properties.Severity=Informational
+      | count(as="InfoCount")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Informational Alerts
+    isLive: false
+    type: query
+  b7e2c99a-3fce-425d-bdab-100fd87d3150:
+    x: 9
+    y: 0
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      Vendor.properties.Severity=Informational
+      | count(as="InfoCount")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+      text-color: '#df1616'
+    visualization: single-value
+    title: High Alerts
+    isLive: false
+    type: query
+  c516f0f5-f859-4413-9b83-7f5bb690fc4a:
+    x: 6
+    y: 0
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      Vendor.properties.Severity=Informational
+      | count(as="InfoCount")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+      text-color: '#eb840f'
+    visualization: single-value
+    title: Medium Alerts
+    isLive: false
+    type: query
+  d8913d98-ca6c-4894-879c-53efa31123c1:
+    x: 3
+    y: 0
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      Vendor.properties.Severity=Informational
+      | count(as="InfoCount")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+      text-color: '#e9f816'
+    visualization: single-value
+    title: Low Alerts
+    isLive: false
+    type: query
+  ebc6099e-ea5f-4fac-9f71-ceabf93d4c1a:
+    x: 0
+    y: 6
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      | groupby(Vendor.properties.DetectionSource)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 3
+    title: Alert Detection Source
+    isLive: false
+    type: query
+  de3ff274-8e6c-4398-8725-1b93fb10cf4a:
+    x: 0
+    height: 4
+    queryString: "* | Vendor.Workload=AlertInfo\n| Vendor.properties.AlertId=?AlertID\
+      \ (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source)\
+      \ Vendor.properties.Severity=?Severity\n| "
+    end: now
+    start: 1d
+    width: 12
+    y: 9
+    interactions:
+    - conditions: null
+      name: 'Investigate Alert '
+      titleTemplate: null
+      useWidgetTimeWindow: true
+      dashboardReference:
+        name: Alert Investigation
+        packageSpecifier: microsoft/defender
+        repoOrViewName: null
+      arguments:
+        AlertId: '["{{ fields.Vendor.properties.AlertId }}"]'
+      openInNewTab: false
+      type: dashboardlink
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.properties.AlertId","format":"text","width":347},{"type":"field","fieldName":"Vendor.properties.Category","format":"text","width":227},{"type":"field","fieldName":"Vendor.properties.Title","format":"text","width":505},{"type":"field","fieldName":"Vendor.properties.Severity","format":"text","width":227},{"type":"field","fieldName":"Vendor.properties.DetectionSource","format":"text","width":280},{"type":"field","fieldName":"Vendor.properties.AttackTechniques","format":"text","width":685}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Alert Summary Events
+    isLive: false
+    type: query
+  8951c4ef-4764-440d-a0fd-15747f34e214:
+    x: 6
+    y: 3
+    height: 6
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      | top(Vendor.properties.AttackTechniques)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Attack Techniques
+    isLive: false
+    type: query
+  c0f796de-d901-4b63-a3f4-c5e0003cf5b1:
+    x: 3
+    y: 6
+    height: 3
+    queryString: |-
+      * | Vendor.Workload=AlertInfo
+      | Vendor.properties.AlertId=?AlertID (Vendor.properties.DetectionSource=?Source OR Vendor.properties.ServiceSource=?Source) Vendor.properties.Severity=?Severity
+      | groupby(Vendor.properties.ServiceSource)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 3
+    title: Alert Service Source
+    isLive: false
+    type: query
+  bc86ffc6-fd80-4c73-8e10-815b9e5bf995:
+    x: 0
+    y: 13
+    height: 4
+    queryString: |-
+      * | Vendor.category="AdvancedHunting-AlertEvidence"
+      | Vendor.properties.AlertId=?AlertId Vendor.properties.Severity=?Severity Vendor.properties.EntityType=?Type
+      | groupBy([Vendor.properties.AlertId],function=[collect([Vendor.properties.Title,Vendor.properties.EntityType,Vendor.properties.Categories])])
+    end: now
+    start: 2d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Alert Info
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

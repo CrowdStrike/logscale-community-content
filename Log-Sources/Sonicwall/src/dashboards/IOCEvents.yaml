@@ -1,0 +1,71 @@
+name: IOC Events
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  c8a6fcf1-9c28-4c9c-9c89-b20562de789f:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      // Check the remote address.
+      | case {
+          // Apply when the source.ip is a non-RFC1918 IP address.
+          !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(source.ip)
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=Unverified) ;
+          * ;
+        }
+
+      // Only grab events with IOC labels, then pull values from the results.
+      | regex("(^|,)((?<iocActor>Actor\/.*?),|(?<iocMalware>Malware\/.*?),)", field=ioc[0].labels, strict=true)
+
+      // Format the output.
+      | table([@timestamp, source.ip, source.port, destination.ip, destination.port,source.ip.country, event.type[0],event.type[1],event.type[2],iocActor, iocMalware], limit=1000)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Events from Source(Inbound) IOC IP Addresses
+    isLive: false
+    type: query
+  e47c1de3-7788-4c8b-89e2-80a87a5a069a:
+    x: 0
+    y: 6
+    height: 6
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      // Check the remote address.
+      | case {
+          // Apply when the destination.ip is a non-RFC1918 IP address.
+          !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+            | ipLocation(destination.ip)
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=Unverified) ;
+          * ;
+        }
+
+      // Only grab events with IOC labels, then pull values from the results.
+      | regex("(^|,)((?<iocActor>Actor\/.*?),|(?<iocMalware>Malware\/.*?),)", field=ioc[0].labels, strict=true)
+
+      // Format the output.
+      | table([@timestamp, source.ip, source.port, destination.ip, destination.port,source.ip.country, event.type[0],event.type[1],event.type[2],iocActor, iocMalware], limit=1000)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Events from Desitnation(Outbound) IOC IP
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0

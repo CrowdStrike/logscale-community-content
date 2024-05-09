@@ -1,0 +1,203 @@
+name: Defender - Search By DNS
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  1698c80a-994a-4055-a4ef-cf517d0f0727:
+    x: 0
+    y: 13
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | host.hostname=?ComputerName host.id=?DeviceId Vendor.properties.AdditionalFields.query=?DomainName
+      | groupBy(Vendor.properties.AdditionalFields.query, function=[
+          {selectLast([Vendor.properties.Timestamp, host.hostname]) | LastLookup:=rename(Vendor.properties.Timestamp) | LastLookupBy:=rename(host.hostname)},
+          {select([Vendor.properties.Timestamp, host.hostname]) | head(1) | FirstLookup:=rename(Vendor.properties.Timestamp) | FirstLookupBy:=rename(host.hostname) | drop(@timestamp)},
+          {count(host.hostname, as=NumberOfHosts, distinct=true)}
+        ], limit=max)
+      | LastLookup:=LastLookup*1000
+      | FirstLookup:=FirstLookup*1000
+      | LastLookup:=formatTime(field=LastLookup, format="%Y-%m-%d %H:%M:%S")
+      | FirstLookup:=formatTime(field=FirstLookup, format="%Y-%m-%d %H:%M:%S")
+      | table([Vendor.properties.AdditionalFields.query, NumberOfHosts, FirstLookup, FirstLookupBy, LastLookup, LastLookupBy], sortby=NumberOfHosts, limit=1000)
+      | rename(NumberOfHosts, as="Total Hosts")
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DnsRequest Events by Lookup Time
+    isLive: false
+    type: query
+  56b1dcbc-8082-4f11-87c5-f950ecaa30b0:
+    x: 5
+    y: 8
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | host.hostname=?ComputerName host.id=?DeviceId Vendor.properties.AdditionalFields.query=?DomainName
+      | Time:=formatTime(field=@timestamp, format="%Y-%m-%d %H:%M:%S")
+      | table([host.id, host.hostname, Vendor.properties.AdditionalFields.query], limit=1000)
+      | sort(limit=1000)
+    end: now
+    start: 7d
+    width: 7
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DnsRequest Events
+    isLive: false
+    type: query
+  note-1674500024017-0:
+    x: 0
+    y: 0
+    height: 4
+    text: "- `DomainName` is required as an input parameter.\n- `DomainName` should\
+      \ be lower-case. \n- Wildcards can be used for `DomainName`, e.g. `*crowdstrike*`.\
+      \ \n- `aid` and `ComputerName` can be used to further refine the results."
+    width: 5
+    title: Workflow Details
+    type: note
+  5b09d3a4-e827-4950-8480-3882f62dc03b:
+    x: 5
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | host.hostname=?ComputerName host.id=?DeviceId Vendor.properties.AdditionalFields.query=?DomainName
+      | groupBy([host.id, host.hostname, Vendor.properties.AdditionalFields.query], function=count(as="Total Requests"), limit=max)
+      | sort("Total Requests", limit=1000)
+    end: now
+    start: 7d
+    width: 7
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DnsRequest Events by AgentId
+    isLive: false
+    type: query
+  fc995786-0ac0-4d33-87eb-1c2c6f1f36f1:
+    x: 0
+    height: 4
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | host.hostname=?ComputerName host.id=?DeviceId Vendor.properties.AdditionalFields.query=?DomainName
+      | timeChart(Vendor.properties.AdditionalFields.query, limit=10)
+      | rename(_count, as="Total Requests")
+    end: now
+    start: 1d
+    width: 12
+    y: 4
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName="DnsRequest"
+        | aid=?aid
+        | DomainName=?DomainName
+        | $"crowdstrike/fltr-core:zComputerName"():
+        | ComputerName=?ComputerName
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        DomainName: '["{{ parameters.DomainName }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Top DnsRequest Events by DomainName
+    isLive: false
+    type: query
+  3c0a32a0-e8aa-46c3-a9fb-5c28856871df:
+    x: 0
+    y: 18
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceProcessEvents
+      | host.id=?DeviceId
+      | join(
+          {Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected Vendor.properties.AdditionalFields.query=?DomainName},
+          field=process.pid, key=process.parent.pid,
+          include=[Vendor.properties.AdditionalFields.query], limit=200000
+        )
+      // Extract the filename.
+      | regex("(?<FileName>[^\\/|\\\\]*)$", field=Vendor.properties.FileName, strict=false)
+      // Remove entries that have no domain name or process start time.
+      | Vendor.properties.AdditionalFields.query=?DomainName process.start=* FileName=* host.hostname=?ComputerName
+      // Make the process start time human-readable.
+      | ProcessStartTime:=process.start*1000
+      | ProcessStartTime:=formatTime(field=ProcessStartTime, format="%Y-%m-%d %H:%M:%S")
+      // Present the results.
+      | table([aid, host.hostname, Vendor.properties.AdditionalFields.query, FileName, process.parent.pid, ProcessStartTime, file.hash.sha256], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Process Details for Domain
+    isLive: false
+    type: query
+  c08bff9a-048a-4267-9b50-8685ca4a243b:
+    x: 0
+    height: 5
+    queryString: |-
+      Vendor.Workload=DeviceNetworkEvents event.action=DnsConnectionInspected
+      | host.hostname=?ComputerName host.id=?DeviceId Vendor.properties.AdditionalFields.query=?DomainName
+      | timeChart(function=count())
+      | rename(_count, as="Total Requests")
+    end: now
+    start: 7d
+    width: 5
+    y: 8
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName="DnsRequest"
+        | aid=?aid
+        | DomainName=?DomainName
+        | $"crowdstrike/fltr-core:zComputerName"()
+        | ComputerName=?ComputerName
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        ComputerName: '["{{ parameters.ComputerName }}"]'
+        DomainName: '["{{ parameters.DomainName }}"]'
+        aid: '["{{ parameters.aid }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+      legend: false
+    visualization: time-chart
+    title: Total DnsRequest Events Over Time
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  DomainName:
+    label: DomainName
+    order: 50
+    type: text

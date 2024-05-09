@@ -1,0 +1,70 @@
+name: Device Search
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  16b858f1-a357-4fd8-9dad-ae79b33a5eff:
+    x: 0
+    y: 6
+    height: 4
+    queryString: |-
+      Vendor.operationName = Devices
+      | Vendor.properties.DeviceName=?DeviceName
+      | Vendor.properties.UserEmail=?UserName
+      | UsedStorage := Vendor.properties.StorageTotal - Vendor.properties.StorageFree
+      | timechart(Vendor.properties.DeviceName,function=[max(UsedStorage,as="UsedStorage"),max(Vendor.properties.StorageTotal,as="TotalStorage")])
+    end: now
+    start: 30d
+    width: 7
+    options:
+      connect-points: true
+      imputation: mean
+      plotType: line
+      interpolation: natural
+    visualization: time-chart
+    title: Storage Used
+    isLive: false
+    type: query
+  379a9f12-b777-4f36-bd5a-d3440cc71c9f:
+    x: 0
+    y: 10
+    height: 4
+    queryString: |-
+      Vendor.category=OperationalLogs Vendor.operationName=/Enrollment/i
+      | Vendor.properties.AADDeviceId = ?ADDeviceID Vendor.properties.IntuneDeviceId=?IntuneDeviceID Vendor.properties.Os=?OperatingSystem
+      | Vendor.resultType = Success
+      | count(as="Succesfull Enrollments")
+    visualization: single-value
+    end: now
+    start: 30d
+    width: 4
+    title: Successful Enrollments
+    isLive: false
+    type: query
+  ea4a75c2-55ff-4fc4-b6b3-b8cc3b841821:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |-
+      Vendor.operationName = Devices
+      | Vendor.properties.DeviceName=?DeviceName
+      | Vendor.properties.UserEmail=?UserName
+      | selectLast([Vendor.properties.DeviceId,Vendor.properties.DeviceName,Vendor.properties.SerialNumber,Vendor.properties.PrimaryUser,Vendor.properties.OS,Vendor.properties.OSVersion,Vendor.properties.Manufacturer,Vendor.properties.Model,Vendor.properties.ManagedDeviceName,Vendor.properties.IMEI,Vendor.properties.WifiMacAddress,Vendor.properties.UserName,Vendor.properties.UserEmail,Vendor.properties.StorageTotal])
+      | transpose()
+      | rename(column,as="Field")
+      | rename(row[1],as="Value")
+    end: now
+    start: 1d
+    width: 7
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Device Information
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
