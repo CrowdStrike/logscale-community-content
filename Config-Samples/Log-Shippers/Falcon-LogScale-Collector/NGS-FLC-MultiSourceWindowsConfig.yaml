@@ -59,7 +59,7 @@ sinks:
       #maxLimitInMB: 4096
     ## Add more workers to processing. The default is 4 workers. 
     ## This can be increased if FLC is falling behind on processing.
-    #workers: 8
+    workers: 16
 
   next-gen-siem-fileRead:
     type: hec
@@ -70,6 +70,7 @@ sinks:
     url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY/v1/
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
+    workers: 16
     
   next-gen-siem-syslog:
     type: hec
@@ -80,3 +81,4 @@ sinks:
     url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ/v1/
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
+    workers: 16
