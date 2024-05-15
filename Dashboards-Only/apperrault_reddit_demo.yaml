@@ -1,0 +1,143 @@
+name: apperrault
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  9db7f265-a0b1-405d-990b-849efe624c89:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |
+      #event_simpleName=OsVersionInfo
+      | groupBy([aid], function=([selectFromMax(field="@timestamp", include=[event_platform])]))
+      | groupBy([event_platform])
+      | rename([[event_platform, Platform], [_count, Endpoints]])
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: By Platform
+    isLive: false
+    type: query
+  35aeae2d-86c3-41c4-88d0-d357a3743b82:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      #repo=base_sensor
+      | count()
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Total Endpoint Events Examined
+    isLive: false
+    type: query
+  13f61161-72da-4291-9e57-99b06ce350f6:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=OsVersionInfo
+      | groupBy([aid])
+      | count(aid)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      decimal-places: 0
+      default: {}
+      value-format: raw
+    visualization: single-value
+    title: Falcon Endpoints
+    isLive: false
+    type: query
+  1fe26b65-f727-451b-9be8-bb31afc4554c:
+    x: 4
+    y: 8
+    height: 4
+    queryString: |
+      #repo=detections ExternalApiType=Event_EppDetectionSummaryEvent
+      | groupBy([SeverityName])
+      | sort(order=desc, _count)
+      | rename([[SeverityName, Severity], [_count, Detections]])
+    end: now
+    start: 30d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Detections by Severity
+    isLive: false
+    type: query
+  fc651f76-7446-4909-9111-bc57a26ff642:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |-
+      #repo=detections ExternalApiType=Event_EppDetectionSummaryEvent UserName!=""
+      | top([UserName], limit=10)
+      | rename([[UserName, User], [_count, Detections]])
+    end: now
+    start: 30d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 10 Noisiest Users
+    isLive: false
+    type: query
+  5c150ff4-cfbb-4919-b86b-6bb4a22b983b:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |
+      #repo=detections ExternalApiType=Event_EppDetectionSummaryEvent
+      | timeChart(span=1d, SeverityName)
+    end: now
+    start: 30d
+    width: 12
+    options:
+      series: {}
+      showDataPoints: true
+      connect-points: false
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Detection by Day
+    isLive: false
+    type: query
+  34ff82db-05c5-4a4d-8303-22b003f55052:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #repo=detections ExternalApiType=Event_EppDetectionSummaryEvent
+      | top([Hostname], limit=10)
+      | rename([[Hostname, Endpoint], [_count, Detections]])
+    end: now
+    start: 30d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: 10 Noisiest Endpoints
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
