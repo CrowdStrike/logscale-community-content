@@ -1,0 +1,186 @@
+name: User Management
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  4e029c11-7da4-4f52-989b-0f58e7c72ded:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=UserManagement
+      | top([Vendor.properties.initiatedBy.app.displayName])
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Top Changes by Another Application
+    isLive: false
+    type: query
+  6ff12973-91fa-433a-bc54-369a04fff7d6:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.properties.category=UserManagement
+      | timechart(Vendor.operationName)
+    end: now
+    start: 1d
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Operations over Time
+    isLive: false
+    type: query
+  1a90c751-a05a-42a6-b61d-7e919072beaf:
+    x: 0
+    y: 35
+    height: 4
+    queryString: |
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=UserManagement
+      | Vendor.properties.result=success
+
+      | $"microsoft/azuread:Parse Target Resource AzureAD"()
+      | parseJson(Vendor.properties.targetResources,prefix=Vendor.properties.targetResources)
+      | top([Vendor.properties.targetResources[0].displayName,Vendor.operationName])
+      //| top([Vendor.operationName,Vendor.properties.targetResources[0].displayName])
+      //| Vendor.properties.result != success
+    end: now
+    start: 1d
+    width: 4
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Top Group Changes
+    isLive: false
+    type: query
+  0871ae3e-3d4c-4454-a9d1-affb4b41e35e:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.properties.category=UserManagement
+      | top([Vendor.operationName])
+    visualization: bar-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Top Operation Names
+    isLive: false
+    type: query
+  88f42bad-47e4-493f-9702-91a8199d171c:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |-
+      | Vendor.category=AuditLogs
+      | Vendor.properties.category=UserManagement
+      | Vendor.properties.result!=success
+      | count()
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Failed User Changes
+    isLive: false
+    type: query
+  15c409ec-5601-4e97-befd-4bc557a83ced:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.properties.category=UserManagement
+      | top(Vendor.properties.result)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Results of Operation
+    isLive: false
+    type: query
+  5c9b5fff-b789-4fd6-8745-402f9c00a93f:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=UserManagement
+      | Vendor.properties.result != success
+    end: now
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.operationName","format":"text","width":332},{"type":"field","fieldName":"Vendor.properties.initiatedBy.user.userPrincipalName","format":"text","width":460},{"type":"field","fieldName":"Vendor.properties.initiatedBy.app.displayName","format":"text","width":377},{"type":"field","fieldName":"Vendor.properties.targetResources","format":"text","width":10097},{"type":"field","fieldName":"Vendor.properties.result","format":"text","width":212}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Failed Events
+    isLive: false
+    type: query
+  0e39b1fa-f3de-4c5b-909f-6b277136173f:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      | Vendor.category=AuditLogs
+      | Vendor.properties.category=UserManagement
+      | Vendor.properties.result=success
+      | count()
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Successful Group Changes
+    isLive: false
+    type: query
+  05c4ae6a-56fd-486d-afc3-7de750cdb365:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=UserManagement
+      | Vendor.properties.result = success
+    end: now
+    start: 7d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.operationName","format":"text","width":332},{"type":"field","fieldName":"Vendor.properties.initiatedBy.user.userPrincipalName","format":"text","width":460},{"type":"field","fieldName":"Vendor.properties.initiatedBy.app.displayName","format":"text","width":377},{"type":"field","fieldName":"Vendor.properties.targetResources","format":"text","width":10097},{"type":"field","fieldName":"Vendor.properties.result","format":"text","width":212}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Successful Events
+    isLive: false
+    type: query
+  f8b0697c-0987-43bf-bb83-b643ee56d98d:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.category=UserManagement
+      | $"microsoft/azuread:Parse Target Resource AzureAD"()
+      | parseJson(Vendor.properties.targetResources,prefix=Vendor.properties.targetResources)
+      | Vendor.properties.result != success
+      | groupby(Vendor.properties.targetResources[0].displayName,function=collect([Vendor.operationName,Vendor.resultDescription]))
+    visualization: bar-chart
+    end: now
+    start: 1d
+    width: 8
+    title: Failed Operations on Users with Reasons
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

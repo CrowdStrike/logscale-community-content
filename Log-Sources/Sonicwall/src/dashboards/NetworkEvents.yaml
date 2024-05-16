@@ -1,0 +1,277 @@
+name: Network Events
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  cde4a936-2fee-4c4b-9531-06525b998094:
+    x: 4
+    y: 11
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |log.level=?LogLevel
+      |groupBy([destination.ip])
+      | sort(_count,limit=50)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 50 Destination (targeted) IPs
+    isLive: false
+    type: query
+  fc6e6ce8-ff7e-4a2a-843b-5b03a2dc8a67:
+    x: 8
+    y: 11
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |log.level=?LogLevel
+      |groupBy([destination.port])
+      | sort(_count,limit=50)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 50 Destination Ports
+    isLive: false
+    type: query
+  7710c263-f26e-4030-9ddf-84df923f7041:
+    x: 0
+    y: 7
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[0]=network
+      |log.level=?LogLevel
+      |groupBy([Vendor.msg])
+      | sort(_count,limit=1000)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Events by Event Names
+    isLive: false
+    type: query
+  70cf7bfa-272e-428d-bd16-f2750a4252d6:
+    x: 0
+    y: 11
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |log.level=?LogLevel
+      |groupBy([source.ip])
+      | sort(_count,limit=50)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 50 Source IPs
+    isLive: false
+    type: query
+  c3d2e690-0597-4b05-a386-cefcfa051284:
+    x: 0
+    y: 0
+    height: 7
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[0]=network
+      |event.severity=?EventSeverity
+      |log.level=?LogLevel
+      |groupBy([log.level,event.severity])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      xAxisTitle: Log Level
+      yAxisTitle: Event Count
+      series: {}
+      yScaleType: log
+    visualization: bar-chart
+    title: Network Events by Severity and Log level
+    isLive: false
+    type: query
+  5715d5ce-3984-4801-a643-45c26e93ff40:
+    x: 0
+    y: 15
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |log.level=?LogLevel
+      |groupBy([user.name])
+      | sort(_count,limit=50)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 50 User Names
+    isLive: false
+    type: query
+  3834b267-4e25-4f4f-ae13-5ec1d27ea81e:
+    x: 0
+    y: 19
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |log.level=?LogLevel
+      |groupBy([user.name,source.ip],function=collect([destination.ip,destination.port,Vendor.msg]))
+      | sort(_count,limit=50)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 50 Source and Target port Details
+    isLive: false
+    type: query
+  04aee613-e66c-433d-8cdc-c3af2b79e20e:
+    x: 0
+    y: 34
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |ipLocation(field=destination.ip)
+      |groupBy([destination.ip.country],function=collect([source.ip,destination.ip,destination.port,Vendor.msg]))
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network Events to Destination Countries
+    isLive: false
+    type: query
+  c7b9a17e-6d05-47df-b6be-7c56d636fa8f:
+    x: 0
+    y: 43
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |worldMap(ip=destination.ip)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      projection: orthographic
+    visualization: world-map
+    title: World Map - Destination IPs
+    isLive: false
+    type: query
+  f4a7d0f5-da40-450a-b011-16fe658175cf:
+    x: 0
+    y: 24
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      /block/i
+      |groupBy([Vendor.msg])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Attacks Blocked
+    isLive: false
+    type: query
+  4fb2c69c-6a8c-4951-b8eb-e0ff38f116bc:
+    x: 0
+    y: 39
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |worldMap(ip=source.ip)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      projection: orthographic
+    visualization: world-map
+    title: World Map - Source IPs
+    isLive: false
+    type: query
+  246354dd-4455-48cc-b373-002712c8bfce:
+    x: 0
+    y: 29
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |event.category[0]=network
+      |ipLocation(field=source.ip)
+      |groupBy([source.ip.country],function=collect([source.ip,destination.ip,destination.port,Vendor.msg]))
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network Events from Source Countries
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
+parameters:
+  EventSeverity:
+    label: Event Severity
+    order: 50
+    values:
+    - '*'
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    - '6'
+    type: list
+    defaultValue: '*'
+  LogLevel:
+    label: Log Level
+    order: 50
+    values:
+    - '*'
+    - alert
+    - error
+    - info
+    - notice
+    - warning
+    type: list
+    defaultValue: '*'

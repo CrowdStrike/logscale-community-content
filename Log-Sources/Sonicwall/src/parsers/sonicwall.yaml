@@ -1,0 +1,1099 @@
+name: sonicwall
+tests:
+- <134>  id=firewall sn=C0EAE4F6D316 time="2024-04-18 10:10:36" fw=85.118.26.198 pri=6
+  c=1024 gcat=6 m=537 msg="Connection Closed" src=10.2.130.187:52214:X2 dst=10.2.141.64:27017:X0
+  proto=tcp/27017 sent=52 spkt=1 app=49459 appName='Service MongoDB 27017' n=23259145
+  fw_action="NA" dpi=0
+- <134>  id=firewall sn=C0EAE4F6D316 time="2024-02-27 14:33:28" fw=85.118.26.198 pri=6
+  c=1024 gcat=6 m=537 msg="Connection Closed" src=10.2.120.141:56144:X0 natSrc=85.118.26.198:42833
+  dst=96.17.178.179:80:X1 natDst=96.17.178.179:80 proto=tcp/http sent=52 spkt=1 app=49175
+  appName='General HTTP' n=616196690 fw_action="NA" dpi=0
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.2.0
+script: |
+  // Sonicwall SonicOS Parser
+  // Copyright: CrowdStrike 2024
+  // Reference doc: https://www.sonicwall.com/techdocs/pdf/SonicOS-X_7.0.1_LogEvents_ReferenceGuide.pdf
+
+  // #region PREPARSE
+  /************************************************************
+  ****** Parse timestamp and log headers
+  ****** Extract message field for parsing
+  ****** Parse structured data
+  ************************************************************/
+  kvparse(field=@rawstring, as="Vendor", separatorPadding=no)
+  | parseTimestamp("yyyy-MM-dd HH:mm:ss", field="Vendor.time",timezone="GMT")
+
+  // #endregion
+
+  // #region METADATA
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser_version:="2.0.0"
+  | Vendor:="sonicwall"
+  | Product:="sonicos"
+  | ecs.version:="8.11"
+  | event.kind:="event"
+  | event.category[0]:="network"
+  | event.type[0]:="info"
+
+  // #endregion
+
+  // #region NORMALIZATION
+  /************************************************************
+  ****** Parse unstructured data (i.e. message field)
+  ****** Normalize fields to data model
+  ************************************************************/
+  | event.reason:=Vendor.note
+  | event.action:=lower(Vendor.fw_action)
+  | event.severity:=Vendor.pri
+  | event.code:=Vendor.m
+  | observer.serial_number:=Vendor.sn
+  | observer.ingress.zone:=Vendor.srcZone
+  | observer.egress.zone:=Vendor.dstZone
+  | observer.type:="firewall"
+  | observer.vendor:="sonicwall"
+  | observer.ip:=Vendor.fw
+  | source.bytes:=Vendor.sent
+  | source.packets:=Vendor.spkt
+  | destination.bytes:=Vendor.rcvd
+  | destination.packets:=Vendor.rpkt
+  | network.bytes:=source.bytes + destination.bytes
+  | network.packets:=source.packets + destination.packets
+  | network.application:=Vendor.appName
+  | url.path:=Vendor.arg
+  | url.domain:=Vendor.dstname
+  | rule.name:=Vendor.rule
+  | user.name:=lower(Vendor.usr)
+
+  // There are two measures of duration
+  // Vendor.dur is the session duration in seconds
+  // Vendor.cdur is the connection duration in milliseconds
+  // We multiply each to get nanoseconds as stipulated by OTel
+  // We set one after the other as there is only ever one
+  | event.duration:=Vendor.dur*1000000000
+  | event.duration:=Vendor.cdur*1000000
+
+  // If we have both parts of a URL combine them
+  | case {
+    url.path=* url.domain=*
+      | format(format="%s%s", field=[url.domain, url.path], as=url.full);
+
+    // Do nothing otherwise
+    *;
+  }
+
+  // Determine the HTTP request method if Vendor.op is available
+  // Found on page 101 of the Log Events Reference Guide
+  // These are capitalized to match the values in the reference guide
+  | Vendor.op match {
+    "0" => http.request.method:="NO OPERATION";
+
+    "1" => http.request.method:="GET";
+
+    "2" => http.request.method:="POST";
+
+    "3" => http.request.method:="HEAD";
+
+    // Do nothing if we don't have op
+    * => "";
+  }
+
+  // The MACs come in with the octets delimited by :
+  // OTel stipulates that they should be delimited by -
+  | replace(field="Vendor.srcMac", regex=":", with="\\-", as=source.mac)
+  | replace(field="Vendor.dstMac", regex=":", with="\\-", as=destination.mac)
+
+  // The protocol can come in 3 ways
+  | case {
+    // proto=tcp/113
+    Vendor.proto=/(?<network.transport>\w+?)\/\d+/;
+
+    // proto=tcp/https
+    Vendor.proto=/(?<network.transport>\w+?)\/(?<network.protocol>\w+)/;
+
+    // proto=tcp
+    Vendor.proto=/(?<network.transport>\w+)/;
+
+    *;
+  }
+
+  // There is no standardized reporting for username
+  // Put Vendor.usr into user.name then do checks for email/domain
+  | case {
+    // Username is an email or formatted user@domain
+    user.name=/^(?<user.email>(?<user.name>[\w-\.]+)@(?<user.domain>([\w-]+\.)+[\w-]+$))/;
+
+    user.name=/^(?<user.domain>.*?)(\/|\\)(?<user.name>.*)/;
+
+    // Username seems to just be a username
+    *;
+  }
+
+  // IPs are reported as the address, the port, and sometimes the interface separated by colons
+  // Example - 192.168.0.1:443:ExampleInterface
+  // Example - 192.168.0.1:443
+  | case {
+    // Extract the source with the interface if possible
+    Vendor.src=/(?<source.ip>.*?):(?<source.port>.*?):(?<source.interface.name>.*)/;
+
+    // Otherwise just extract
+    Vendor.src=/(?<source.ip>.*?):(?<source.port>.*)/;
+
+    // If it is just an IP, put it into source.ip
+    Vendor.src=/(?<source.ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
+
+    // Keep a catchall here for logs without Vendor.src
+    *;
+  }
+
+  | case {
+    // Sometimes there is an interface on the end of the destination
+    Vendor.dst=/(?<destination.ip>.*?):(?<destination.port>.*?):(?<destination.interface.name>.*)/;
+
+    // Sometimes it is just
+    Vendor.dst=/(?<destination.ip>.*?):(?<destination.port>.*)/;
+
+    // If it is just an IP, put it into destination.ip
+    Vendor.src=/(?<destination.ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/;
+
+    // Keep a catchall here for logs without Vendor.dst
+    *;
+  }
+
+  | case {
+    // Extract the NAT'd source IP and port
+    Vendor.natSrc=/(?<source.nat.ip>.*?):(?<source.nat.port>.*)/;
+
+    // Keep a catchall here for logs without Vendor.natSrc
+    *;
+  }
+
+  | case {
+    // Extract the NAT'd source IP and port
+    Vendor.natDst=/(?<destination.nat.ip>.*?):(?<destination.nat.port>.*)/;
+
+    // Keep a catchall here for logs without Vendor.dst
+    *;
+  }
+
+  // We prefer IPv4 where possible, but if there isn't one provided
+  // we will put the IPv6 address there
+  | case {
+    // Check if we have Vendor.srcV6 and don't have source.ip
+    (source.ip!=* OR source.ip="") Vendor.srcV6=*
+      | source.ip:=Vendor.srcV6;
+
+    // Do nothing
+    *;
+  }
+
+  | case {
+    // Check if we have Vendor.dstV6 and don't have destination.ip
+    (destination.ip!=* OR destination.ip="") Vendor.dstV6=*
+      | destination.ip:=Vendor.dstV6;
+
+    // Do nothing
+    *;
+  }
+
+  // We can determine direction based on the source and destination
+  // Anything from an internal IP to an internal IP is internal
+  // Anything from an external IP to an external IP is external
+  // Anything from an internal IP to an external IP is outbound
+  // Anything from an external IP to an internal IP is inbound
+  | case {
+    // An internal source IP
+    cidr(field="source.ip", subnet=["10.0.0.0/8", "172.16.0.0/12","192.168.0.0/16"])
+      | case {
+        // And an internal destination IP
+        cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12","192.168.0.0/16"])
+          | network.direction:="internal";
+
+        // And an external destination IP
+        *
+          | network.direction:="outbound";
+    };
+
+    // An external source IP
+    *
+      | case {
+        // And an internal destination IP
+        cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12","192.168.0.0/16"])
+          | network.direction:="inbound";
+
+        // And an external destination IP
+        *
+          | network.direction:="external";
+      }
+  }
+
+  // Convert priority to a human readable format
+  // Normal priority system translation, also found on Page 110
+  | event.severity match {
+    "0" => log.level:="emergency";
+    "1" => log.level:="alert"
+      // Also set event.type as an alert
+      | event.type:="alert";
+    "2" => log.level:="critical";
+    "3" => log.level:="error";
+    "4" => log.level:="warning";
+    "5" => log.level:="notice";
+    "6" => log.level:="info";
+    "7" => log.level:="debug";
+  }
+
+  // Match Group Category (gcat) numbers to their human readable values
+  // Assign fields that correspond to the value while we are here
+  // Found on page 105 of Log Events Reference Guide
+  // The maximum message length is 255 so the regexes look scary, but are very bounded
+  | Vendor.gcat match {
+    "1" => Vendor.group_category:="System"
+      | Vendor.msg match {
+        // Match common failure messages
+        /drop|too large|out of tol|exceed|did not|invalid|unreach|fail/i => event.outcome:="failure";
+
+        // Match successful messages
+        /succe|sent/i => event.outcome:="success";
+
+        // Catch all
+        * => "";
+      };
+
+    "2" => Vendor.group_category:="Log"
+      | Vendor.msg match {
+        // Match common failure messages
+        /fail|abort|error|problem|exceed|canno/i => event.outcome:="failure";
+
+        // Match successful messages
+        /succ|\s+hit/i => event.outcome:="success";
+
+        // Catch all
+        * => "";
+      };
+
+    "3" => Vendor.group_category:="Security Services"
+      | event.kind:="alert"
+      | event.category[1]:="intrusion_detection"
+      | Vendor.msg match {
+        // Check for the common fail messages
+        /fail|drop|error|denied|deny|problem|forbid/i => event.outcome:="failure";
+
+        // Allow is a success
+        /allow/i => event.outcome:="success";
+
+        // Sonicwall reports several "possible" or "probable" attacks
+        // "Probable TCP NULL scan detected"
+        // "Possible port scan detected"
+        /^possib|^probab/i => event.outcome:="unknown";
+
+        * => "";
+      };
+
+    "4" => Vendor.group_category:="Users"
+      | event.category[1]:="authentication"
+
+      // Check what type of authentication the message is
+      | Vendor.msg match {
+        /denied|incorr|canno|fail/i => event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="denied";
+
+        /logged out|end|logout|timed/i => event.outcome:="success"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        /allow|started|succ|login/i => event.outcome:="success"
+          | event.type[0]:="connection"
+          | event.type[1]:="start"
+          | event.type[2]:="allowed";
+
+        // These are the only Users events not about authentication
+        // e.g. "VPN disabled by administrator"
+        /disabled|enabled/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="change";
+
+        /created|added/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="creation";
+
+        /pruned|deleted/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="deletion";
+
+        // Catch all
+        * => "";
+      };
+
+    "5" => Vendor.group_category:="Firewall Settings"
+      | Vendor.msg match {
+        // There are several configuration messages to report
+        /join|leave|change|enable|disable|blacklist|dos prot/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="change";
+
+        // Report failed events
+        // e.g. "FTP: Data connection from non default port dropped"
+        /drop|invalid/i => event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="denied";
+
+        // Some events are not clear on what the outcome is
+        // e.g. "Possible SYN flood attack detected"
+        /possible|probable/i => event.outcome:="unknown";
+
+      };
+
+    "6" => Vendor.group_category:="Network"
+      | Vendor.msg match {
+        // These indicate failure
+        /drop|fail/i => event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="denied";
+
+        // These indicate a successful end to communication
+        /close/i => event.type[0]:="end"
+          | event.type[0]:="connection"
+          | event.type[1]:="end"
+          | event.outcome:="success";
+
+        // These indicate a successful connection
+        /open|allow/i => event.type[0]:="start"
+          | event.type[0]:="connection"
+          | event.type[1]:="start"
+          | event.type[2]:="allowed"
+          | event.outcome:="success";
+
+        // Catch all
+        * => "";
+      };
+
+    "7" => Vendor.group_category:="VPN"
+      // Check message for common outcome indicators
+      | Vendor.msg match {
+        /fail|abort|error|not fou|not mat/i => event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="denied";
+
+        // These strings indicate the beginning of a connection
+        /accept|start|complete/i => event.outcome:="success"
+          | event.type[0]:="connection"
+          | event.type[1]:="start"
+          | event.type[2]:="allowed";
+
+        // These strings indicate the end of a connection
+        /expire/i => event.outcome:="success"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // Catch all
+        * => "";
+      };
+
+    "8" => Vendor.group_category:="High Availability"
+      // Check for HA failures
+      | Vendor.msg match {
+        /fail|miss|error|expire|incorr|down/i => event.outcome:="failure";
+
+        // Several messages report success on firewalls transitioning to active/standby
+        /active|standby|reboot|succe|up/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="change";
+
+        // Catch all
+        * => "";
+      };
+
+    // There is only one event, 1522, listed for this category
+    // It listed as "%s 3G/4G/LTE WWAN Status"
+    // This does not detail much about the status and is skipped here for event.outcome
+    "9" => Vendor.group_category:="3G/4G, Modem, and Module";
+
+    "10" => Vendor.group_category:="Firewall"
+      | Vendor.msg match {
+        /drop/i => event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="denied"
+          | event.category[1]:="intrusion_detection";
+
+        // Specify different event.type values based on which verbiage is used in the message
+        /add/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="creation";
+
+        /modif/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="change";
+
+        /delet/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="deletion";
+
+        // Catch all
+        * => "";
+      };
+
+    "11" => Vendor.group_category:="Wireless"
+      | Vendor.msg match {
+        //Wireless has fairly easy outcomes to detect
+        /drop|not in|max conc|fail|unexpec/i => event.outcome:="failure"
+          | event.type[0]:="connection";
+
+        /pass|succ/i => event.outcome:="success"
+          | event.type[0]:="connection"
+          | event.type[1]:="start"
+          | event.type[2]:="allowed";
+
+        // Catch all
+        * => "";
+      };
+
+    "12" => Vendor.group_category:="VoIP"
+      | Vendor.msg match {
+        // Look for rejected messages
+        /reject|not added/i => event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="denied";
+
+        // These only confirm connections were successful in some way
+        /confirm|added|removed/i => event.outcome:="success"
+          | event.type[0]:="connection";
+
+        // These confirm a connection successfully ended
+        /discon|end/i => event.outcome:="success"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // This indicates a connection successfully started
+        /conn/i => event.outcome:="success"
+          | event.type[0]:="connection"
+          | event.type[1]:="start"
+          | event.type[2]:="allowed";
+
+        // Catch all
+        * => "";
+      };
+
+    // The SSL VPN events are not defined well in the manual
+    // Here we extract some useful information based on Vendor.msg
+    // This section will be "incomplete" as we find new messages
+    "13" => Vendor.group_category:="SSL VPN"
+      | case {
+        // User efudd login
+        Vendor.msg=/^user (?<user.name>.*?) login/i
+          | "event.category[1]":="authentication"
+          | event.type[0]:="start"
+          | event.outcome:="success";
+
+        // Client dduck is assigned IP:192.168.0.1
+        Vendor.msg=/^client (?<user.name>.*?) is assigned ip:(?<Vendor.AssignedIP>.*)/i
+          | event.outcome:="success";
+
+        // Auth failed: Domain name bbunny doesn't match
+        // Many other auth failure messages
+        Vendor.msg=/^auth failed: (?<error.message>.*)/i
+          | event.outcome:="failure"
+          | "event.category[1]":="authentication";
+
+        // RADIUS User ppig login success through RADIUS server
+        Vendor.msg=/^radius user (?<user.name>.*?) login success/i
+          | event.outcome:="success"
+          | event.category[1]:="authentication"
+          | event.type[0]:="start";
+
+      };
+
+    "14" => Vendor.group_category:="Anti-Spam"
+      | Vendor.msg match {
+        // Check for failure verbiage
+        /unavail|expire|drop|fail|rejec|no val|block|inval/i => event.outcome:="failure"
+          | event.category[1]:="intrusion_detection";
+
+        // Check for general success verbiage
+        /operat|resolve|update/i => event.outcome:="success";
+
+        // Rules can be enabled/disabled
+        /enable|disable/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="change";
+
+        // There is a single inconclusive message
+        // "Possible replay attack with this client IP - %s"
+        /^possi/i => event.outcome:="unknown"
+          | event.category[1]:="intrusion_detection"
+          | event.outcome:="unknown";
+
+        // Catch all
+        * => "";
+      };
+
+    "15" => Vendor.group_category:="WAN Acceleration"
+      | Vendor.msg match {
+        // Check for failure messages
+        /no lon|stop|expire|not|fail/i => event.outcome:="failure";
+
+        // Check for general success messages
+        /found|operat|used|start|succ/i => event.outcome:="success";
+
+        // Check for configuration changes
+        /enable|disable/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="change";
+
+        // Catch all
+        * => "";
+      };
+
+    "16" => Vendor.group_category:="SD-WAN"
+      | Vendor.msg match {
+        // Check for failure messages
+        /fail/i => event.outcome:="failure";
+
+        // Check for configuration changes
+        /added|delet|modif/i => event.outcome:="success"
+          | event.category[1]:="configuration"
+          | event.type[0]:="change";
+
+        // Catch all
+        * => "";
+      };
+    // There are not many events for Multi-Tenancy and none are defined in the manual with event messages
+    "17" => Vendor.group_category:="Multi-Tenancy";
+
+    //Catch all
+    *    => "";
+  }
+
+  // Group category provides an easy way to identify datasets
+  | event.dataset:=format(format="sonicwall.%s", field=[Vendor.group_category])
+  | event.dataset:=lower(event.dataset)
+  | event.dataset:=replace(field="event.dataset", regex="\\s", with="-")
+
+  // Match legacy categories (c in the logs) to their name
+  // Many logs have a legacy category but it is not a requirement
+  // We may overwrite event.kind in case of an alert
+  // We check for gcat existing before setting some values so we don't do unnecessary checks/regex
+  // Found on page 109 of Log Events Reference Guide
+  | Vendor.c match {
+    "0" => Vendor.legacy_category:="-"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          // This is a wildly varied category with ~300 events in it
+          | Vendor.msg match {
+            /authentication succes/i => "event.category[1]":="authentication"
+              | event.type[0]:="start"
+              | event.outcome:="success";
+
+            /allowed/i => event.outcome:="success";
+
+            /added/i => event.category[1]:="configuration"
+              | event.outcome:="success"
+              | event.type[0]:="creation";
+
+            /modified|change/i => event.category[1]:="configuration"
+              | event.outcome:="success"
+              | event.type[0]:="change";
+
+            /deleted/i => event.category[1]:="configuration"
+              | event.outcome:="success"
+              | event.type[0]:="deletion";
+
+            /blocked/i => event.category[0]:="intrusion_detection"
+              | event.outcome:="successs"
+              | event.type[0]:="denied";
+
+            /possible/i => event.category[1]:="intrusion_detection"
+              | event.outcome:="unknown";
+
+            /violation/i => event.outcome:="failure"
+              | event.type[0]:="denied"
+              | event.type[1]:="connection"
+              | event.type[2]:="protocol";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "1" => Vendor.legacy_category:="System Maintenance"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          // This is a wildly varied category with ~300 events in it
+          | Vendor.msg match {
+            // Check for common fail messages
+            // Checking failure messages first lets us easily narrow success messages after
+            /fail|abort|err|incomp|mismat|\snot\s|declin|out|miss|invalid|no res|canno|exce|illeg/i => event.outcome:="failure";
+
+            // Check for varying success messages
+            /start/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="start"
+              | event.type[2]:="allowed";
+
+            /succe|activa|send|\sgot\s|transit|sync|expire|timeou|start|establ|finish/i => event.outcome:="success";
+
+            // Check for successful configuration messages
+            /enable|disable/i => event.outcome:="success"
+              | event.category[1]:="configuration"
+              | event.type[0]:="change";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "2" => Vendor.legacy_category:="System Error"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // Check for common fail messages
+            /fail|abort|incomp|mismat|probl|miss|err|exceed|down|too larg|drop|\snot\s|doesn|expir/i => event.outcome:="failure";
+
+            /succ|up|avail|receiv|activ/i => event.outcome:="success";
+
+            /transit|preempt/i => event.outcome:="sucess"
+              | event.category[1]:="configuration"
+              | event.type[0]:="change";
+
+            // This is a broad category, so we are unsure if the others are successes
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "4" => Vendor.legacy_category:="Blocked Web Site"
+      // Set the category to web as this is always website traffic, even with gcat specified
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // Check for common fail messages
+            /deni|blackl/i => event.outcome:="failure"
+              | event.category[1]:="intrusion_detection"
+              | event.category[2]:="web"
+              | event.type[0]:="connection"
+              | event.type[1]:="denied";
+
+            // We are unable to determine event.outcome here due to various configuration possibilities
+            // i.e. with a weak cipher being used you may still allow the connection
+            /untrust|self-sign|weak|invali|compl/i => event.category[1]:="web"
+              | event.type[0]:="connection"
+              | event.type[1]:="info";
+
+            /allow|whiteli/i => event.outcome:="success"
+              | event.category[1]:="intrusion_detection"
+              | event.category[2]:="web"
+              | event.type[0]:="connection"
+              | event.type[1]:="allow";
+
+            /transit|preempt/i => event.outcome:="sucess"
+              | event.category[1]:="configuration"
+              | event.type[0]:="change";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    // There are no events described for this legacy category
+    "8" => Vendor.legacy_category:="Blocked Java Etc";
+
+    "16" => Vendor.legacy_category:="User Activity"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // Check for common fail messages
+            /deni|illeg|incomp|does no|fail|no mat|\snot\s/i => event.outcome:="failure"
+              | event.category[1]:="authentication"
+              | event.type[0]:="connection"
+              | event.type[1]:="start"
+              | event.type[2]:="denied";
+
+            /configuration succeeded/i => event.category[1]:="configuration"
+              | event.outcome:="success"
+              | event.type[0]:="change";
+
+            // These are successful logouts
+            /logged out|timed/i => event.outcome:="success"
+              | event.category[2]:="authentication"
+              | event.type[0]:="connection"
+              | event.type[1]:="end";
+
+            // These are soccessful logins
+            /login|allow|succ/i => event.outcome:="success"
+              | event.category[2]:="authentication"
+              | event.type[0]:="connection"
+              | event.type[1]:="start";
+
+            // These only provide information, authentication already occurred
+            /accept|compl/i => event.outcome:="success"
+              | event.category[1]:="authentication";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "32" => Vendor.legacy_category:="Attacks"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // Check for blacklist removals
+            /removed from \w+ blacklist/i => event.outcome:="success"
+              | event.category[1]:="configuration"
+              | event.type[0]:="change";
+
+            // Check for dropped messages
+            /drop|illeg|prevent|\snot\s|disab/i => event.outcome:="failure"
+              | event.category[1]:="intrusion_detection"
+              | event.type[0]:="connection"
+              | event.type[1]:="denied";
+
+            // Check for configuration changes to various protections
+            /changed by user/i => event.outcome:="success"
+              | event.category[1]:="configuration"
+              | event.type[0]:="change";
+
+            // Sonicwall reports several "possible" or "probable" attacks
+            // "Probable TCP NULL scan detected"
+            // "Possible port scan detected"
+            /possib|probab|detect|too many/i => event.outcome:="unknown"
+              | event.category[1]:="intrusion_detection"
+              | event.type[0]:="connection";
+
+            // Admin login denies are reported as attacks
+            /login|authenticat/i => event.outcome:="failure"
+              | event.category[1]:="authentication"
+              | event.type[0]:="connection"
+              | event.type[1]:="start"
+              | event.type[2]:="denied";
+
+            /fail/i => event.outcome:="failure";
+
+            /alert/i => event.category[1]:="intrusion_detection";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    // Dropped TCP/UDP/ICMP only have drop messages
+    // No need to check anything other than if gcat exists
+    "64" => Vendor.legacy_category:="Dropped TCP"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | event.category[1]:="intrusion_detection"
+          | event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "128" => Vendor.legacy_category:="Dropped UDP"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | event.category[1]:="intrusion_detection"
+          | event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "256" => Vendor.legacy_category:="Dropped ICMP"
+      | event.category[1]:="intrusion_detection"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | event.category[1]:="intrusion_detection"
+          | event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    // Network debug is full of debug/info events that are low value
+    "512" => Vendor.legacy_category:="Network Debug";
+
+    // There are only three messages in this category
+    "1024" => Vendor.legacy_category:="Syslog Only - For Traffic Reporting"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+
+            // Web site hit
+            /hit$/i => event.outcome:="success"
+              | event.category[1]:="web"
+              | event.type[0]:="connection"
+              | event.type[1]:="start"
+              | event.type[2]:="allowed";
+
+            // Connection closed
+            /closed$/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="end";
+
+            // DPI-SSL Inspect Cleaned-up
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    // Dropped TCP/UDP/ICMP only have drop messages
+    // No need to check anything other than if gcat exists
+    "2048" => Vendor.legacy_category:="Dropped LAN TCP"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | event.category[1]:="intrusion_detection"
+          | event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "4096" => Vendor.legacy_category:="Dropped LAN UDP"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | event.category[1]:="intrusion_detection"
+          | event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "8192" => Vendor.legacy_category:="Dropped LAN ICMP"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | event.category[1]:="intrusion_detection"
+          | event.outcome:="failure"
+          | event.type[0]:="connection"
+          | event.type[1]:="end";
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    // Modem debug is full of debug/info events that are low value
+    "32768" => Vendor.legacy_category:="Modem Debug";
+
+    // There is only one event in this status
+    // "IPsec Tunnel status changes"
+    "65536" => Vendor.legacy_category:="VPN Tunnel Status"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | event.type[0]:="connection"
+          | event.type[1]:="info";
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "131072" => Vendor.legacy_category:="802.11 Management"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // "Wireless Flood Attack"
+            /attack/i => event.outcome:="failure"
+              | event.category[1]:="intrusion_detection";
+
+            // RSSI/BandOver/AutoChannel event
+            // These are only informational
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    // Only reports open and closed traffic
+    "262144" => Vendor.legacy_category:="Syslog Only - For Traffic Reporting"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // Check for common fail messages
+            /open/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="start";
+
+            /close/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="end";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "524288" => Vendor.legacy_category:="System Environment"
+      | case {
+        // Check for no gcat
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // These are hardware errors
+            /fail|tolerance|current|red|yellow/i => event.outcome:="failure"
+              | event.category[1]:="host";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    "1048576" => Vendor.legacy_category:="Expanded - VOIP Activity"
+      | case {
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            // Look for rejected messages
+            /reject|not added/i => event.outcome:="failure"
+              | event.type[0]:="connection"
+              | event.type[1]:="denied";
+
+            // These only confirm connections were successful in some way
+            /confirm|added|removed/i => event.outcome:="success"
+              | event.type[0]:="connection";
+
+            // These confirm a connection successfully ended
+            /discon|end/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="end";
+
+            // This indicates a connection successfully started
+            /conn/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="start"
+              | event.type[2]:="allowed";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+
+      };
+
+    // This is the same as wireless from above
+    "2097152" => Vendor.legacy_category:="Expanded - WLAN IDS Activity"
+      | case {
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            //Wireless has fairly easy outcomes to detect
+            /drop|not in|max conc|fail|unexpec/i => event.outcome:="failure"
+              | event.type[0]:="connection";
+
+            /pass|succ/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="start"
+              | event.type[2]:="allowed";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+
+    // This is the same as wireless from above
+    "4194304" => Vendor.legacy_category:="Expanded - SonicPoint Activity"
+      | case {
+        Vendor.gcat!=*
+          | Vendor.msg match {
+            //Wireless has fairly easy outcomes to detect
+            /drop|not in|max conc|fail|unexpec/i => event.outcome:="failure"
+              | event.type[0]:="connection";
+
+            /pass|succ/i => event.outcome:="success"
+              | event.type[0]:="connection"
+              | event.type[1]:="start"
+              | event.type[2]:="allowed";
+
+            // Catch all
+            * => "";
+          };
+
+        // Passthrough if we have gcat
+        *;
+      };
+  }
+
+  // Add the IPs to related.ip
+  // Format the IPs so that they are delimited by a ;
+  // Replace any null values (many logs don't have a NAT'd IP)
+  // Split on the ; and label it related.ip[]
+  // This does leave potential duplicates in i.e. when someone logs into the firewall itself
+  | format(format="%s;%s;%s;%s;%s", field=[source.ip, destination.ip, source.nat.ip, destination.nat.ip, observer.ip], as=ips)
+  | replace(field="ips", regex="null(;|$)", with="", as=ips)
+  | splitString(field=ips, by=";", as=related.ip)
+  | drop([ips])
+
+  // There is only one username per event, so add it here if available
+  | case {
+    user.name=*
+      | related.user[0]:=user.name;
+
+    *;
+  }
+
+  // #endregion
+
+  // #region POST-NORMALIZATION
+  /************************************************************
+  ****** Post Normalization
+  ****** Custom parser logic needed after normalization
+  ************************************************************/
+
+
+  // #endregion
+tagFields:
+- event.outcome
+- Vendor

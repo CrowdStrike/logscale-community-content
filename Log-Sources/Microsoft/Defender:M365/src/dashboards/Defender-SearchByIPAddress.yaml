@@ -1,0 +1,240 @@
+name: Defender - Search By IP Address
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  55721549-4c36-4be7-a5cc-412a65fa7262:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      destination.ip=?IP OR source.ip=?IP OR host.ip =?IP
+      | InputIP:=?IP
+      | asn:=asn(InputIP)
+      | rdns:=rdns(InputIP)
+      | default(value="-", field=[asn.org, asn.asn, rdns])
+      | groupBy([InputIP, asn.org, asn.asn, rdns], limit=max)
+      | ipLocation(InputIP)
+      | rename(field="InputIP", as="IP")
+      | rename(field="asn.org", as="IP ASN Org.")
+      | rename(field="asn.asn", as="IP ASN")
+      | rename(field="rdns", as="Reverse DNS")
+      | rename(field="InputIP.city", as="GeoIP City")
+      | rename(field="InputIP.state", as="GeoIP State")
+      | rename(field="InputIP.country", as="GeoIP Country")
+      | rename(field="InputIP.lat", as="GeoIP Latitude")
+      | rename(field="InputIP.lon", as="GeoIP Longitude")
+      | rename(field="InputIP.lat", as="Event Types")
+      | drop([_count])
+      | select(["IP", "Reverse DNS", "IP ASN", "IP ASN Org.", "GeoIP Country", "GeoIP State", "GeoIP City", "GeoIP Latitude","GeoIP Longitude"])
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: IP Address Details
+    isLive: false
+    type: query
+  7a1cbfd0-0b17-4209-bb4c-222440bc3fc7:
+    x: 0
+    y: 9
+    height: 3
+    queryString: |-
+      destination.ip=?IP OR source.ip=?IP OR host.ip =?IP
+      | IP:=?IP
+      | timeChart(IP, function=count(Vendor.properties.DeviceId))
+    end: now
+    start: 7d
+    width: 4
+    options:
+      trend-value: abs
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 100
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 50
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      color-method: threshold
+      sparkline-zero: false
+      use-colorised-thresholds: true
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+    visualization: single-value
+    title: IP Connection History
+    isLive: false
+    type: query
+  35f930f6-6912-43ba-92fb-5053cfeb3ce8:
+    x: 7
+    y: 9
+    height: 3
+    queryString: |-
+      destination.ip=?IP OR source.ip=?IP OR host.ip =?IP
+      | IP:=?IP
+      | groupBy([Vendor.Workload], limit=max)
+      | rename(field="_count", as="Connection Count")
+      | table([Vendor.Workload, "Connection Count"], limit=1000)
+    end: now
+    start: 7d
+    width: 5
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Connection Count
+    isLive: false
+    type: query
+  2cfeb736-169d-4196-9221-009638d90788:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      destination.ip=?IP OR source.ip=?IP OR host.ip =?IP
+      | IP:=?IP
+      | ipLocation(IP)
+      | worldMap(lat=IP.lat, lon=IP.lon)
+    visualization: world-map
+    end: now
+    start: 7d
+    width: 6
+    title: IP Location (GeoIP)
+    isLive: false
+    type: query
+  6cf32add-97e7-4ee2-93e6-5047565bdb3a:
+    x: 6
+    y: 12
+    height: 4
+    queryString: |-
+      destination.ip=?IP OR source.ip=?IP OR host.ip =?IP
+      | IP:=?IP
+      | top(Vendor.properties.DeviceName, limit=10)
+      | "Connection Count":=rename(field="_count")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 10 Endpoints
+    isLive: false
+    type: query
+  3006a86a-55fa-410f-9894-0cba54713539:
+    x: 0
+    y: 16
+    height: 6
+    queryString: |-
+      Vendor.Workload=DeviceProcessEvents OR (Vendor.Workload=DeviceNetworkEvents destination.ip=?IP OR source.ip=?IP OR host.ip =?IP)
+      | IP:=?IP
+      | PID:=Vendor.properties.ProcessId
+      | PID:=Vendor.properties.InitiatingProcessId
+      | selfJoinFilter([Vendor.properties.DeviceId, PID], where=[{Vendor.Workload=DeviceProcessEvents}, {Vendor.Workload=DeviceNetworkEvents}], prefilter=true)
+      | regex("^.+(\\\|\/)(?<FileName>.+)$", field=Vendor.properties.FileName, strict=false)
+      | groupBy([Vendor.properties.DeviceId, PID], function=([min(process.start, as=ProcessStartTime), count(Vendor.Workload, distinct=true, as=eventCount), collect([Vendor.properties.InitiatingProcessFileName, Vendor.properties.FileName, Vendor.properties.ProcessCommandLine, destination.ip], limit=1000)]), limit=max)
+      | eventCount>1
+      | shortCommandLine:=format("%,.100s", field=Vendor.properties.ProcessCommandLine)
+      | ProcessStartTime:=ProcessStartTime*1000
+      | timestamp:=formatTime(format="%c", field=ProcessStartTime)
+      | table([timestamp, Vendor.properties.DeviceId, Vendor.properties.DeviceName, Vendor.properties.InitiatingProcessFileName, FileName, destination.ip, shortCommandLine], limit=1000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Process Executions
+    isLive: false
+    type: query
+  a2517488-3941-4ec0-8356-c33e45066e23:
+    x: 4
+    y: 9
+    height: 3
+    queryString: |-
+      destination.ip=?IP OR source.ip=?IP OR host.ip =?IP
+      | IP:=?IP
+      | count(Vendor.properties.DeviceId, as="Total Connections")
+    end: now
+    start: 7d
+    width: 3
+    options:
+      color-method: threshold
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 100
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 50
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+        v: 0
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 0
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      use-colorised-thresholds: true
+    visualization: single-value
+    title: Total Connections
+    isLive: false
+    type: query
+  9e608f5a-e3da-4828-bec4-2e3603ce5ea4:
+    x: 0
+    height: 4
+    queryString: |-
+      destination.ip=?IP OR source.ip=?IP OR host.ip =?IP
+      | timeChart(Vendor.Workload, function=count(Vendor.properties.DeviceId))
+    end: now
+    start: 7d
+    width: 12
+    y: 5
+    interactions:
+    - conditions: null
+      name: Search by Time
+      titleTemplate: null
+      queryString: |-
+        #event_simpleName=/^(DCSyncAttempted|FirewallDeleteRuleIP4|FirewallRuleIP4Matched|FirewallSetRuleIP4|HttpRequest|NetworkCloseIP4|NetworkConnectIP4|NetworkConnectIP4Blocked|NetworkConnectIP4DetectInfo|NetworkListenIP4|NetworkReceiveAcceptIP4|ProcessExecOnRDPFile|ProcessExecOnSMBFile|PromiscuousBindIP4|RawBindIP4|RemediationActionKillIP4Connection|RemoteBruteForceDetectInfo|SmbServerShareOpenedEtw|TlsClientHello|UserLogoff|UserLogon|UserLogonFailed2|WmiCreateProcess)$/
+        | RemoteAddressIP4=?RemoteAddressIP4
+      useWidgetTimeWindow: true
+      repoOrViewName: null
+      arguments:
+        RemoteAddressIP4: '["{{ parameters.RemoteAddressIP4 }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      lastBucketBehavior: exclude
+      legendLabelOverflow: truncate
+      legend: true
+      showDataPoints: true
+      connect-points: false
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Connection Count Over Time
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  RemoteAddressIP4:
+    label: RemoteAddressIP4
+    order: 50
+    type: text

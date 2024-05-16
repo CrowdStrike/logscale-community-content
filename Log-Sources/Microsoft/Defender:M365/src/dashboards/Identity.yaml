@@ -1,0 +1,98 @@
+name: Identity
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  9b2ad44c-918c-4d87-84f3-fa9aef2d8d2a:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category="AdvancedHunting-IdentityLogonEvents"
+      | groupBy(Vendor.properties.ActionType)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 6
+    title: Logon success vs failure
+    isLive: false
+    type: query
+  b55fed2e-e259-4cc4-bb62-a1d6cc36f33c:
+    x: 6
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category="AdvancedHunting-IdentityLogonEvents" | Vendor.properties.AccountUpn=?User_Email | Vendor.properties.ActionType=LogonFailed
+      | groupBy(Vendor.properties.FailureReason, function=count(as=count)) | rename(field="Vendor.properties.FailureReason", as="FailureReason") | sort(field=count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top reasons for logon failures (By user)
+    isLive: false
+    type: query
+  c67523f5-98de-4792-9206-3f8aba3c992a:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      /* Get logon attempts by domain accounts targeted by credential theft */
+      Vendor.category=AdvancedHunting-AlertInfo
+      | Vendor.properties.Category = CredentialAccess
+      | join({Vendor.category=AdvancedHunting-AlertEvidence | parseJson(field=Vendor.properties.AdditionalFields, prefix=Vendor.properties.AdditionalFields.)}, field=Vendor.properties.AlertId, key=properties.AlertId, include=[properties.AdditionalFields.Sid])
+      | join({#category=AdvancedHunting-IdentityLogonEvents | Vendor.properties.AccountUpn=?User_Email}, field=Vendor.properties.AdditionalFields.Sid, key=Vendor.properties.AccountSid, mode=inner, include=[Vendor.properties.AccountUpn, Vendor.properties.TargetDeviceName, Vendor.properties.TargetAccountDisplayName, Vendor.properties.AccountDisplayName, Vendor.properties.Application, Vendor.properties.Protocol, Vendor.properties.DeviceName, Vendor.properties.TargetDeviceName, Vendor.properties.DestinationDeviceName, Vendor.properties.LogonType])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"logline"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Logon attempts targeted by credential theft (by user)
+    isLive: false
+    type: query
+  5b68affc-b905-489f-922e-32e00a4be13c:
+    x: 0
+    y: 4
+    height: 4
+    queryString: Vendor.category="AdvancedHunting-IdentityDirectoryEvents" | Vendor.properties.AccountUpn=?User_Email
+      | groupBy(Vendor.properties.ActionType, function=count(as=count)) | rename(field="Vendor.properties.ActionType",
+      as="ActionType") | sort(field=count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Identity directory events (by user)
+    isLive: false
+    type: query
+  f6c43a05-e32d-4c2a-a7c7-9da0ff10f46d:
+    x: 6
+    y: 4
+    height: 4
+    queryString: Vendor.category="AdvancedHunting-IdentityDirectoryEvents" | Vendor.properties.AccountUpn=?User_Email
+      | Vendor.properties.ActionType=Account* | groupBy(Vendor.properties.ActionType,
+      function=count(as=count)) | rename(field="Vendor.properties.ActionType", as="ActionType")
+      | sort(field=count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Account-related activities (by user)
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

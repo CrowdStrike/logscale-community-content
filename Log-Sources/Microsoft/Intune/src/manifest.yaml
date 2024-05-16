@@ -1,0 +1,9 @@
+author:
+  name: microsoft
+name: microsoft/intune
+description: microsoft/intune
+version: 0.1.0
+minHumioVersion: 1.20.0
+type: application
+$schema: https://schemas.humio.com/manifest/v2.0.0
+licenseUrl: https://www.apache.org/licenses/LICENSE-2.0

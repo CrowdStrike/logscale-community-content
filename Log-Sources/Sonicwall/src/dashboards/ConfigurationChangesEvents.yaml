@@ -1,0 +1,41 @@
+name: Configuration Changes Events
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  9fc36ef8-a6a4-4c0a-9522-9f569f7cc9f1:
+    x: 0
+    height: 6
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | event.category[1]=configuration
+      |table([Vendor.time,Vendor.msg,Vendor.note,Vendor.group_category,Vendor.legacy_category,Vendor.fw,source.ip,event.type[0]])
+    end: now
+    start: 7d
+    width: 12
+    y: 0
+    interactions:
+    - conditions: null
+      name: 'Interaction #1 VendorMsg'
+      titleTemplate: null
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n#repo=net-firewall #type=sonicwall|split(event.category)|Vendor.msg=?VendorMsg"
+      useWidgetTimeWindow: true
+      repoOrViewName: SecurityOperations
+      arguments:
+        VendorMsg: '["{{ fields.Vendor.msg }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Configuration Changes
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0

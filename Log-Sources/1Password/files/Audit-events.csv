@@ -1,0 +1,116 @@
+﻿Event,Description,Action,Object Type,event.action,Aux Info
+Activate Account,The account was activated.,activate,account,activate-account,
+Update Account,"Account attributes, such as the name, were changed.",update,account,update-account,
+Delete Account,The account was deleted.,delete,account,delete-account,
+Update Account Domain,The account domain was changed.,update,account,update-account,domain
+Change Account Type,The account type was changed.,convert,account,convert-account,"old account type, new account type"
+Enable Duo,Duo was enabled for the account.,enblduo,account,enblduo-account,
+Update Duo Configuration,The Duo configuration for the account was updated.,updatduo,account,updatduo-account,
+Disable Duo,Duo was disabled for the account.,disblduo,account,disblduo-account,
+Delegate Session,A new delegated session was added.,dlgsess,dlgdsess,dlgsess-dlgdsess,session UUID
+Add Device,A device was added to the account.,create,device,create-device,"user ID, user UUID, user name, user email"
+Update Device,A device was updated.,update,device,update-device,"user ID, user UUID, user name, user email"
+Delete Device,A device was deleted.,delete,device,delete-device,"user ID, user UUID, user name, user email"
+Delete Old Devices,Old devices were deleted.,deolddev,user,deolddev-user,
+Delete All Devices,All devices were deleted.,dealldev,user,dealldev-user,
+Reauthorize Device,A device was reauthorized after being deauthorized,reauth,device,reauth-device,"user ID, user UUID, user name, user email"
+Begin Email Change,An email change was requested by a user.,begin,ec,begin-ec,
+Complete Email Change,A user's email was changed.,complete,ec,complete-ec,
+Propose Email Change,An email change was proposed by an admin.,propose,ec,propose-ec,
+Add File,A file was uploaded to the account.,create,file,create-file,
+Update Firewall Rules,A firewall rule was added or updated.,updatfw,account,updatfw-account,
+Create Group,A group was created.,create,group,create-group,group name
+Delete Group,A group was deleted.,delete,group,delete-group,group name
+Update Group,A group was updated.,update,group,update-group,group name
+Purge Deleted Group,A group was marked to be purged.,purge,group,purge-group,
+Update Group Keyset,A group keyset was replaced.,changeks,group,changeks-group,
+Join Group,A user joined a group.,join,gm,join-gm,"user ID, user UUID, user name, user email, user role"
+Leave Group,A user left a group.,leave,gm,leave-gm,"user ID, user UUID, user name, user email"
+Change Group Membership Role,A user's group membership role was changed.,role,gm,role-gm,"user ID, user UUID, user name, user email, user role"
+Grant Group Vault Access,A group was granted access to a vault.,grant,gva,grant-gva,"group ID, group UUID"
+Revoke Group Vault Access,A group's access to a vault was revoked.,revoke,gva,revoke-gva,"group ID, group UUID"
+Update Group Vault Access,A group's vault access was updated.,update,gva,update-gva,"group ID, group UUID, Access Control List"
+Create Invite,An invite was created.,create,invite,create-invite,The email address the invite was sent to.
+Update Invite,An invite was updated.,update,invite,update-invite,The email address the invite was sent to.
+Patch Vault Items,Vault items were added or updated.,patch,items,patch-items,"Vault Content Version, number of items added or updated."
+Delete Trashed Vault Items,Vault items in the trash were deleted.,delete,items,delete-items,"Vault Content Version, number of items deleted."
+Purge Deleted Vault Items,Deleted vault items were marked to be purged.,purge,items,purge-items,Number of items that were marked to be purged.
+Purge Vault Item History,Archived vault items were marked to be purged.,purge,itemhist,purge-itemhist,"item ID, item UUID"
+Share Item,An item was shared externally.,share,item,share-item,"vault ID, vault UUID, shared item UUID"
+Delete Item Share,A shared item link was deleted.,delshare,item,delshare-item,"vault ID, vault UUID, shared item UUID"
+Update Item Share Settings,The account's item sharing settings were updated.,uisas,account,uisas-account,
+Enable Multi-Factor Authentication,Multi-factor authentication was enabled.,enblmfa,user,enblmfa-user,"multi-factor authentication ID, multi-factor authentication type"
+Update Multi-Factor Authentication,Multi-factor authentication was updated.,updatmfa,user,updatmfa-user,"multi-factor authentication ID, multi-factor authentication type"
+Disable Multi-Factor Authentication,Multi-factor authentication was disabled.,disblmfa,user,disblmfa-user,"multi-factor authentication ID, multi-factor authentication type"
+Disable Multi-Factor Authentication For All Users,Multi-factor authentication was disabled for everyone in the account.,disblmfa,account,disblmfa-account,
+Disable Multi-Factor Authentication Type For All Users,Multi-factor authentication of a certain type was disabled for everyone in the account.,disblmfa,account,disblmfa-account,multi-factor authentication type
+Send Package,A user sent an item to another user.,sendpkg,user,sendpkg-user,package UUID
+Send Provisioning Email,A provisioning email was sent.,sendts,user,sendts-user,
+Resend Provisioning Email,A provisioning email was resent.,resendts,user,resendts-user,
+Resend All Provisioning Emails,All provisioning emails were resent.,prsndall,invite,prsndall-invite,
+Export Report,A user exported a report.,export,report,export-report,"report UUID, report type"
+View Report,A user viewed a report.,view,report,view-report,"report UUID, report type"
+Create Integration,An integration was created.,create,sa,create-sa,integration type
+Create Token,An integration token was registered.,create,satoken,create-satoken,token name
+Rename Token,An integration token name was updated.,trename,satoken,trename-satoken,token name
+Verify Token,An integration token signature was registered.,tverify,satoken,tverify-satoken,token name
+Revoke Token,An integration token was revoked.,trevoke,satoken,trevoke-satoken,token name
+Sign In With Sign-In Token,A sign-in token was used to log in.,ssotknv,ssotkn,ssotknv-ssotkn,
+Enable Slack App,A Slack app was connected to the account.,create,slackapp,create-slackapp,
+Disable Slack App,A Slack app was removed from the account.,delete,slackapp,delete-slackapp,
+Update Slack App,A connected Slack app was updated.,update,slackapp,update-slackapp,
+Enable SSO,Unlock with SSO was enabled.,enblsso,sso,enblsso-sso,
+Disable SSO,Unlock with SSO was disabled.,disblsso,sso,disblsso-sso,
+Change SSO Authentication Policy,The SSO authentication policy was changed.,chngpsso,sso,chngpsso-sso,
+Change SSO Grace Period Authentication Count,The SSO grace period authentication count was changed.,chngasso,sso,chngasso-sso,
+Change SSO Grace Period Duration,The SSO grace period duration was changed.,chngdsso,sso,chngdsso-sso,
+Add an SSO Group.,An SSO group was added.,addgsso,sso,addgsso-sso,group UUID
+Delete an SSO Group.,An SSO group was deleted.,delgsso,sso,delgsso-sso,group UUID
+Add Card,A new Stripe card was created.,create,card,create-card,"card ID, card UID"
+Update Card,A Stripe card was updated.,update,card,update-card,"card ID, card UID"
+Delete Card,A Stripe card was deleted.,delete,card,delete-card,"card ID, card UID"
+Add Payment Method,A new Stripe payment method was created.,create,pm,create-pm,"payment method ID, payment method UUID"
+Delete Payment Method,A Stripe payment method was deleted.,delete,pm,delete-pm,"payment method ID, payment method UUID"
+Create Subscription,A new Stripe subscription was created.,create,sub,create-sub,"subscription ID, subscription UUID"
+Update Subscription,A Stripe subscription was updated.,update,sub,update-sub,"subscription ID, subscription UUID"
+Cancel Subscription,A Stripe subscription was canceled.,cancel,sub,cancel-sub,"subscription ID, subscription UUID"
+Add Template,A template was added.,create,template,create-template,template name
+Update Template,A template was updated.,update,template,update-template,template name
+Hide Template,A template was hidden.,hide,template,hide-template,template name
+Unhide Template,A template was shown (after being hidden).,unhide,template,unhide-template,template name
+Delete Template,A template was deleted.,delete,template,delete-template,template name
+Unknown Events,An unknown action occurred.,unknown,unknown,unknown-unknown,
+Upgrade User,A guest was promoted to a family or team member.,upguest,user,upguest-user,
+Change User State From,A user's state was changed.,verify,user,verify-user,
+Change User State From,A user's state was changed.,join,user,join-user,
+Change User State From,A user's state was changed.,activate,user,activate-user,
+Change User State From,A user's state was changed.,reactivate,user,reactivate-user,
+Change User State From,A user's state was changed.,suspend,user,suspend-user,
+Change User State From,A user's state was changed.,delete,user,delete-user,
+Begin User Recovery,A user recovery was initiated.,beginr,user,beginr-user,
+Complete User Recovery,A user recovery was completed.,completr,user,completr-user,
+Cancel User Recovery,A user recovery was canceled.,cancelr,user,cancelr-user,
+Mark User Away For Travel,A user was marked as away for travel.,trvlaway,user,trvlaway-user,
+Mark User Back From Travel,A user was marked as back from travel.,trvlback,user,trvlback-user,
+Change User Keyset,A user's keyset changed.,changeks,user,changeks-user,
+Change 1Password Account Password,A user changed their 1Password account password.,changemp,user,changemp-user,
+Change Secret Key,A user changed their Secret Key.,changesk,user,changesk-user,
+Change Name,A user changed their name.,changenm,user,changenm-user,
+Change Language,A user changed their preferred language.,changela,user,changela-user,
+Enroll Trusted Device,A user set up a trusted device to unlock with SSO.,tdvcsso,user,tdvcsso-user,
+Set up Single Sign-On Authentication,A user set up their 1Password account to unlock with SSO.,sdvcsso,user,sdvcsso-user,
+Migrating User Created,A user migration was started.,create,miguser,create-miguser,user email
+Migrating User Complete,A user migration was marked complete.,musercom,miguser,musercom-miguser,
+Migrating User Declined,A user migration was marked declined.,muserdec,miguser,muserdec-miguser,
+Grant User Vault Access,A user was granted access to a vault.,grant,uva,grant-uva,"user ID, user UUID, user name, user email"
+Revoke User Vault Access,A user's access to a vault was revoked.,revoke,uva,revoke-uva,"user ID, user UUID, user name, user email"
+Update User Vault Access,A user's vault access was updated.,update,uva,update-uva,"user ID, user UUID, user name, user email, Access Control List"
+Add Vault,A vault was added.,create,vault,create-vault,
+Delete Vault,A vault was deleted.,delete,vault,delete-vault,
+Mark Vault To Be Purged,A vault was marked for purging.,purge,vault,purge-vault,
+Update Client Access,The client access value for a vault was updated.,update,vault,update-vault,The new client access value.
+Update Attributes,A vault name or description was changed.,updatea,vault,updatea-vault,
+Export Vault,A vault was exported.,export,vault,export-vault,
+Add Verified Domain,A domain was verified.,vrfydmn,account,vrfydmn-account,domain
+Update Verified Domain,A verified domain was updated.,uvrfydmn,account,uvrfydmn-account,domain
+Delete Verified Domain,A verified domain was removed.,dvrfydmn,account,dvrfydmn-account,domain

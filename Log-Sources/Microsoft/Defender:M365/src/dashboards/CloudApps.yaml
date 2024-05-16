@@ -1,0 +1,291 @@
+name: CloudApps
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  c7c831d3-4139-4aab-92de-362173920aad:
+    x: 3
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | top(Vendor.properties.IPAddress)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 10 endpoints with activities
+    isLive: false
+    type: query
+  b9217048-f7f2-4293-888c-87e0e0f16f86:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy(Vendor.properties.IsAnonymousProxy)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Was the IP an anonymous proxy?
+    isLive: false
+    type: query
+  071afcfb-adae-4fb7-b619-c3f6719a1dff:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy(Vendor.properties.DeviceType)
+      | sort()
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Device types
+    isLive: false
+    type: query
+  fcb12972-0342-4704-b886-fe0281a29155:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents | Vendor.properties.ActionType=FileDeleted
+      | top(Vendor.properties.RawEventData.UserId)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 10 file deleters
+    isLive: false
+    type: query
+  23df43d9-ad23-4b0c-9229-c5105e8afbbf:
+    x: 9
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy(Vendor.properties.AccountType)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 3
+    title: Activities by account type
+    isLive: false
+    type: query
+  c6123cab-637f-4d9c-afcf-b1e8565f82df:
+    x: 4
+    y: 20
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy(Vendor.properties.IsImpersonated)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Was it an impersonated user?
+    isLive: false
+    type: query
+  3a5ea951-7157-44a1-a0c2-3f63e8912ad8:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | test(?EventID != "*")
+      | Vendor.roperties.ReportId = ?EventID
+      | table([Vendor.properties.Timestamp, time, Vendor.properties.AccountDisplayName, Vendor.properties.RawEventData.UserId, Vendor.properties.ActionType, Vendor.properties.Application, Vendor.properties.DeviceType, Vendor.properties.IPAddress, Vendor.properties.OSPlatform, Vendor.properties.RawEventData.DeviceName, Vendor.properties.RawEventData.FileExtension, Vendor.properties.UserAgent, Vendor.properties.RawEventData.ObjectId])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Search by EventID
+    isLive: false
+    type: query
+  707f1b89-61bc-4830-9b84-06822b85e05f:
+    x: 6
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | join({Vendor.category=AdvancedHunting-IdentityLogonEvents}, mode=left , field=Vendor.properties.AccountDisplayName, key=Vendor.properties.AccountDisplayName, include=[Vendor.properties.AccountUpn, Vendor.properties.AccountDisplayName, Vendor.properties.Location])
+      | Vendor.properties.AccountUpn=?UserEmail
+      |groupby([Vendor.properties.IPAddress, Vendor.properties.AccountUpn])
+      | sort()
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Endpoint/user combinations (by user)
+    isLive: false
+    type: query
+  c841505d-249c-4791-827c-b1916751768d:
+    x: 3
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | top([Vendor.properties.UserAgent])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 10 UserAgents
+    isLive: false
+    type: query
+  319fd679-2385-4f9e-8cda-39f60a4559df:
+    x: 9
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents | Vendor.properties.ActionType=FileDeleted
+      | top(Vendor.properties.RawEventData.FileExtension)
+      | rename(field="Vendor.properties.RawEventData.FileExtension", as="file extension")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 10 file types deleted
+    isLive: false
+    type: query
+  9bd07015-8eb0-4e26-85f0-5080625f0663:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      #category=AdvancedHunting-CloudAppEvents
+      | Vendor.properties.IsAdminOperation=*
+      | groupBy(Vendor.properties.IsAdminOperation)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Was it an admin operation?
+    isLive: false
+    type: query
+  8434411a-5a81-465d-8515-150c2f3677de:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy(Vendor.properties.IsExternalUser)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 4
+    title: Was it an external user?
+    isLive: false
+    type: query
+  8a241370-15fa-4145-895c-63f6e620d111:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy([Vendor.properties.Application, Vendor.properties.ActionType])
+      | sort()
+    end: now
+    start: 1d
+    width: 5
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top 200 actions per app
+    isLive: false
+    type: query
+  06c6e002-7525-4907-ad6b-0b62ae4cbbb0:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy(Vendor.properties.OSPlatform)
+      | sort()
+    end: now
+    start: 1d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: OS's on which activities were run
+    isLive: false
+    type: query
+  d67d6458-e537-41b2-8add-412563b3a716:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | groupBy(Vendor.properties.Application)
+      | sort()
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Apps that had activities
+    isLive: false
+    type: query
+  15109902-1203-4d59-84f1-5bd106631157:
+    x: 0
+    y: 24
+    height: 4
+    queryString: |-
+      Vendor.category=AdvancedHunting-CloudAppEvents
+      | Vendor.properties.IsImpersonated = true
+    end: now
+    start: 1d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"@rawstring","format":"json"}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Impersonated activities
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0

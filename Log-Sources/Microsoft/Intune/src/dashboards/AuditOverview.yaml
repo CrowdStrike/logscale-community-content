@@ -1,0 +1,492 @@
+name: Audit Overview
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  a62cb1d8-7ee6-4150-b649-31f400614dd0:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="cleanWindowsDevice ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Windows Device Cleaned
+    isLive: false
+    type: query
+  7c2dfba1-161d-4e69-9f53-b54b3816c8b1:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="locateDevice ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Locate Device
+    isLive: false
+    type: query
+  02774b65-9407-408d-a3c3-3e3e5cab8638:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.Actor.UPN=?ActorUsername | regex(?DeviceID,field=Vendor.properties.TargetObjectIds,flags="i")
+      | regex(field=Vendor.operationName,?Operation)
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Operations by Device ID
+    isLive: false
+    type: query
+  560832b0-a8c1-49db-b65a-ca341c3c8291:
+    x: 4
+    y: 36
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="decryptcredential ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Credentials Decrypted
+    isLive: false
+    type: query
+  a9f6c0a1-ebf6-49a4-a3ef-d91fb811f1bb:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.Actor.UPN=?ActorUsername | regex(?DeviceID,field=Vendor.properties.TargetObjectIds,flags="i")
+      | regex(field=Vendor.operationName,?Operation)
+      | groupby(Vendor.properties.Actor.UPN)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Initiated Operations by Actor
+    isLive: false
+    type: query
+  5cd0d978-7ff4-4162-aebc-0d63a412b04f:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.Actor.UPN=?ActorUsername | regex(?DeviceID,field=Vendor.properties.TargetObjectIds,flags="i")
+      | regex(field=Vendor.operationName,?Operation)
+      | timechart(Vendor.operationName)
+    end: now
+    start: 30d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Operations Over Time
+    isLive: false
+    type: query
+  5a0c428e-6827-44c6-8721-25165551a5a9:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |
+      Vendor.category=AuditLogs
+      | Vendor.properties.Actor.UPN=?ActorUsername | regex(?DeviceID,field=Vendor.properties.TargetObjectIds,flags="i")
+      | regex(field=Vendor.operationName,?Operation)
+    end: now
+    start: 30d
+    width: 12
+    options:
+      columns: '[{"type":"field","fieldName":"@timestamp","format":"datetime","width":180},{"type":"field","fieldName":"Vendor.operationName","format":"text","width":535},{"type":"field","fieldName":"Vendor.properties.TargetDisplayNames","format":"text","width":535},{"type":"field","fieldName":"Vendor.properties.TargetObjectIds","format":"text","width":910},{"type":"field","fieldName":"Vendor.properties.Actor.UPN","format":"text","width":280}]'
+      newestAtBottom: 'true'
+      showOnlyFirstLine: 'false'
+    visualization: list-view
+    title: Raw Events
+    isLive: false
+    type: query
+  5a9ed265-2aee-4309-af16-4164e03b582e:
+    x: 0
+    y: 28
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="resetPasscode ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Passcode Reset
+    isLive: false
+    type: query
+  e4129a9b-be9d-490e-87c0-8fce9d6486c7:
+    x: 4
+    y: 12
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="cleanWindowsDevice ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Windows Device Cleaned
+    isLive: false
+    type: query
+  e287aaf3-35bd-4876-95b0-57556b9f2013:
+    x: 0
+    y: 48
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="syncDevice ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Sync Device
+    isLive: false
+    type: query
+  c593f197-35ba-4176-8c39-18b84d0709a7:
+    x: 4
+    y: 24
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="rebootNow ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Device Rebooted
+    isLive: false
+    type: query
+  5c8584d6-5713-4d87-8888-a5823b794427:
+    x: 4
+    y: 40
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="disableLostMode ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Lost Mode Disabled
+    isLive: false
+    type: query
+  c498131f-67c6-40fc-bdeb-9f9fb274a6ae:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="enableLostMode ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Enabled Lost Mode
+    isLive: false
+    type: query
+  024432d1-45b2-42ec-93c7-824099551edc:
+    x: 4
+    y: 48
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="syncDevice ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Sync Devices
+    isLive: false
+    type: query
+  0df2e1b1-d694-430d-ac16-a7d8c0f36f75:
+    x: 4
+    y: 20
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="locateDevice ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Locate Device
+    isLive: false
+    type: query
+  b6040265-a46c-4b71-a7f0-aa3c090a678d:
+    x: 0
+    y: 44
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="wipe ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Device Wiped
+    isLive: false
+    type: query
+  94381667-374e-4e93-ac93-bd2135e7943a:
+    x: 0
+    y: 32
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="retire ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Device Retired
+    isLive: false
+    type: query
+  ffd3b21a-758f-4ded-8e6c-deb5448bcef3:
+    x: 4
+    y: 32
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="retire ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Device Retired
+    isLive: false
+    type: query
+  f71f7b23-f548-4971-9c97-d30c7983df4a:
+    x: 0
+    y: 40
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="disableLostMode ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Lost Mode Disabled
+    isLive: false
+    type: query
+  bc224a39-c020-48f0-ada9-d44a10944d1f:
+    x: 4
+    y: 28
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="resetPasscode ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Passcode Reset
+    isLive: false
+    type: query
+  7d4c16a3-05c7-4cd7-8bff-de7a43dd9932:
+    x: 0
+    y: 36
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="decryptcredential ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Credentials Decrypted
+    isLive: false
+    type: query
+  184ce018-32fc-4893-a03d-fc48e74bf70e:
+    x: 4
+    y: 44
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="wipe ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Device Wiped
+    isLive: false
+    type: query
+  5e649216-6da2-4b52-b01f-9785f2e50a4a:
+    x: 0
+    y: 24
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="rebootNow ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Device Rebooted
+    isLive: false
+    type: query
+  1b1dd4f3-c9f5-43d6-a24c-ca2b7e2bd3a1:
+    x: 4
+    y: 16
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      |Vendor.properties.Actor.UPN="*"
+      |regex(".*",field=Vendor.properties.TargetObjectIds,flags="i")
+      | Vendor.operationName="enableLostMode ManagedDevice"
+      | groupby(Vendor.properties.TargetObjectIds,function=[collect(Vendor.properties.Actor.UPN),selectLast(@timestamp)])
+    end: now
+    start: 30d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Lost Mode Enabled
+    isLive: false
+    type: query
+  42f9587f-1aca-43a8-b273-29176d49d5a0:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      Vendor.category=AuditLogs
+      | Vendor.properties.Actor.UPN=?ActorUsername | regex(?DeviceID,field=Vendor.properties.TargetObjectIds,flags="i")
+      | regex(field=Vendor.operationName,?Operation)
+      | groupby(Vendor.operationName)
+    visualization: pie-chart
+    end: now
+    start: 30d
+    width: 4
+    title: Operations
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.14.0
+parameters:
+  DeviceID:
+    defaultValue: .*
+    label: DeviceID
+    order: 50
+    type: text
+  Operation:
+    label: Operation
+    order: 50
+    values:
+    - .*
+    - Delete
+    - Patch
+    - Rename
+    - Create
+    type: list
+    defaultValue: .*

@@ -1,0 +1,122 @@
+name: Events Overview
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  118151b4-c0e3-47a2-8a30-3e8197ac41c3:
+    x: 6
+    y: 9
+    height: 6
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |!destination.port=""
+      |top([destination.port],limit=25)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      xAxisTitle: Destination Ports
+      yAxisTitle: Events Count
+      series: {}
+      yScaleType: log
+    visualization: bar-chart
+    title: Top 25 Destination Ports
+    isLive: false
+    type: query
+  631c2eb8-9700-4440-a838-26012ee9642a:
+    x: 0
+    y: 9
+    height: 6
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |!source.port=""
+      |top([source.port],limit=25)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      xAxisTitle: Source Port
+      yAxisTitle: Events Count
+      series: {}
+      yScaleType: log
+    visualization: bar-chart
+    title: Top 25 Source Ports
+    isLive: false
+    type: query
+  2d090d8d-188c-4571-be28-742b21988f1d:
+    x: 0
+    y: 5
+    height: 4
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      |top([user.name],limit=25)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      xAxisTitle: User Name
+      yAxisTitle: Events Count
+      series: {}
+      yScaleType: log
+    visualization: bar-chart
+    title: Top 25 Users
+    isLive: false
+    type: query
+  0f5b19b0-9ff5-4610-ba70-21d2e832da72:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | groupBy([event.category[1]])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      padding: 0.12
+      thresholdConfig:
+        palette: Blue red diverging
+        reversePalette: false
+        thresholds:
+        - value: 50
+      value-format: metric
+    visualization: gauge
+    title: Events Category
+    isLive: false
+    type: query
+  aa9c9b09-fb0f-4362-9ed1-fe6dca8398de:
+    x: 0
+    y: 15
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | worldMap(ip="source.ip")
+    end: now
+    start: 1d
+    width: 12
+    options:
+      projection: orthographic
+    visualization: world-map
+    title: World Map - Source IPs
+    isLive: false
+    type: query
+  d7ca1082-ce5c-44cd-a1f7-33efd1d26d05:
+    x: 0
+    y: 20
+    height: 5
+    queryString: |-
+      #repo=net-firewall #type=sonicwall
+      | worldMap(ip="destination.ip")
+    end: now
+    start: 1d
+    width: 12
+    options:
+      projection: orthographic
+    visualization: world-map
+    title: World Map - Destination IPs
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.15.0
