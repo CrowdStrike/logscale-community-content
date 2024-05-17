@@ -1,6 +1,7 @@
 ```
 // Get all process execution and DNS events on Windows
 (#event_simpleName=ProcessRollup2 OR #event_simpleName=DnsRequest) event_platform=Win
+| ComputerName=~wildcard(?ComputerName, ignoreCase=true)
 // Normalize file name value across both events
 | fileName:=concat([FileName, ContextBaseFileName])
 // Make sure responsible process is a web browser
