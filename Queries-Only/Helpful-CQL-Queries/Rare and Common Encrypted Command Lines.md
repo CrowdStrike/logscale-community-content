@@ -6,6 +6,6 @@
 | length("CommandLine", as="cmdLength")
 | groupby([CommandLine], function=stats([collect(cmdLength), count(aid, distinct=true, as="uniqueEndpointCount"), count(aid, as="executionCount")]), limit=max)
 | table([executionCount, uniqueEndpoitnCount, cmdLength, CommandLine])
-| sort(executionCount, type=any, order=desc)
+| sort(executionCount, order=desc)
 
 ```
