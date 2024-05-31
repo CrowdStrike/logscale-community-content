@@ -24,7 +24,7 @@ sources:
     sink: next-gen-siem
     ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated
     ## NOTE: Setting maxEventSize above the max allowed value will cause the FLC service to not start
-    # maxEventSize: 1048576
+    #maxEventSize: 1048576
  
   # Collect syslog tcp 1514.
   syslog_tcp_1514:
@@ -34,7 +34,7 @@ sources:
     sink: next-gen-siem
     ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated
     ## NOTE: Setting maxEventSize above the max allowed value will cause the FLC service to not start
-    # maxEventSize: 1048576
+    #maxEventSize: 1048576
  
 sinks:
   next-gen-siem:
