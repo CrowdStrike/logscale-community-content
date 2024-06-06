@@ -5,7 +5,8 @@
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
 
-## Uncomment if you need to manually set the directory. 
+## Uncomment dataDirectory if you need to manually set the directory.
+## Note: Not used with Data Ingest / Fleet configuration
 #dataDirectory: C:\ProgramData\LogScale Collector
  
 sources:

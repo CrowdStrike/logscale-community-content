@@ -5,8 +5,9 @@
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
 
-## Uncomment if you need to manually set the directory. 
-#dataDirectory: /var/lib/humio-log-collector
+## Following entry is the default content dir
+## Comment out in future when Fleet Management available in NG-SIEM 
+dataDirectory: /var/lib/humio-log-collector
 
 sources:
   # Collect local files.
