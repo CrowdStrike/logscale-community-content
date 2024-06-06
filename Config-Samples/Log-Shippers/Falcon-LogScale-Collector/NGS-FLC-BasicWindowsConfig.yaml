@@ -7,7 +7,7 @@
 
 ## Uncomment dataDirectory if you need to manually set the directory.
 ## Note: Not used with Data Ingest / Fleet configuration
-## dataDirectory: C:\ProgramData\LogScale Collector
+#dataDirectory: C:\ProgramData\LogScale Collector
  
 sources:
   windows_events:
