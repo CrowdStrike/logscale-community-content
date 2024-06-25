@@ -5,7 +5,7 @@
 // Normalize file name value across both events
 | fileName:=concat([FileName, ContextBaseFileName])
 // Make sure responsible process is a web browser
-| in(field="fileName", values=[chrome.exe, filefox.exe, msedge.exe], ignoreCase=true)
+| in(field="fileName", values=[chrome.exe, firefox.exe, msedge.exe], ignoreCase=true)
 // Normalize Falcon UPID
 | falconPID:=TargetProcessId | falconPID:=ContextProcessId
 // Use selfJoinFilter to make sure execution and DNS resolution occured under the same UPID value
