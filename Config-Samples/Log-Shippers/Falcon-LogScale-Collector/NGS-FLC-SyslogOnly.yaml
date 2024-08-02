@@ -1,0 +1,27 @@
+#####
+## Sample configuration file for Microsoft Windows.
+## This is YAML, so structure and indentation is important.
+## Lines can be uncommented by removing the #. You should not need to change the number of spaces after that.
+## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
+#####
+ 
+sources:
+  syslog_udp_1514:
+    type: syslog
+    mode: udp
+    port: 1514
+    sink: next-gen-siem
+ 
+  syslog_tcp_1514:
+    type: syslog
+    mode: tcp
+    port: 1514
+    sink: next-gen-siem
+     
+sinks:
+  next-gen-siem:
+    type: hec
+    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.us-1.crowdstrike.com
+    proxy: none
+    workers: 16
