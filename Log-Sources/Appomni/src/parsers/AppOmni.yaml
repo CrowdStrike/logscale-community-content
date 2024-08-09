@@ -1,0 +1,72 @@
+name: AppOmni
+fieldsToBeRemovedBeforeParsing: []
+testCases:
+- assertions: null
+  event:
+    rawString: '{"@timestamp":"2024-07-25T14:03:45.443Z","appomni":{"alert":{"channel":"prod"},"event":{"dataset":"appomni_alert","id":"c053a5fe-f9c9-5ebc-9084-127a0c4636e7","sortable_event_id":"01J3N38XX33GX41CRGEH58HB8P","sortable_ingest_id":"01J3N3ZWG3BZB4FWEKF11YM4PW"},"organization":{"id":25}},"event":{"created":"2024-07-25T14:16:17.667Z","kind":"alert","severity":3},"message":"Impossible
+      travel detected for ''shibainucoin@duck.com'' in ''Okta''","related":{"event":["d3c48eb8-4a10-513f-a6bb-81265923d689","05317486-6a38-54ef-ac77-d6ee63d42b1c"],"identity":["d1bed0de-8901-40bb-ab64-47a5effa275f"],"ip":["192.168.10.1","192.168.10.2"],"services":{"id":[11169],"type":["okta"]},"user":["shibainucoin@duck.com"]},"rule":{"name":"[Experimental]
+      Impossible Travel Activity Detected","ruleset":"4b2845a0-a01b-402b-a181-f2f9f3814ad2","threat":{"framework":"MITRE
+      ATT&CK","tactic":{"id":["TA0001"],"name":["Initial Access"]},"technique":{"id":["T1078"],"name":["Valid
+      Accounts"]}},"uuid":"e2f6d186-8cda-4824-aa5a-fd016a4d15e4","version":"1"},"version":"2.0.0"}'
+- assertions: null
+  event:
+    rawString: |
+      {"@timestamp":"2024-07-24T09:06:28.000Z","appomni":{"alert":{"channel":"prod"},"event":{"dataset":"appomni_alert","id":"e6f7228f-3f12-5900-acd7-8d0fa8dfa0ae","sortable_event_id":"01J3HZVVH0MHJ9Z614AV7N54HW","sortable_ingest_id":"01J3J08DXA866TRMRDRJKJ4YR8"},"organization":{"id":25}},"event":{"created":"2024-07-24T09:13:20.042Z","kind":"alert","severity":3},"message":"Mass login failures for user 'adela.cervantsz' in ServiceNow","related":{"event":["4d7e3c10-9f20-50f2-bb46-0be1b528a8d1"],"ip":["192.168.10.2"],"services":{"id":[29669],"type":["snow"]},"user":["adela.cervantsz","guest"]},"rule":{"name":"Mass Login Failures","ruleset":"ef5b16a5-0d6d-41d6-93d2-09c57edb2a31","threat":{"framework":"MITRE ATT&CK","tactic":{"id":["TA0006"],"name":["Credential Access"]},"technique":{"id":["T1110"],"name":["Brute Force"]}},"uuid":"002723d0-c083-4aa2-b10c-f1524a1dc86e","version":"1"},"version":"2.0.0"}
+- assertions: null
+  event:
+    rawString: '{"@timestamp":"2024-07-24T12:25:40.214Z","appomni":{"event":{"collected_time":"2024-07-24T12:25:40.235Z","dataset":"ao_auditlogs","id":"f7c09521-0a9a-5688-b484-7cf3832062a5","ingestion_time":"2024-07-24T12:25:40.276Z"},"organization":{"id":25},"service":{"account_id":"25","id":0,"name":"AppOmni","type":"appomni"}},"event":{"action":"login_user","category":["authentication"],"code":"user_login","created":"2024-07-24T12:25:40.235Z","dataset":"ao_auditlogs","id":"fc0dcff7-b483-49f8-8751-5737fa1b72e0","ingested":"2024-07-24T12:25:40.276Z","kind":"event","module":"appomni","original":"{\"action_at\":\"2024-07-24T12:25:40.214469+00:00\",\"action_data\":{\"md_kind\":\"core.aoaudit.auditdata\",\"md_version\":1,\"user_agent\":\"Mozilla/5.0
+      (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0
+      Safari/537.36\",\"user_ip\":\"192.168.10.2\",\"user_username\":\"jondoe@example.com\"},\"action_type\":\"user_login\",\"log_id\":\"fc0dcff7-b483-49f8-8751-5737fa1b72e0\",\"org_id\":25,\"user_id\":8405}","outcome":"success","type":["access"]},"related":{"ip":["192.168.10.2"],"user":["jondoe@example.com"]},"source":{"address":"192.168.10.2","as":{"country":"US","domain":"oplink.net","number":40156,"organization":{"name":"The
+      Optimal Link Corporation"},"type":"hosting"},"geo":{"city_name":"Houston","country_iso_code":"US","location":{"lat":29.76328,"lon":-95.36327},"postal_code":"77002","region_name":"Texas","timezone":"America/Chicago"},"ip":"192.168.10.2"},"user":{"id":"8405","name":"jondoe@example.com","target":{"name":"jondoe@example.com"}},"user_agent":{"original":"Mozilla/5.0
+      (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0
+      Safari/537.36"},"version":"2.0.0"}'
+$schema: https://schemas.humio.com/parser/v0.3.0
+script: |
+  // #region PREPARSE
+
+  // Remove fields parsed automatically
+  | select([@rawstring, @timestamp])
+
+  // Rewrite appomni namespace into a temporary field
+  | parseJson(@rawstring, exclude=[""], include=["appomni.", "related."])
+  | writeJson(["appomni."], as=_tmp)
+  | select([@rawstring, @timestamp, _tmp])
+
+  // Parse temporary field into Vendor namespace instead of appomni namespace
+  | parseJson(_tmp, removePrefixes="appomni.", prefix="Vendor.")
+  | drop([_tmp])
+
+  | parseJson(@rawstring, exclude=["appomni."])
+  | rename(version, as=Vendor.version)
+  // #endregion
+
+  // #region METADATA
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser.version := "1.0.0"
+  | ecs.version := "8.11.0"
+  | Cps.version := "1.0.0"
+  | Vendor := "appomni"
+  | event.module := "appomni"
+
+  // #endregion
+
+  // #region NORMALIZATION
+  /************************************************************
+  ****** Normalize fields to data model
+  ************************************************************/
+  | rename(field=event.original, as=@rawstring)
+  | drop([event.code, event.ingested])
+  | event.dataset := format("appomni.%s", field=[event.dataset])
+
+  // #endregion
+tagFields:
+- Cps.version
+- event.kind
+- event.outcome
+- Vendor
+- ecs.version
+- event.dataset
+- event.module
+- observer.type

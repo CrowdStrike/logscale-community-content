@@ -1,0 +1,263 @@
+name: AppOmni Alerts
+description: AppOmni simplifies security and prevents breaches from business-critical
+  SaaS applications by identifying data exposure and risks, detecting threats, and
+  mapping compliance requirements.
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  d256b5b6-c1e6-4bd9-aa4c-91be58d335cb:
+    x: 8
+    y: 0
+    description: Alert over time by rule names
+    height: 4
+    queryString: |-
+      #event.module := "appomni"
+      | #event.kind = "alert"
+      | "related.services.type[0]" = ?ServiceType
+      | case {
+          event.severity = 0 | severity := "Critical";
+          event.severity = 1 | severity := "High";
+          event.severity = 2 | severity := "Medium";
+          event.severity = 3 | severity := "Low";
+          event.severity = 4 | severity := "Informational";
+          * | severity := "unknown"
+      }
+      | timeChart(rule.name)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      interpolation: basis
+      xAxisTitle: Date
+      showDataPoints: false
+      connect-points: false
+      yAxisScale: linear
+      plotType: area
+      maxSeriesCount: 50
+      imputation: zero
+      yAxisTitle: Alerts
+      stacking: normal
+    visualization: time-chart
+    title: Alert Over Time
+    isLive: false
+    type: query
+  3f784bfb-9813-433e-84f4-5ca709127883:
+    x: 0
+    y: 0
+    description: Alert Count
+    height: 4
+    queryString: |-
+      #event.module := "appomni"
+      | #event.kind = "alert"
+      | "related.services.type[0]" = ?ServiceType
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      trellisShowBorders: false
+      color-method: static
+      time-format: seconds
+      yAxisTitle: Alerts
+      use-colorised-thresholds: false
+      value-format: raw
+      default: {}
+    visualization: single-value
+    title: Alert Count
+    isLive: false
+    type: query
+  a95f0f0f-6f71-4c16-9e58-7d04186860b9:
+    x: 0
+    y: 4
+    description: Alerts World Wide
+    height: 6
+    queryString: |
+      #event.module := "appomni"
+      | #event.kind = "alert"
+      | "related.services.type[0]" = ?ServiceType
+      | worldMap(ip="related.ip[0]")
+    end: now
+    start: 1d
+    width: 6
+    options:
+      zLevel: 0
+      projection: mercator
+      autoRotate: false
+      rotZ: 0
+      rotY: 0
+      fixedSize: 11
+      rotX: 0
+    visualization: world-map
+    title: Alerts World-Wide
+    isLive: false
+    type: query
+  b4459f21-3c1e-4e5c-b7d9-d56e1d122178:
+    x: 0
+    y: 10
+    height: 6
+    queryString: |
+      #event.module := "appomni"
+      | #event.kind = "alert"
+      | "related.services.type[0]" = ?ServiceType
+      | sankey(source = "related.user[0]", target="related.services.type[0]")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 12
+    title: Alerts by User and Platform
+    isLive: false
+    type: query
+  0a2b73a3-a81d-4789-b365-cfdece02cbbd:
+    x: 2
+    y: 0
+    description: Pie Chart Displaying Alert Severity as a %
+    height: 4
+    queryString: |-
+      event.module := "appomni"
+      | #event.kind = "alert"
+      | "related.services.type[0]" = ?ServiceType
+      | case {
+          event.severity = 0 | severity := "Critical";
+          event.severity = 1 | severity := "High";
+          event.severity = 2 | severity := "Medium";
+          event.severity = 3 | severity := "Low";
+          event.severity = 4 | severity := "Informational";
+          * | severity := "unknown"
+      }
+      | groupBy(severity)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      legendPosition: bottom
+      series:
+        Critical:
+          color: '#C93637'
+        High:
+          color: '#F49125'
+        Low:
+          color: '#34B248'
+        Medium:
+          color: '#F9E686'
+      legendLabelOverflow: truncate
+      legend: true
+      innerRadius: 36
+      maxSeriesCount: 7
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Alert Risk
+    isLive: false
+    type: query
+  31ed1b3f-e716-4575-ac90-1d37c8f2d63b:
+    x: 5
+    y: 0
+    description: Pie Chart Displaying count by monitored service type
+    height: 4
+    queryString: |-
+      #event.module := "appomni"
+      | #event.kind = "alert"
+      | "related.services.type[0]" = ?ServiceType
+      | groupBy("related.services.type[0]")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      series: {}
+      legendLabelOverflow: truncate
+      legend: true
+      innerRadius: 36
+      legendPosition: bottom
+      legendTitle: Monitored Service Type
+      maxSeriesCount: 10
+      withLegendTitle: true
+    visualization: pie-chart
+    title: Alert Count by Service Type
+    isLive: false
+    type: query
+  a1ccd2e8-aabb-4268-bca8-5878d27964b8:
+    x: 6
+    y: 4
+    description: Alerts Table
+    height: 6
+    queryString: |-
+      #event.module := "appomni"
+      | #event.kind = "alert"
+      | "related.services.type[0]" = ?ServiceType
+      | case {
+          event.severity = 0 | severity := "Critical";
+          event.severity = 1 | severity := "High";
+          event.severity = 2 | severity := "Medium";
+          event.severity = 3 | severity := "Low";
+          event.severity = 4 | severity := "Informational";
+          * | severity := "unknown"
+      }
+      | table([@timestamp,severity, message, rule.name,"related.user[0]","related.user[1]","related.services.type[0]"])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        event.severity:
+          color:
+            conditions:
+            - color: '#C93637'
+              condition:
+                arg: '0'
+                type: Equal
+            - color: '#F49125'
+              condition:
+                arg: '1'
+                type: Equal
+            - color: '#F9E686'
+              condition:
+                arg: '2'
+                type: Equal
+            - color: '#34B248'
+              condition:
+                arg: '3'
+                type: Equal
+            defaultColor: '#9DE1D0'
+          render-as: value
+        severity:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: Low
+                type: Equal
+            - color: '#F9E686'
+              condition:
+                arg: Medium
+                type: Equal
+            - color: '#F49125'
+              condition:
+                arg: High
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: Critical
+                type: Equal
+            defaultColor: '#9DE1D0'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Alerts Table
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.16.0
+parameters:
+  ServiceType:
+    label: Service Type
+    query: '#event.module = "appomni" | #event.kind = "alert" | groupBy(related.services.type[0],
+      function=[])'
+    timeInterval: 5d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: related.services.type[0]
