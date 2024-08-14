@@ -22,6 +22,6 @@ sinks:
   next-gen-siem:
     type: hec
     token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.us-1.crowdstrike.com
+    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     proxy: none
-    workers: 16
+    workers: 4
