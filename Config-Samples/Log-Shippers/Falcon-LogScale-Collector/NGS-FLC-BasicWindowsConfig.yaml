@@ -22,6 +22,26 @@ sources:
       - name: Windows PowerShell
       - name: ForwardedEvents
     sink: next-gen-siem
+
+  # Collect syslog udp 1514.
+  syslog_udp_1514:
+    type: syslog
+    mode: udp
+    port: 1514
+    sink: next-gen-siem
+    ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated
+    ## NOTE: Setting maxEventSize above the max allowed value will cause the FLC service to not start
+    #maxEventSize: 1048576
+ 
+  # Collect syslog tcp 1514.
+  syslog_tcp_1514:
+    type: syslog
+    mode: tcp
+    port: 1514
+    sink: next-gen-siem
+    ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated
+    ## NOTE: Setting maxEventSize above the max allowed value will cause the FLC service to not start
+    #maxEventSize: 1048576
      
 sinks:
   next-gen-siem:
