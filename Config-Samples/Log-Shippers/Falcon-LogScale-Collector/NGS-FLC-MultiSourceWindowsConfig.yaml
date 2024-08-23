@@ -45,7 +45,7 @@ sinks:
     token: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
     # Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     # NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
-    url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/v1/
+    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
     ## This sets the maximum single event size to 8 MB. You can change as needed.
@@ -67,10 +67,10 @@ sinks:
   next-gen-siem-fileRead:
     type: hec
     # Replace with your specified ingest token.
-    token: XXXXXXXX-XXXX-XXXX-XXXX-YYYYYYYYYYYY
+    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     # Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     # NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
-    url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY/v1/
+    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
     workers: 16
@@ -78,10 +78,10 @@ sinks:
   next-gen-siem-syslog:
     type: hec
     # Replace with your specified ingest token.
-    token: XXXXXXXX-XXXX-XXXX-XXXX-ZZZZZZZZZZZZ
+    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     # Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     # NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
-    url: https://ingest.XX-X.crowdstrike.com/api/ingest/hec/ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ/v1/
+    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
-    workers: 16
+    workers: 4
