@@ -1,8 +1,8 @@
 ![CrowdStrike](https://www.crowdstrike.com/wp-content/uploads/2022/09/CS_Logo_2022_In-Line_All-Red_RGB.png)
 
-# CQL Community Content
+# Community Content
 
-Welcome to the CQL Community Content Repository. This covers both NG-SIEM and LogScale. 
+Welcome to the Community Content Repository. This covers both NG-SIEM and LogScale. 
 
 To keep it simple, we'll just use the name *CQL Community Content* for this repo. What is CQL? It's the CrowdStrike Query Language used in both NG-SIEM and LogScale. There is content in here that applies to both. 
 
