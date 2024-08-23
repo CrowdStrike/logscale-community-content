@@ -4,7 +4,7 @@
 _Welcome!_ We're excited you want to take part in the PSFalcon community!
 
 Please review this document for details regarding getting started with your first contribution and our Pull
-Request process. If you have any questions, please let us know by posting your question as an [issue](issues/new/choose).
+Request process. If you have any questions, please let us know by posting your question as an [issue](https://github.com/CrowdStrike/logscale-community-content/issues/new/choose).
 
 ### Before you begin
 - Have you read the [Code of Conduct](CODE_OF_CONDUCT.md)? The Code of Conduct helps us establish community norms and how they'll be enforced.
@@ -28,7 +28,7 @@ Request process. If you have any questions, please let us know by posting your q
 - Submit a [Pull Request](#pull-requests)
 
 ### Bug reporting and questions are handled using GitHub's issues
-We use GitHub issues to track bugs. Report a bug by opening a [new issue](issues/new/choose).
+We use GitHub issues to track bugs. Report a bug by opening a [new issue](https://github.com/CrowdStrike/logscale-community-content/issues/new/choose).
 
 ## Pull Requests
 
@@ -64,4 +64,4 @@ and execute any backend processes related to package deployment. At this time, c
 ability to merge to the `main` branch.
 
 ## Suggestions
-If you have suggestions on how this process could be improved, please let us know by [posting an issue](issues/new/choose).
+If you have suggestions on how this process could be improved, please let us know by [posting an issue](https://github.com/CrowdStrike/logscale-community-content/issues/new/choose).
