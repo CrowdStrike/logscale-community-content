@@ -1,0 +1,212 @@
+name: Azure-AD-Dashboard
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  9c68649e-baad-452c-9ab9-f45837708dce:
+    x: 0
+    height: 5
+    queryString: |-
+      | #Vendor="microsoft" #event.module="azure"
+      | event.category[0] = authentication
+      | #event.outcome = failure
+      | timeChart(span=1h, function=count(), series=Vendor.appDisplayName)
+    end: now
+    start: 1d
+    width: 9
+    y: 0
+    interactions:
+    - conditions: null
+      name: 'Search for app authentications '
+      titleTemplate: null
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n#Vendor=\"microsoft\" #event.module=\"azure\"|event.category[0]=authentication|#event.outcome=failure\
+        \ | Vendor.appDisplayName=?Vendor_appDisplayName"
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments:
+        Vendor_appDisplayName: '["{{fields.Vendor.appDisplayName}}"]'
+      openInNewTab: false
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+      maxSeriesCount: 39
+    visualization: time-chart
+    title: 'Failed Authentications by App Name over time '
+    isLive: false
+    type: query
+  f02c9a4b-3624-4496-8c0a-cbb75ad70182:
+    x: 6
+    height: 4
+    queryString: |-
+      #type=azuread-ecs
+      | event.action="remove-member-from-group" AND #event.outcome=success
+      | table([source.user.name, event.action, "Vendor.targetResources[0].userPrincipalName", "Vendor.targetResources[0].modifiedProperties[1].oldValue"])
+    end: now
+    start: 1d
+    width: 6
+    y: 10
+    interactions:
+    - conditions: null
+      name: Open in search
+      titleTemplate: null
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n#type=azuread-ecs|event.action=\"remove-member-from-group\" #event.outcome=success\
+        \ | "
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments: {}
+      openInNewTab: false
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Users removed from groups
+    isLive: false
+    type: query
+  0cf16205-4c00-4949-b492-64f40b0d3f88:
+    x: 9
+    height: 5
+    queryString: |-
+      #Vendor=microsoft
+      | #type = "azuread-ecs"
+      | event.action = *
+      | #event.outcome = failure
+      | top(event.action)
+    end: now
+    start: 7d
+    width: 3
+    y: 0
+    interactions:
+    - conditions: null
+      name: Search failed {{fields.event.action}}
+      titleTemplate: null
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n#Vendor=microsoft|#type=\"azuread-ecs\"|event.action=*|#event.outcome=failure\
+        \ | event.action=?event_action "
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments:
+        event_action: '["{{fields.event.action}}"]'
+      openInNewTab: false
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Failed Azure Events
+    isLive: false
+    type: query
+  518e2988-ac3a-45c5-b35e-b6a385754ec0:
+    x: 9
+    height: 5
+    queryString: |-
+      #type=azuread-ecs
+      | event.action != other
+      | top([event.action])
+    end: now
+    start: 1d
+    width: 3
+    y: 5
+    interactions:
+    - conditions: null
+      name: Search for {{fields.event.action}}
+      titleTemplate: null
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n#type=azuread-ecs|event.action!=other | event.action=?event_action "
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments:
+        event_action: '["{{fields.event.action}}"]'
+      openInNewTab: false
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Azure Events
+    isLive: false
+    type: query
+  55245cfa-78a7-4a29-934c-1f64d892230f:
+    x: 0
+    height: 4
+    queryString: |-
+      #type=azuread-ecs
+      | event.action="add-member-to-group" AND #event.outcome=success
+      | table([source.user.name, event.action, "Vendor.targetResources[0].userPrincipalName", "Vendor.targetResources[0].modifiedProperties[1].newValue"])
+    end: now
+    start: 1d
+    width: 6
+    y: 10
+    interactions:
+    - conditions: null
+      name: Open in search
+      titleTemplate: null
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n#type=azuread-ecs|event.action=\"add-member-to-group\" #event.outcome=success\
+        \ | "
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments: {}
+      openInNewTab: false
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Users added to group
+    isLive: false
+    type: query
+  0146b8f6-873e-4b92-ac75-bb19da027228:
+    x: 0
+    y: 5
+    height: 5
+    queryString: |-
+      | #Vendor="microsoft" #event.module="azure"
+      | #event.kind="event"
+      | Vendor.conditionalAccessStatus=failure
+      | timeChart(span=1h, function=count(), series=Vendor.status.additionalDetails)
+    end: now
+    start: 1d
+    width: 9
+    options:
+      legendPosition: right
+      series: {}
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      imputation: none
+    visualization: time-chart
+    title: Failed MFA over time
+    isLive: false
+    type: query
+  4bf2ebea-1e5d-4336-ac79-8c1a9a137b84:
+    x: 0
+    y: 14
+    height: 10
+    queryString: |-
+      | #Vendor="microsoft" #event.module="azure"
+      | event.category[0] = authentication
+      | worldMap(ip=source.ip)
+    visualization: world-map
+    end: now
+    start: 1d
+    width: 12
+    title: Sign in World Map
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.16.0
