@@ -26,6 +26,8 @@ Here's a quick summary of the various folders in this repository:
   - Queries, dashboards, alerts, etc.
 - **[Config-Samples](Config-Samples)**: 
   - These folders contain quick starts, configuration examples, and other useful artifacts.
+- **[Next-Gen-SIEM](Next-Gen-SIEM)**:
+  - Content related specifically to Next-Gen SIEM, e.g. dashboards, queries, etc. 
 - **[Parsers-Only](Parsers-Only)**:
   - Standalone parsers beyond the official ones. 
 - **[Queries-Only](Queries-Only)**:
