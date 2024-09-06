@@ -6,6 +6,13 @@ The AppOmni Alerts Dashboard for Crowdstrike provides a view of all your alerts,
 
 See [AppOmni Developer Platform site](https://appomni.com/solutions/) for a comprehensive list of supported applications.
 
+## Changelog
+
+Version 0.2.0
+
+- Updated the parser to set the `threat.*` fields
+- Added new `AppOmni Events` dashboard
+
 ## Package Contents
 
 ### Parsers
@@ -15,6 +22,7 @@ See [AppOmni Developer Platform site](https://appomni.com/solutions/) for a comp
 ### Dashboards
 
 - `AppOmni Alerts`
+- `AppOmni Events`
 
 ## Use case
 

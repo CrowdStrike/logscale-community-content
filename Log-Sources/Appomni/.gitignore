@@ -1,0 +1,8 @@
+### Mac OS specific ###
+.DS_Store
+__MACOSX
+
+### VS Code ###
+.vscode/
+
+*.zip

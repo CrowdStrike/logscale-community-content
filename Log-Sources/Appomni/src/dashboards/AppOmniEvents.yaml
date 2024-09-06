@@ -1,0 +1,196 @@
+name: AppOmni Events
+description: AppOmni simplifies security and prevents breaches from business-critical
+  SaaS applications by identifying data exposure and risks, detecting threats, and
+  mapping compliance requirements.
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  d256b5b6-c1e6-4bd9-aa4c-91be58d335cb:
+    x: 5
+    y: 0
+    description: Alert over time by rule names
+    height: 4
+    queryString: |-
+      #Vendor = "appomni" | #event.kind = "event"
+      | Vendor.appomni.service.type = ?ServiceType|timeChart(Vendor.appomni.service.type)
+    end: now
+    start: 1d
+    width: 7
+    options:
+      series: {}
+      interpolation: basis
+      xAxisTitle: Date
+      showDataPoints: false
+      connect-points: false
+      yAxisScale: linear
+      plotType: area
+      maxSeriesCount: 50
+      imputation: zero
+      yAxisTitle: Alerts
+      stacking: normal
+    visualization: time-chart
+    title: Event Over Time
+    isLive: false
+    type: query
+  a95f0f0f-6f71-4c16-9e58-7d04186860b9:
+    x: 0
+    y: 4
+    description: Alerts World Wide
+    height: 6
+    queryString: |
+      #Vendor = "appomni" | #event.kind = "event"
+      | Vendor.appomni.service.type = ?ServiceType | worldMap(ip="source.address")
+    end: now
+    start: 1d
+    width: 6
+    options:
+      zLevel: 0
+      projection: mercator
+      autoRotate: false
+      rotZ: 0
+      rotY: 0
+      fixedSize: 11
+      rotX: 0
+    visualization: world-map
+    title: Events World-Wide
+    isLive: false
+    type: query
+  406d9177-63c4-40df-b6bc-3b9671b92578:
+    x: 0
+    y: 0
+    description: Count of Events
+    height: 4
+    queryString: |-
+      #Vendor = "appomni" | #event.kind = "event"
+      | Vendor.appomni.service.type = ?ServiceType | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      trellisShowBorders: false
+      color-method: static
+      time-format: seconds
+      yAxisTitle: Events
+      use-colorised-thresholds: false
+      value-format: raw
+      default: {}
+    visualization: single-value
+    title: Event Count
+    isLive: false
+    type: query
+  b4459f21-3c1e-4e5c-b7d9-d56e1d122178:
+    x: 0
+    y: 10
+    height: 6
+    queryString: |+
+      #Vendor = "appomni" | #event.kind = "event"
+      | Vendor.appomni.service.type = ?ServiceType | sankey(source = "user.name", target="Vendor.appomni.service.type")
+
+
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 12
+    title: Events by User and Platform
+    isLive: false
+    type: query
+  31ed1b3f-e716-4575-ac90-1d37c8f2d63b:
+    x: 2
+    y: 0
+    description: Pie Chart Displaying count by monitored service type
+    height: 4
+    queryString: |-
+      #Vendor = "appomni" | #event.kind = "event"
+      | Vendor.appomni.service.type = ?ServiceType |groupBy("Vendor.appomni.service.type")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      series: {}
+      legendLabelOverflow: truncate
+      legend: true
+      innerRadius: 36
+      legendPosition: bottom
+      legendTitle: Monitored Service Type
+      maxSeriesCount: 10
+      withLegendTitle: true
+    visualization: pie-chart
+    title: Event Count by Service Type
+    isLive: false
+    type: query
+  a1ccd2e8-aabb-4268-bca8-5878d27964b8:
+    x: 6
+    y: 4
+    description: Alerts Table
+    height: 6
+    queryString: |-
+      #Vendor = "appomni" | #event.kind = "event"
+      | Vendor.appomni.service.type = ?ServiceType | table([@timestamp, event.action, OperationName, Vendor.appomni.service.type, user.name])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        event.severity:
+          color:
+            conditions:
+            - color: '#C93637'
+              condition:
+                arg: '0'
+                type: Equal
+            - color: '#F49125'
+              condition:
+                arg: '1'
+                type: Equal
+            - color: '#F9E686'
+              condition:
+                arg: '2'
+                type: Equal
+            - color: '#34B248'
+              condition:
+                arg: '3'
+                type: Equal
+            defaultColor: '#9DE1D0'
+          render-as: value
+        severity:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: Low
+                type: Equal
+            - color: '#F9E686'
+              condition:
+                arg: Medium
+                type: Equal
+            - color: '#F49125'
+              condition:
+                arg: High
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: Critical
+                type: Equal
+            defaultColor: '#9DE1D0'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Event Table
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.16.0
+parameters:
+  ServiceType:
+    label: Service Type
+    query: '#Vendor = "appomni" | #event.kind = "event" | groupBy("Vendor.appomni.service.type",
+      function=[])'
+    timeInterval: 7d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: Vendor.appomni.service.type
