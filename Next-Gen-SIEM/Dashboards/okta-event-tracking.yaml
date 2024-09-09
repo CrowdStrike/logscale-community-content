@@ -1,0 +1,101 @@
+name: Okta - User Tracking
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  b78079a8-704c-426d-9c6b-6590bab34193:
+    x: 6
+    y: 0
+    height: 5
+    queryString: |
+      | #repo="okta" #Vendor="okta" #event.module="sso"
+      | #event.kind="event"
+      | event.action="user.lifecycle.create"
+      | table([user.target.full_name,user.target.name,message,user.name,user.target.id,@timestamp], limit=1000)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: New Okta Users
+    isLive: false
+    type: query
+  e3e3408e-a9c8-48c7-947e-3a19ca34a2b1:
+    x: 0
+    y: 5
+    height: 4
+    queryString: |-
+      #Vendor = okta
+      | #event.outcome = failure
+      | message = "Authentication of user via MFA"
+      | top([user.target.full_name], limit=20)
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 12
+    title: MFA Failures by user - Top
+    isLive: false
+    type: query
+  30620f70-6b11-463f-b23e-fdf71087785d:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #Vendor = okta
+      | #event.kind = alert
+      | groupBy([event.reason], limit=max)
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 3
+    title: Okta Alerts
+    isLive: false
+    type: query
+  9078cac8-907c-4a60-af62-de5ba717875b:
+    x: 3
+    y: 0
+    height: 5
+    queryString: |+
+      //actor.alternateId like ?{Username=*}
+      | #repo = okta
+      | #event.module = sso
+      | Vendor.outcome.result = FAILURE
+      | worldMap(ip=client.ip)
+
+    end: now
+    start: 30d
+    width: 3
+    options:
+      autoRotate: true
+      projection: orthographic
+      zLevel: 7.8
+    visualization: world-map
+    title: GeoData SSO Failures
+    isLive: false
+    type: query
+  d7a67fe5-aee3-4745-a59c-37b199678170:
+    x: 9
+    y: 0
+    height: 5
+    queryString: |-
+      #Vendor = okta
+      | #event.kind = event
+      | top([message], limit=20)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Okta Events
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.16.0
