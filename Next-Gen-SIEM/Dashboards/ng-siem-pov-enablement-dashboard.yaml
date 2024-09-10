@@ -40,7 +40,7 @@ widgets:
         informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
         alert\"} | #Vendor=?_Vendor "
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
+      repoOrViewName: 
       arguments:
         _Vendor: '["{{fields.#Vendor}}"]'
       openInNewTab: true
@@ -89,7 +89,7 @@ widgets:
         informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
         alert\"} | #Vendor=?_Vendor"
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
+      repoOrViewName: 
       arguments:
         _Vendor: '["{{fields.#Vendor}}"]'
       openInNewTab: true
@@ -128,7 +128,7 @@ widgets:
     y: 0
     height: 3
     text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
-      \ \n\n1. Import into the `search-all` view. \n2. Clone the dashboard if you\
+      \ \n\n1. Import into the `` view. \n2. Clone the dashboard if you\
       \ would like to create a modified copy for demonstration or learning purposes.\
       \ \n3. Each widget contains a query designed to showcase the flexibility of\
       \ CQL and dashboard widgets. \n4. All of the major dashboard widget types are\
@@ -204,7 +204,7 @@ widgets:
         \ := Technique|threat.technique.name[0]=/./|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
         alert\"} | threat.tactic.name[0]=?threat_tactic_name_0_ #Vendor=?_Vendor "
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
+      repoOrViewName: 
       arguments:
         _Vendor: '["{{ fields.source }}"]'
         threat_tactic_name_0_: '["{{ fields.target }}"]'
@@ -494,7 +494,7 @@ widgets:
         \ := Technique|threat.technique.name[0]=/./|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
         alert\"} | threat.technique.name[0]=?threat_technique_name_0_ threat.tactic.name[0]=?threat_tactic_name_0_ "
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
+      repoOrViewName: 
       arguments:
         threat_tactic_name_0_: '["{{ fields.source }}"]'
         threat_technique_name_0_: '["{{ fields.target }}"]'
@@ -558,7 +558,7 @@ widgets:
         informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\"|lower(Tactic,as=event.category);#type!=falcon-raw-data|#event.kind=\"\
         alert\"}|split(event.category)|event.category=/./ | event.category=?event_category "
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
+      repoOrViewName: 
       arguments:
         event_category: '["{{fields.event.category}}"]'
       openInNewTab: true
@@ -726,7 +726,7 @@ widgets:
         informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\"|lower(Tactic,as=event.category);#type!=falcon-raw-data|#event.kind=\"\
         alert\"}|split(event.category)|event.category=/./ | event.category=?event_category "
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
+      repoOrViewName: 
       arguments:
         event_category: '["{{fields.event.category}}"]'
       openInNewTab: true
@@ -782,7 +782,7 @@ widgets:
         \ := Technique|threat.technique.name[0]=/./|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
         alert\"} | Tactic=?Tactic Technique=?Technique "
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
+      repoOrViewName: 
       arguments:
         Tactic: '["{{fields.Tactic}}"]'
         Technique: '["{{fields.Technique}}"]'
