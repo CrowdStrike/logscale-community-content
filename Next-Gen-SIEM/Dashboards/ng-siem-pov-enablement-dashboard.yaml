@@ -128,7 +128,7 @@ widgets:
     y: 0
     height: 3
     text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
-      \ \n\n1. Import into the `` view. \n2. Clone the dashboard if you\
+      \ \n\n1. Import into the `All` view. \n2. Clone the dashboard if you\
       \ would like to create a modified copy for demonstration or learning purposes.\
       \ \n3. Each widget contains a query designed to showcase the flexibility of\
       \ CQL and dashboard widgets. \n4. All of the major dashboard widget types are\
