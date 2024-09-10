@@ -54,7 +54,6 @@ widgets:
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
     x: 8
-    y: 35
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -97,6 +96,28 @@ widgets:
     end: now
     start: 30d
     width: 4
+    y: 35
+    interactions:
+    - conditions: null
+      name: filterClick
+      titleTemplate: '{{ fields.dns.tld }}'
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \ncase { #type=falcon-raw-data|#event_simpleName=/^(DnsRequest|TlsClientHello)/|source.ip\
+        \ := LocalAddressIP4|destination.ip := RemoteAddressIP4|destination.port :=\
+        \ RemotePort|#Vendor := \"crowdstrike\"|dns.domainName := DomainName;#type!=falcon-raw-data|url.domain=*|dns.domainName\
+        \ := url.domain;#type!=falcon-raw-data|source.domain=*|dns.domainName := source.domain;#type!=falcon-raw-data|dns.question.name=*|dns.domainName\
+        \ := dns.question.name}|dns.domainName=/^([a-z0-9]|\\.).*?\\./i|dns.domainName!=/\\\
+        .(internal|local|amazonaws\\.com|cloudsink\\.net|cloudfront\\.net|googlesyndication\\\
+        .com|footprintdns\\.com|azure\\.com|live\\.com)$/i|dns.domainName!=/_/i|shannonEntropy(dns.domainName)|_shannonentropy>4.2|format(\"\
+        %.1f\",field=_shannonentropy,as=dns.entropy)|dns.domainName=/\\.(?<dns.tld>[a-z0-9-]+?\\\
+        .[a-z0-9]+?)$/ | dns.tld=?dns_tld "
+      useWidgetTimeWindow: true
+      repoOrViewName:
+      arguments:
+        dns_tld: '["{{fields.dns.tld}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       legendPosition: right
       series: {}
@@ -496,16 +517,16 @@ widgets:
     interactions:
     - conditions: null
       name: filterClick
-      titleTemplate: '{{ fields.#Vendor }}'
+      titleTemplate: '{{ fields.event.reason }}'
       queryString: "// Suggested go to events query - may be incorrect for complex\
         \ queries \ncase { #type=falcon-raw-data|#event_simpleName=/UserLogonFailed/|#Vendor\
         \ := \"crowdstrike\"|client.ip := aip|user.name := UserName|#event.module\
         \ := \"sso\"|event.reason := Technique;#type!=falcon-raw-data|#event.outcome=failure|#event.module=sso}|client.ip=*|ipLocation(client.ip)|asn(client.ip)|user.name=/./|user.name!=/^(-)$/i\
-        \ | #Vendor=?_Vendor "
+        \ | event.reason=?event_reason "
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
-        _Vendor: '["{{fields.#Vendor}}"]'
+        event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
