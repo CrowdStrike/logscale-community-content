@@ -169,17 +169,15 @@ widgets:
     title: Alert Queries
     type: note
   note-1725887215771-0:
-    x: 4
+    x: 2
     backgroundColor: '#242526'
     y: 0
     height: 3
     text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
-      \ \n\n1. Import into the `All` view. \n2. Clone the dashboard if you would like\
-      \ to create a modified copy for demonstration or learning purposes. \n3. Each\
-      \ widget contains a query designed to showcase the flexibility of CQL and dashboard\
-      \ widgets. \n4. All of the major dashboard widget types are included. \n5. Click\
-      \ on the widget title to view the query that powers the widget.\n6. Each query\
-      \ contains comments to explain what the query does. "
+      \ \n\n1. Import into the `All` view. \n2. Each widget contains a query designed\
+      \ to showcase the flexibility of CQL and dashboard widgets. \n3. Click on the\
+      \ widget title to view the query that powers the widget.\n4. Each query contains\
+      \ comments to explain what the query does. "
     width: 8
     title: Instructions
     type: note
@@ -298,6 +296,24 @@ widgets:
       zLevel: 0.4
     visualization: world-map
     title: World Map of Alert IPs
+    isLive: false
+    type: query
+  d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
+    x: 10
+    y: 0
+    height: 3
+    queryString: |-
+      // Read the CSV and count.
+      readFile("aid_master_main.csv")
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      background-color: '#242526'
+      default: {}
+    visualization: single-value
+    title: Agent ID Count
     isLive: false
     type: query
   692ee352-4067-4414-939a-c66985e8bd6b:
@@ -716,11 +732,10 @@ widgets:
     height: 3
     text: |-
       ```
-      name: NG-SIEM POV Enablement Dashboard
       date: 2024-09-10
       version: 1.1.0
       ```
-    width: 4
+    width: 2
     title: Details
     type: note
   e2f5106a-a03e-49f4-b23a-416d6ff85fbc:
@@ -781,7 +796,7 @@ widgets:
       // Sort the results.
       | sort(count, limit=20000)
     end: now
-    start: 1d
+    start: 30d
     width: 10
     options:
       cell-overflow: wrap-text
@@ -958,7 +973,7 @@ widgets:
       // Group the top 10 results.
       | groupBy([Technique, Tactic], function=count(#event.kind), limit=10)
     end: now
-    start: 1d
+    start: 7d
     width: 10
     y: 16
     interactions:
