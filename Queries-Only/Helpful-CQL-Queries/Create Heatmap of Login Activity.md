@@ -10,14 +10,13 @@ Accounts for when events do not contain all hour/day permutations:
 | time:hour(_bucket)
 | groupby([_hour,_dayOfWeekName], function=sum(_count, as="count"))
 | case{
-    _dayOfWeekName="Monday" | _dayOfWeekName:="1-Mon";
-    _dayOfWeekName="Tuesday" | _dayOfWeekName:="2-Tu"; 
+    _dayOfWeekName="Monday"    | _dayOfWeekName:="1-Mon";
+    _dayOfWeekName="Tuesday"   | _dayOfWeekName:="2-Tu"; 
     _dayOfWeekName="Wednesday" | _dayOfWeekName:="3-Wed";
-    _dayOfWeekName="Thursday" | _dayOfWeekName:="4-Thur"; 
-    _dayOfWeekName="Friday" | _dayOfWeekName:="5-Fri";
-    _dayOfWeekName="Saturday" | _dayOfWeekName:="6-Sat"; 
-    _dayOfWeekName="Sunday" | _dayOfWeekName:="7-Sun"; 
-
+    _dayOfWeekName="Thursday"  | _dayOfWeekName:="4-Thur"; 
+    _dayOfWeekName="Friday"    | _dayOfWeekName:="5-Fri";
+    _dayOfWeekName="Saturday"  | _dayOfWeekName:="6-Sat"; 
+    _dayOfWeekName="Sunday"    | _dayOfWeekName:="7-Sun"; 
 }
 | sort(field=_hour, reverse=false)
 | sort(field=_dayOfWeekName, reverse=false)
