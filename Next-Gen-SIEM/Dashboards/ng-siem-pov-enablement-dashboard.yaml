@@ -1,4 +1,4 @@
-name: NG-SIEM POV Enablement Dashboard - v1.1.0
+name: NG-SIEM POV Enablement Dashboard - v1.1.1
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -934,7 +934,7 @@ widgets:
       | !regex("(.*->.*){2}", field=threat.indicator.name)
 
       // // Group the results.
-      | groupBy([agent.id], function=[collect([ComputerName, Ngsiem.event.vendor, threat.indicator.name, #event.module], limit=10), count(Ngsiem.event.vendor, distinct=true, as=VendorCount), count(#event.module, distinct=true, as=ModuleCount), count(as=DetectionCount), sum("event.severity", as=TotalRiskScore)], limit=max)
+      | groupBy(agent.id, function=[collect([ComputerName, Ngsiem.event.vendor, threat.indicator.name, #event.module], limit=10), sum("event.severity", as=TotalRiskScore), count(Ngsiem.event.vendor, distinct=true, as=VendorCount), count(#event.module, distinct=true, as=ModuleCount), count(as=DetectionCount)], limit=max)
 
       // Sort the results.
       | sort(TotalRiskScore, limit=20000)
