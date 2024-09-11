@@ -212,7 +212,7 @@ widgets:
       \ A high value generally translates to unique values. \n\nExample: apply the\
       \ function to DNS to look for unique domains. "
     width: 2
-    title: Entropy Functon
+    title: Entropy Function
     type: note
   note-1725900646032-0:
     x: 0
