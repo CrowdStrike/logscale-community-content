@@ -753,8 +753,8 @@ widgets:
     height: 3
     text: |-
       ```
-      date: 2024-09-10
-      version: 1.1.0
+      date: 2024-09-11
+      version: 1.1.1
       ```
     width: 2
     title: Details
