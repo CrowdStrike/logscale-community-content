@@ -581,7 +581,7 @@ widgets:
 
       | case {
           ioc.actorName=*
-              | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(SPIDER|PANDA|BEAR|KITTEN|CHOLLIMA|TIGER|JACKAL))$", field=ioc.actorName, strict=false)
+              | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
               | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
               | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
               | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
@@ -795,7 +795,7 @@ widgets:
 
       | case {
           ioc.actorName=*
-              | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(SPIDER|PANDA|BEAR|KITTEN|CHOLLIMA|TIGER|JACKAL))$", field=ioc.actorName, strict=false)
+              | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
               | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
               | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
               | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
