@@ -3,70 +3,143 @@ fieldsToBeRemovedBeforeParsing: []
 testCases:
 - assertions: null
   event:
-    rawString: '{"@timestamp":"2024-07-25T14:03:45.443Z","appomni":{"alert":{"channel":"prod"},"event":{"dataset":"appomni_alert","id":"c053a5fe-f9c9-5ebc-9084-127a0c4636e7","sortable_event_id":"01J3N38XX33GX41CRGEH58HB8P","sortable_ingest_id":"01J3N3ZWG3BZB4FWEKF11YM4PW"},"organization":{"id":25}},"event":{"created":"2024-07-25T14:16:17.667Z","kind":"alert","severity":3},"message":"Impossible
-      travel detected for ''shibainucoin@duck.com'' in ''Okta''","related":{"event":["d3c48eb8-4a10-513f-a6bb-81265923d689","05317486-6a38-54ef-ac77-d6ee63d42b1c"],"identity":["d1bed0de-8901-40bb-ab64-47a5effa275f"],"ip":["192.168.10.1","192.168.10.2"],"services":{"id":[11169],"type":["okta"]},"user":["shibainucoin@duck.com"]},"rule":{"name":"[Experimental]
-      Impossible Travel Activity Detected","ruleset":"4b2845a0-a01b-402b-a181-f2f9f3814ad2","threat":{"framework":"MITRE
-      ATT&CK","tactic":{"id":["TA0001"],"name":["Initial Access"]},"technique":{"id":["T1078"],"name":["Valid
-      Accounts"]}},"uuid":"e2f6d186-8cda-4824-aa5a-fd016a4d15e4","version":"1"},"version":"2.0.0"}'
+    rawString: '{"@timestamp":"2024-08-20T12:09:48.000Z","appomni":{"alert":{"channel":"prod"},"event":{"dataset":"appomni_alert","id":"0fe7de3e-acae-595d-96d7-b865e2cd74ee","sortable_event_id":"01J5QV2YQ07W8CPEPEWN694F41","sortable_ingest_id":"01J5QV3S3TRJEQM8ZJPVRDQ0V6"},"organization":{"id":25}},"event":{"created":"2024-08-20T12:10:15.034Z","kind":"alert","severity":3},"message":"Mass
+      login failures for user ''johndoe'' in ServiceNow","related":{"event":["01b42a58-7202-5d8c-8085-d69d3cf44f56","cd8addc9-e405-5e64-aea7-b0417b548548","80abe655-c48a-5686-a4b8-a0e4ba9d811e","8ff8e357-3365-540b-939f-2cd1c23ed5df","79de6f52-dc5b-506c-8a85-900563cfc16b","fa7ed16e-25c8-5b0e-923a-77004e0cfdc7","68a65cf3-c27c-5001-9edc-26d6891c1b79","c65b3aa9-d553-554d-9d42-199610b5f713","aab0efa5-0e37-514f-ae1c-cd7229e9162a","d93cd364-afc3-5296-aaec-efe4ba862c6d"],"ip":["192.168.10.1"],"services":{"id":[29669],"type":["snow"]},"user":["johndoe","guest"]},"rule":{"name":"Mass
+      Login Failures","ruleset":"ef5b16a5-0d6d-41d6-93d2-09c57edb2a31","threat":{"framework":"MITRE
+      ATT&CK","tactic":{"id":["TA0006", "AAA"],"name":["Credential Access", "TEST"]},"technique":{"id":["T1110"],"name":["Brute
+      Force"]}},"uuid":"002723d0-c083-4aa2-b10c-f1524a1dc86e","version":"1"},"version":"2.0.0"}'
 - assertions: null
   event:
-    rawString: |
-      {"@timestamp":"2024-07-24T09:06:28.000Z","appomni":{"alert":{"channel":"prod"},"event":{"dataset":"appomni_alert","id":"e6f7228f-3f12-5900-acd7-8d0fa8dfa0ae","sortable_event_id":"01J3HZVVH0MHJ9Z614AV7N54HW","sortable_ingest_id":"01J3J08DXA866TRMRDRJKJ4YR8"},"organization":{"id":25}},"event":{"created":"2024-07-24T09:13:20.042Z","kind":"alert","severity":3},"message":"Mass login failures for user 'adela.cervantsz' in ServiceNow","related":{"event":["4d7e3c10-9f20-50f2-bb46-0be1b528a8d1"],"ip":["192.168.10.2"],"services":{"id":[29669],"type":["snow"]},"user":["adela.cervantsz","guest"]},"rule":{"name":"Mass Login Failures","ruleset":"ef5b16a5-0d6d-41d6-93d2-09c57edb2a31","threat":{"framework":"MITRE ATT&CK","tactic":{"id":["TA0006"],"name":["Credential Access"]},"technique":{"id":["T1110"],"name":["Brute Force"]}},"uuid":"002723d0-c083-4aa2-b10c-f1524a1dc86e","version":"1"},"version":"2.0.0"}
+    rawString: '{"@timestamp":"2024-08-20T12:09:28.000Z","appomni":{"alert":{"channel":"prod"},"event":{"dataset":"appomni_alert","id":"a39218e5-8e2c-52be-86c7-8c813e9406be","sortable_event_id":"01J5QV2B60T7254G9RYNDX3W05","sortable_ingest_id":"01J5QVZ0TWG5YQD6XF6TJSKVCP"},"organization":{"id":25}},"event":{"created":"2024-08-20T12:25:07.676Z","kind":"alert","severity":3},"message":"Mass
+      login failures for user ''dummy@example.com'' in Microsoft 365","related":{"event":["0e25173d-1973-50b2-b50b-73469fdf2db9","094e6a3d-ff17-5d23-8f7c-0d8d22745e98","8df0d4ee-96e4-51a8-b551-6f847487fc64","158757a0-309f-53ef-98a8-1102f28404e0","537e022a-a543-5e00-bcfc-50d785cf41ff","7497c09f-d8b0-5c7b-ad0c-0b0f7e9a04ba","66d73925-8ed5-55a8-9e29-005b935b1e85","e2462a8d-fe2e-577d-bd8c-2ffe0484875d","46b844c0-2808-5958-9cfe-d9084b52afbd","98cce495-b684-5102-9fed-783d9a621648","8662ccf2-a823-5478-9662-d3382b24bdb7","5eff9da9-ffab-560e-87db-15da6c669bfb","40b85a33-947c-5fc1-a301-bae4a0ad6bd0","c1ff44f2-12eb-51ad-9672-fad7d47928b0","e949e83a-1d29-50b1-bf3a-802fccc3da51"],"ip":["185.171.30.116"],"services":{"id":[7610],"type":["o365"]},"user":["dummy@example.com"]},"rule":{"name":"Mass
+      Login Failures in Microsoft 365","ruleset":"1423ff39-3250-4d53-aafb-142e740668bd","threat":{"framework":"MITRE
+      ATT&CK","tactic":{"id":["TA0006"],"name":["Credential Access"]},"technique":{"id":["T1110"],"name":["Brute
+      Force"]}},"uuid":"6b918a61-a960-4058-ac4f-4440e0c37f2e","version":"1"},"version":"2.0.0"}'
 - assertions: null
   event:
-    rawString: '{"@timestamp":"2024-07-24T12:25:40.214Z","appomni":{"event":{"collected_time":"2024-07-24T12:25:40.235Z","dataset":"ao_auditlogs","id":"f7c09521-0a9a-5688-b484-7cf3832062a5","ingestion_time":"2024-07-24T12:25:40.276Z"},"organization":{"id":25},"service":{"account_id":"25","id":0,"name":"AppOmni","type":"appomni"}},"event":{"action":"login_user","category":["authentication"],"code":"user_login","created":"2024-07-24T12:25:40.235Z","dataset":"ao_auditlogs","id":"fc0dcff7-b483-49f8-8751-5737fa1b72e0","ingested":"2024-07-24T12:25:40.276Z","kind":"event","module":"appomni","original":"{\"action_at\":\"2024-07-24T12:25:40.214469+00:00\",\"action_data\":{\"md_kind\":\"core.aoaudit.auditdata\",\"md_version\":1,\"user_agent\":\"Mozilla/5.0
-      (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0
-      Safari/537.36\",\"user_ip\":\"192.168.10.2\",\"user_username\":\"jondoe@example.com\"},\"action_type\":\"user_login\",\"log_id\":\"fc0dcff7-b483-49f8-8751-5737fa1b72e0\",\"org_id\":25,\"user_id\":8405}","outcome":"success","type":["access"]},"related":{"ip":["192.168.10.2"],"user":["jondoe@example.com"]},"source":{"address":"192.168.10.2","as":{"country":"US","domain":"oplink.net","number":40156,"organization":{"name":"The
-      Optimal Link Corporation"},"type":"hosting"},"geo":{"city_name":"Houston","country_iso_code":"US","location":{"lat":29.76328,"lon":-95.36327},"postal_code":"77002","region_name":"Texas","timezone":"America/Chicago"},"ip":"192.168.10.2"},"user":{"id":"8405","name":"jondoe@example.com","target":{"name":"jondoe@example.com"}},"user_agent":{"original":"Mozilla/5.0
-      (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0
-      Safari/537.36"},"version":"2.0.0"}'
+    rawString: '{"@timestamp":"2024-08-20T14:02:04.429Z","appomni":{"alert":{"channel":"prod"},"event":{"dataset":"appomni_alert","id":"5a4f5ec3-cbae-5000-9458-2c9add726f48","sortable_event_id":"01J5R1GH8DVCD0DY5ZJ18GDKES","sortable_ingest_id":"01J5R1P4BEH2JMEWCNPWRF7Y8G"},"organization":{"id":25}},"event":{"created":"2024-08-20T14:05:07.822Z","kind":"alert","severity":2},"message":"Indicators
+      of session hijacking detected for ''john@example.com'' in ''Okta''","related":{"event":["47ff1869-81f6-5b7b-abb6-021c87f0e484","79f5f69e-47ec-5947-b091-22cbfa94e183"],"identity":["d1bed0de-8901-40bb-ab64-47a5effa275f"],"ip":["192.168.1.1"],"services":{"id":[11169],"type":["okta"]},"user":["john@example.com"]},"rule":{"name":"[Experimental]
+      Session Hijacking Detected in Okta","ruleset":"4b2845a0-a01b-402b-a181-f2f9f3814ad2","threat":{"framework":"MITRE
+      ATT&CK","tactic":{"id":["TA0006"],"name":["Credential Access"]},"technique":{"id":["T1539"],"name":["Steal
+      Web Session Cookie"]}},"uuid":"356e65ed-ff4f-4ac1-ae9d-48f181771747","version":"1"},"version":"2.0.0"}'
+- assertions: null
+  event:
+    rawString: '{"@timestamp":"2024-08-20T14:50:08.000Z","appomni":{"event":{"collected_time":"2024-08-20T14:50:09.495Z","dataset":"snow_sysevent","id":"a3ea0209-44b0-58d0-82ad-e09184668978","ingestion_time":"2024-08-20T14:50:48.686Z"},"organization":{"id":25},"service":{"account_id":"ven04338","id":29689,"name":"ServiceNow
+      - Prod","type":"snow"}},"event":{"action":"notify_workflow","code":"flow.fire","created":"2024-08-20T14:50:09.495Z","dataset":"snow_sysevent","id":"4e291d071b409a50abe055f5604bcb44","ingested":"2024-08-20T14:50:48.686Z","kind":"event","module":"snow","original":"{\"instance\":\"fd291d0783409a50561a623c47a13343\",\"name\":\"flow.fire\",\"parm1\":null,\"parm2\":\"0e291d0749409a50fde0ba1180acaf44\",\"sys_created_by\":\"service.appomni\",\"sys_created_on\":\"2024-08-20
+      14:50:08\",\"sys_id\":\"4e291d071b409a50abe055f5604bcb44\",\"sys_updated_by\":\"system\",\"sys_updated_on\":\"2024-08-20
+      14:50:09\",\"table\":\"sys_flow_context\",\"user_id\":\"8e04d7921b276490a7c052c2604bcba7\",\"user_name\":\"service.appomni\"}"},"labels":{"table":"sys_flow_context"},"message":"Fires
+      when a Flow is ran","related":{"user":["service.appomni"]},"resource":{"id":"fd291d0783409a50561a623c47a13343"},"tags":["is_internal_user"],"user":{"identity":{"full_name":"AppOmni
+      Service"},"name":"service.appomni","roles":["23d877081b0f6410a7c052c2604bcb06","208b923f1bfa2410a7c052c2604bcbcd","76869b2a1b63a490a7c052c2604bcbc6","8619b7081b0f6410a7c052c2604bcba9","x_apom_appomni_unl.export_job_user","x_apom_appomni_unl.admin","x_apom_appomni_unl.api","x_apom_appomni_unl.export_configuration_user"]},"version":"2.0.0"}'
+- assertions: null
+  event:
+    rawString: '{"@timestamp":"2024-08-20T14:40:48.088Z","appomni":{"event":{"collected_time":"2024-08-20T14:41:59.684Z","dataset":"workday_activity_logging","id":"56ea2ae7-df7a-5c55-b4fb-2ad9db19b9b5","ingestion_time":"2024-08-20T14:41:59.809Z"},"organization":{"id":15},"service":{"account_id":"impl.workday.com-appomni_dpt1","id":94,"name":"Workday
+      - Prod","type":"workday"}},"event":{"action":"read_resource","code":"READ","created":"2024-08-20T14:41:59.684Z","dataset":"workday_activity_logging","ingested":"2024-08-20T14:41:59.809Z","kind":"event","module":"workday","original":"{\"activityAction\":\"READ\",\"ipAddress\":\"192.168.10.1\",\"requestTime\":\"2024-08-20T14:40:48.088Z\",\"sessionId\":\"411905\",\"systemAccount\":\"appomni_int_allan\",\"taskDisplayName\":\"privacy/activityLogging/userActivity
+      (GET) (v1 -  )\",\"taskId\":\"e67b812850dc100047be196f396d745f\"}","outcome":"success","type":["info"]},"message":"privacy/activityLogging/userActivity
+      (GET) (v1 -  )","related":{"ip":["192.168.10.1"],"user":["appomni_int_allan"]},"session":{"id":"411905"},"source":{"address":"192.168.10.1","as":{"country":"US","domain":"google.com","number":396982,"organization":{"name":"Google
+      LLC"},"type":"hosting"},"geo":{"city_name":"The Dalles","country_iso_code":"US","location":{"lat":45.59456,"lon":-121.17868},"postal_code":"97058","region_name":"Oregon","timezone":"America/Los_Angeles"},"ip":"192.168.10.1"},"tags":["is_hosting","is_internal_user","is_app_user","appomni_source"],"user":{"identity":{"full_name":"appomni_int_allan"},"name":"appomni_int_allan","roles":["48bf3e7f0aa510001c3d0db23c610022","0490a485bcca012238e12feb181f0000","2b80cf5375e74614ad3c0e888506adae","dc76f698446c11de98360015c5e6daf6","35a0d2cdba054e85a1c78361c79e6f87","3cc56fd657dd10011181cff576830000","0490a485bcca012236d4d86ae7800000","48bf3e7f0aa510001b36874f2b32001f"]},"version":"2.0.0"}'
+- assertions: null
+  event:
+    rawString: '{"@timestamp":"2024-08-20T14:44:05.487Z","appomni":{"event":{"collected_time":"2024-08-20T14:45:07.924Z","dataset":"okta_syslog","id":"feb0c986-c346-56d5-8521-3ee204c1f9a5","ingestion_time":"2024-08-20T14:45:07.950Z"},"organization":{"id":25},"service":{"account_id":"f578d8d9-3a6f-4f0a-b9be-36d1e99c8bd2","id":11169,"name":"Okta
+      - Prod","type":"okta"}},"event":{"action":"approve_token","code":"app.oauth2.token.grant.access_token","created":"2024-08-20T14:45:07.924Z","dataset":"okta_syslog","id":"a6357825-5f02-11ef-9049-f7fb729bcb3c","ingested":"2024-08-20T14:45:07.950Z","kind":"event","module":"okta","original":"{\"actor\":{\"alternateId\":\"0oaedq0d12kPxpk3x5d7\",\"detailEntry\":null,\"displayName\":\"AppOmni
+      Client (integration)\",\"id\":\"0oaedq0d12kPxpk3x5d7\",\"type\":\"PublicClientApp\"},\"authenticationContext\":{\"authenticationProvider\":null,\"authenticationStep\":0,\"credentialProvider\":null,\"credentialType\":null,\"externalSessionId\":\"unknown\",\"interface\":null,\"issuer\":null},\"client\":{\"device\":\"unknown\",\"geographicalContext\":{\"city\":\"Sydney\",\"country\":\"Australia\",\"geolocation\":{\"lat\":-33.8715,\"lon\":151.2006},\"postalCode\":\"2000\",\"state\":\"New
+      South Wales\"},\"id\":\"0oaedq0d12kPxpk3x5d7\",\"ipAddress\":\"192.168.10.1\",\"userAgent\":{\"browser\":\"unknown\",\"os\":\"unknown\",\"rawUserAgent\":\"unknown\"},\"zone\":\"null\"},\"debugContext\":{\"debugData\":{\"clientAuthType\":\"client_secret_post\",\"clientSecret\":\"SVP7DxIlWy9UmoxioV880A\",\"dtHash\":\"a36bf61a04fb33c7e87bf68c029140643cf27651e0204669ba35b70c835e7b89\",\"grantType\":\"refresh_token\",\"grantedScopes\":\"okta.apiTokens.read,
+      okta.policies.read, okta.threatInsights.read, okta.roles.read, okta.apps.read,
+      okta.groups.read, okta.logs.read, okta.networkZones.read, offline_access, okta.users.read,
+      okta.authorizationServers.read\",\"redirectUri\":\"https://example.com/r/\",\"requestId\":\"5fe38962c872ccb6cef2c2d72ba29f3b\",\"requestUri\":\"/oauth2/v1/token\",\"requestedScopes\":\"\",\"responseTime\":\"325\",\"threatSuspected\":\"false\",\"url\":\"/oauth2/v1/token?\"}},\"device\":null,\"displayMessage\":\"OIDC
+      access token is granted\",\"eventType\":\"app.oauth2.token.grant.access_token\",\"legacyEventType\":\"app.oauth2.token.grant.access_token_success\",\"outcome\":{\"reason\":null,\"result\":\"SUCCESS\"},\"published\":\"2024-08-20T14:44:05.487Z\",\"request\":{\"ipChain\":[{\"geographicalContext\":{\"city\":\"Sydney\",\"country\":\"Australia\",\"geolocation\":{\"lat\":-33.8715,\"lon\":151.2006},\"postalCode\":\"2000\",\"state\":\"New
+      South Wales\"},\"ip\":\"192.168.10.1\",\"source\":null,\"version\":\"V4\"}]},\"securityContext\":{\"asNumber\":396982,\"asOrg\":\"google\",\"domain\":\"example.com\",\"isProxy\":false,\"isp\":\"google\"},\"severity\":\"INFO\",\"target\":[{\"alternateId\":\"johndoe@example.com\",\"detailEntry\":null,\"displayName\":\"Solutions
+      Engineering\",\"id\":\"00u1p1shltE81txkp5d6\",\"type\":\"User\"},{\"alternateId\":null,\"detailEntry\":{\"expires\":\"2024-08-20T15:44:05.000Z\",\"hash\":\"fa7qZ_KH4oZ5fBsSR9Vyww\",\"subject\":\"00u1p1shltE81txkp5d6\"},\"displayName\":\"Access
+      Token\",\"id\":\"AT.9xdghNUZS3pHBJADi0esrQFSc1OCxjbLxEJydhDE_Wk.oar27u64r1bIySYfV5d7\",\"type\":\"access_token\"}],\"transaction\":{\"detail\":{},\"id\":\"5fe38962c872ccb6cef2c2d72ba29f3b\",\"type\":\"WEB\"},\"uuid\":\"a6357825-5f02-11ef-9049-f7fb729bcb3c\",\"version\":\"0\"}","outcome":"success","url":"/oauth2/v1/token"},"labels":{"device_hash":"a36bf61a04fb33c7e87bf68c029140643cf27651e0204669ba35b70c835e7b89","threat_suspected":"false","transaction_id":"5fe38962c872ccb6cef2c2d72ba29f3b","transaction_type":"WEB"},"message":"OIDC
+      access token is granted","related":{"identity":["f9eaf6ad-bf00-446f-a370-ad3515e20aae"],"ip":["192.168.10.1"],"resource":["Access
+      Token"],"user":["0oaedq0d12kPxpk3x5d7","johndoe@example.com"]},"resource":{"id":"AT.9xdghNUZS3pHBJADi0esrQFSc1OCxjbLxEJydhDE_Wk.oar27u64r1bIySYfV5d7","name":"Access
+      Token"},"session":{"id":"unknown"},"source":{"address":"192.168.10.1","as":{"country":"US","domain":"google.com","number":396982,"organization":{"name":"Google
+      LLC"},"type":"hosting"},"geo":{"city_name":"Sydney","country_iso_code":"AU","location":{"lat":-33.86785,"lon":151.20732},"postal_code":"1001","region_name":"New
+      South Wales","timezone":"Australia/Sydney"},"host":{"os":{"name":"unknown"},"type":"unknown"},"ip":"192.168.10.1"},"tags":["is_hosting","appomni_source"],"user":{"email":"0oaedq0d12kpxpk3x5d7","full_name":"AppOmni
+      Client (integration)","id":"0oaedq0d12kPxpk3x5d7","name":"0oaedq0d12kPxpk3x5d7","roles":["PublicClientApp"],"target":{"email":"johndoe@example.com","full_name":"Solutions
+      Engineering","id":"00u1p1shltE81txkp5d6","identity":{"admin":true,"elevated":true,"email":"johndoe@example.com","full_name":"Solutions
+      Engineering","id":"f9eaf6ad-bf00-446f-a370-ad3515e20aae"},"name":"johndoe@example.com","roles":["SUPER_ADMIN","Super
+      Administrator","00g5r44emU5aTbe2F5d6","00g1p1se8KlU5ZaQO5d6","Administrators","Everyone"]}},"user_agent":{"name":"unknown","original":"unknown"},"version":"2.0.0"}'
+- assertions: null
+  event:
+    rawString: |-
+      {"@timestamp":"2024-08-16T21:02:42.324Z","appomni":{"event":{"collected_time":"2024-08-16T21:02:43.006Z","dataset":"crowdstrike_auth_activity","id":"f8b42889-47fe-5efe-82cc-d22f0b7c532b","ingestion_time":"2024-08-16T21:02:53.146Z"},"organization":{"id":15},"service":{"account_id":"00962946-86ce-46a1-b093-b9b384ce32ea","id":85,"name":"Crowdstrike
+            - Prod","type":"crowdstrike"}},"event":{"action":"start_task","code":"streamStarted","created":"2024-08-16T21:02:43.006Z","dataset":"crowdstrike_auth_activity","ingested":"2024-08-16T21:02:53.146Z","kind":"event","module":"Crowdstrike
+            Streaming API","original":"{\"event\":{\"Attributes\":{\"APIClientID\":\"7692ce50e2a04cf588196d6d5bce462d\",\"appId\":\"ao_event_collector-f0defd11\",\"eventType\":\"All
+            event type(s)\",\"offset\":\"542944\",\"partition\":\"0\"},\"AuditKeyValues\":[{\"Key\":\"APIClientID\",\"ValueString\":\"7692ce50e2a04cf588196d6d5bce462d\"},{\"Key\":\"partition\",\"ValueString\":\"0\"},{\"Key\":\"offset\",\"ValueString\":\"542944\"},{\"Key\":\"appId\",\"ValueString\":\"ao_event_collector-f0defd11\"},{\"Key\":\"eventType\",\"ValueString\":\"All
+            event type(s)\"}],\"Message\":\"\",\"OperationName\":\"streamStarted\",\"ServiceName\":\"Crowdstrike
+            Streaming API\",\"Source\":\"Crowdstrike Streaming API\",\"SourceIp\":\"192.168.10.1\",\"Success\":true,\"UTCTimestamp\":1723842162,\"UserId\":\"api-client-id:7692ce50e2a04cf588196d6d5bce462d\",\"UserIp\":\"192.168.10.1\"},\"metadata\":{\"customerIDString\":\"4cc0dd15475e49d1861693cd9fc73f11\",\"eventCreationTime\":1723842162324,\"eventType\":\"AuthActivityAuditEvent\",\"offset\":542960,\"version\":\"1.0\"}}","outcome":"success","provider":"AuthActivityAuditEvent","start":"2024-08-16T21:02:42.000Z"},"related":{"ip":["192.168.10.1"],"user":["api-client-id:7692ce50e2a04cf588196d6d5bce462d"]},"source":{"address":"192.168.10.1","as":{"country":"US","domain":"google.com","number":396982,"organization":{"name":"Google
+            LLC"},"type":"hosting"},"geo":{"city_name":"Sydney","country_iso_code":"AU","location":{"lat":-33.86785,"lon":151.20732},"postal_code":"1001","region_name":"New
+            South Wales","timezone":"Australia/Sydney"},"ip":"192.168.10.1"},"tags":["is_hosting","appomni_source"],"user":{"name":"api-client-id:7692ce50e2a04cf588196d6d5bce462d"},"version":"2.0.0"}
 $schema: https://schemas.humio.com/parser/v0.3.0
-script: |
+script: |+
   // #region PREPARSE
 
   // Remove fields parsed automatically
   | select([@rawstring, @timestamp])
 
-  // Rewrite appomni namespace into a temporary field
-  | parseJson(@rawstring, exclude=[""], include=["appomni.", "related."])
-  | writeJson(["appomni."], as=_tmp)
-  | select([@rawstring, @timestamp, _tmp])
+  // Rewrite ECS compliant namespaces into a temporary field
+  | parseJson(@rawstring, exclude=[""],include=["related.hash[*]", "related.host[*]", "related.ip[*]", "related.user[*]", "source.", "user.domain", "user.email", "user.full_name", "user.hash", "user.id", "user.name", "user.roles", "user_agent.name", "user_agent.original", "user_agent.version", "rule.author", "rule.category", "rule.description", "rule.license", "rule.name", "rule.reference", "rule.ruleset", "rule.uuid", "rule.vendor_id", "rule.version", "destination.address", "destination.domain", "destination.ip", "destination.mac", "destination.port", "event.kind", "event.category", "event.action", "event.type", "event.outcome", "event.code", "event.created", "event.dataset", "event.id", "event.ingested", "event.module", "event.provider", "event.reason", "event.reference", "event.risk_score", "event.severity", "event.url" ])
+  | writeJson(["ecs"], as=_tmp_ecs)
+  | drop([_tmp_ecs])
 
-  // Parse temporary field into Vendor namespace instead of appomni namespace
-  | parseJson(_tmp, removePrefixes="appomni.", prefix="Vendor.")
-  | drop([_tmp])
+  | parseJson(exclude=["appomni.", "event.", "message", "related.", "rule.", "version", "labels.", "resource.", "tags.", "user."], include=[""], prefix="Vendor.")
+  | parseTimestamp(field="Vendor.@timestamp")
 
-  | parseJson(@rawstring, exclude=["appomni."])
-  | rename(version, as=Vendor.version)
+
   // #endregion
 
   // #region METADATA
   /************************************************************
   ****** Static Metadata Definitions
   ************************************************************/
-  | Parser.version := "1.0.0"
+  | Parser.version := "2.0.0"
   | ecs.version := "8.11.0"
-  | Cps.version := "1.0.0"
+  | Cps.version := Vendor.version
   | Vendor := "appomni"
-  | event.module := "appomni"
+  | event.module := Vendor.related.services.type[0]
+  | event.dataset := format("appomni.%s", field=[Vendor.appomni.event.dataset])
 
+  | threat.framework := Vendor.rule.threat.framework
+  | case {
+      Vendor.rule.threat.tactic.id[0] = *
+          | concatArray(field="Vendor.rule.threat.tactic.id", separator=";", as="threat")
+          | splitString(field="threat", by=";", as=threat.tactic.id)
+          | drop([threat]);
+      *
+  }
+
+  | case {
+      Vendor.rule.threat.tactic.name[0] = *
+          | concatArray(field="Vendor.rule.threat.tactic.name", separator=";", as="threat")
+          | splitString(field="threat", by=";", as=threat.tactic.name)
+          | drop([threat]);
+      *
+  }
+
+  | case {
+      Vendor.rule.threat.technique.id[0] = *
+          | concatArray(field="Vendor.rule.threat.technique.id", separator=";", as="threat")
+          | splitString(field="threat", by=";", as=threat.technique.id)
+          | drop([threat]);
+      *
+  }
+
+  | case {
+      Vendor.rule.threat.technique.name[0] = *
+          | concatArray(field="Vendor.rule.threat.technique.name", separator=";", as="threat")
+          | splitString(field="threat", by=";", as=threat.technique.name)
+          | drop([threat]);
+      *
+  }
   // #endregion
 
-  // #region NORMALIZATION
-  /************************************************************
-  ****** Normalize fields to data model
-  ************************************************************/
-  | rename(field=event.original, as=@rawstring)
-  | drop([event.code, event.ingested])
-  | event.dataset := format("appomni.%s", field=[event.dataset])
 
-  // #endregion
 tagFields:
 - Cps.version
-- event.kind
-- event.outcome
 - Vendor
 - ecs.version
 - event.dataset
+- event.kind
 - event.module
+- event.outcome
 - observer.type

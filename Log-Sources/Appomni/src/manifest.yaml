@@ -4,7 +4,7 @@ author:
     name: CrowdStrike
     email: logscalesupport@crowdstrike.com
 description: Package for AppOmni
-version: 0.1.0
+version: 0.2.0
 minHumioVersion: 1.142.0
 type: application
 licenseUrl: https://www.apache.org/licenses/LICENSE-2.0

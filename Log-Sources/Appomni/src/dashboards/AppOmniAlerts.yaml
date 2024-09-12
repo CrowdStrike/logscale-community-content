@@ -14,9 +14,9 @@ widgets:
     description: Alert over time by rule names
     height: 4
     queryString: |-
-      #event.module := "appomni"
+      #Vendor = "appomni"
       | #event.kind = "alert"
-      | "related.services.type[0]" = ?ServiceType
+      | "Vendor.related.services.type[0]" = ?ServiceType
       | case {
           event.severity = 0 | severity := "Critical";
           event.severity = 1 | severity := "High";
@@ -51,9 +51,9 @@ widgets:
     description: Alert Count
     height: 4
     queryString: |-
-      #event.module := "appomni"
+      #Vendor = "appomni"
       | #event.kind = "alert"
-      | "related.services.type[0]" = ?ServiceType
+      | "Vendor.related.services.type[0]" = ?ServiceType
       | count()
     end: now
     start: 1d
@@ -76,9 +76,9 @@ widgets:
     description: Alerts World Wide
     height: 6
     queryString: |
-      #event.module := "appomni"
+      #Vendor = "appomni"
       | #event.kind = "alert"
-      | "related.services.type[0]" = ?ServiceType
+      | "Vendor.related.services.type[0]" = ?ServiceType
       | worldMap(ip="related.ip[0]")
     end: now
     start: 1d
@@ -100,10 +100,10 @@ widgets:
     y: 10
     height: 6
     queryString: |
-      #event.module := "appomni"
+      #Vendor = "appomni"
       | #event.kind = "alert"
-      | "related.services.type[0]" = ?ServiceType
-      | sankey(source = "related.user[0]", target="related.services.type[0]")
+      | "Vendor.related.services.type[0]" = ?ServiceType
+      | sankey(source = "related.user[0]", target="Vendor.related.services.type[0]")
     visualization: sankey
     end: now
     start: 1d
@@ -117,9 +117,9 @@ widgets:
     description: Pie Chart Displaying Alert Severity as a %
     height: 4
     queryString: |-
-      event.module := "appomni"
+      #Vendor = "appomni"
       | #event.kind = "alert"
-      | "related.services.type[0]" = ?ServiceType
+      | "Vendor.related.services.type[0]" = ?ServiceType
       | case {
           event.severity = 0 | severity := "Critical";
           event.severity = 1 | severity := "High";
@@ -158,10 +158,10 @@ widgets:
     description: Pie Chart Displaying count by monitored service type
     height: 4
     queryString: |-
-      #event.module := "appomni"
+      #Vendor = "appomni"
       | #event.kind = "alert"
-      | "related.services.type[0]" = ?ServiceType
-      | groupBy("related.services.type[0]")
+      | "Vendor.related.services.type[0]" = ?ServiceType
+      | groupBy("Vendor.related.services.type[0]")
     end: now
     start: 1d
     width: 3
@@ -184,9 +184,9 @@ widgets:
     description: Alerts Table
     height: 6
     queryString: |-
-      #event.module := "appomni"
+      #Vendor = "appomni"
       | #event.kind = "alert"
-      | "related.services.type[0]" = ?ServiceType
+      | "Vendor.related.services.type[0]" = ?ServiceType
       | case {
           event.severity = 0 | severity := "Critical";
           event.severity = 1 | severity := "High";
@@ -195,7 +195,7 @@ widgets:
           event.severity = 4 | severity := "Informational";
           * | severity := "unknown"
       }
-      | table([@timestamp,severity, message, rule.name,"related.user[0]","related.user[1]","related.services.type[0]"])
+      | table([@timestamp,severity, Vendor.message, rule.name,"related.user[0]","related.user[1]","Vendor.related.services.type[0]"])
     end: now
     start: 1d
     width: 6
@@ -252,12 +252,12 @@ $schema: https://schemas.humio.com/dashboard/v0.16.0
 parameters:
   ServiceType:
     label: Service Type
-    query: '#event.module = "appomni" | #event.kind = "alert" | groupBy(related.services.type[0],
+    query: '#Vendor = "appomni" | #event.kind = "alert" | groupBy(Vendor.related.services.type[0],
       function=[])'
-    timeInterval: 5d
+    timeInterval: 7d
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
     width: 1
     order: 50
-    valueField: related.services.type[0]
+    valueField: Vendor.related.services.type[0]
