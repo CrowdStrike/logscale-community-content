@@ -370,7 +370,6 @@ widgets:
     start: 1d
     width: 2
     options:
-      background-color: '#242526'
       default: {}
     visualization: single-value
     title: Agent ID Count
