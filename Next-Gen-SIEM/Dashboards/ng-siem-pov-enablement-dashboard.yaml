@@ -49,7 +49,7 @@ widgets:
       series: {}
       withLegendTitle: false
     visualization: pie-chart
-    title: Total Alerts by Vendor
+    title: Total Detections by Vendor
     isLive: false
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
@@ -174,7 +174,7 @@ widgets:
       regression: false
       imputation: none
     visualization: time-chart
-    title: Alerts by Vendor Over Time
+    title: Detections by Vendor Over Time
     isLive: false
     type: query
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
@@ -183,11 +183,11 @@ widgets:
     y: 3
     height: 18
     text: |-
-      This section provides example queries around alerts for first- and third-party data, specifically `#event.type=alert`. That event type if part of CPS and allows you to quickly identify alerts in your data.
+      This section provides example queries around detections for first- and third-party data, specifically `#event.type=alert`. That event type if part of CPS and allows you to quickly identify detections in your data.
 
-      Example: find all alerts across email, proxy, and endpoint.
+      Example: find all detections across email, proxy, and endpoint.
     width: 2
-    title: Alert Queries
+    title: Detection Queries
     type: note
   note-1725887215771-0:
     x: 2
@@ -273,7 +273,7 @@ widgets:
       openInNewTab: true
       isLive: false
       type: searchlink
-    title: Alerts - Vendor to Tactic - Most Frequent
+    title: Detections - Vendor to Tactic - Most Frequent
     isLive: false
     type: query
   b6ed9d1a-d340-45d7-93f2-5b75d384d66c:
@@ -316,7 +316,7 @@ widgets:
     options:
       zLevel: 0.4
     visualization: world-map
-    title: World Map of Alert IPs
+    title: World Map of Detection IPs
     isLive: false
     type: query
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
@@ -433,7 +433,7 @@ widgets:
     options:
       default: {}
     visualization: single-value
-    title: Total Alerts
+    title: Total Detections
     isLive: false
     type: query
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
@@ -679,7 +679,7 @@ widgets:
       openInNewTab: true
       isLive: false
       type: searchlink
-    title: Alerts - Tactic to Technique - Most Frequent
+    title: Detections - Tactic to Technique - Most Frequent
     isLive: false
     type: query
   note-1725902925766-0:
@@ -743,7 +743,7 @@ widgets:
       legendPosition: right
       series: {}
     visualization: pie-chart
-    title: Top Alerts by Category
+    title: Top Detections by Category
     isLive: false
     type: query
   note-1725565030439-0:
