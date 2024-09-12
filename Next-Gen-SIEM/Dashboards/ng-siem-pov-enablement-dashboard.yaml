@@ -125,7 +125,7 @@ widgets:
             | dns.domainName:=source.domain ;
           #type!=falcon-raw-data
             | dns.question.name=*
-            | dns.domainName:=dns.question.name
+            | dns.domainName:=dns.question.name ;
         }
         | dns.domainName=/^([a-z0-9]|\\.).*?\\./i
         | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
@@ -154,15 +154,15 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=DetectionExcluded
-              | severity!="informational"
-              | #event.kind:="alert"
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-             | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Build a timechart based on the vendor.
@@ -184,7 +184,7 @@ widgets:
             | #event.kind:="alert"
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
-            | #event.kind="alert"
+            | #event.kind="alert" ;
         } 
         | #Vendor=?_Vendor
       useWidgetTimeWindow: true
@@ -260,18 +260,18 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-              | severity!="informational"
-              | #event.kind:="alert"
-              | threat.tactic.name[0]:=Tactic
-              | threat.technique.name[0]:=Technique
-              | threat.technique.name[0]=/./
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-              | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+          | severity!="informational"
+          | #event.kind:="alert"
+          | threat.tactic.name[0]:=Tactic
+          | threat.technique.name[0]:=Technique
+          | threat.technique.name[0]=/./
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
       }
 
       // Get the top vendor and tactic combinations.
@@ -300,7 +300,7 @@ widgets:
             | threat.technique.name[0]=/./
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
-            | #event.kind="alert"
+            | #event.kind="alert" ;
         } 
         | threat.tactic.name[0]=?threat_tactic_name_0_ 
         | #Vendor=?_Vendor
@@ -321,17 +321,17 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=DetectionExcluded
-              | severity!="informational"
-              | #event.kind:="alert"
-              | #Vendor:="crowdstrike"
-              | destination.ip:=RemoteAddressIP4
-              | source.ip:=LocalAddressIP4 ;
-          #type!=falcon-raw-data
-             | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=DetectionExcluded
+          | severity!="informational"
+          | #event.kind:="alert"
+          | #Vendor:="crowdstrike"
+          | destination.ip:=RemoteAddressIP4
+          | source.ip:=LocalAddressIP4 ;
+        #type!=falcon-raw-data
+         | #event.kind="alert" ;
       }
 
       // Check to ensure the IP exists and it's routable.
@@ -390,23 +390,23 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/^(DnsRequest|TlsClientHello)/
-              | source.ip:=LocalAddressIP4
-              | destination.ip:=RemoteAddressIP4
-              | destination.port:=RemotePort
-              | #Vendor:="crowdstrike"
-              | dns.domainName:=DomainName ;
-          #type!=falcon-raw-data
-              | url.domain=*
-              | dns.domainName:=url.domain ;
-          #type!=falcon-raw-data
-              | source.domain=*
-              | dns.domainName:=source.domain ;
-          #type!=falcon-raw-data
-              | dns.question.name=*
-              | dns.domainName:=dns.question.name ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | source.ip:=LocalAddressIP4
+          | destination.ip:=RemoteAddressIP4
+          | destination.port:=RemotePort
+          | #Vendor:="crowdstrike"
+          | dns.domainName:=DomainName ;
+        #type!=falcon-raw-data
+          | url.domain=*
+          | dns.domainName:=url.domain ;
+        #type!=falcon-raw-data
+          | source.domain=*
+          | dns.domainName:=source.domain ;
+        #type!=falcon-raw-data
+          | dns.question.name=*
+          | dns.domainName:=dns.question.name ;
       }
 
       // Filter for Internet DNS names.
@@ -451,15 +451,15 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=DetectionExcluded
-              | severity!="informational"
-              | #event.kind:="alert"
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-             | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=DetectionExcluded
+          | severity!="informational"
+          | #event.kind:="alert"
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
       }
 
       // Count the total number of alerts.
@@ -479,17 +479,17 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/UserLogonFailed/
-              | #Vendor:="crowdstrike"
-              | client.ip:=aip
-              | user.name:=UserName
-              | #event.module:="sso"
-              | event.reason:=Technique ;
-          #type!=falcon-raw-data
-              | #event.outcome=failure
-              | #event.module=sso ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/UserLogonFailed/
+          | #Vendor:="crowdstrike"
+          | client.ip:=aip
+          | user.name:=UserName
+          | #event.module:="sso"
+          | event.reason:=Technique ;
+        #type!=falcon-raw-data
+          | #event.outcome=failure
+          | #event.module=sso ;
       }
 
       // Enrich the source IP.
@@ -524,17 +524,17 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/UserLogonFailed/
-              | #Vendor:="crowdstrike"
-              | client.ip:=aip
-              | user.name:=UserName
-              | #event.module:="sso"
-              | event.reason:=Technique ;
-          #type!=falcon-raw-data
-              | #event.outcome=failure
-              | #event.module=sso ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/UserLogonFailed/
+          | #Vendor:="crowdstrike"
+          | client.ip:=aip
+          | user.name:=UserName
+          | #event.module:="sso"
+          | event.reason:=Technique ;
+        #type!=falcon-raw-data
+          | #event.outcome=failure
+          | #event.module=sso ;
       }
 
       // Enrich the source IP.
@@ -558,15 +558,15 @@ widgets:
       queryString: |-
         case { 
           #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFailed/
-          | #Vendor:="crowdstrike"
-          | client.ip:=aip
-          | user.name:=UserName
-          | #event.module:="sso"
-          | event.reason:=Technique ;
+            | #event_simpleName=/UserLogonFailed/
+            | #Vendor:="crowdstrike"
+            | client.ip:=aip
+            | user.name:=UserName
+            | #event.module:="sso"
+            | event.reason:=Technique ;
           #type!=falcon-raw-data
             | #event.outcome=failure
-            | #event.module=sso
+            | #event.module=sso ;
         }
         | client.ip=*
         | ipLocation(client.ip)
@@ -596,32 +596,32 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/^(Network|HTTP|Tls|User|DCS|Smb|Wmi|Command|Directory)|(BindIP)/
-              | (LocalAddressIP4=* OR RemoteAddressIP4=*)
-              | source.ip:=LocalAddressIP4
-              | destination.ip:=RemoteAddressIP4
-              | destination.port:=RemotePort
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-              | (source.ip=* OR destination.ip=*);
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/^(Network|HTTP|Tls|User|DCS|Smb|Wmi|Command|Directory)|(BindIP)/
+          | (LocalAddressIP4=* OR RemoteAddressIP4=*)
+          | source.ip:=LocalAddressIP4
+          | destination.ip:=RemoteAddressIP4
+          | destination.port:=RemotePort
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | (source.ip=* OR destination.ip=*) ;
       }
 
       // These case statements check to make sure the field exists, then enriches anything with an Internet-routable IP address.
       | case {
           source.ip=*
-              | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-              | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
-              | ipLocation(source.ip) ;
+            | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
+            | ipLocation(source.ip) ;
           * ;
       }
 
       | case {
           destination.ip=*
-              | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-              | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
-              | ipLocation(destination.ip) ;
+            | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
+            | ipLocation(destination.ip) ;
           * ;
       }
 
@@ -632,10 +632,10 @@ widgets:
 
       | case {
           ioc.actorName=*
-              | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
-              | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
-              | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
-              | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
+            | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
+            | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
+            | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
+            | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
           * ;
       }
 
@@ -689,18 +689,18 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-              | severity!="informational"
-              | #event.kind:="alert"
-              | threat.tactic.name[0]:=Tactic
-              | threat.technique.name[0]:=Technique
-              | threat.technique.name[0]=/./
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-              | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+          | severity!="informational"
+          | #event.kind:="alert"
+          | threat.tactic.name[0]:=Tactic
+          | threat.technique.name[0]:=Technique
+          | threat.technique.name[0]=/./
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
       }
 
       // Get the top vendor and technique combinations.
@@ -729,7 +729,7 @@ widgets:
             | threat.technique.name[0]=/./
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
-            | #event.kind="alert"
+            | #event.kind="alert" ;
         } 
         | threat.technique.name[0]=?threat_technique_name_0_ 
         | threat.tactic.name[0]=?threat_tactic_name_0_
@@ -763,16 +763,16 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=DetectionExcluded
-              | severity!="informational"
-              | #event.kind:="alert"
-              | #Vendor:="crowdstrike"
-              | lower(Tactic, as=event.category) ;
-          #type!=falcon-raw-data
-             | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=DetectionExcluded
+          | severity!="informational"
+          | #event.kind:="alert"
+          | #Vendor:="crowdstrike"
+          | lower(Tactic, as=event.category) ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
       }
 
       // Spit any of the event.category[] values into individual values, then ensure a value exists.
@@ -799,7 +799,7 @@ widgets:
             | #Vendor:="crowdstrike"
             | lower(Tactic, as=event.category) ;
           #type!=falcon-raw-data
-          | #event.kind="alert" ;
+            | #event.kind="alert" ;
         }
         | split(event.category)
         | event.category=/./
@@ -836,23 +836,23 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/^(DnsRequest|TlsClientHello)/
-              | source.ip:=LocalAddressIP4
-              | destination.ip:=RemoteAddressIP4
-              | destination.port:=RemotePort
-              | #Vendor:="crowdstrike"
-              | dns.domainName:=DomainName ;
-          #type!=falcon-raw-data
-              | url.domain=*
-              | dns.domainName:=url.domain ;
-          #type!=falcon-raw-data
-              | source.domain=*
-              | dns.domainName:=source.domain ;
-          #type!=falcon-raw-data
-              | dns.question.name=*
-              | dns.domainName:=dns.question.name ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | source.ip:=LocalAddressIP4
+          | destination.ip:=RemoteAddressIP4
+          | destination.port:=RemotePort
+          | #Vendor:="crowdstrike"
+          | dns.domainName:=DomainName ;
+        #type!=falcon-raw-data
+          | url.domain=*
+          | dns.domainName:=url.domain ;
+        #type!=falcon-raw-data
+          | source.domain=*
+          | dns.domainName:=source.domain ;
+        #type!=falcon-raw-data
+          | dns.question.name=*
+          | dns.domainName:=dns.question.name ;
       }
 
       // Search for IOCs.
@@ -866,10 +866,10 @@ widgets:
 
       | case {
           ioc.actorName=*
-              | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
-              | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
-              | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
-              | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
+            | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
+            | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
+            | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
+            | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
           * ;
       }
 
@@ -920,17 +920,17 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/UserLogonFailed/
-              | #Vendor:="crowdstrike"
-              | client.ip:=aip
-              | user.name:=UserName
-              | #event.module:="sso"
-              | event.reason:=Technique ;
-          #type!=falcon-raw-data
-              | #event.outcome=failure
-              | #event.module=sso
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/UserLogonFailed/
+          | #Vendor:="crowdstrike"
+          | client.ip:=aip
+          | user.name:=UserName
+          | #event.module:="sso"
+          | event.reason:=Technique ;
+        #type!=falcon-raw-data
+          | #event.outcome=failure
+          | #event.module=sso
       }
 
       // Enrich the source IP.
@@ -1037,18 +1037,18 @@ widgets:
       queryString: |-
         case { 
           #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=/DetectionExcluded/
-          | severity!="informational"
-          | #event.kind:="alert"
-          | #Vendor:="crowdstrike"
-          | lower(Tactic, as=event.category) ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=/DetectionExcluded/
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike"
+            | lower(Tactic, as=event.category) ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
         }
-          | split(event.category)
-          | event.category=/./ 
-          | event.category=?event_category
+        | split(event.category)
+        | event.category=/./ 
+        | event.category=?event_category
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -1073,18 +1073,18 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-              | severity!="informational"
-              | #event.kind:="alert"
-              | threat.tactic.name[0]:=Tactic
-              | threat.technique.name[0]:=Technique
-              | threat.technique.name[0]=/./
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-              | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+          | severity!="informational"
+          | #event.kind:="alert"
+          | threat.tactic.name[0]:=Tactic
+          | threat.technique.name[0]:=Technique
+          | threat.technique.name[0]=/./
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
       }
 
       // Group the top 10 results.
@@ -1100,16 +1100,16 @@ widgets:
       queryString: |-
         case { 
           #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-          | severity!="informational"
-          | #event.kind:="alert"
-          | threat.tactic.name[0]:=Tactic
-          | threat.technique.name[0]:=Technique
-          | threat.technique.name[0]=/./
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | #event.kind="alert"
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | severity!="informational"
+            | #event.kind:="alert"
+            | threat.tactic.name[0]:=Tactic
+            | threat.technique.name[0]:=Technique
+            | threat.technique.name[0]=/./
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
         } 
         | Tactic=?Tactic 
         | Technique=?Technique
