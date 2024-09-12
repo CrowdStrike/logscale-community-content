@@ -1,4 +1,4 @@
-name: NG-SIEM POV Enablement Dashboard - v1.1.1
+name: NG-SIEM POV Enablement Dashboard - v1.1.2
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -32,10 +32,17 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \n#type=/-ecs($|-)|^falcon-raw-data$/|case { #type=falcon-raw-data|#event_simpleName=/Detection/|#event_simpleName!=DetectionExcluded|severity!=\"\
-        informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
-        alert\"} | #Vendor=?_Vendor "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded|severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            |#event.kind="alert"
+        } 
+        | #Vendor=?_Vendor
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -101,16 +108,33 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \ncase { #type=falcon-raw-data|#event_simpleName=/^(DnsRequest|TlsClientHello)/|source.ip\
-        \ := LocalAddressIP4|destination.ip := RemoteAddressIP4|destination.port :=\
-        \ RemotePort|#Vendor := \"crowdstrike\"|dns.domainName := DomainName;#type!=falcon-raw-data|url.domain=*|dns.domainName\
-        \ := url.domain;#type!=falcon-raw-data|source.domain=*|dns.domainName := source.domain;#type!=falcon-raw-data|dns.question.name=*|dns.domainName\
-        \ := dns.question.name}|dns.domainName=/^([a-z0-9]|\\.).*?\\./i|dns.domainName!=/\\\
-        .(internal|local|amazonaws\\.com|cloudsink\\.net|cloudfront\\.net|googlesyndication\\\
-        .com|footprintdns\\.com|azure\\.com|live\\.com)$/i|dns.domainName!=/_/i|shannonEntropy(dns.domainName)|_shannonentropy>4.2|format(\"\
-        %.1f\",field=_shannonentropy,as=dns.entropy)|dns.domainName=/\\.(?<dns.tld>[a-z0-9-]+?\\\
-        .[a-z0-9]+?)$/ | dns.tld=?dns_tld "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+            | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+            | source.ip:=LocalAddressIP4
+            | destination.ip:=RemoteAddressIP4
+            | destination.port:=RemotePort
+            | #Vendor:="crowdstrike"
+            | dns.domainName:=DomainName ;
+          #type!=falcon-raw-data
+            | url.domain=*
+            | dns.domainName:=url.domain ;
+          #type!=falcon-raw-data
+            | source.domain=*
+            | dns.domainName:=source.domain ;
+          #type!=falcon-raw-data
+            | dns.question.name=*
+            | dns.domainName:=dns.question.name
+        }
+        | dns.domainName=/^([a-z0-9]|\\.).*?\\./i
+        | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
+        | dns.domainName!=/_/i
+        | shannonEntropy(dns.domainName)
+        | _shannonentropy>4.2
+        | format("%.1f", field=_shannonentropy, as=dns.entropy)
+        | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/ 
+        | dns.tld=?dns_tld
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -151,10 +175,18 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \n#type=/-ecs($|-)|^falcon-raw-data$/|case { #type=falcon-raw-data|#event_simpleName=/Detection/|#event_simpleName!=DetectionExcluded|severity!=\"\
-        informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
-        alert\"} | #Vendor=?_Vendor"
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert"
+        } 
+        | #Vendor=?_Vendor
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -179,7 +211,6 @@ widgets:
     type: query
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
     x: 0
-    backgroundColor: '#242526'
     y: 3
     height: 18
     text: |-
@@ -191,7 +222,6 @@ widgets:
     type: note
   note-1725887215771-0:
     x: 2
-    backgroundColor: '#242526'
     y: 0
     height: 3
     text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
@@ -204,7 +234,6 @@ widgets:
     type: note
   987bb4eb-028e-4f66-b773-a12a05f1d1c4:
     x: 0
-    backgroundColor: '#242526'
     y: 35
     height: 4
     text: "This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)\
@@ -216,7 +245,6 @@ widgets:
     type: note
   note-1725900646032-0:
     x: 0
-    backgroundColor: '#242526'
     y: 27
     height: 8
     text: "This section demonstrates the use of the [ioc:lookup](https://library.humio.com/data-analysis/functions-ioc-lookup.html)\
@@ -260,11 +288,22 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \n#type=/-ecs($|-)|^falcon-raw-data$/|case { #type=falcon-raw-data|#event_simpleName=/Detection/|#event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/|severity!=\"\
-        informational\"|#event.kind := \"alert\"|threat.tactic.name[0] := Tactic|threat.technique.name[0]\
-        \ := Technique|threat.technique.name[0]=/./|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
-        alert\"} | threat.tactic.name[0]=?threat_tactic_name_0_ #Vendor=?_Vendor "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | severity!="informational"
+            | #event.kind:="alert"
+            | threat.tactic.name[0]:=Tactic
+            | threat.technique.name[0]:=Technique
+            | threat.technique.name[0]=/./
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert"
+        } 
+        | threat.tactic.name[0]=?threat_tactic_name_0_ 
+        | #Vendor=?_Vendor
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -339,7 +378,6 @@ widgets:
     type: query
   692ee352-4067-4414-939a-c66985e8bd6b:
     x: 0
-    backgroundColor: '#242526'
     y: 39
     height: 8
     text: 'This section shows failed logins across all data types. The data has been
@@ -452,7 +490,7 @@ widgets:
               | event.reason:=Technique ;
           #type!=falcon-raw-data
               | #event.outcome=failure
-              | #event.module=sso
+              | #event.module=sso ;
       }
 
       // Enrich the source IP.
@@ -497,7 +535,7 @@ widgets:
               | event.reason:=Technique ;
           #type!=falcon-raw-data
               | #event.outcome=failure
-              | #event.module=sso
+              | #event.module=sso ;
       }
 
       // Enrich the source IP.
@@ -518,11 +556,25 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \ncase { #type=falcon-raw-data|#event_simpleName=/UserLogonFailed/|#Vendor\
-        \ := \"crowdstrike\"|client.ip := aip|user.name := UserName|#event.module\
-        \ := \"sso\"|event.reason := Technique;#type!=falcon-raw-data|#event.outcome=failure|#event.module=sso}|client.ip=*|ipLocation(client.ip)|asn(client.ip)|user.name=/./|user.name!=/^(-)$/i\
-        \ | event.reason=?event_reason "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+          | #event_simpleName=/UserLogonFailed/
+          | #Vendor:="crowdstrike"
+          | client.ip:=aip
+          | user.name:=UserName
+          | #event.module:="sso"
+          | event.reason:=Technique ;
+          #type!=falcon-raw-data
+            | #event.outcome=failure
+            | #event.module=sso
+        }
+        | client.ip=*
+        | ipLocation(client.ip)
+        | asn(client.ip)
+        | user.name=/./
+        | user.name!=/^(-)$/i
+        | event.reason=?event_reason
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -666,11 +718,22 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \n#type=/-ecs($|-)|^falcon-raw-data$/|case { #type=falcon-raw-data|#event_simpleName=/Detection/|#event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/|severity!=\"\
-        informational\"|#event.kind := \"alert\"|threat.tactic.name[0] := Tactic|threat.technique.name[0]\
-        \ := Technique|threat.technique.name[0]=/./|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
-        alert\"} | threat.technique.name[0]=?threat_technique_name_0_ threat.tactic.name[0]=?threat_tactic_name_0_ "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | severity!="informational"
+            | #event.kind:="alert"
+            | threat.tactic.name[0]:=Tactic
+            | threat.technique.name[0]:=Technique
+            | threat.technique.name[0]=/./
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert"
+        } 
+        | threat.technique.name[0]=?threat_technique_name_0_ 
+        | threat.tactic.name[0]=?threat_tactic_name_0_
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -684,7 +747,6 @@ widgets:
     type: query
   note-1725902925766-0:
     x: 0
-    backgroundColor: '#242526'
     y: 21
     height: 6
     text: "This query displays hosts with multiple detection types. These can be used\
@@ -728,10 +790,21 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.event.category }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \n#type=/-ecs($|-)|^falcon-raw-data$/|case { #type=falcon-raw-data|#event_simpleName=/Detection/|#event_simpleName!=DetectionExcluded|severity!=\"\
-        informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\"|lower(Tactic,as=event.category);#type!=falcon-raw-data|#event.kind=\"\
-        alert\"}|split(event.category)|event.category=/./ | event.category=?event_category "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike"
+            | lower(Tactic, as=event.category) ;
+          #type!=falcon-raw-data
+          | #event.kind="alert" ;
+        }
+        | split(event.category)
+        | event.category=/./
+        | event.category=?event_category
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -748,13 +821,12 @@ widgets:
     type: query
   note-1725565030439-0:
     x: 0
-    backgroundColor: '#242526'
     y: 0
     height: 3
     text: |-
       ```
       date: 2024-09-11
-      version: 1.1.1
+      version: 1.1.2
       ```
     width: 2
     title: Details
@@ -817,7 +889,7 @@ widgets:
       // Sort the results.
       | sort(count, limit=20000)
     end: now
-    start: 30d
+    start: 1d
     width: 10
     options:
       cell-overflow: wrap-text
@@ -881,11 +953,25 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.client.ip.country }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \ncase { #type=falcon-raw-data|#event_simpleName=/UserLogonFailed/|#Vendor\
-        \ := \"crowdstrike\"|client.ip := aip|user.name := UserName|#event.module\
-        \ := \"sso\"|event.reason := Technique;#type!=falcon-raw-data|#event.outcome=failure|#event.module=sso}|client.ip=*|ipLocation(client.ip)|asn(client.ip)|user.name=/./|user.name!=/^(-)$/i\
-        \ | client.ip.country=?client_ip_country "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+            | #event_simpleName=/UserLogonFailed/
+            | #Vendor:="crowdstrike"
+            | client.ip:=aip
+            | user.name:=UserName
+            | #event.module:="sso"
+            | event.reason:=Technique ;
+          #type!=falcon-raw-data
+            | #event.outcome=failure
+            | #event.module=sso ;
+          }
+          | client.ip=*
+          | ipLocation(client.ip)
+          | asn(client.ip)
+          | user.name=/./
+          | user.name!=/^(-)$/i 
+          | client.ip.country=?client_ip_country
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -949,10 +1035,21 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.event.category }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \n#type=/-ecs($|-)|^falcon-raw-data$/|case { #type=falcon-raw-data|#event_simpleName=/Detection/|#event_simpleName!=DetectionExcluded|severity!=\"\
-        informational\"|#event.kind := \"alert\"|#Vendor := \"crowdstrike\"|lower(Tactic,as=event.category);#type!=falcon-raw-data|#event.kind=\"\
-        alert\"}|split(event.category)|event.category=/./ | event.category=?event_category "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=/DetectionExcluded/
+          | severity!="informational"
+          | #event.kind:="alert"
+          | #Vendor:="crowdstrike"
+          | lower(Tactic, as=event.category) ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
+        }
+          | split(event.category)
+          | event.category=/./ 
+          | event.category=?event_category
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
@@ -1001,11 +1098,22 @@ widgets:
     - conditions: null
       name: filterClick
       titleTemplate: '{{ fields.Tactic }}, {{ fields.Technique }}'
-      queryString: "// Suggested go to events query - may be incorrect for complex\
-        \ queries \n#type=/-ecs($|-)|^falcon-raw-data$/|case { #type=falcon-raw-data|#event_simpleName=/Detection/|#event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/|severity!=\"\
-        informational\"|#event.kind := \"alert\"|threat.tactic.name[0] := Tactic|threat.technique.name[0]\
-        \ := Technique|threat.technique.name[0]=/./|#Vendor := \"crowdstrike\";#type!=falcon-raw-data|#event.kind=\"\
-        alert\"} | Tactic=?Tactic Technique=?Technique "
+      queryString: |-
+        case { 
+          #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+          | severity!="informational"
+          | #event.kind:="alert"
+          | threat.tactic.name[0]:=Tactic
+          | threat.technique.name[0]:=Technique
+          | threat.technique.name[0]=/./
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | #event.kind="alert"
+        } 
+        | Tactic=?Tactic 
+        | Technique=?Technique
       useWidgetTimeWindow: true
       repoOrViewName:
       arguments:
