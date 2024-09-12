@@ -101,7 +101,7 @@ widgets:
       // Display the top TLDs.
       | top(dns.tld, limit=10)
     end: now
-    start: 30d
+    start: 1d
     width: 4
     y: 35
     interactions:
@@ -1090,7 +1090,7 @@ widgets:
       // Group the top 10 results.
       | groupBy([Technique, Tactic], function=count(#event.kind), limit=10)
     end: now
-    start: 7d
+    start: 1d
     width: 10
     y: 16
     interactions:
