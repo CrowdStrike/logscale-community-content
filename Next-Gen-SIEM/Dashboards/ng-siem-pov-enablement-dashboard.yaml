@@ -1,4 +1,76 @@
-name: NG-SIEM POV Enablement Dashboard - v1.1.2
+sections:
+  section-1726168363732-0:
+    collapsed: false
+    order: 0
+    title: Dashboard Details
+    widgetIds:
+    - d4487ff0-b9c0-49cc-82f2-bd8d6caaab40
+    - note-1726166516962-2
+    - note-1726166476961-1
+  section-1726165310280-0:
+    collapsed: true
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - fa99cb2b-02a9-434e-b922-99f76f082229
+    - f9ac01a4-3c19-48b6-ab3b-55bd1d0db515
+    - 92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5
+    - 692ee352-4067-4414-939a-c66985e8bd6b
+    order: 4
+    title: Failed Logins
+  section-1726166115962-0:
+    collapsed: true
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - note-1725900646032-0
+    - e2f5106a-a03e-49f4-b23a-416d6ff85fbc
+    - b3427008-ad73-4cee-9411-0536dbb67e03
+    - d3bf7aaf-0866-4a49-9658-cdbd4537b4e2
+    order: 3
+    title: IOC Queries
+  section-1726164862426-1:
+    collapsed: true
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - de526ba2-2994-48ab-b5fa-7f3a8f8eeee6
+    - 987bb4eb-028e-4f66-b773-a12a05f1d1c4
+    - 0cf0fe05-224f-49e4-88fa-f8139b045881
+    - 39c7025d-8b8d-483b-80d2-1f68f3cc1832
+    order: 5
+    title: Entropy Functions
+  section-1726164099750-0:
+    collapsed: true
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - b6ed9d1a-d340-45d7-93f2-5b75d384d66c
+    - 020a3b23-8ea8-4e85-a8ef-5b35026fdfc4
+    - 02d35c48-c437-4b32-8898-a3837e1e37c5
+    - 12c3ee21-5f64-483e-bfbb-e61a848e2c77
+    - 422e0b37-a2cc-4f9a-97d7-e8fb9cbd48b2
+    - 4d157e50-d35e-43ac-98ab-bd5415a4192d
+    - 57a44bcb-2491-40a2-8eb4-26017140d65d
+    - 6ba8f44f-0bd2-41c3-9db8-016f34e89e30
+    - e56a243e-390f-43d7-a37a-5cd59319785c
+    order: 1
+    title: Detection Queries
+  section-1726164638427-0:
+    collapsed: true
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - note-1725902925766-0
+    - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
+    order: 2
+    title: Incident Creation
+name: NG-SIEM POV Enablement Dashboard - v1.2.0
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -7,44 +79,35 @@ sharedTimeInterval:
   start: 1d
 widgets:
   6ba8f44f-0bd2-41c3-9db8-016f34e89e30:
-    x: 4
+    x: 0
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=DetectionExcluded
-              | severity!="informational"
-              | #event.kind:="alert"
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-             | #event.kind="alert" ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=DetectionExcluded
+          | severity!="informational"
+          | #event.kind:="alert"
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
       }
 
       // Group the results by #Vendor.
       | groupby(#Vendor, limit=max)
     end: now
     start: 1d
-    width: 4
-    y: 3
+    width: 5
+    y: 4
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=DetectionExcluded|severity!="informational"
-            | #event.kind:="alert"
-            | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-            |#event.kind="alert"
-        } 
-        | #Vendor=?_Vendor
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=DetectionExcluded|severity!=\"informational\"\n\
+        \    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
+        \    |#event.kind=\"alert\"\n} \n| #Vendor=?_Vendor"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         _Vendor: '["{{fields.#Vendor}}"]'
       openInNewTab: true
@@ -60,27 +123,27 @@ widgets:
     isLive: false
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
-    x: 8
-    height: 4
+    x: 0
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/^(DnsRequest|TlsClientHello)/
-              | source.ip:=LocalAddressIP4
-              | destination.ip:=RemoteAddressIP4
-              | destination.port:=RemotePort
-              | #Vendor:="crowdstrike"
-              | dns.domainName:=DomainName ;
-          #type!=falcon-raw-data
-              | url.domain=*
-              | dns.domainName:=url.domain ;
-          #type!=falcon-raw-data
-              | source.domain=*
-              | dns.domainName:=source.domain ;
-          #type!=falcon-raw-data
-              | dns.question.name=*
-              | dns.domainName:=dns.question.name ;
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | source.ip:=LocalAddressIP4
+          | destination.ip:=RemoteAddressIP4
+          | destination.port:=RemotePort
+          | #Vendor:="crowdstrike"
+          | dns.domainName:=DomainName ;
+        #type!=falcon-raw-data
+          | url.domain=*
+          | dns.domainName:=url.domain ;
+        #type!=falcon-raw-data
+          | source.domain=*
+          | dns.domainName:=source.domain ;
+        #type!=falcon-raw-data
+          | dns.question.name=*
+          | dns.domainName:=dns.question.name ;
       }
 
       // Filter for Internet DNS names.
@@ -102,41 +165,24 @@ widgets:
       | top(dns.tld, limit=10)
     end: now
     start: 1d
-    width: 4
-    y: 35
+    width: 5
+    y: 5
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/^(DnsRequest|TlsClientHello)/
-            | source.ip:=LocalAddressIP4
-            | destination.ip:=RemoteAddressIP4
-            | destination.port:=RemotePort
-            | #Vendor:="crowdstrike"
-            | dns.domainName:=DomainName ;
-          #type!=falcon-raw-data
-            | url.domain=*
-            | dns.domainName:=url.domain ;
-          #type!=falcon-raw-data
-            | source.domain=*
-            | dns.domainName:=source.domain ;
-          #type!=falcon-raw-data
-            | dns.question.name=*
-            | dns.domainName:=dns.question.name ;
-        }
-        | dns.domainName=/^([a-z0-9]|\\.).*?\\./i
-        | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
-        | dns.domainName!=/_/i
-        | shannonEntropy(dns.domainName)
-        | _shannonentropy>4.2
-        | format("%.1f", field=_shannonentropy, as=dns.entropy)
-        | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/ 
-        | dns.tld=?dns_tld
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
+        \    | source.ip:=LocalAddressIP4\n    | destination.ip:=RemoteAddressIP4\n\
+        \    | destination.port:=RemotePort\n    | #Vendor:=\"crowdstrike\"\n    |\
+        \ dns.domainName:=DomainName ;\n  #type!=falcon-raw-data\n    | url.domain=*\n\
+        \    | dns.domainName:=url.domain ;\n  #type!=falcon-raw-data\n    | source.domain=*\n\
+        \    | dns.domainName:=source.domain ;\n  #type!=falcon-raw-data\n    | dns.question.name=*\n\
+        \    | dns.domainName:=dns.question.name ;\n}\n| dns.domainName=/^([a-z0-9]|\\\
+        \\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\.com|cloudsink\\\
+        .net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\.com|azure\\.com|live\\\
+        .com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n| _shannonentropy>4.2\n\
+        | format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n| dns.domainName=/\\\
+        .(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         dns_tld: '["{{fields.dns.tld}}"]'
       openInNewTab: true
@@ -150,7 +196,7 @@ widgets:
     isLive: false
     type: query
   e56a243e-390f-43d7-a37a-5cd59319785c:
-    x: 7
+    x: 5
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -169,26 +215,16 @@ widgets:
       | timechart(#Vendor, limit=20)
     end: now
     start: 1d
-    width: 5
-    y: 7
+    width: 7
+    y: 4
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=DetectionExcluded
-            | severity!="informational"
-            | #event.kind:="alert"
-            | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-            | #event.kind="alert" ;
-        } 
-        | #Vendor=?_Vendor
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
+        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
+        \    | #event.kind=\"alert\" ;\n} \n| #Vendor=?_Vendor"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         _Vendor: '["{{fields.#Vendor}}"]'
       openInNewTab: true
@@ -209,54 +245,92 @@ widgets:
     title: Detections by Vendor Over Time
     isLive: false
     type: query
-  12c3ee21-5f64-483e-bfbb-e61a848e2c77:
-    x: 0
-    y: 3
-    height: 18
-    text: |-
-      This section provides example queries around detections for first- and third-party data, specifically `#event.type=alert`. That event type if part of CPS and allows you to quickly identify detections in your data.
-
-      Example: find all detections across email, proxy, and endpoint.
-    width: 2
-    title: Detection Queries
-    type: note
-  note-1725887215771-0:
+  d3bf7aaf-0866-4a49-9658-cdbd4537b4e2:
     x: 2
     y: 0
-    height: 3
-    text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
-      \ \n\n1. Import into the `All` view. \n2. Each widget contains a query designed\
-      \ to showcase the flexibility of CQL and dashboard widgets. \n3. Click on the\
-      \ widget title to view the query that powers the widget.\n4. Each query contains\
-      \ comments to explain what the query does. "
-    width: 8
-    title: Instructions
+    height: 4
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/^(Network|HTTP|Tls|User|DCS|Smb|Wmi|Command|Directory)|(BindIP)/
+          | (LocalAddressIP4=* OR RemoteAddressIP4=*)
+          | source.ip:=LocalAddressIP4
+          | destination.ip:=RemoteAddressIP4
+          | destination.port:=RemotePort
+          | #Vendor:="crowdstrike" ;
+        #type!=falcon-raw-data
+          | (source.ip=* OR destination.ip=*) ;
+      }
+
+      // These case statements check to make sure the field exists, then enriches anything with an Internet-routable IP address.
+      | case {
+          source.ip=*
+            | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
+            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
+            | ipLocation(source.ip) ;
+          * ;
+      }
+
+      | case {
+          destination.ip=*
+            | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
+            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
+            | ipLocation(destination.ip) ;
+          * ;
+      }
+
+      // Look for anything with an IOC.
+      | ioc.detected=true
+
+      // Chart the results.
+      | timechart(#Vendor, limit=20)
+    end: now
+    start: 1d
+    width: 10
+    options:
+      connect-points: false
+      imputation: none
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: IOC Matches - Data Source
+    isLive: false
+    type: query
+  12c3ee21-5f64-483e-bfbb-e61a848e2c77:
+    x: 0
+    y: 0
+    height: 4
+    text: This section provides example queries around detections for first- and third-party
+      data, specifically the tagged event `#event.type=alert`. That event type is
+      part of [CPS](https://library.humio.com/logscale-parsing-standard/pasta.html)
+      and allows you to quickly identify detections in your data.
+    width: 2
+    title: Details
     type: note
   987bb4eb-028e-4f66-b773-a12a05f1d1c4:
     x: 0
-    y: 35
-    height: 4
-    text: "This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)\
-      \ function. This can be applied to any field and returns the entropy value.\
-      \ A high value generally translates to unique values. \n\nExample: apply the\
-      \ function to DNS to look for unique domains. "
+    y: 0
+    height: 5
+    text: 'This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)
+      function. This can be applied to any field and returns the entropy value. A
+      high value generally translates to unique values. '
     width: 2
-    title: Entropy Function
+    title: Details
     type: note
   note-1725900646032-0:
     x: 0
-    y: 27
-    height: 8
+    y: 0
+    height: 4
     text: "This section demonstrates the use of the [ioc:lookup](https://library.humio.com/data-analysis/functions-ioc-lookup.html)\
       \ function. This can be applied to IPs, domains, and URLs for both first- and\
-      \ third-party data.\n\nExample: apply CrowdStrike's intelligence to your proxy\
-      \ or firewall logs. \n\n**Note**: values in red will link directly to Falcon\
+      \ third-party data.\n\n**Note**: values in red will link directly to Falcon\
       \ Indicator Graph or the CAO threat actor profile. "
     width: 2
-    title: IOC Queries
+    title: Details
     type: note
   57a44bcb-2491-40a2-8eb4-26017140d65d:
-    x: 2
+    x: 0
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -282,30 +356,18 @@ widgets:
     visualization: sankey
     end: now
     start: 1d
-    width: 5
-    y: 11
+    width: 6
+    y: 8
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-            | severity!="informational"
-            | #event.kind:="alert"
-            | threat.tactic.name[0]:=Tactic
-            | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/./
-            | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-            | #event.kind="alert" ;
-        } 
-        | threat.tactic.name[0]=?threat_tactic_name_0_ 
-        | #Vendor=?_Vendor
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
+        \    | severity!=\"informational\"\n    | #event.kind:=\"alert\"\n    | threat.tactic.name[0]:=Tactic\n\
+        \    | threat.technique.name[0]:=Technique\n    | threat.technique.name[0]=/./\n\
+        \    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n    | #event.kind=\"\
+        alert\" ;\n} \n| threat.tactic.name[0]=?threat_tactic_name_0_ \n| #Vendor=?_Vendor"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         _Vendor: '["{{ fields.source }}"]'
         threat_tactic_name_0_: '["{{ fields.target }}"]'
@@ -315,10 +377,88 @@ widgets:
     title: Detections - Vendor to Tactic - Most Frequent
     isLive: false
     type: query
+  39c7025d-8b8d-483b-80d2-1f68f3cc1832:
+    x: 5
+    height: 5
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | source.ip:=LocalAddressIP4
+          | destination.ip:=RemoteAddressIP4
+          | destination.port:=RemotePort
+          | #Vendor:="crowdstrike"
+          | dns.domainName:=DomainName ;
+        #type!=falcon-raw-data
+          | url.domain=*
+          | dns.domainName:=url.domain ;
+        #type!=falcon-raw-data
+          | source.domain=*
+          | dns.domainName:=source.domain ;
+        #type!=falcon-raw-data
+          | dns.question.name=*
+          | dns.domainName:=dns.question.name ;
+      }
+
+      // Filter for Internet DNS names.
+      | dns.domainName=/^([a-z0-9]|\.).*?\./i
+      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
+      | dns.domainName!=/_/i
+
+      // Check entropy.
+      | shannonEntropy(dns.domainName)
+      | _shannonentropy>4.2
+
+      // Round to 1 decimal place.
+      | dns.entropy:=format("%.1f", field=_shannonentropy)
+
+      // Extract the TLD with another regex.
+      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/
+
+      // Display the top TLDs.
+      | timechart(dns.tld, limit=10)
+    end: now
+    start: 30d
+    width: 7
+    y: 5
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.dns.tld }}'
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
+        \    | source.ip:=LocalAddressIP4\n    | destination.ip:=RemoteAddressIP4\n\
+        \    | destination.port:=RemotePort\n    | #Vendor:=\"crowdstrike\"\n    |\
+        \ dns.domainName:=DomainName ;\n  #type!=falcon-raw-data\n    | url.domain=*\n\
+        \    | dns.domainName:=url.domain ;\n  #type!=falcon-raw-data\n    | source.domain=*\n\
+        \    | dns.domainName:=source.domain ;\n  #type!=falcon-raw-data\n    | dns.question.name=*\n\
+        \    | dns.domainName:=dns.question.name ;\n}\n| dns.domainName=/^([a-z0-9]|\\\
+        \\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\.com|cloudsink\\\
+        .net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\.com|azure\\.com|live\\\
+        .com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n| _shannonentropy>4.2\n\
+        | format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n| dns.domainName=/\\\
+        .(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
+      useWidgetTimeWindow: true
+      arguments:
+        dns_tld: '["{{fields.dns.tld}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: bottom
+      series: {}
+      gradient: false
+      interpolation: linear
+      showDataPoints: false
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: High Entropy - TLDs Over Time
+    isLive: false
+    type: query
   b6ed9d1a-d340-45d7-93f2-5b75d384d66c:
-    x: 8
-    y: 3
-    height: 4
+    x: 0
+    y: 13
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -359,7 +499,7 @@ widgets:
     isLive: false
     type: query
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
-    x: 10
+    x: 9
     y: 0
     height: 3
     queryString: |-
@@ -368,26 +508,55 @@ widgets:
       | count()
     end: now
     start: 1d
-    width: 2
+    width: 3
     options:
       default: {}
     visualization: single-value
     title: Agent ID Count
     isLive: false
     type: query
+  note-1726166516962-2:
+    x: 3
+    y: 0
+    height: 3
+    text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
+      \ It is also designed to showcase the power and flexibility of Next-Gen SIEM\
+      \ and the [CrowdStrike Query Language](https://github.com/CrowdStrike/logscale-community-content/wiki).\
+      \  \n\n1. Import into the `All` view.\n2. The dashboard is separated into sections. Click on each section to expand it.\
+      \ \n3. Each widget contains a query designed to showcase the flexibility of\
+      \ CQL and dashboard widgets.\n4. Click on the widget title to view the query\
+      \ that powers the widget.\n5. Each query contains comments to explain what the\
+      \ query does."
+    width: 6
+    title: Instructions
+    type: note
   692ee352-4067-4414-939a-c66985e8bd6b:
     x: 0
-    y: 39
-    height: 8
+    y: 0
+    height: 4
     text: 'This section shows failed logins across all data types. The data has been
       enriched to include GeoIP and ASN details. '
     width: 2
     title: Failed Logins
     type: note
+  note-1726166476961-1:
+    x: 0
+    y: 0
+    height: 3
+    text: |-
+      ```
+      date: 2024-09-12
+      version: 1.2.0
+      ```
+
+      The latest version can be found [on GitHub](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).
+    width: 3
+    title: Version
+    type: note
   0cf0fe05-224f-49e4-88fa-f8139b045881:
     x: 2
-    y: 35
-    height: 4
+    y: 0
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -426,7 +595,7 @@ widgets:
       | sort(dns.entropy, limit=20000)
     end: now
     start: 1d
-    width: 6
+    width: 10
     options:
       cell-overflow: wrap-text
       configured-columns:
@@ -447,7 +616,7 @@ widgets:
     type: query
   4d157e50-d35e-43ac-98ab-bd5415a4192d:
     x: 2
-    y: 3
+    y: 0
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -466,7 +635,7 @@ widgets:
       | count()
     end: now
     start: 1d
-    width: 2
+    width: 4
     options:
       default: {}
     visualization: single-value
@@ -474,9 +643,9 @@ widgets:
     isLive: false
     type: query
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
-    x: 2
-    y: 39
-    height: 4
+    x: 0
+    y: 4
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -505,7 +674,7 @@ widgets:
       | sort(count, limit=20000)
     end: now
     start: 1d
-    width: 10
+    width: 12
     options:
       cell-overflow: wrap-text
       configured-columns:
@@ -550,32 +719,17 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 43
+    y: 0
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/UserLogonFailed/
-            | #Vendor:="crowdstrike"
-            | client.ip:=aip
-            | user.name:=UserName
-            | #event.module:="sso"
-            | event.reason:=Technique ;
-          #type!=falcon-raw-data
-            | #event.outcome=failure
-            | #event.module=sso ;
-        }
-        | client.ip=*
-        | ipLocation(client.ip)
-        | asn(client.ip)
-        | user.name=/./
-        | user.name!=/^(-)$/i
-        | event.reason=?event_reason
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogonFailed/\n\
+        \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
+        \    | #event.module:=\"sso\"\n    | event.reason:=Technique ;\n  #type!=falcon-raw-data\n\
+        \    | #event.outcome=failure\n    | #event.module=sso ;\n}\n| client.ip=*\n\
+        | ipLocation(client.ip)\n| asn(client.ip)\n| user.name=/./\n| user.name!=/^(-)$/i\n\
+        | event.reason=?event_reason"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
@@ -591,9 +745,9 @@ widgets:
     isLive: false
     type: query
   b3427008-ad73-4cee-9411-0536dbb67e03:
-    x: 2
-    y: 31
-    height: 4
+    x: 0
+    y: 4
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -646,16 +800,19 @@ widgets:
       | ioc[0].indicator:=format("[%s](/intelligence/graph?indicators=ip:'%s'&selectedIndicator=%s)", field=[ioc[0].indicator, ioc[0].indicator, ioc[0].indicator])
 
       // Group the results together.
-      | groupby([#Vendor, source.ip, destination.ip, destination.port, destination.ip.country, ioc[0].indicator, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], limit=max)
+      | groupby([#Vendor, source.ip, destination.ip, destination.port, destination.ip.country, ioc[0].indicator, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
+
+      // Format the timestamp.
+      | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
 
       // Rename fields for readability.
-      | rename(field=[[ioc[0].indicator, ioc.ip], [ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count]])
+      | rename(field=[[ioc[0].indicator, ioc.ip], [ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count], [@timestamp, lastSeen]])
 
       // Sort the results.
       | sort(count, limit=20000)
     end: now
     start: 1d
-    width: 10
+    width: 12
     options:
       cell-overflow: wrap-text
       configured-columns:
@@ -685,7 +842,7 @@ widgets:
     isLive: false
     type: query
   422e0b37-a2cc-4f9a-97d7-e8fb9cbd48b2:
-    x: 7
+    x: 6
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -711,30 +868,18 @@ widgets:
     visualization: sankey
     end: now
     start: 1d
-    width: 5
-    y: 11
+    width: 6
+    y: 8
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-            | severity!="informational"
-            | #event.kind:="alert"
-            | threat.tactic.name[0]:=Tactic
-            | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/./
-            | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-            | #event.kind="alert" ;
-        } 
-        | threat.technique.name[0]=?threat_technique_name_0_ 
-        | threat.tactic.name[0]=?threat_tactic_name_0_
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
+        \    | severity!=\"informational\"\n    | #event.kind:=\"alert\"\n    | threat.tactic.name[0]:=Tactic\n\
+        \    | threat.technique.name[0]:=Technique\n    | threat.technique.name[0]=/./\n\
+        \    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n    | #event.kind=\"\
+        alert\" ;\n} \n| threat.technique.name[0]=?threat_technique_name_0_ \n| threat.tactic.name[0]=?threat_tactic_name_0_"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         threat_tactic_name_0_: '["{{ fields.source }}"]'
         threat_technique_name_0_: '["{{ fields.target }}"]'
@@ -746,20 +891,20 @@ widgets:
     type: query
   note-1725902925766-0:
     x: 0
-    y: 21
-    height: 6
+    y: 0
+    height: 7
     text: "This query displays hosts with multiple detection types. These can be used\
       \ to create ad-hoc incidents and demonstrate the power of the Next-Gen SIEM\
       \ workbench. \n\n1. Click on the `agent.id` you would like to view. This will\
       \ open a query in this window. \n2. Click \"Create one-time incident\" after\
       \ the results load. \n3. Pivot to the workbench to view the incident. Please\
       \ note the incident may take a minute to get created. \n\n**Note**: values in\
-      \ red will link directly to a Falcon summary view."
+      \ red will link to other modules within the Falcon Console. "
     width: 2
-    title: Incident Creation
+    title: Details
     type: note
   020a3b23-8ea8-4e85-a8ef-5b35026fdfc4:
-    x: 2
+    x: 6
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -783,29 +928,17 @@ widgets:
       | top(event.category, limit=10)
     end: now
     start: 1d
-    width: 5
-    y: 7
+    width: 6
+    y: 0
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.event.category }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=DetectionExcluded
-            | severity!="informational"
-            | #event.kind:="alert"
-            | #Vendor:="crowdstrike"
-            | lower(Tactic, as=event.category) ;
-          #type!=falcon-raw-data
-            | #event.kind="alert" ;
-        }
-        | split(event.category)
-        | event.category=/./
-        | event.category=?event_category
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
+        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\"\n    | lower(Tactic,\
+        \ as=event.category) ;\n  #type!=falcon-raw-data\n    | #event.kind=\"alert\"\
+        \ ;\n}\n| split(event.category)\n| event.category=/./\n| event.category=?event_category"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         event_category: '["{{fields.event.category}}"]'
       openInNewTab: true
@@ -818,22 +951,10 @@ widgets:
     title: Top Detections by Category
     isLive: false
     type: query
-  note-1725565030439-0:
-    x: 0
-    y: 0
-    height: 3
-    text: |-
-      ```
-      date: 2024-09-11
-      version: 1.1.2
-      ```
-    width: 2
-    title: Details
-    type: note
   e2f5106a-a03e-49f4-b23a-416d6ff85fbc:
-    x: 2
-    y: 27
-    height: 4
+    x: 0
+    y: 9
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -880,16 +1001,19 @@ widgets:
       | dns.domainName:=format("[%s](/intelligence/graph?indicators=domain:%s&selectedIndicator=%s)", field=[dns.domainName, dns.domainName, dns.domainName])
 
       // Group the results together.
-      | groupby([#Vendor, source.ip, dns.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], limit=max)
+      | groupby([#Vendor, source.ip, dns.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
+
+      // Format the timestamp.
+      | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
 
       // Rename fields for readability.
-      | rename(field=[[ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count]])
+      | rename(field=[[ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count], [@timestamp, lastSeen]])
 
       // Sort the results.
       | sort(count, limit=20000)
     end: now
     start: 1d
-    width: 10
+    width: 12
     options:
       cell-overflow: wrap-text
       configured-columns:
@@ -947,32 +1071,17 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 43
+    y: 0
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.client.ip.country }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/UserLogonFailed/
-            | #Vendor:="crowdstrike"
-            | client.ip:=aip
-            | user.name:=UserName
-            | #event.module:="sso"
-            | event.reason:=Technique ;
-          #type!=falcon-raw-data
-            | #event.outcome=failure
-            | #event.module=sso ;
-          }
-          | client.ip=*
-          | ipLocation(client.ip)
-          | asn(client.ip)
-          | user.name=/./
-          | user.name!=/^(-)$/i 
-          | client.ip.country=?client_ip_country
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogonFailed/\n\
+        \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
+        \    | #event.module:=\"sso\"\n    | event.reason:=Technique ;\n  #type!=falcon-raw-data\n\
+        \    | #event.outcome=failure\n    | #event.module=sso ;\n  }\n  | client.ip=*\n\
+        \  | ipLocation(client.ip)\n  | asn(client.ip)\n  | user.name=/./\n  | user.name!=/^(-)$/i\
+        \ \n  | client.ip.country=?client_ip_country"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         client_ip_country: '["{{fields.client.ip.country}}"]'
       openInNewTab: true
@@ -987,7 +1096,7 @@ widgets:
     type: query
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
-    height: 6
+    height: 7
     queryString: |-
       // Identify events with NG-SIEM indicators.
       #type=none
@@ -1019,7 +1128,7 @@ widgets:
       | !regex("(.*->.*){2}", field=threat.indicator.name)
 
       // // Group the results.
-      | groupBy(agent.id, function=[collect([ComputerName, Ngsiem.event.vendor, threat.indicator.name, #event.module], limit=10), sum("event.severity", as=TotalRiskScore), count(Ngsiem.event.vendor, distinct=true, as=VendorCount), count(#event.module, distinct=true, as=ModuleCount), count(as=DetectionCount)], limit=max)
+      | groupBy(agent.id, function=[collect([ComputerName, Ngsiem.event.vendor, threat.indicator.name], limit=10), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
 
       // Sort the results.
       | sort(TotalRiskScore, limit=20000)
@@ -1029,28 +1138,16 @@ widgets:
     end: now
     start: 1d
     width: 10
-    y: 21
+    y: 0
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.event.category }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=/DetectionExcluded/
-            | severity!="informational"
-            | #event.kind:="alert"
-            | #Vendor:="crowdstrike"
-            | lower(Tactic, as=event.category) ;
-          #type!=falcon-raw-data
-            | #event.kind="alert" ;
-        }
-        | split(event.category)
-        | event.category=/./ 
-        | event.category=?event_category
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=/DetectionExcluded/\n    | severity!=\"informational\"\
+        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\"\n    | lower(Tactic,\
+        \ as=event.category) ;\n  #type!=falcon-raw-data\n    | #event.kind=\"alert\"\
+        \ ;\n}\n| split(event.category)\n| event.category=/./ \n| event.category=?event_category"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         event_category: '["{{fields.event.category}}"]'
       openInNewTab: true
@@ -1069,7 +1166,7 @@ widgets:
     isLive: false
     type: query
   02d35c48-c437-4b32-8898-a3837e1e37c5:
-    x: 2
+    x: 4
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -1091,30 +1188,18 @@ widgets:
       | groupBy([Technique, Tactic], function=count(#event.kind), limit=10)
     end: now
     start: 1d
-    width: 10
-    y: 16
+    width: 8
+    y: 13
     interactions:
-    - conditions: null
-      name: filterClick
+    - name: filterClick
       titleTemplate: '{{ fields.Tactic }}, {{ fields.Technique }}'
-      queryString: |-
-        case { 
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-            | severity!="informational"
-            | #event.kind:="alert"
-            | threat.tactic.name[0]:=Tactic
-            | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/./
-            | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-            | #event.kind="alert" ;
-        } 
-        | Tactic=?Tactic 
-        | Technique=?Technique
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
+        \    | severity!=\"informational\"\n    | #event.kind:=\"alert\"\n    | threat.tactic.name[0]:=Tactic\n\
+        \    | threat.technique.name[0]:=Technique\n    | threat.technique.name[0]=/./\n\
+        \    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n    | #event.kind=\"\
+        alert\" ;\n} \n| Tactic=?Tactic \n| Technique=?Technique"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         Tactic: '["{{fields.Tactic}}"]'
         Technique: '["{{fields.Technique}}"]'
@@ -1122,7 +1207,7 @@ widgets:
       isLive: false
       type: searchlink
     options:
-      labelAngle: 30
+      labelAngle: 45
       colorPalette: monoMagenta
       withLegendTitle: false
       labelAlign: center
@@ -1132,4 +1217,4 @@ widgets:
     title: Top Tactics and Techniques
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.16.0
+$schema: https://schemas.humio.com/dashboard/v0.17.0
