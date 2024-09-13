@@ -550,8 +550,10 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Format the output.
-      | groupby([#Vendor, dns.domainName, dns.entropy], function=count(as=count), limit=max)
+      | groupby([#Vendor, dns.domainName, dns.entropy], function=[selectLast(@timestamp), count(as=count)], limit=max)
       | sort(dns.entropy, limit=20000)
+      | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
+      | rename([[@timestamp, lastSeen]])
     end: now
     start: 1d
     width: 10
