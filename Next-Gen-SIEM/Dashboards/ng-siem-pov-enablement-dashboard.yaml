@@ -58,6 +58,7 @@ sections:
     - 57a44bcb-2491-40a2-8eb4-26017140d65d
     - 6ba8f44f-0bd2-41c3-9db8-016f34e89e30
     - e56a243e-390f-43d7-a37a-5cd59319785c
+    - 5777baf2-55e4-4311-ae40-6bd0457c32ec
     order: 1
     title: Detection Queries
   section-1726164638427-0:
@@ -70,7 +71,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: NG-SIEM POV Enablement Dashboard - v1.2.0
+name: NG-SIEM POV Enablement Dashboard - v1.2.1
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -98,7 +99,7 @@ widgets:
       | groupby(#Vendor, limit=max)
     end: now
     start: 1d
-    width: 5
+    width: 4
     y: 4
     interactions:
     - name: filterClick
@@ -191,6 +192,7 @@ widgets:
     options:
       legendPosition: right
       series: {}
+      withLegendTitle: false
     visualization: pie-chart
     title: High Entropy - TLDs
     isLive: false
@@ -216,7 +218,7 @@ widgets:
     end: now
     start: 1d
     width: 7
-    y: 4
+    y: 0
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
@@ -314,7 +316,7 @@ widgets:
     height: 5
     text: 'This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)
       function. This can be applied to any field and returns the entropy value. A
-      high value generally translates to unique values. '
+      high entropy value generally translates to unique or interesting data. '
     width: 2
     title: Details
     type: note
@@ -324,8 +326,8 @@ widgets:
     height: 4
     text: "This section demonstrates the use of the [ioc:lookup](https://library.humio.com/data-analysis/functions-ioc-lookup.html)\
       \ function. This can be applied to IPs, domains, and URLs for both first- and\
-      \ third-party data.\n\n**Note**: values in red will link directly to Falcon\
-      \ Indicator Graph or the CAO threat actor profile. "
+      \ third-party data.\n\n**Note**: highlighted values will link to other modules\
+      \ within the Falcon Console. "
     width: 2
     title: Details
     type: note
@@ -447,55 +449,12 @@ widgets:
       legendPosition: bottom
       series: {}
       gradient: false
-      interpolation: linear
+      interpolation: step-after
       showDataPoints: false
       connect-points: false
       imputation: none
     visualization: time-chart
     title: High Entropy - TLDs Over Time
-    isLive: false
-    type: query
-  b6ed9d1a-d340-45d7-93f2-5b75d384d66c:
-    x: 0
-    y: 13
-    height: 5
-    queryString: |-
-      // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=DetectionExcluded
-          | severity!="informational"
-          | #event.kind:="alert"
-          | #Vendor:="crowdstrike"
-          | destination.ip:=RemoteAddressIP4
-          | source.ip:=LocalAddressIP4 ;
-        #type!=falcon-raw-data
-         | #event.kind="alert" ;
-      }
-
-      // Check to ensure the IP exists and it's routable.
-      | case {
-          destination.ip=*
-              | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-              | mapIp:=destination.ip ;
-          aip=*
-              | !cidr(aip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-              | mapIp:=aip ;
-          source.ip=*
-              | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-              | mapIp:=source.ip ;
-      }
-
-      // Map out the results.
-      | worldMap(ip=mapIp)
-    end: now
-    start: 1d
-    width: 4
-    options:
-      zLevel: 0.4
-    visualization: world-map
-    title: World Map of Detection IPs
     isLive: false
     type: query
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
@@ -522,11 +481,11 @@ widgets:
     text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
       \ It is also designed to showcase the power and flexibility of Next-Gen SIEM\
       \ and the [CrowdStrike Query Language](https://github.com/CrowdStrike/logscale-community-content/wiki).\
-      \  \n\n1. Import into the `All` view.\n2. The dashboard is separated into sections. Click on each section to expand it.\
-      \ \n3. Each widget contains a query designed to showcase the flexibility of\
-      \ CQL and dashboard widgets.\n4. Click on the widget title to view the query\
-      \ that powers the widget.\n5. Each query contains comments to explain what the\
-      \ query does."
+      \  \n\n1. Import into the `All` view.\n2. The dashboard is separated into sections.\
+      \ Click on the arrow for each section to expand it. \n3. Each widget contains\
+      \ a query designed to showcase the flexibility of CQL and dashboard widgets.\n\
+      4. Click on the widget title to view the query that powers the widget.\n5. Each\
+      \ query contains comments to explain what the query does."
     width: 6
     title: Instructions
     type: note
@@ -545,8 +504,8 @@ widgets:
     height: 3
     text: |-
       ```
-      date: 2024-09-12
-      version: 1.2.0
+      date: 2024-09-13
+      version: 1.2.1
       ```
 
       The latest version can be found [on GitHub](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).
@@ -635,7 +594,7 @@ widgets:
       | count()
     end: now
     start: 1d
-    width: 4
+    width: 3
     options:
       default: {}
     visualization: single-value
@@ -817,7 +776,7 @@ widgets:
       cell-overflow: wrap-text
       configured-columns:
         ioc.ip:
-          color: '#F0424266'
+          color: '#AFDDF4'
         '#Vendor':
           render-as: value
         ioc.actorName:
@@ -835,6 +794,7 @@ widgets:
         ioc.malwareName:
           render-as: value
         ioc.CVE:
+          hidden: true
           render-as: value
       row-numbers-enabled: false
     visualization: table-view
@@ -898,13 +858,13 @@ widgets:
       \ workbench. \n\n1. Click on the `agent.id` you would like to view. This will\
       \ open a query in this window. \n2. Click \"Create one-time incident\" after\
       \ the results load. \n3. Pivot to the workbench to view the incident. Please\
-      \ note the incident may take a minute to get created. \n\n**Note**: values in\
-      \ red will link to other modules within the Falcon Console. "
+      \ note the incident may take a minute to get created. \n\n**Note**: highlighted\
+      \ values will link to other modules within the Falcon Console. "
     width: 2
     title: Details
     type: note
   020a3b23-8ea8-4e85-a8ef-5b35026fdfc4:
-    x: 6
+    x: 4
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -928,8 +888,8 @@ widgets:
       | top(event.category, limit=10)
     end: now
     start: 1d
-    width: 6
-    y: 0
+    width: 4
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.category }}'
@@ -947,6 +907,7 @@ widgets:
     options:
       legendPosition: right
       series: {}
+      withLegendTitle: false
     visualization: pie-chart
     title: Top Detections by Category
     isLive: false
@@ -994,6 +955,9 @@ widgets:
           * ;
       }
 
+      // Find the Agent ID details.
+      | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
+
       // Set default values to keep the results consistent.
       | default(field=[#Vendor, source.ip, dns.domainName, ioc.malwareName, ioc.CVE], value="-")
 
@@ -1001,7 +965,7 @@ widgets:
       | dns.domainName:=format("[%s](/intelligence/graph?indicators=domain:%s&selectedIndicator=%s)", field=[dns.domainName, dns.domainName, dns.domainName])
 
       // Group the results together.
-      | groupby([#Vendor, source.ip, dns.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
+      | groupby([#Vendor, ComputerName, source.ip, dns.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
 
       // Format the timestamp.
       | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
@@ -1011,32 +975,139 @@ widgets:
 
       // Sort the results.
       | sort(count, limit=20000)
+
+      // Add a URL in markdown.
+      | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
     end: now
     start: 1d
     width: 12
     options:
       cell-overflow: wrap-text
       configured-columns:
-        ioc.malwareName:
-          render-as: value
         '#Vendor':
           render-as: value
+        ComputerName:
+          color: '#126cc6'
         source.ip:
           render-as: value
+        ioc.malwareName:
+          render-as: value
+        ioc.CVE:
+          hidden: true
         ioc.actorName:
           color:
             conditions:
-            - color: '#F0424233'
+            - color: '#C93637'
               condition:
                 arg: ''
                 type: Present
           render-as: link
         dns.domainName:
-          color: '#F0424266'
+          color: '#AFDDF4'
           render-as: link
       row-numbers-enabled: false
     visualization: table-view
     title: IOC Matches - DNS
+    isLive: false
+    type: query
+  5777baf2-55e4-4311-ae40-6bd0457c32ec:
+    x: 8
+    height: 4
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=DetectionExcluded
+          | severity!="informational"
+          | #event.kind:="alert"
+          | #Vendor:="crowdstrike"
+          | lower(Tactic, as=event.category) ;
+        #type!=falcon-raw-data
+          | #event.kind="alert" ;
+      }
+
+      // Find the top 10 event categories.
+      | Ngsiem.event.data_domain=/./
+      | top(Ngsiem.event.data_domain, limit=10)
+    end: now
+    start: 1d
+    width: 4
+    y: 4
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.Ngsiem.event.data_domain }}'
+      queryString: |-
+        // Filter to events with required fields, and rename fields to match CPS.
+        case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike"
+            | lower(Tactic, as=event.category) ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
+        }
+
+        // Find the top 10 event categories.
+        | Ngsiem.event.data_domain=?Ngsiem_event_data_domain
+      useWidgetTimeWindow: true
+      arguments:
+        Ngsiem_event_data_domain: '["{{ fields.Ngsiem.event.data_domain }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Top Detections by Data Domain
+    isLive: false
+    type: query
+  b6ed9d1a-d340-45d7-93f2-5b75d384d66c:
+    x: 0
+    y: 13
+    height: 5
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/Detection/
+          | #event_simpleName!=DetectionExcluded
+          | severity!="informational"
+          | #event.kind:="alert"
+          | #Vendor:="crowdstrike"
+          | destination.ip:=RemoteAddressIP4
+          | source.ip:=LocalAddressIP4 ;
+        #type!=falcon-raw-data
+         | #event.kind="alert" ;
+      }
+
+      // Check to ensure the IP exists and it's routable.
+      | case {
+          destination.ip=*
+              | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
+              | mapIp:=destination.ip ;
+          aip=*
+              | !cidr(aip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
+              | mapIp:=aip ;
+          source.ip=*
+              | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
+              | mapIp:=source.ip ;
+      }
+
+      // Map out the results.
+      | worldMap(ip=mapIp)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      zLevel: 0
+    visualization: world-map
+    title: World Map of Detection IPs
     isLive: false
     type: query
   f9ac01a4-3c19-48b6-ab3b-55bd1d0db515:
@@ -1090,6 +1161,8 @@ widgets:
     options:
       connect-points: false
       imputation: none
+      series: {}
+      interpolation: step-after
     visualization: time-chart
     title: Authentication Failures - Source Country
     isLive: false
@@ -1157,12 +1230,12 @@ widgets:
       cell-overflow: wrap-text
       configured-columns:
         ComputerName:
-          color: '#F0424266'
+          color: '#126cc6'
         agent.id:
           render-as: go_to_events_link
       row-numbers-enabled: false
     visualization: table-view
-    title: AgentId Risk Score
+    title: Agent Id Risk Score
     isLive: false
     type: query
   02d35c48-c437-4b32-8898-a3837e1e37c5:
