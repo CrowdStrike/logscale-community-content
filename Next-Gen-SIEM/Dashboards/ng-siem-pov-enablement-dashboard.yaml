@@ -4,8 +4,8 @@ sections:
     order: 0
     title: Dashboard Details
     widgetIds:
+    - note-1726582500637-0
     - d4487ff0-b9c0-49cc-82f2-bd8d6caaab40
-    - note-1726166516962-2
     - note-1726166476961-1
   section-1726165310280-0:
     collapsed: true
@@ -71,7 +71,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: NG-SIEM POV Enablement Dashboard - v1.2.1
+name: NG-SIEM Enablement Dashboard - v1.2.3
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -94,6 +94,9 @@ widgets:
         #type!=falcon-raw-data
           | #event.kind="alert" ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Group the results by #Vendor.
       | groupby(#Vendor, limit=max)
@@ -146,6 +149,9 @@ widgets:
           | dns.question.name=*
           | dns.domainName:=dns.question.name ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
       | dns.domainName=/^([a-z0-9]|\.).*?\./i
@@ -213,6 +219,9 @@ widgets:
             | #event.kind="alert" ;
       }
 
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Build a timechart based on the vendor.
       | timechart(#Vendor, limit=20)
     end: now
@@ -264,6 +273,9 @@ widgets:
         #type!=falcon-raw-data
           | (source.ip=* OR destination.ip=*) ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // These case statements check to make sure the field exists, then enriches anything with an Internet-routable IP address.
       | case {
@@ -350,6 +362,9 @@ widgets:
           | #event.kind="alert" ;
       }
 
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Get the top vendor and tactic combinations.
       | top([#Vendor, threat.tactic.name[0]], limit=15)
 
@@ -402,6 +417,9 @@ widgets:
           | dns.question.name=*
           | dns.domainName:=dns.question.name ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
       | dns.domainName=/^([a-z0-9]|\.).*?\./i
@@ -460,7 +478,7 @@ widgets:
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
     x: 9
     y: 0
-    height: 3
+    height: 4
     queryString: |-
       // Read the CSV and count.
       readFile("aid_master_main.csv")
@@ -471,24 +489,9 @@ widgets:
     options:
       default: {}
     visualization: single-value
-    title: Agent ID Count
+    title: Sensor Count
     isLive: false
     type: query
-  note-1726166516962-2:
-    x: 3
-    y: 0
-    height: 3
-    text: "This dashboard is built for threat hunting using [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html).\
-      \ It is also designed to showcase the power and flexibility of Next-Gen SIEM\
-      \ and the [CrowdStrike Query Language](https://github.com/CrowdStrike/logscale-community-content/wiki).\
-      \  \n\n1. Import into the `All` view.\n2. The dashboard is separated into sections.\
-      \ Click on the arrow for each section to expand it. \n3. Each widget contains\
-      \ a query designed to showcase the flexibility of CQL and dashboard widgets.\n\
-      4. Click on the widget title to view the query that powers the widget.\n5. Each\
-      \ query contains comments to explain what the query does."
-    width: 6
-    title: Instructions
-    type: note
   692ee352-4067-4414-939a-c66985e8bd6b:
     x: 0
     y: 0
@@ -501,14 +504,14 @@ widgets:
   note-1726166476961-1:
     x: 0
     y: 0
-    height: 3
+    height: 4
     text: |-
       ```
-      date: 2024-09-13
-      version: 1.2.1
+      date: 2024-09-17
+      version: 1.2.3
       ```
 
-      The latest version can be found [on GitHub](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).
+      The latest version of this dashboard can be found [on the GitHub repository](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).
     width: 3
     title: Version
     type: note
@@ -536,6 +539,9 @@ widgets:
           | dns.question.name=*
           | dns.domainName:=dns.question.name ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
       | dns.domainName=/^([a-z0-9]|\.).*?\./i
@@ -592,6 +598,9 @@ widgets:
           | #event.kind="alert" ;
       }
 
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Count the total number of alerts.
       | count()
     end: now
@@ -621,6 +630,9 @@ widgets:
           | #event.outcome=failure
           | #event.module=sso ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Enrich the source IP.
       | client.ip=*
@@ -666,6 +678,9 @@ widgets:
           | #event.outcome=failure
           | #event.module=sso ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Enrich the source IP.
       | client.ip=*
@@ -722,6 +737,9 @@ widgets:
         #type!=falcon-raw-data
           | (source.ip=* OR destination.ip=*) ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // These case statements check to make sure the field exists, then enriches anything with an Internet-routable IP address.
       | case {
@@ -822,6 +840,9 @@ widgets:
           | #event.kind="alert" ;
       }
 
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Get the top vendor and technique combinations.
       | top([threat.tactic.name[0], threat.technique.name[0]], limit=15)
 
@@ -882,6 +903,9 @@ widgets:
           | #event.kind="alert" ;
       }
 
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Spit any of the event.category[] values into individual values, then ensure a value exists.
       | split(event.category)
       | event.category=/./
@@ -938,6 +962,9 @@ widgets:
           | dns.question.name=*
           | dns.domainName:=dns.question.name ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Search for IOCs.
       | ioc:lookup(dns.domainName, type="domain", confidenceThreshold=unverified, strict=true)
@@ -1029,6 +1056,9 @@ widgets:
           | #event.kind="alert" ;
       }
 
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Find the top 10 event categories.
       | Ngsiem.event.data_domain=/./
       | top(Ngsiem.event.data_domain, limit=10)
@@ -1088,6 +1118,9 @@ widgets:
          | #event.kind="alert" ;
       }
 
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Check to ensure the IP exists and it's routable.
       | case {
           destination.ip=*
@@ -1112,6 +1145,25 @@ widgets:
     title: World Map of Detection IPs
     isLive: false
     type: query
+  note-1726582500637-0:
+    x: 3
+    y: 0
+    height: 4
+    text: "This dashboard is built to demonstrate both the [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
+      \ and the [CrowdStrike Query Language](https://library.humio.com/data-analysis/syntax.html).\
+      \ Further examples of the query language can be found [on the wiki](https://github.com/CrowdStrike/logscale-community-content/wiki).\n\
+      \n### Instructions\n1. Import this dashboard into the `All` view.\n2. The dashboard\
+      \ is separated into sections. Click on the arrow for each section to expand\
+      \ it.\n3. Data sources can be selected from the multi-pick parameter located\
+      \ above this section. \n4. Each widget contains a query designed to showcase\
+      \ the flexibility of CQL and dashboard widgets. Click on the widget title to\
+      \ pivot directly to the query. Each query contains inline comments to explain\
+      \ what the query does. Cell colors indicate links to other components of the\
+      \ Falcon platform. \n5. You can view all of the queries powering this dashboard\
+      \ by clicking `Edit -> Show queries`. "
+    width: 6
+    title: Dashboard Details
+    type: note
   f9ac01a4-3c19-48b6-ab3b-55bd1d0db515:
     x: 6
     height: 4
@@ -1129,6 +1181,9 @@ widgets:
           | #event.outcome=failure
           | #event.module=sso
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Enrich the source IP.
       | client.ip=*
@@ -1173,8 +1228,11 @@ widgets:
     x: 2
     height: 7
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
       // Identify events with NG-SIEM indicators.
-      #type=none
+      | #type=none
       | Ngsiem.detection.id=*
 
       // Exclude correlation rules, which we'll have to handle separately.
@@ -1237,7 +1295,7 @@ widgets:
           render-as: go_to_events_link
       row-numbers-enabled: false
     visualization: table-view
-    title: Agent Id Risk Score
+    title: Sensor Risk Score
     isLive: false
     type: query
   02d35c48-c437-4b32-8898-a3837e1e37c5:
@@ -1258,6 +1316,9 @@ widgets:
         #type!=falcon-raw-data
           | #event.kind="alert" ;
       }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
 
       // Group the top 10 results.
       | groupBy([Technique, Tactic], function=count(#event.kind), limit=10)
@@ -1293,3 +1354,15 @@ widgets:
     isLive: false
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.17.0
+parameters:
+  Vendor:
+    label: Vendor
+    query: 'case {   #type=falcon-raw-data     | #Vendor:="crowdstrike" ;   #type!=falcon-raw-data     |
+      * ; } | top(#Vendor, limit=100)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 2
+    order: 50
+    valueField: '#Vendor'
