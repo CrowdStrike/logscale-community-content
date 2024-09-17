@@ -550,6 +550,9 @@ widgets:
       | sort(dns.entropy, limit=20000)
       | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
       | rename([[@timestamp, lastSeen]])
+
+      // Add a URL in markdown.
+      | dns.domainName:=format("[%s](/search/?term=_all:~'%s')", field=[dns.domainName, dns.domainName])
     end: now
     start: 1d
     width: 10
@@ -565,7 +568,8 @@ widgets:
         ioc.actorName:
           render-as: go_to_events_link
         dns.domainName:
-          render-as: go_to_events_link
+          color: '#126cc6'
+          render-as: link
       row-numbers-enabled: false
     visualization: table-view
     title: High Entropy DNS Domains
@@ -1202,7 +1206,7 @@ widgets:
       \ Further examples of the query language can be found [on the wiki](https://github.com/CrowdStrike/logscale-community-content/wiki).\n\
       \nThe latest version of this dashboard can be found [on the GitHub repository](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).\n\
       \n### Instructions\n1. Data can be ingested in [the Data Onboarding section](/data-connectors/).\
-      \ \n2. The dashboard is separated into sections. Click on the arrow for each\
+      \ \n2. This dashboard is separated into sections. Click on the arrow for each\
       \ section to expand it.\n3. Data sources can be selected from the multi-pick\
       \ parameter located above this section. \n4. Each widget contains a query designed\
       \ to showcase the flexibility of CQL and dashboard widgets.\n5. You can view\
