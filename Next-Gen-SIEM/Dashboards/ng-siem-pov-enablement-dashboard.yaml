@@ -4,6 +4,7 @@ sections:
     order: 0
     title: Dashboard Details
     widgetIds:
+    - 66a7420e-0bac-48b6-adc0-499f03b66f9c
     - note-1726582500637-0
     - d4487ff0-b9c0-49cc-82f2-bd8d6caaab40
     - note-1726166476961-1
@@ -71,7 +72,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: NG-SIEM Enablement Dashboard - v1.2.3
+name: '# NG-SIEM Enablement Dashboard - v1.2.4'
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -128,7 +129,7 @@ widgets:
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
     x: 0
-    height: 5
+    height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -173,7 +174,7 @@ widgets:
     end: now
     start: 1d
     width: 5
-    y: 5
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
@@ -320,17 +321,7 @@ widgets:
       part of [CPS](https://library.humio.com/logscale-parsing-standard/pasta.html)
       and allows you to quickly identify detections in your data.
     width: 2
-    title: Details
-    type: note
-  987bb4eb-028e-4f66-b773-a12a05f1d1c4:
-    x: 0
-    y: 0
-    height: 5
-    text: 'This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)
-      function. This can be applied to any field and returns the entropy value. A
-      high entropy value generally translates to unique or interesting data. '
-    width: 2
-    title: Details
+    title: ''
     type: note
   note-1725900646032-0:
     x: 0
@@ -338,10 +329,10 @@ widgets:
     height: 4
     text: "This section demonstrates the use of the [ioc:lookup](https://library.humio.com/data-analysis/functions-ioc-lookup.html)\
       \ function. This can be applied to IPs, domains, and URLs for both first- and\
-      \ third-party data.\n\n**Note**: highlighted values will link to other modules\
-      \ within the Falcon Console. "
+      \ third-party data.\n\n**Note**: highlighted values will link to other components\
+      \ within the Falcon platform. "
     width: 2
-    title: Details
+    title: ''
     type: note
   57a44bcb-2491-40a2-8eb4-26017140d65d:
     x: 0
@@ -396,7 +387,7 @@ widgets:
     type: query
   39c7025d-8b8d-483b-80d2-1f68f3cc1832:
     x: 5
-    height: 5
+    height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -441,7 +432,7 @@ widgets:
     end: now
     start: 30d
     width: 7
-    y: 5
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
@@ -476,9 +467,9 @@ widgets:
     isLive: false
     type: query
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
-    x: 9
-    y: 0
-    height: 4
+    x: 0
+    y: 2
+    height: 2
     queryString: |-
       // Read the CSV and count.
       readFile("aid_master_main.csv")
@@ -497,28 +488,27 @@ widgets:
     y: 0
     height: 4
     text: 'This section shows failed logins across all data types. The data has been
-      enriched to include GeoIP and ASN details. '
+      enriched to include GeoIP and ASN details. These enrichment functions can be
+      applied to both first- and third-party data. '
     width: 2
-    title: Failed Logins
+    title: ''
     type: note
   note-1726166476961-1:
     x: 0
     y: 0
-    height: 4
-    text: |-
+    height: 2
+    text: |
       ```
       date: 2024-09-17
-      version: 1.2.3
+      version: 1.2.4
       ```
-
-      The latest version of this dashboard can be found [on the GitHub repository](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).
     width: 3
-    title: Version
+    title: ''
     type: note
   0cf0fe05-224f-49e4-88fa-f8139b045881:
     x: 2
     y: 0
-    height: 5
+    height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -615,7 +605,7 @@ widgets:
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
     x: 0
     y: 4
-    height: 5
+    height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -643,6 +633,11 @@ widgets:
       | user.name=/./
       | user.name!=/^(-)$/i
 
+      // Format the URL.
+      | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
+      | user.name.stripped:=lower(user.name.stripped)
+      | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
+
       | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.city, client.ip.org], function=count(as=count), limit=max)
       | sort(count, limit=20000)
     end: now
@@ -654,7 +649,8 @@ widgets:
         client.ip:
           render-as: go_to_events_link
         user.name:
-          render-as: go_to_events_link
+          color: '#D7F580'
+          render-as: link
           width: 298
       row-numbers-enabled: false
     visualization: table-view
@@ -723,7 +719,7 @@ widgets:
   b3427008-ad73-4cee-9411-0536dbb67e03:
     x: 0
     y: 4
-    height: 5
+    height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -875,16 +871,16 @@ widgets:
   note-1725902925766-0:
     x: 0
     y: 0
-    height: 7
-    text: "This query displays hosts with multiple detection types. These can be used\
-      \ to create ad-hoc incidents and demonstrate the power of the Next-Gen SIEM\
-      \ workbench. \n\n1. Click on the `agent.id` you would like to view. This will\
-      \ open a query in this window. \n2. Click \"Create one-time incident\" after\
-      \ the results load. \n3. Pivot to the workbench to view the incident. Please\
-      \ note the incident may take a minute to get created. \n\n**Note**: highlighted\
-      \ values will link to other modules within the Falcon Console. "
+    height: 6
+    text: "This query displays sensors with multiple detection types. These can be\
+      \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
+      \ SIEM workbench. \n\n1. Click on the `agent.id` you would like to view. \n\
+      2. Click \"Create one-time incident\" after the results have loaded. \n3. Pivot\
+      \ to the workbench to view the incident. The incident may take a short amount\
+      \ of time to populate. \n\n**Note**: highlighted values will link to other components\
+      \ within the Falcon platform. "
     width: 2
-    title: Details
+    title: ''
     type: note
   020a3b23-8ea8-4e85-a8ef-5b35026fdfc4:
     x: 4
@@ -940,8 +936,8 @@ widgets:
     type: query
   e2f5106a-a03e-49f4-b23a-416d6ff85fbc:
     x: 0
-    y: 9
-    height: 5
+    y: 8
+    height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
@@ -1039,6 +1035,57 @@ widgets:
     title: IOC Matches - DNS
     isLive: false
     type: query
+  66a7420e-0bac-48b6-adc0-499f03b66f9c:
+    x: 9
+    y: 0
+    description: 'Values with a highlighted cell color will link to other components
+      of the Falcon platform. '
+    height: 4
+    queryString: |-
+      createEvents(["{\"Cell Color Legend\":\"Falcon Console Search\"}", "{\"Cell Color Legend\":\"Counter Adversary Operations\"}", "{\"Cell Color Legend\":\"Indicator Graph\"}", "{\"Cell Color Legend\":\"Identity Protection\"}"])
+      | parseJson()
+      | table("Cell Color Legend", limit=10)
+      | sort(limit=10)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Cell Color Legend:
+          color:
+            conditions:
+            - color: '#126cc6'
+              condition:
+                arg: Falcon Console Search
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: Counter Adversary Operations
+                type: Equal
+            - color: '#AFDDF4'
+              condition:
+                arg: Indicator Graph
+                type: Equal
+            - color: '#D7F580'
+              condition:
+                arg: Identity Protection
+                type: Equal
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Clickable Link Details
+    isLive: false
+    type: query
+  987bb4eb-028e-4f66-b773-a12a05f1d1c4:
+    x: 0
+    y: 0
+    height: 4
+    text: 'This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)
+      function. This can be applied to any field and returns the entropy value. A
+      high entropy value generally translates to unique or interesting data. '
+    width: 2
+    title: ''
+    type: note
   5777baf2-55e4-4311-ae40-6bd0457c32ec:
     x: 8
     height: 4
@@ -1140,7 +1187,7 @@ widgets:
     start: 1d
     width: 4
     options:
-      zLevel: 0
+      zLevel: 1
     visualization: world-map
     title: World Map of Detection IPs
     isLive: false
@@ -1149,20 +1196,19 @@ widgets:
     x: 3
     y: 0
     height: 4
-    text: "This dashboard is built to demonstrate both the [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
+    text: "### Details\n\nThis dashboard is built to demonstrate both the [CrowdStrike\
+      \ Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
       \ and the [CrowdStrike Query Language](https://library.humio.com/data-analysis/syntax.html).\
       \ Further examples of the query language can be found [on the wiki](https://github.com/CrowdStrike/logscale-community-content/wiki).\n\
-      \n### Instructions\n1. Import this dashboard into the `All` view.\n2. The dashboard\
-      \ is separated into sections. Click on the arrow for each section to expand\
-      \ it.\n3. Data sources can be selected from the multi-pick parameter located\
-      \ above this section. \n4. Each widget contains a query designed to showcase\
-      \ the flexibility of CQL and dashboard widgets. Click on the widget title to\
-      \ pivot directly to the query. Each query contains inline comments to explain\
-      \ what the query does. Cell colors indicate links to other components of the\
-      \ Falcon platform. \n5. You can view all of the queries powering this dashboard\
-      \ by clicking `Edit -> Show queries`. "
+      \nThe latest version of this dashboard can be found [on the GitHub repository](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).\n\
+      \n### Instructions\n1. Data can be ingested in [the Data Onboarding section](/data-connectors/).\
+      \ \n2. The dashboard is separated into sections. Click on the arrow for each\
+      \ section to expand it.\n3. Data sources can be selected from the multi-pick\
+      \ parameter located above this section. \n4. Each widget contains a query designed\
+      \ to showcase the flexibility of CQL and dashboard widgets.\n5. You can view\
+      \ all of the queries powering this dashboard by clicking `Edit -> Show queries`. "
     width: 6
-    title: Dashboard Details
+    title: ''
     type: note
   f9ac01a4-3c19-48b6-ab3b-55bd1d0db515:
     x: 6
@@ -1226,7 +1272,7 @@ widgets:
     type: query
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
-    height: 7
+    height: 6
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
@@ -1295,7 +1341,7 @@ widgets:
           render-as: go_to_events_link
       row-numbers-enabled: false
     visualization: table-view
-    title: Sensor Risk Score
+    title: Risk Scores
     isLive: false
     type: query
   02d35c48-c437-4b32-8898-a3837e1e37c5:
@@ -1343,7 +1389,7 @@ widgets:
       isLive: false
       type: searchlink
     options:
-      labelAngle: 45
+      labelAngle: 30
       colorPalette: monoMagenta
       withLegendTitle: false
       labelAlign: center
