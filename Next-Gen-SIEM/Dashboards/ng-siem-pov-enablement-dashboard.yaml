@@ -73,7 +73,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: '# NG-SIEM Enablement Dashboard - v1.2.4'
+name: '# NG-SIEM Enablement Dashboard - v1.2.5'
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -497,8 +497,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-09-17
-      version: 1.2.4
+      date: 2024-09-18
+      version: 1.2.5
       ```
     width: 3
     title: ''
@@ -1389,35 +1389,35 @@ widgets:
 
       // Identify events with NG-SIEM indicators.
       | #type=none
+      | Ngsiem.parent.incident.id!=*
+      | Ngsiem.parent.incident.id[0]!=*
       | Ngsiem.detection.id=*
 
-      // Exclude correlation rules, which we'll have to handle separately.
-      | Ngsiem.event.type!="ngsiem-rule-match-event"
+      // Rename fields to keep the names common.
+      | rename([[agent.id, aid], [Vendor.SourceEndpointSensorId, aid], [Ngsiem.event.vendor, #Vendor], [Vendor.threat_id, threat.indicator.name]])
+      | #Vendor:=lower(#Vendor)
 
       // Grab enrichment data.
       | match(file="aid_master_main.csv", field=[aid], column=[aid], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[agent.id], column=[aid], include=[aid, ComputerName, LocalAddressIP4], strict=false)
       | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], strict=false)
       | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
       | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[Vendor.Vendor.SourceEndpointSensorId], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[Vendor.TargetEndpointSensorId], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
 
-      // Ensure the required values exist.
+      // Ensure we have an aid and ComputerName.
       | aid=* ComputerName=*
 
-      // Normalize fields as needed.
-      | rename([[aid, agent.id], [Vendor.SourceEndpointSensorId, agent.id], [#Vendor, Ngsiem.event.vendor], [Vendor.threat_id, threat.indicator.name]])
-
       // Check if the field exists and then map the indicator name to the score.
-      | threat.indicator.name=*
-      | format(format="%s -> (%s)", field=[threat.indicator.name, event.severity], as=threat.indicator.name)
+      | case {
+          threat.indicator.name=*
+              | format(format="%s -> (%s)", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
+          * ;
+      }
 
-      // Attempt to remove any duplicates.
-      | !regex("(.*->.*){2}", field=threat.indicator.name)
+      // Group the results.
+      | groupBy(aid, function=[collect([ComputerName, #Vendor, threat.indicator.name], limit=10), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
 
-      // // Group the results.
-      | groupBy(agent.id, function=[collect([ComputerName, Ngsiem.event.vendor, threat.indicator.name], limit=10), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
+      // Ensure there's a risk score.
+      | TotalRiskScore>0
 
       // Sort the results.
       | sort(TotalRiskScore, limit=20000)
@@ -1448,6 +1448,8 @@ widgets:
         ComputerName:
           color: '#126cc6'
         agent.id:
+          render-as: go_to_events_link
+        aid:
           render-as: go_to_events_link
       row-numbers-enabled: false
     visualization: table-view
