@@ -73,7 +73,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: '# NG-SIEM Enablement Dashboard - v1.2.5'
+name: '# NG-SIEM Enablement Dashboard - v1.2.4'
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -86,15 +86,17 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=DetectionExcluded
-          | severity!="informational"
-          | #event.kind:="alert"
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -109,10 +111,13 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=DetectionExcluded|severity!=\"informational\"\n\
-        \    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
-        \    |#event.kind=\"alert\"\n} \n| #Vendor=?_Vendor"
+      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+        Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
+        )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
+        \      | #event_simpleName!=DetectionExcluded|severity!=\"informational\"\n\
+        \      | #event.kind:=\"alert\"\n      | #Vendor:=\"crowdstrike\" ;\n    #type!=falcon-raw-data\n\
+        \      |#event.kind=\"alert\"\n} \n| #Vendor=?_Vendor"
       useWidgetTimeWindow: true
       arguments:
         _Vendor: '["{{fields.#Vendor}}"]'
@@ -172,13 +177,14 @@ widgets:
       titleTemplate: '{{ fields.event.reason }}'
       queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogon$/\n\
         \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
-        \    | #event.module:=\"sso\"\n    | event.reason:=name ;\n  #type!=falcon-raw-data\n\
-        \    | #event.outcome=success\n    | #event.module=sso ;\n}\n| client.ip=*\n\
+        \    | #event.module:=\"sso\"\n    | event.reason:=Technique ;\n  #type!=falcon-raw-data\n\
+        \    | #event.outcome=failure\n    | #event.module=sso ;\n}\n| client.ip=*\n\
         | ipLocation(client.ip)\n| asn(client.ip)\n| user.name=/./\n| user.name!=/(\\\
         $$|^DWM-|^LOCAL\\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\
         \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
         \ ;\n    * ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
+      repoOrViewName: search-all
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
@@ -274,15 +280,17 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=DetectionExcluded
-            | severity!="informational"
-            | #event.kind:="alert"
-            | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-            | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+              | #event_simpleName=/Detection/
+              | #event_simpleName!=DetectionExcluded
+              | severity!="informational"
+              | #event.kind:="alert"
+              | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+              | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -404,18 +412,20 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-          | severity!="informational"
-          | #event.kind:="alert"
-          | threat.tactic.name[0]:=Tactic
-          | threat.technique.name[0]:=Technique
-          | threat.technique.name[0]=/./
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | severity!="informational"
+            | #event.kind:="alert"
+            | threat.tactic.name[0]:=Tactic
+            | threat.technique.name[0]:=Technique
+            | threat.technique.name[0]=/./
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -434,12 +444,16 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
-        \    | severity!=\"informational\"\n    | #event.kind:=\"alert\"\n    | threat.tactic.name[0]:=Tactic\n\
-        \    | threat.technique.name[0]:=Technique\n    | threat.technique.name[0]=/./\n\
-        \    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n    | #event.kind=\"\
-        alert\" ;\n} \n| threat.tactic.name[0]=?threat_tactic_name_0_ \n| #Vendor=?_Vendor"
+      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+        Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
+        )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
+        \      | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
+        \      | severity!=\"informational\"\n      | #event.kind:=\"alert\"\n   \
+        \   | threat.tactic.name[0]:=Tactic\n      | threat.technique.name[0]:=Technique\n\
+        \      | threat.technique.name[0]=/./\n      | #Vendor:=\"crowdstrike\" ;\n\
+        \    #type!=falcon-raw-data\n      | #event.kind=\"alert\" ;\n} \n| threat.tactic.name[0]=?threat_tactic_name_0_\
+        \ \n| #Vendor=?_Vendor"
       useWidgetTimeWindow: true
       arguments:
         _Vendor: '["{{ fields.source }}"]'
@@ -484,7 +498,7 @@ widgets:
     text: |
       ```
       date: 2024-09-17
-      version: 1.2.5
+      version: 1.2.4
       ```
     width: 3
     title: ''
@@ -565,15 +579,17 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=DetectionExcluded
-          | severity!="informational"
-          | #event.kind:="alert"
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -827,18 +843,20 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-          | severity!="informational"
-          | #event.kind:="alert"
-          | threat.tactic.name[0]:=Tactic
-          | threat.technique.name[0]:=Technique
-          | threat.technique.name[0]=/./
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | severity!="informational"
+            | #event.kind:="alert"
+            | threat.tactic.name[0]:=Tactic
+            | threat.technique.name[0]:=Technique
+            | threat.technique.name[0]=/./
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -857,12 +875,16 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
-        \    | severity!=\"informational\"\n    | #event.kind:=\"alert\"\n    | threat.tactic.name[0]:=Tactic\n\
-        \    | threat.technique.name[0]:=Technique\n    | threat.technique.name[0]=/./\n\
-        \    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n    | #event.kind=\"\
-        alert\" ;\n} \n| threat.technique.name[0]=?threat_technique_name_0_ \n| threat.tactic.name[0]=?threat_tactic_name_0_"
+      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+        Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
+        )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
+        \      | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
+        \      | severity!=\"informational\"\n      | #event.kind:=\"alert\"\n   \
+        \   | threat.tactic.name[0]:=Tactic\n      | threat.technique.name[0]:=Technique\n\
+        \      | threat.technique.name[0]=/./\n      | #Vendor:=\"crowdstrike\" ;\n\
+        \    #type!=falcon-raw-data\n      | #event.kind=\"alert\" ;\n} \n| threat.technique.name[0]=?threat_technique_name_0_\
+        \ \n| threat.tactic.name[0]=?threat_tactic_name_0_"
       useWidgetTimeWindow: true
       arguments:
         threat_tactic_name_0_: '["{{ fields.source }}"]'
@@ -892,16 +914,18 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=DetectionExcluded
-          | severity!="informational"
-          | #event.kind:="alert"
-          | #Vendor:="crowdstrike"
-          | lower(Tactic, as=event.category) ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike"
+            | lower(Tactic, as=event.category) ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -920,11 +944,15 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.category }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
-        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\"\n    | lower(Tactic,\
-        \ as=event.category) ;\n  #type!=falcon-raw-data\n    | #event.kind=\"alert\"\
-        \ ;\n}\n| split(event.category)\n| event.category=/./\n| event.category=?event_category"
+      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+        Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
+        )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
+        \      | #event_simpleName!=DetectionExcluded\n      | severity!=\"informational\"\
+        \n      | #event.kind:=\"alert\"\n      | #Vendor:=\"crowdstrike\"\n     \
+        \ | lower(Tactic, as=event.category) ;\n    #type!=falcon-raw-data\n     \
+        \ | #event.kind=\"alert\" ;\n}\n| split(event.category)\n| event.category=/./\n\
+        | event.category=?event_category"
       useWidgetTimeWindow: true
       arguments:
         event_category: '["{{fields.event.category}}"]'
@@ -1237,16 +1265,16 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=DetectionExcluded
-          | severity!="informational"
-          | #event.kind:="alert"
-          | #Vendor:="crowdstrike"
-          | lower(Tactic, as=event.category) ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike"
+            | lower(Tactic, as=event.category) ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -1262,22 +1290,16 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.Ngsiem.event.data_domain }}'
-      queryString: |-
-        // Filter to events with required fields, and rename fields to match CPS.
-        case {
-          #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=DetectionExcluded
-            | severity!="informational"
-            | #event.kind:="alert"
-            | #Vendor:="crowdstrike"
-            | lower(Tactic, as=event.category) ;
-          #type!=falcon-raw-data
-            | #event.kind="alert" ;
-        }
-
-        // Find the top 10 event categories.
-        | Ngsiem.event.data_domain=?Ngsiem_event_data_domain
+      queryString: "// Filter to events with required fields, and rename fields to\
+        \ match CPS.\n(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+        Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
+        )\n| case {\n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
+        \      | #event_simpleName!=DetectionExcluded\n      | severity!=\"informational\"\
+        \n      | #event.kind:=\"alert\"\n      | #Vendor:=\"crowdstrike\"\n     \
+        \ | lower(Tactic, as=event.category) ;\n    #type!=falcon-raw-data\n     \
+        \ | #event.kind=\"alert\" ;\n}\n\n// Find the top 10 event categories.\n|\
+        \ Ngsiem.event.data_domain=?Ngsiem_event_data_domain"
       useWidgetTimeWindow: true
       arguments:
         Ngsiem_event_data_domain: '["{{ fields.Ngsiem.event.data_domain }}"]'
@@ -1298,17 +1320,19 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=DetectionExcluded
-          | severity!="informational"
-          | #event.kind:="alert"
-          | #Vendor:="crowdstrike"
-          | destination.ip:=RemoteAddressIP4
-          | source.ip:=LocalAddressIP4 ;
-        #type!=falcon-raw-data
-         | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=DetectionExcluded
+            | severity!="informational"
+            | #event.kind:="alert"
+            | #Vendor:="crowdstrike"
+            | destination.ip:=RemoteAddressIP4
+            | source.ip:=LocalAddressIP4 ;
+          #type!=falcon-raw-data
+          | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -1435,18 +1459,20 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/Detection/
-          | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
-          | severity!="informational"
-          | #event.kind:="alert"
-          | threat.tactic.name[0]:=Tactic
-          | threat.technique.name[0]:=Technique
-          | threat.technique.name[0]=/./
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | #event.kind="alert" ;
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/Detection/
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | severity!="informational"
+            | #event.kind:="alert"
+            | threat.tactic.name[0]:=Tactic
+            | threat.technique.name[0]:=Technique
+            | threat.technique.name[0]=/./
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | #event.kind="alert" ;
       }
 
       // Add a multipick array for value selection.
@@ -1461,12 +1487,16 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.Tactic }}, {{ fields.Technique }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
-        \    | severity!=\"informational\"\n    | #event.kind:=\"alert\"\n    | threat.tactic.name[0]:=Tactic\n\
-        \    | threat.technique.name[0]:=Technique\n    | threat.technique.name[0]=/./\n\
-        \    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n    | #event.kind=\"\
-        alert\" ;\n} \n| Tactic=?Tactic \n| Technique=?Technique"
+      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+        Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
+        )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
+        \      | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
+        \      | severity!=\"informational\"\n      | #event.kind:=\"alert\"\n   \
+        \   | threat.tactic.name[0]:=Tactic\n      | threat.technique.name[0]:=Technique\n\
+        \      | threat.technique.name[0]=/./\n      | #Vendor:=\"crowdstrike\" ;\n\
+        \    #type!=falcon-raw-data\n      | #event.kind=\"alert\" ;\n} \n| Tactic=?Tactic\
+        \ \n| Technique=?Technique"
       useWidgetTimeWindow: true
       arguments:
         Tactic: '["{{fields.Tactic}}"]'
