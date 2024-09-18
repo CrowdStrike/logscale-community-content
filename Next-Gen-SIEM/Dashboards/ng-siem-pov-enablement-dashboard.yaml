@@ -184,7 +184,6 @@ widgets:
         \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
         \ ;\n    * ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
-      repoOrViewName: search-all
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
