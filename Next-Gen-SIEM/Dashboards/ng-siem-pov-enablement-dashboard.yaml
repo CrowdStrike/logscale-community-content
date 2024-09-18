@@ -14,12 +14,13 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - 7904f3b5-0d48-402e-93b7-88a708af3747
     - fa99cb2b-02a9-434e-b922-99f76f082229
-    - f9ac01a4-3c19-48b6-ab3b-55bd1d0db515
     - 92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5
     - 692ee352-4067-4414-939a-c66985e8bd6b
+    - 2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3
     order: 4
-    title: Failed Logins
+    title: Logon Events
   section-1726166115962-0:
     collapsed: true
     timeSelector:
@@ -72,7 +73,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: '# NG-SIEM Enablement Dashboard - v1.2.4'
+name: '# NG-SIEM Enablement Dashboard - v1.2.5'
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -125,6 +126,70 @@ widgets:
       withLegendTitle: false
     visualization: pie-chart
     title: Total Detections by Vendor
+    isLive: false
+    type: query
+  2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3:
+    x: 7
+    height: 4
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      | case {
+          #type=falcon-raw-data
+              | #event_simpleName=/UserLogon$/
+              | #Vendor:="crowdstrike"
+              | client.ip:=aip
+              | user.name:=UserName
+              | #event.module:="sso"
+              | event.reason:=name ;
+          #type!=falcon-raw-data
+              | event.category[0]=authentication
+              | #event.outcome=success
+              | #event.module=sso ;
+      }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
+      // Ensure the user.name exists.
+      | user.name=/./
+      | user.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/
+
+      // Alias the field if it does not exist.
+      | case {
+          event.reason!=*
+            | event.reason:=event.action ;
+          * ;
+      }
+
+      // Format the results.
+      | top(event.reason, limit=10)
+    end: now
+    start: 1d
+    width: 5
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.event.reason }}'
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogon$/\n\
+        \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
+        \    | #event.module:=\"sso\"\n    | event.reason:=name ;\n  #type!=falcon-raw-data\n\
+        \    | #event.outcome=success\n    | #event.module=sso ;\n}\n| client.ip=*\n\
+        | ipLocation(client.ip)\n| asn(client.ip)\n| user.name=/./\n| user.name!=/(\\\
+        $$|^DWM-|^LOCAL\\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\
+        \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
+        \ ;\n    * ;\n}\n| event.reason=?event_reason"
+      useWidgetTimeWindow: true
+      arguments:
+        event_reason: '["{{fields.event.reason}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Authentication - Top Success Reasons
     isLive: false
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
@@ -385,87 +450,6 @@ widgets:
     title: Detections - Vendor to Tactic - Most Frequent
     isLive: false
     type: query
-  39c7025d-8b8d-483b-80d2-1f68f3cc1832:
-    x: 5
-    height: 4
-    queryString: |-
-      // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
-          | source.ip:=LocalAddressIP4
-          | destination.ip:=RemoteAddressIP4
-          | destination.port:=RemotePort
-          | #Vendor:="crowdstrike"
-          | dns.domainName:=DomainName ;
-        #type!=falcon-raw-data
-          | url.domain=*
-          | dns.domainName:=url.domain ;
-        #type!=falcon-raw-data
-          | source.domain=*
-          | dns.domainName:=source.domain ;
-        #type!=falcon-raw-data
-          | dns.question.name=*
-          | dns.domainName:=dns.question.name ;
-      }
-
-      // Add a multipick array for value selection.
-      | in(field=#Vendor, values=[?Vendor])
-
-      // Filter for Internet DNS names.
-      | dns.domainName=/^([a-z0-9]|\.).*?\./i
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
-      | dns.domainName!=/_/i
-
-      // Check entropy.
-      | shannonEntropy(dns.domainName)
-      | _shannonentropy>4.2
-
-      // Round to 1 decimal place.
-      | dns.entropy:=format("%.1f", field=_shannonentropy)
-
-      // Extract the TLD with another regex.
-      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/
-
-      // Display the top TLDs.
-      | timechart(dns.tld, limit=10)
-    end: now
-    start: 30d
-    width: 7
-    y: 4
-    interactions:
-    - name: filterClick
-      titleTemplate: '{{ fields.dns.tld }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
-        \    | source.ip:=LocalAddressIP4\n    | destination.ip:=RemoteAddressIP4\n\
-        \    | destination.port:=RemotePort\n    | #Vendor:=\"crowdstrike\"\n    |\
-        \ dns.domainName:=DomainName ;\n  #type!=falcon-raw-data\n    | url.domain=*\n\
-        \    | dns.domainName:=url.domain ;\n  #type!=falcon-raw-data\n    | source.domain=*\n\
-        \    | dns.domainName:=source.domain ;\n  #type!=falcon-raw-data\n    | dns.question.name=*\n\
-        \    | dns.domainName:=dns.question.name ;\n}\n| dns.domainName=/^([a-z0-9]|\\\
-        \\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\.com|cloudsink\\\
-        .net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\.com|azure\\.com|live\\\
-        .com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n| _shannonentropy>4.2\n\
-        | format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n| dns.domainName=/\\\
-        .(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
-      useWidgetTimeWindow: true
-      arguments:
-        dns_tld: '["{{fields.dns.tld}}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
-    options:
-      legendPosition: bottom
-      series: {}
-      gradient: false
-      interpolation: step-after
-      showDataPoints: false
-      connect-points: false
-      imputation: none
-    visualization: time-chart
-    title: High Entropy - TLDs Over Time
-    isLive: false
-    type: query
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
     x: 0
     y: 2
@@ -500,7 +484,7 @@ widgets:
     text: |
       ```
       date: 2024-09-17
-      version: 1.2.4
+      version: 1.2.5
       ```
     width: 3
     title: ''
@@ -608,18 +592,18 @@ widgets:
     type: query
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
     x: 0
-    y: 4
+    y: 8
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFailed/
+          | #event_simpleName=/UserLogonFail/
           | #Vendor:="crowdstrike"
           | client.ip:=aip
           | user.name:=UserName
           | #event.module:="sso"
-          | event.reason:=Technique ;
+          | event.reason:=name ;
         #type!=falcon-raw-data
           | #event.outcome=failure
           | #event.module=sso ;
@@ -640,9 +624,17 @@ widgets:
       // Format the URL.
       | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
       | user.name.stripped:=lower(user.name.stripped)
-      | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
+      | user.name:=format("[%s](/search/?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
-      | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.city, client.ip.org], function=count(as=count), limit=max)
+      // Alias the field if it does not exist.
+      | case {
+          event.reason!=*
+            | event.reason:=event.action ;
+          * ;
+      }
+
+      // Format the results.
+      | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
       | sort(count, limit=20000)
     end: now
     start: 1d
@@ -653,12 +645,12 @@ widgets:
         client.ip:
           render-as: go_to_events_link
         user.name:
-          color: '#D7F580'
+          color: '#126cc6'
           render-as: link
           width: 298
       row-numbers-enabled: false
     visualization: table-view
-    title: Authentication Failures - Details
+    title: Authentication - Failure
     isLive: false
     type: query
   fa99cb2b-02a9-434e-b922-99f76f082229:
@@ -668,12 +660,12 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFailed/
+          | #event_simpleName=/UserLogonFail/
           | #Vendor:="crowdstrike"
           | client.ip:=aip
           | user.name:=UserName
           | #event.module:="sso"
-          | event.reason:=Technique ;
+          | event.reason:=name ;
         #type!=falcon-raw-data
           | #event.outcome=failure
           | #event.module=sso ;
@@ -691,20 +683,29 @@ widgets:
       | user.name=/./
       | user.name!=/^(-)$/i
 
-      | groupby(event.reason, limit=max)
+      // Alias the field if it does not exist.
+      | case {
+          event.reason!=*
+            | event.reason:=event.action ;
+          * ;
+      }
+
+      | top(event.reason, limit=10)
     end: now
     start: 1d
-    width: 4
+    width: 5
     y: 0
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
       queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogonFailed/\n\
         \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
-        \    | #event.module:=\"sso\"\n    | event.reason:=Technique ;\n  #type!=falcon-raw-data\n\
+        \    | #event.module:=\"sso\"\n    | event.reason:=name ;\n  #type!=falcon-raw-data\n\
         \    | #event.outcome=failure\n    | #event.module=sso ;\n}\n| client.ip=*\n\
-        | ipLocation(client.ip)\n| asn(client.ip)\n| user.name=/./\n| user.name!=/^(-)$/i\n\
-        | event.reason=?event_reason"
+        | ipLocation(client.ip)\n| asn(client.ip)\n| user.name=/./\n| user.name!=/(\\\
+        $$|^DWM-|^LOCAL\\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\
+        \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
+        \ ;\n    * ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
@@ -717,7 +718,7 @@ widgets:
       series: {}
       withLegendTitle: false
     visualization: pie-chart
-    title: Authentication Failures - Reason
+    title: Authentication - Top Failure Reasons
     isLive: false
     type: query
   b3427008-ad73-4cee-9411-0536dbb67e03:
@@ -1071,7 +1072,7 @@ widgets:
               condition:
                 arg: Indicator Graph
                 type: Equal
-            - color: '#D7F580'
+            - color: '#91BD0F'
               condition:
                 arg: Identity Protection
                 type: Equal
@@ -1090,6 +1091,147 @@ widgets:
     width: 2
     title: ''
     type: note
+  7904f3b5-0d48-402e-93b7-88a708af3747:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      | case {
+          #type=falcon-raw-data
+              | #event_simpleName=/UserLogon$/
+              | #Vendor:="crowdstrike"
+              | client.ip:=aip
+              | user.name:=UserName
+              | #event.module:="sso"
+              | event.reason:=name ;
+          #type!=falcon-raw-data
+              | event.category[0] = authentication
+              | #event.outcome=success
+              | #event.module=sso ;
+      }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
+      // Enrich the source IP.
+      | client.ip=*
+      | ipLocation(client.ip)
+      | asn(client.ip)
+
+      // Ensure the user.name exists.
+      | user.name=/./
+      | user.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/
+
+      // Format the URL.
+      | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
+      | user.name.stripped:=lower(user.name.stripped)
+      | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
+
+      // Alias the field if it does not exist.
+      | case {
+          event.reason!=*
+            | event.reason:=event.action ;
+          * ;
+      }
+
+      // Format the results.
+      | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
+      | sort(count, limit=20000)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        user.name:
+          color: '#91BD0F'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Authentication - Success
+    isLive: false
+    type: query
+  39c7025d-8b8d-483b-80d2-1f68f3cc1832:
+    x: 5
+    height: 4
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      case {
+        #type=falcon-raw-data
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | source.ip:=LocalAddressIP4
+          | destination.ip:=RemoteAddressIP4
+          | destination.port:=RemotePort
+          | #Vendor:="crowdstrike"
+          | dns.domainName:=DomainName ;
+        #type!=falcon-raw-data
+          | url.domain=*
+          | dns.domainName:=url.domain ;
+        #type!=falcon-raw-data
+          | source.domain=*
+          | dns.domainName:=source.domain ;
+        #type!=falcon-raw-data
+          | dns.question.name=*
+          | dns.domainName:=dns.question.name ;
+      }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
+      // Filter for Internet DNS names.
+      | dns.domainName=/^([a-z0-9]|\.).*?\./i
+      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
+      | dns.domainName!=/_/i
+
+      // Check entropy.
+      | shannonEntropy(dns.domainName)
+      | _shannonentropy>4.2
+
+      // Round to 1 decimal place.
+      | dns.entropy:=format("%.1f", field=_shannonentropy)
+
+      // Extract the TLD with another regex.
+      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/
+
+      // Display the top TLDs.
+      | timechart(dns.tld, limit=10)
+    end: now
+    start: 30d
+    width: 7
+    y: 4
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.dns.tld }}'
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
+        \    | source.ip:=LocalAddressIP4\n    | destination.ip:=RemoteAddressIP4\n\
+        \    | destination.port:=RemotePort\n    | #Vendor:=\"crowdstrike\"\n    |\
+        \ dns.domainName:=DomainName ;\n  #type!=falcon-raw-data\n    | url.domain=*\n\
+        \    | dns.domainName:=url.domain ;\n  #type!=falcon-raw-data\n    | source.domain=*\n\
+        \    | dns.domainName:=source.domain ;\n  #type!=falcon-raw-data\n    | dns.question.name=*\n\
+        \    | dns.domainName:=dns.question.name ;\n}\n| dns.domainName=/^([a-z0-9]|\\\
+        \\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\.com|cloudsink\\\
+        .net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\.com|azure\\.com|live\\\
+        .com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n| _shannonentropy>4.2\n\
+        | format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n| dns.domainName=/\\\
+        .(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
+      useWidgetTimeWindow: true
+      arguments:
+        dns_tld: '["{{fields.dns.tld}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: bottom
+      series: {}
+      gradient: false
+      interpolation: step-after
+      showDataPoints: false
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: High Entropy - TLDs Over Time
+    isLive: false
+    type: query
   5777baf2-55e4-4311-ae40-6bd0457c32ec:
     x: 8
     height: 4
@@ -1214,66 +1356,6 @@ widgets:
     width: 6
     title: ''
     type: note
-  f9ac01a4-3c19-48b6-ab3b-55bd1d0db515:
-    x: 6
-    height: 4
-    queryString: |-
-      // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFailed/
-          | #Vendor:="crowdstrike"
-          | client.ip:=aip
-          | user.name:=UserName
-          | #event.module:="sso"
-          | event.reason:=Technique ;
-        #type!=falcon-raw-data
-          | #event.outcome=failure
-          | #event.module=sso
-      }
-
-      // Add a multipick array for value selection.
-      | in(field=#Vendor, values=[?Vendor])
-
-      // Enrich the source IP.
-      | client.ip=*
-      | ipLocation(client.ip)
-      | asn(client.ip)
-
-      // Ensure the user.name exists.
-      | user.name=/./
-      | user.name!=/^(-)$/i
-
-      // Visualize the results.
-      | timechart(client.ip.country, limit=20)
-    end: now
-    start: 1d
-    width: 6
-    y: 0
-    interactions:
-    - name: filterClick
-      titleTemplate: '{{ fields.client.ip.country }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogonFailed/\n\
-        \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
-        \    | #event.module:=\"sso\"\n    | event.reason:=Technique ;\n  #type!=falcon-raw-data\n\
-        \    | #event.outcome=failure\n    | #event.module=sso ;\n  }\n  | client.ip=*\n\
-        \  | ipLocation(client.ip)\n  | asn(client.ip)\n  | user.name=/./\n  | user.name!=/^(-)$/i\
-        \ \n  | client.ip.country=?client_ip_country"
-      useWidgetTimeWindow: true
-      arguments:
-        client_ip_country: '["{{fields.client.ip.country}}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
-    options:
-      connect-points: false
-      imputation: none
-      series: {}
-      interpolation: step-after
-    visualization: time-chart
-    title: Authentication Failures - Source Country
-    isLive: false
-    type: query
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
     height: 6
