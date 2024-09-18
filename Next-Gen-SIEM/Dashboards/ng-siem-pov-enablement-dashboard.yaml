@@ -134,7 +134,7 @@ widgets:
     isLive: false
     type: query
   2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3:
-    x: 7
+    x: 2
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -670,7 +670,7 @@ widgets:
     isLive: false
     type: query
   fa99cb2b-02a9-434e-b922-99f76f082229:
-    x: 2
+    x: 7
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
