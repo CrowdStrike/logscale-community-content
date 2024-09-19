@@ -27,6 +27,7 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - parameter-panel-1726760459191-0
     - note-1725900646032-0
     - e2f5106a-a03e-49f4-b23a-416d6ff85fbc
     - b3427008-ad73-4cee-9411-0536dbb67e03
@@ -73,7 +74,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: '# NG-SIEM Enablement Dashboard - v1.2.5'
+name: '# NG-SIEM Enablement Dashboard - v1.3.0'
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -184,6 +185,7 @@ widgets:
         \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
         \ ;\n    * ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
+      repoOrViewName:
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
@@ -330,7 +332,7 @@ widgets:
     isLive: false
     type: query
   d3bf7aaf-0866-4a49-9658-cdbd4537b4e2:
-    x: 2
+    x: 5
     y: 0
     height: 4
     queryString: |-
@@ -367,21 +369,39 @@ widgets:
           * ;
       }
 
-      // Look for anything with an IOC.
-      | ioc.detected=true
+      // Look for anything with an IOC label, then extract fields.
+      | ioc[0].labels=*
+      | regex("(^|,)((?<ioc.actorName>Actor\/.*?),|(?<ioc.malwareName>Malware\/.*?),)", field=ioc[0].labels, strict=false)
+      | regex("(^|,)(Vulnerability\/(?<ioc.CVE>.*?)(,|$))", field=ioc[0].labels, strict=false)
+
+      // Rename fields for readability.
+      | rename(field=[[ioc[0].malicious_confidence, ioc.confidence]])
+
+      // Create values for the value selector
+      | case {
+          ioc.actorName=*
+            | ioc.actorName.exists:=1 ;
+          ioc.actorName!=*
+            | ioc.actorName.exists:=0 ;
+          * ;
+      }
+
+      // Only display selected values.
+      | in(field=ioc.confidence, values=[?ioc_confidence_level])
+      | ioc.actorName.exists=?ioc_actor_present
 
       // Chart the results.
       | timechart(#Vendor, limit=20)
     end: now
     start: 1d
-    width: 10
+    width: 7
     options:
       connect-points: false
       imputation: none
       series: {}
       interpolation: step-after
     visualization: time-chart
-    title: IOC Matches - Data Source
+    title: IOC Matches - IP - Data Source
     isLive: false
     type: query
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
@@ -463,6 +483,16 @@ widgets:
     title: Detections - Vendor to Tactic - Most Frequent
     isLive: false
     type: query
+  parameter-panel-1726760459191-0:
+    x: 2
+    y: 0
+    parameterIds:
+    - ioc_actor_present
+    - ioc_confidence_level
+    height: 4
+    width: 3
+    title: IOC Filter
+    type: parameterPanel
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
     x: 0
     y: 2
@@ -496,8 +526,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-09-18
-      version: 1.2.5
+      date: 2024-09-19
+      version: 1.3.0
       ```
     width: 3
     title: ''
@@ -803,8 +833,22 @@ widgets:
       // Rename fields for readability.
       | rename(field=[[ioc[0].indicator, ioc.ip], [ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count], [@timestamp, lastSeen]])
 
+      // Create values for the value selector
+      | case {
+          ioc.actorName=*
+            | ioc.actorName.exists:=1 ;
+          ioc.actorName!=*
+            | ioc.actorName.exists:=0 ;
+          * ;
+      }
+
+      // Only display selected values.
+      | in(field=ioc.confidence, values=[?ioc_confidence_level])
+      | ioc.actorName.exists=?ioc_actor_present
+
       // Sort the results.
       | sort(count, limit=20000)
+      | drop([ioc.actorName.exists])
     end: now
     start: 1d
     width: 12
@@ -1030,11 +1074,25 @@ widgets:
       // Rename fields for readability.
       | rename(field=[[ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count], [@timestamp, lastSeen]])
 
+      // Create values for the value selector
+      | case {
+          ioc.actorName=*
+            | ioc.actorName.exists:=1 ;
+          ioc.actorName!=*
+            | ioc.actorName.exists:=0 ;
+          * ;
+      }
+
+      // Only display selected values.
+      | in(field=ioc.confidence, values=[?ioc_confidence_level])
+      | ioc.actorName.exists=?ioc_actor_present
+
       // Sort the results.
       | sort(count, limit=20000)
 
       // Add a URL in markdown.
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
+      | drop([ioc.actorName.exists])
     end: now
     start: 1d
     width: 12
@@ -1529,3 +1587,25 @@ parameters:
     width: 2
     order: 50
     valueField: '#Vendor'
+  ioc_actor_present:
+    label: Threat Actor Detection
+    order: 1
+    values:
+      '*': Not Required
+      '1': Required
+      '0': Exclude
+    type: list
+    defaultValue: '*'
+    width: 4
+  ioc_confidence_level:
+    label: IOC Confidence Level
+    order: 0
+    values:
+      '*': all
+      high: high
+      medium: medium
+      low: low
+      unverified: unverified
+    type: list
+    defaultValue: '*'
+    width: 4
