@@ -1427,7 +1427,7 @@ widgets:
       \ Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
       \ and the [CrowdStrike Query Language](https://library.humio.com/data-analysis/syntax.html).\
       \ Further examples of the query language can be found [on the wiki](https://github.com/CrowdStrike/logscale-community-content/wiki).\n\
-      \nThe latest version of this dashboard can be found [on the GitHub repository](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/main/Next-Gen-SIEM/Dashboards/ng-siem-pov-enablement-dashboard.yaml).\n\
+      \nThe latest version of this dashboard can be found [on the GitHub repository](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml).\n\
       \n### Instructions\n1. Data can be ingested in [the Data Onboarding section](/data-connectors/).\
       \ \n2. This dashboard is separated into sections. Click on the arrow for each\
       \ section to expand it.\n3. Data sources can be selected from the multi-pick\
