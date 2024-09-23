@@ -74,7 +74,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: '# NG-SIEM Enablement Dashboard - v1.3.0'
+name: '# NG-SIEM Enablement Dashboard - v1.3.1'
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -527,7 +527,7 @@ widgets:
     text: |
       ```
       date: 2024-09-19
-      version: 1.3.0
+      version: 1.3.1
       ```
     width: 3
     title: ''
@@ -1445,10 +1445,13 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Identify events with NG-SIEM indicators.
-      | #type=none
-      | Ngsiem.parent.incident.id!=*
-      | Ngsiem.parent.incident.id[0]!=*
-      | Ngsiem.detection.id=*
+      | case {
+          Ngsiem.event.type="ngsiem-rule-trigger-event"
+            | rename([[rule.name, threat.indicator.name], [Ngsiem.event.source_ips[0], source.ip], [Ngsiem.event.hostnames[0], ComputerName], [Ngsiem.event.type, #event.module]]) ;
+        Ngsiem.parent.incident.id!=* 
+          | Ngsiem.parent.incident.id[0]!=* 
+          | Ngsiem.detection.id=* ;
+      }
 
       // Rename fields to keep the names common.
       | rename([[agent.id, aid], [Vendor.SourceEndpointSensorId, aid], [Ngsiem.event.vendor, #Vendor], [Vendor.threat_id, threat.indicator.name]])
