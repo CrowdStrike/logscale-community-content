@@ -1439,18 +1439,20 @@ widgets:
     type: note
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
+    y: 0
     height: 6
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
       // Identify events with NG-SIEM indicators.
+      | #type=none
       | case {
           Ngsiem.event.type="ngsiem-rule-trigger-event"
-            | rename([[rule.name, threat.indicator.name], [Ngsiem.event.source_ips[0], source.ip], [Ngsiem.event.hostnames[0], ComputerName], [Ngsiem.event.type, #event.module]]) ;
-        Ngsiem.parent.incident.id!=* 
-          | Ngsiem.parent.incident.id[0]!=* 
-          | Ngsiem.detection.id=* ;
+              | rename([[rule.name, threat.indicator.name], [Ngsiem.event.source_ips[0], source.ip], [Ngsiem.event.hostnames[0], ComputerName], [Ngsiem.event.type, #event.module]]) ;
+          Ngsiem.parent.incident.id!=*
+              | Ngsiem.parent.incident.id[0]!=*
+              | Ngsiem.detection.id=* ;
       }
 
       // Rename fields to keep the names common.
@@ -1487,21 +1489,6 @@ widgets:
     end: now
     start: 1d
     width: 10
-    y: 0
-    interactions:
-    - name: filterClick
-      titleTemplate: '{{ fields.event.category }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=/DetectionExcluded/\n    | severity!=\"informational\"\
-        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\"\n    | lower(Tactic,\
-        \ as=event.category) ;\n  #type!=falcon-raw-data\n    | #event.kind=\"alert\"\
-        \ ;\n}\n| split(event.category)\n| event.category=/./ \n| event.category=?event_category"
-      useWidgetTimeWindow: true
-      arguments:
-        event_category: '["{{fields.event.category}}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
     options:
       cell-overflow: wrap-text
       configured-columns:
