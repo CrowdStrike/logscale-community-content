@@ -74,7 +74,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: '# NG-SIEM Enablement Dashboard - v1.3.1'
+name: # NG-SIEM Enablement Dashboard - v1.3.1
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
