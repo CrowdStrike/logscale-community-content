@@ -1576,7 +1576,7 @@ parameters:
     order: 1
     values:
       '0': Exclude
-      '1': Required
+      '1': Require
       '*': Optional
     type: list
     defaultValue: '*'
