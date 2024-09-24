@@ -1,4 +1,4 @@
 # Dashboard Screenshots
 
-## [ng-siem-enablement-dashboard](ng-siem-enablement-dashboard.yaml)
-![Screenshot 1](screenshots/ng-siem-enablement-dashboard.png)
+## [next-gen-siem-reference-dashboard](next-gen-siem-reference-dashboard.yaml)
+![Screenshot 1](screenshots/next-gen-siem-reference-dashboard.png)

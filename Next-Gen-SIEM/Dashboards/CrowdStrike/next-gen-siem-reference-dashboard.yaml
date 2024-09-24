@@ -4,6 +4,8 @@ sections:
     order: 0
     title: Dashboard Details
     widgetIds:
+    - 4d157e50-d35e-43ac-98ab-bd5415a4192d
+    - note-1727187815054-0
     - 66a7420e-0bac-48b6-adc0-499f03b66f9c
     - note-1726582500637-0
     - d4487ff0-b9c0-49cc-82f2-bd8d6caaab40
@@ -57,7 +59,6 @@ sections:
     - 02d35c48-c437-4b32-8898-a3837e1e37c5
     - 12c3ee21-5f64-483e-bfbb-e61a848e2c77
     - 422e0b37-a2cc-4f9a-97d7-e8fb9cbd48b2
-    - 4d157e50-d35e-43ac-98ab-bd5415a4192d
     - 57a44bcb-2491-40a2-8eb4-26017140d65d
     - 6ba8f44f-0bd2-41c3-9db8-016f34e89e30
     - e56a243e-390f-43d7-a37a-5cd59319785c
@@ -74,7 +75,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: '# NG-SIEM Enablement Dashboard - v1.3.1'
+name: Next-Gen SIEM Reference Dashboard - v1.4.0
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -185,7 +186,6 @@ widgets:
         \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
         \ ;\n    * ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
-      repoOrViewName:
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
@@ -277,7 +277,7 @@ widgets:
     isLive: false
     type: query
   e56a243e-390f-43d7-a37a-5cd59319785c:
-    x: 5
+    x: 2
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -301,7 +301,7 @@ widgets:
       | timechart(#Vendor, limit=20)
     end: now
     start: 1d
-    width: 7
+    width: 10
     y: 0
     interactions:
     - name: filterClick
@@ -526,8 +526,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-09-19
-      version: 1.3.1
+      date: 2024-09-24
+      version: 1.4.0
       ```
     width: 3
     title: ''
@@ -603,9 +603,9 @@ widgets:
     isLive: false
     type: query
   4d157e50-d35e-43ac-98ab-bd5415a4192d:
-    x: 2
-    y: 0
-    height: 4
+    x: 0
+    y: 4
+    height: 2
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
@@ -1010,6 +1010,20 @@ widgets:
     title: Top Detections by Category
     isLive: false
     type: query
+  note-1727187815054-0:
+    x: 9
+    y: 0
+    height: 3
+    text: |-
+      * [Data onboarding](/data-connectors/)
+      * [Detection posture](/xdr/rules/detection-posture)
+      * [Detections](/unified-detections)
+      * [Incidents](/xdr/incidents)
+      * [Advanced event search](/investigate/search)
+      * [SOAR dashboard](/workflow/fusion/dashboard)
+    width: 3
+    title: Next-Gen SIEM Components
+    type: note
   e2f5106a-a03e-49f4-b23a-416d6ff85fbc:
     x: 0
     y: 8
@@ -1127,10 +1141,10 @@ widgets:
     type: query
   66a7420e-0bac-48b6-adc0-499f03b66f9c:
     x: 9
-    y: 0
-    description: 'Values with a highlighted cell color will link to other components
-      of the Falcon platform. '
-    height: 4
+    y: 3
+    description: Values with a highlighted cell color will link to other components
+      of the Falcon platform.
+    height: 3
     queryString: |-
       createEvents(["{\"Cell Color Legend\":\"Falcon Console Search\"}", "{\"Cell Color Legend\":\"Counter Adversary Operations\"}", "{\"Cell Color Legend\":\"Indicator Graph\"}", "{\"Cell Color Legend\":\"Identity Protection\"}"])
       | parseJson()
@@ -1422,18 +1436,25 @@ widgets:
   note-1726582500637-0:
     x: 3
     y: 0
-    height: 4
-    text: "### Details\n\nThis dashboard is built to demonstrate both the [CrowdStrike\
-      \ Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
+    height: 6
+    text: "## Dashboard Summary\n\nThis dashboard is built to demonstrate both the\
+      \ [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
       \ and the [CrowdStrike Query Language](https://library.humio.com/data-analysis/syntax.html).\
       \ Further examples of the query language can be found [on the wiki](https://github.com/CrowdStrike/logscale-community-content/wiki).\n\
-      \nThe latest version of this dashboard can be found [on the GitHub repository](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml).\n\
-      \n### Instructions\n1. Data can be ingested in [the Data Onboarding section](/data-connectors/).\
-      \ \n2. This dashboard is separated into sections. Click on the arrow for each\
-      \ section to expand it.\n3. Data sources can be selected from the multi-pick\
-      \ parameter located above this section. \n4. Each widget contains a query designed\
-      \ to showcase the flexibility of CQL and dashboard widgets.\n5. You can view\
-      \ all of the queries powering this dashboard by clicking `Edit -> Show queries`. "
+      \n## Latest Version\n\nThe latest version of this dashboard can be found [on\
+      \ the GitHub repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
+      \ \n\nTo import the latest version of this dashboard, just download [the raw\
+      \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml)\
+      \ from the repo. Click *Create dashboard -> Import dashboard* and select the\
+      \ YAML file that was downloaded. \n\n## Dashboard Instructions\n   \n1. This\
+      \ dashboard is separated into sections. Scroll down and click on the left arrow\
+      \ for each section to expand the section.\n2. Specific data sources can be selected\
+      \ from the multi-pick parameter box at the top of the dashboard. By default\
+      \ it uses `*` to show all data sources.\n3. You can view all of the queries\
+      \ powering this dashboard by clicking *Edit* in the top-right followed by the\
+      \ *Show queries* button in the top-middle. Have a look at what powers the dashboard.\
+      \ \n4. Try new queries and widgets, modify existing ones, or build entirely\
+      \ new sections. Discover the flexibility of Next-Gen SIEM!\n\n"
     width: 6
     title: ''
     type: note
@@ -1581,9 +1602,9 @@ parameters:
     label: Threat Actor Detection
     order: 1
     values:
-      '*': Not Required
-      '1': Required
       '0': Exclude
+      '1': Required
+      '*': Not Required
     type: list
     defaultValue: '*'
     width: 4
@@ -1592,10 +1613,10 @@ parameters:
     order: 0
     values:
       '*': all
-      high: high
       medium: medium
       low: low
       unverified: unverified
+      high: high
     type: list
     defaultValue: '*'
     width: 4
