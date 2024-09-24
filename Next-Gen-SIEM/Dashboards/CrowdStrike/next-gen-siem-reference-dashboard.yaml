@@ -75,7 +75,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: Next-Gen SIEM Reference Dashboard - v1.4.0
+name: Next-Gen SIEM Reference Dashboard - v1.4.1
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -352,22 +352,8 @@ widgets:
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
-      // These case statements check to make sure the field exists, then enriches anything with an Internet-routable IP address.
-      | case {
-          source.ip=*
-            | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
-            | ipLocation(source.ip) ;
-          * ;
-      }
-
-      | case {
-          destination.ip=*
-            | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
-            | ipLocation(destination.ip) ;
-          * ;
-      }
+      // Check for IOCs.
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=unverified, strict=true)
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
@@ -527,7 +513,7 @@ widgets:
     text: |
       ```
       date: 2024-09-24
-      version: 1.4.0
+      version: 1.4.1
       ```
     width: 3
     title: ''
@@ -788,21 +774,8 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // These case statements check to make sure the field exists, then enriches anything with an Internet-routable IP address.
-      | case {
-          source.ip=*
-            | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-            | ioc:lookup(source.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
-            | ipLocation(source.ip) ;
-          * ;
-      }
-
-      | case {
-          destination.ip=*
-            | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
-            | ioc:lookup(destination.ip, type="ip_address", confidenceThreshold=unverified, strict=false)
-            | ipLocation(destination.ip) ;
-          * ;
-      }
+      | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=unverified, strict=true)
+      | iplocation(ioc[0].indicator)
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
@@ -825,13 +798,13 @@ widgets:
       | ioc[0].indicator:=format("[%s](/intelligence/graph?indicators=ip:'%s'&selectedIndicator=%s)", field=[ioc[0].indicator, ioc[0].indicator, ioc[0].indicator])
 
       // Group the results together.
-      | groupby([#Vendor, source.ip, destination.ip, destination.port, destination.ip.country, ioc[0].indicator, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
+      | groupby([#Vendor, source.ip, destination.ip, destination.port, ioc[0].indicator, ioc[0].indicator.country, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
 
       // Format the timestamp.
       | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
 
       // Rename fields for readability.
-      | rename(field=[[ioc[0].indicator, ioc.ip], [ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count], [@timestamp, lastSeen]])
+      | rename(field=[[ioc[0].indicator, ioc.ip], [ioc[0].malicious_confidence, ioc.confidence], [ioc[0].indicator.country, ioc.ip.country], [_count, count], [@timestamp, lastSeen]])
 
       // Create values for the value selector
       | case {
@@ -944,10 +917,10 @@ widgets:
     height: 6
     text: "This query displays sensors with multiple detection types. These can be\
       \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
-      \ SIEM workbench. \n\n1. Click on the `aid` you would like to view. \n\
-      2. Click \"Create one-time incident\" after the results have loaded. \n3. Pivot\
-      \ to the workbench to view the incident. The incident may take a short amount\
-      \ of time to populate. \n\n**Note**: highlighted values will link to other components\
+      \ SIEM workbench. \n\n1. Click on the `aid` you would like to view. \n2. Click\
+      \ \"Create one-time incident\" after the results have loaded. \n3. Pivot to\
+      \ the workbench to view the incident. The incident may take a short amount of\
+      \ time to populate. \n\n**Note**: highlighted values will link to other components\
       \ within the Falcon platform. "
     width: 2
     title: ''
