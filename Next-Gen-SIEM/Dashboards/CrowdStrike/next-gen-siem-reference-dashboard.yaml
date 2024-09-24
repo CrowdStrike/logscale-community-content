@@ -944,7 +944,7 @@ widgets:
     height: 6
     text: "This query displays sensors with multiple detection types. These can be\
       \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
-      \ SIEM workbench. \n\n1. Click on the `agent.id` you would like to view. \n\
+      \ SIEM workbench. \n\n1. Click on the `aid` you would like to view. \n\
       2. Click \"Create one-time incident\" after the results have loaded. \n3. Pivot\
       \ to the workbench to view the incident. The incident may take a short amount\
       \ of time to populate. \n\n**Note**: highlighted values will link to other components\
@@ -1604,7 +1604,7 @@ parameters:
     values:
       '0': Exclude
       '1': Required
-      '*': Not Required
+      '*': Optional
     type: list
     defaultValue: '*'
     width: 4
