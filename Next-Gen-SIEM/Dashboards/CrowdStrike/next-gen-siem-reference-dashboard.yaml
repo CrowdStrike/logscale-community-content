@@ -75,7 +75,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Incident Creation
-name: Next-Gen SIEM Reference Dashboard - v1.4.1
+name: Next-Gen SIEM Reference Dashboard - v1.4.2
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -339,7 +339,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^(Network|HTTP|Tls|User|DCS|Smb|Wmi|Command|Directory)|(BindIP)/
+          | #event_simpleName=/^Network/
           | (LocalAddressIP4=* OR RemoteAddressIP4=*)
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
@@ -513,7 +513,7 @@ widgets:
     text: |
       ```
       date: 2024-09-24
-      version: 1.4.1
+      version: 1.4.2
       ```
     width: 3
     title: ''
@@ -760,7 +760,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^(Network|HTTP|Tls|User|DCS|Smb|Wmi|Command|Directory)|(BindIP)/
+          | #event_simpleName=/^Network/
           | (LocalAddressIP4=* OR RemoteAddressIP4=*)
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
@@ -1268,7 +1268,7 @@ widgets:
       // Display the top TLDs.
       | timechart(dns.tld, limit=10)
     end: now
-    start: 30d
+    start: 1d
     width: 7
     y: 4
     interactions:
@@ -1410,24 +1410,24 @@ widgets:
     x: 3
     y: 0
     height: 6
-    text: "## Dashboard Summary\n\nThis dashboard is built to demonstrate both the\
-      \ [CrowdStrike Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
+    text: "## Summary\n\nThis dashboard is built to demonstrate both the [CrowdStrike\
+      \ Parsing Standard](https://library.humio.com/logscale-parsing-standard/pasta.html)\
       \ and the [CrowdStrike Query Language](https://library.humio.com/data-analysis/syntax.html).\
-      \ Further examples of the query language can be found [on the wiki](https://github.com/CrowdStrike/logscale-community-content/wiki).\n\
-      \n## Latest Version\n\nThe latest version of this dashboard can be found [on\
-      \ the GitHub repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
+      \ Further examples of the query language can be found [on the GitHub wiki](https://github.com/CrowdStrike/logscale-community-content/wiki).\n\
+      \n1. This dashboard is separated into sections. Scroll down and click on the\
+      \ left arrow for each section to expand the section.\n2. Specific data sources\
+      \ can be selected from the multi-pick parameter box at the top of the dashboard.\
+      \ By default it uses `*` to show all data sources.\n3. You can view all of the\
+      \ queries powering this dashboard by clicking *Edit* in the top-right followed\
+      \ by the *Show queries* button in the top-middle. Have a look at what powers\
+      \ the dashboard. \n4. Try new queries and widgets, modify existing ones, or\
+      \ build entirely new sections. Discover the flexibility of Next-Gen SIEM!\n\n\
+      ## Updates\n\nThe latest version of this dashboard can be found [on the GitHub\
+      \ repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
       \ \n\nTo import the latest version of this dashboard, just download [the raw\
       \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml)\
       \ from the repo. Click *Create dashboard -> Import dashboard* and select the\
-      \ YAML file that was downloaded. \n\n## Dashboard Instructions\n   \n1. This\
-      \ dashboard is separated into sections. Scroll down and click on the left arrow\
-      \ for each section to expand the section.\n2. Specific data sources can be selected\
-      \ from the multi-pick parameter box at the top of the dashboard. By default\
-      \ it uses `*` to show all data sources.\n3. You can view all of the queries\
-      \ powering this dashboard by clicking *Edit* in the top-right followed by the\
-      \ *Show queries* button in the top-middle. Have a look at what powers the dashboard.\
-      \ \n4. Try new queries and widgets, modify existing ones, or build entirely\
-      \ new sections. Discover the flexibility of Next-Gen SIEM!\n\n"
+      \ YAML file that was downloaded. \n\n"
     width: 6
     title: ''
     type: note
