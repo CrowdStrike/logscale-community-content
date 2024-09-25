@@ -1425,7 +1425,7 @@ widgets:
       ## Updates\n\nThe latest version of this dashboard can be found [on the GitHub\
       \ repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
       \ \n\nTo import the latest version of this dashboard, just download [the raw\
-      \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml)\
+      \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/next-gen-siem-reference-dashboard.yaml)\
       \ from the repo. Click *Create dashboard -> Import dashboard* and select the\
       \ YAML file that was downloaded. \n\n"
     width: 6
