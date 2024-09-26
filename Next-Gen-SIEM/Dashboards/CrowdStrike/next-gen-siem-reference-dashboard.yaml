@@ -823,7 +823,7 @@ widgets:
       | sort(count, limit=1000)
       | drop([ioc.actorName.exists])
     end: now
-    start: 1y
+    start: 1d
     width: 12
     options:
       cell-overflow: wrap-text
@@ -1012,21 +1012,15 @@ widgets:
           | #Vendor:="crowdstrike"
           | dns.domainName:=DomainName ;
         #type!=falcon-raw-data
-          | url.domain=*
-          | dns.domainName:=url.domain ;
-        #type!=falcon-raw-data
-          | source.domain=*
-          | dns.domainName:=source.domain ;
-        #type!=falcon-raw-data
-          | dns.question.name=*
-          | dns.domainName:=dns.question.name ;
+          | (url.domain=* OR source.domain=* OR dns.question.name=*)
+          | rename([[url.domain, dns.domainName], [source.domain, dns.domainName], [dns.question.name, dns.domainName]]) ;
       }
 
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
       // Search for IOCs.
-      | ioc:lookup(dns.domainName, type="domain", confidenceThreshold=unverified, strict=true)
+      | ioc:lookup([dns.domainName, dns.tld], type="domain", confidenceThreshold=unverified, strict=true)
       | ioc[0].labels!=/DomainType\/KnownGood/i
 
       // Extract fields from the IOCs.
