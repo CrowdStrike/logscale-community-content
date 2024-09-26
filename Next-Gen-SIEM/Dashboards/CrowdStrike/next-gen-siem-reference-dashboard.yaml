@@ -35,7 +35,7 @@ sections:
     - b3427008-ad73-4cee-9411-0536dbb67e03
     - d3bf7aaf-0866-4a49-9658-cdbd4537b4e2
     order: 3
-    title: IOC Queries
+    title: IOC Hunting
   section-1726164862426-1:
     collapsed: true
     timeSelector:
@@ -47,7 +47,7 @@ sections:
     - 0cf0fe05-224f-49e4-88fa-f8139b045881
     - 39c7025d-8b8d-483b-80d2-1f68f3cc1832
     order: 5
-    title: Entropy Functions
+    title: Anomalies
   section-1726164099750-0:
     collapsed: true
     timeSelector:
@@ -64,7 +64,7 @@ sections:
     - e56a243e-390f-43d7-a37a-5cd59319785c
     - 5777baf2-55e4-4311-ae40-6bd0457c32ec
     order: 1
-    title: Detection Queries
+    title: Detection Metrics
   section-1726164638427-0:
     collapsed: true
     timeSelector:
@@ -74,8 +74,8 @@ sections:
     - note-1725902925766-0
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
-    title: Incident Creation
-name: Next-Gen SIEM Reference Dashboard - v1.4.2
+    title: Possible Incidents
+name: Next-Gen SIEM Reference Dashboard - v1.4.3
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -512,8 +512,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-09-24
-      version: 1.4.2
+      date: 2024-09-26
+      version: 1.4.3
       ```
     width: 3
     title: ''
@@ -823,7 +823,7 @@ widgets:
       | sort(count, limit=20000)
       | drop([ioc.actorName.exists])
     end: now
-    start: 1d
+    start: 1y
     width: 12
     options:
       cell-overflow: wrap-text
@@ -914,7 +914,7 @@ widgets:
   note-1725902925766-0:
     x: 0
     y: 0
-    height: 6
+    height: 8
     text: "This query displays sensors with multiple detection types. These can be\
       \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
       \ SIEM workbench. \n\n1. Click on the `aid` you would like to view. \n2. Click\
@@ -1268,7 +1268,7 @@ widgets:
       // Display the top TLDs.
       | timechart(dns.tld, limit=10)
     end: now
-    start: 1d
+    start: 30d
     width: 7
     y: 4
     interactions:
@@ -1425,7 +1425,7 @@ widgets:
       ## Updates\n\nThe latest version of this dashboard can be found [on the GitHub\
       \ repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
       \ \n\nTo import the latest version of this dashboard, just download [the raw\
-      \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/next-gen-siem-reference-dashboard.yaml)\
+      \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml)\
       \ from the repo. Click *Create dashboard -> Import dashboard* and select the\
       \ YAML file that was downloaded. \n\n"
     width: 6
@@ -1434,7 +1434,7 @@ widgets:
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
     y: 0
-    height: 6
+    height: 8
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
@@ -1455,9 +1455,13 @@ widgets:
 
       // Grab enrichment data.
       | match(file="aid_master_main.csv", field=[aid], column=[aid], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
+      | case {
+          aid!=*
+              | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], strict=false)
+              | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
+              | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false) ;
+          * ;
+      }
 
       // Ensure we have an aid and ComputerName.
       | aid=* ComputerName=*
@@ -1470,7 +1474,7 @@ widgets:
       }
 
       // Group the results.
-      | groupBy(aid, function=[collect([ComputerName, #Vendor, threat.indicator.name], limit=10), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
+      | groupBy(aid, function=[collect([ComputerName, #Vendor, threat.indicator.name], limit=20), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
 
       // Ensure there's a risk score.
       | TotalRiskScore>0
@@ -1576,7 +1580,7 @@ parameters:
     order: 1
     values:
       '0': Exclude
-      '1': Require
+      '1': Required
       '*': Optional
     type: list
     defaultValue: '*'
