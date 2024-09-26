@@ -75,7 +75,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.4.3
+name: Next-Gen SIEM Reference Dashboard - v1.4.4
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -513,7 +513,7 @@ widgets:
     text: |
       ```
       date: 2024-09-26
-      version: 1.4.3
+      version: 1.4.4
       ```
     width: 3
     title: ''
@@ -560,7 +560,7 @@ widgets:
 
       // Format the output.
       | groupby([#Vendor, dns.domainName, dns.entropy], function=[selectLast(@timestamp), count(as=count)], limit=max)
-      | sort(dns.entropy, limit=20000)
+      | sort(dns.entropy, limit=1000)
       | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
       | rename([[@timestamp, lastSeen]])
 
@@ -666,7 +666,7 @@ widgets:
 
       // Format the results.
       | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
     end: now
     start: 1d
     width: 12
@@ -820,7 +820,7 @@ widgets:
       | ioc.actorName.exists=?ioc_actor_present
 
       // Sort the results.
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
       | drop([ioc.actorName.exists])
     end: now
     start: 1y
@@ -989,11 +989,11 @@ widgets:
     height: 3
     text: |-
       * [Data onboarding](/data-connectors/)
+      * [Advanced event search](/investigate/search)
+      * [Incidents](/xdr/incidents)
+      * [SOAR dashboard](/workflow/fusion/dashboard)
       * [Detection posture](/xdr/rules/detection-posture)
       * [Detections](/unified-detections)
-      * [Incidents](/xdr/incidents)
-      * [Advanced event search](/investigate/search)
-      * [SOAR dashboard](/workflow/fusion/dashboard)
     width: 3
     title: Next-Gen SIEM Components
     type: note
@@ -1075,7 +1075,7 @@ widgets:
       | ioc.actorName.exists=?ioc_actor_present
 
       // Sort the results.
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
 
       // Add a URL in markdown.
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
@@ -1122,7 +1122,7 @@ widgets:
       createEvents(["{\"Cell Color Legend\":\"Falcon Console Search\"}", "{\"Cell Color Legend\":\"Counter Adversary Operations\"}", "{\"Cell Color Legend\":\"Indicator Graph\"}", "{\"Cell Color Legend\":\"Identity Protection\"}"])
       | parseJson()
       | table("Cell Color Legend", limit=10)
-      | sort(limit=10)
+      | sort(field="Cell Color Legend", order=asc, limit=10)
     end: now
     start: 1d
     width: 3
@@ -1209,7 +1209,7 @@ widgets:
 
       // Format the results.
       | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
     end: now
     start: 1d
     width: 12
@@ -1420,10 +1420,11 @@ widgets:
       \ By default it uses `*` to show all data sources.\n3. You can view all of the\
       \ queries powering this dashboard by clicking *Edit* in the top-right followed\
       \ by the *Show queries* button in the top-middle. Have a look at what powers\
-      \ the dashboard. \n4. Try new queries and widgets, modify existing ones, or\
-      \ build entirely new sections. Discover the flexibility of Next-Gen SIEM!\n\n\
-      ## Updates\n\nThe latest version of this dashboard can be found [on the GitHub\
-      \ repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
+      \ the dashboard. You may need to clone the dashboard depending on permissions.\
+      \ This can be done from the upper-right menu. \n4. Try new queries and widgets,\
+      \ modify existing ones, or build entirely new sections. Discover the flexibility\
+      \ of Next-Gen SIEM!\n\n## Updates\n\nThe latest version of this dashboard can\
+      \ be found [on the GitHub repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
       \ \n\nTo import the latest version of this dashboard, just download [the raw\
       \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml)\
       \ from the repo. Click *Create dashboard -> Import dashboard* and select the\
@@ -1480,7 +1481,7 @@ widgets:
       | TotalRiskScore>0
 
       // Sort the results.
-      | sort(TotalRiskScore, limit=20000)
+      | sort(TotalRiskScore, limit=1000)
 
       // Add a URL in markdown.
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
@@ -1566,8 +1567,7 @@ $schema: https://schemas.humio.com/dashboard/v0.17.0
 parameters:
   Vendor:
     label: Vendor
-    query: 'case {   #type=falcon-raw-data     | #Vendor:="crowdstrike" ;   #type!=falcon-raw-data     |
-      * ; } | top(#Vendor, limit=100)'
+    query: top(#Vendor, limit=25) | sort(#Vendor, order=asc, limit=25)
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
