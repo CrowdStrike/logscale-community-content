@@ -1,0 +1,25 @@
+name: VEEAM
+fieldsToBeRemovedBeforeParsing: []
+testCases:
+- event:
+    rawString: <14>1 2024-09-20T08:35:12.053807-04:00 BKUP Veeam_MP - - [origin enterpriseId="91993"]
+      [categoryId=0 instanceId=10050 OibID="a5ace2d7-9288-4c5c-b2c3-94834099c5db"
+      OriginalOibID="a5ace2d7-9288-4c5c-b2c3-94834099c5db" VmRef="4e073d0d-5f78-4352-bb7d-dc76d4059dcc"
+      VmName="Win10-test-02" ServerName="vm-host.domain.local" DateTime="09/20/2024
+      12:35:12" IsCorrupted="False" Platform="1" StorageSize="5079302144" RepositoryID="39bde2f0-c9d4-4b18-a6f8-1234534342343"
+      IsFull="False" VbrHostName="BKUP" VbrVersion="12.2.0.334" Version="1" Description="Restore
+      point for VM 'Win10-test-02' has been removed by user SYSTEM."]
+$schema: https://schemas.humio.com/parser/v0.3.0
+script: "// VEEAM TIMESTAMP REQUIRED INCREASED PRECISION ON TIMESTAMP REQUIRED ADDING\
+  \ ADDITIONAL .SSSSSS FROM THE STANDARD .SSS\n/<(?<priority>\\d+)>(?<version>\\d+)\\\
+  s(?<@timestamp>\\S+)\\s+(?<host>\\S+)\\s+(?<app>\\S+)(?<msg>.*)/ | parseTimestamp(\"\
+  yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXX\", field=@timestamp)\n| kvParse() "
+tagFields:
+- Cps.version
+- Vendor
+- ecs.version
+- event.dataset
+- event.kind
+- event.module
+- event.outcome
+- observer.type
