@@ -1472,7 +1472,7 @@ widgets:
       // Check if the field exists and then map the indicator name to the score.
       | case {
           threat.indicator.name=*
-              | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
+              | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
           * ;
       }
 
@@ -1480,7 +1480,12 @@ widgets:
       | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
 
       // Group the results.
-      | groupBy(aid, function=[collect([ComputerName, productTypes, threat.indicator.name], limit=20), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
+      | groupBy(aid, function=[
+              collect([ComputerName, productTypes, threat.indicator.name], limit=20),
+              sum(event.severity, as=TotalRiskScore),
+              count(productTypes, distinct=true, as=ProductCount),
+              count(as=DetectionCount)],
+          limit=max)
 
       // Ensure there's a risk score.
       | TotalRiskScore>0
