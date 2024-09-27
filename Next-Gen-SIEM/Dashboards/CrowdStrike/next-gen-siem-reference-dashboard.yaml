@@ -75,7 +75,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.4.4
+name: Next-Gen SIEM Reference Dashboard - v1.4.5
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -512,8 +512,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-09-26
-      version: 1.4.4
+      date: 2024-09-27
+      version: 1.4.5
       ```
     width: 3
     title: ''
@@ -1020,7 +1020,7 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Search for IOCs.
-      | ioc:lookup([dns.domainName, dns.tld], type="domain", confidenceThreshold=unverified, strict=true)
+      | ioc:lookup([dns.domainName], type="domain", confidenceThreshold=unverified, strict=true)
       | ioc[0].labels!=/DomainType\/KnownGood/i
 
       // Extract fields from the IOCs.
@@ -1444,6 +1444,14 @@ widgets:
               | Ngsiem.detection.id=* ;
       }
 
+      // Rename events that might be missing the module value.
+      | case {
+          #event.module!=*
+              | rename([[Vendor.Product, #event.module]])
+              | #event.module:=lower(#event.module) ;
+          * ;
+      }
+
       // Rename fields to keep the names common.
       | rename([[agent.id, aid], [Vendor.SourceEndpointSensorId, aid], [Ngsiem.event.vendor, #Vendor], [Vendor.threat_id, threat.indicator.name]])
       | #Vendor:=lower(#Vendor)
@@ -1464,12 +1472,15 @@ widgets:
       // Check if the field exists and then map the indicator name to the score.
       | case {
           threat.indicator.name=*
-              | format(format="%s -> (%s)", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
+              | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
           * ;
       }
 
+      // Combine names to show where the alerts came from.
+      | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
+
       // Group the results.
-      | groupBy(aid, function=[collect([ComputerName, #Vendor, threat.indicator.name], limit=20), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
+      | groupBy(aid, function=[collect([ComputerName, productTypes, threat.indicator.name], limit=20), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
 
       // Ensure there's a risk score.
       | TotalRiskScore>0
