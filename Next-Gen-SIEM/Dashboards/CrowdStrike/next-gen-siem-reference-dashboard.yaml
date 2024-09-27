@@ -35,7 +35,7 @@ sections:
     - b3427008-ad73-4cee-9411-0536dbb67e03
     - d3bf7aaf-0866-4a49-9658-cdbd4537b4e2
     order: 3
-    title: IOC Queries
+    title: IOC Hunting
   section-1726164862426-1:
     collapsed: true
     timeSelector:
@@ -47,7 +47,7 @@ sections:
     - 0cf0fe05-224f-49e4-88fa-f8139b045881
     - 39c7025d-8b8d-483b-80d2-1f68f3cc1832
     order: 5
-    title: Entropy Functions
+    title: Anomalies
   section-1726164099750-0:
     collapsed: true
     timeSelector:
@@ -64,7 +64,7 @@ sections:
     - e56a243e-390f-43d7-a37a-5cd59319785c
     - 5777baf2-55e4-4311-ae40-6bd0457c32ec
     order: 1
-    title: Detection Queries
+    title: Detection Metrics
   section-1726164638427-0:
     collapsed: true
     timeSelector:
@@ -74,8 +74,8 @@ sections:
     - note-1725902925766-0
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
-    title: Incident Creation
-name: Next-Gen SIEM Reference Dashboard - v1.4.2
+    title: Possible Incidents
+name: Next-Gen SIEM Reference Dashboard - v1.4.4
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -512,8 +512,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-09-24
-      version: 1.4.2
+      date: 2024-09-26
+      version: 1.4.4
       ```
     width: 3
     title: ''
@@ -560,7 +560,7 @@ widgets:
 
       // Format the output.
       | groupby([#Vendor, dns.domainName, dns.entropy], function=[selectLast(@timestamp), count(as=count)], limit=max)
-      | sort(dns.entropy, limit=20000)
+      | sort(dns.entropy, limit=1000)
       | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
       | rename([[@timestamp, lastSeen]])
 
@@ -666,7 +666,7 @@ widgets:
 
       // Format the results.
       | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
     end: now
     start: 1d
     width: 12
@@ -820,7 +820,7 @@ widgets:
       | ioc.actorName.exists=?ioc_actor_present
 
       // Sort the results.
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
       | drop([ioc.actorName.exists])
     end: now
     start: 1d
@@ -914,7 +914,7 @@ widgets:
   note-1725902925766-0:
     x: 0
     y: 0
-    height: 6
+    height: 8
     text: "This query displays sensors with multiple detection types. These can be\
       \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
       \ SIEM workbench. \n\n1. Click on the `aid` you would like to view. \n2. Click\
@@ -989,11 +989,11 @@ widgets:
     height: 3
     text: |-
       * [Data onboarding](/data-connectors/)
+      * [Advanced event search](/investigate/search)
+      * [Incidents](/xdr/incidents)
+      * [SOAR dashboard](/workflow/fusion/dashboard)
       * [Detection posture](/xdr/rules/detection-posture)
       * [Detections](/unified-detections)
-      * [Incidents](/xdr/incidents)
-      * [Advanced event search](/investigate/search)
-      * [SOAR dashboard](/workflow/fusion/dashboard)
     width: 3
     title: Next-Gen SIEM Components
     type: note
@@ -1012,21 +1012,15 @@ widgets:
           | #Vendor:="crowdstrike"
           | dns.domainName:=DomainName ;
         #type!=falcon-raw-data
-          | url.domain=*
-          | dns.domainName:=url.domain ;
-        #type!=falcon-raw-data
-          | source.domain=*
-          | dns.domainName:=source.domain ;
-        #type!=falcon-raw-data
-          | dns.question.name=*
-          | dns.domainName:=dns.question.name ;
+          | (url.domain=* OR source.domain=* OR dns.question.name=*)
+          | rename([[url.domain, dns.domainName], [source.domain, dns.domainName], [dns.question.name, dns.domainName]]) ;
       }
 
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
       // Search for IOCs.
-      | ioc:lookup(dns.domainName, type="domain", confidenceThreshold=unverified, strict=true)
+      | ioc:lookup([dns.domainName, dns.tld], type="domain", confidenceThreshold=unverified, strict=true)
       | ioc[0].labels!=/DomainType\/KnownGood/i
 
       // Extract fields from the IOCs.
@@ -1075,7 +1069,7 @@ widgets:
       | ioc.actorName.exists=?ioc_actor_present
 
       // Sort the results.
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
 
       // Add a URL in markdown.
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
@@ -1122,7 +1116,7 @@ widgets:
       createEvents(["{\"Cell Color Legend\":\"Falcon Console Search\"}", "{\"Cell Color Legend\":\"Counter Adversary Operations\"}", "{\"Cell Color Legend\":\"Indicator Graph\"}", "{\"Cell Color Legend\":\"Identity Protection\"}"])
       | parseJson()
       | table("Cell Color Legend", limit=10)
-      | sort(limit=10)
+      | sort(field="Cell Color Legend", order=asc, limit=10)
     end: now
     start: 1d
     width: 3
@@ -1209,7 +1203,7 @@ widgets:
 
       // Format the results.
       | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
-      | sort(count, limit=20000)
+      | sort(count, limit=1000)
     end: now
     start: 1d
     width: 12
@@ -1268,7 +1262,7 @@ widgets:
       // Display the top TLDs.
       | timechart(dns.tld, limit=10)
     end: now
-    start: 1d
+    start: 30d
     width: 7
     y: 4
     interactions:
@@ -1420,12 +1414,13 @@ widgets:
       \ By default it uses `*` to show all data sources.\n3. You can view all of the\
       \ queries powering this dashboard by clicking *Edit* in the top-right followed\
       \ by the *Show queries* button in the top-middle. Have a look at what powers\
-      \ the dashboard. \n4. Try new queries and widgets, modify existing ones, or\
-      \ build entirely new sections. Discover the flexibility of Next-Gen SIEM!\n\n\
-      ## Updates\n\nThe latest version of this dashboard can be found [on the GitHub\
-      \ repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
+      \ the dashboard. You may need to clone the dashboard depending on permissions.\
+      \ This can be done from the upper-right menu. \n4. Try new queries and widgets,\
+      \ modify existing ones, or build entirely new sections. Discover the flexibility\
+      \ of Next-Gen SIEM!\n\n## Updates\n\nThe latest version of this dashboard can\
+      \ be found [on the GitHub repository](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards/CrowdStrike).\
       \ \n\nTo import the latest version of this dashboard, just download [the raw\
-      \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/next-gen-siem-reference-dashboard.yaml)\
+      \ YAML file](https://raw.githubusercontent.com/CrowdStrike/logscale-community-content/refs/heads/main/Next-Gen-SIEM/Dashboards/CrowdStrike/ng-siem-enablement-dashboard.yaml)\
       \ from the repo. Click *Create dashboard -> Import dashboard* and select the\
       \ YAML file that was downloaded. \n\n"
     width: 6
@@ -1434,7 +1429,7 @@ widgets:
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
     y: 0
-    height: 6
+    height: 8
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
@@ -1455,9 +1450,13 @@ widgets:
 
       // Grab enrichment data.
       | match(file="aid_master_main.csv", field=[aid], column=[aid], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
-      | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
+      | case {
+          aid!=*
+              | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
+              | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
+              | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false) ;
+          * ;
+      }
 
       // Ensure we have an aid and ComputerName.
       | aid=* ComputerName=*
@@ -1470,13 +1469,13 @@ widgets:
       }
 
       // Group the results.
-      | groupBy(aid, function=[collect([ComputerName, #Vendor, threat.indicator.name], limit=10), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
+      | groupBy(aid, function=[collect([ComputerName, #Vendor, threat.indicator.name], limit=20), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
 
       // Ensure there's a risk score.
       | TotalRiskScore>0
 
       // Sort the results.
-      | sort(TotalRiskScore, limit=20000)
+      | sort(TotalRiskScore, limit=1000)
 
       // Add a URL in markdown.
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
@@ -1562,8 +1561,7 @@ $schema: https://schemas.humio.com/dashboard/v0.17.0
 parameters:
   Vendor:
     label: Vendor
-    query: 'case {   #type=falcon-raw-data     | #Vendor:="crowdstrike" ;   #type!=falcon-raw-data     |
-      * ; } | top(#Vendor, limit=100)'
+    query: top(#Vendor, limit=25) | sort(#Vendor, order=asc, limit=25)
     timeInterval: 1d
     useDashboardTimeIfSet: true
     type: query
