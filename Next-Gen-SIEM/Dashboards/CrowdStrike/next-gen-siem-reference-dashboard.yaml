@@ -71,11 +71,12 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - parameter-panel-1727886406081-0
     - note-1725902925766-0
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.4.5
+name: Next-Gen SIEM Reference Dashboard - v1.5.0
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -331,6 +332,17 @@ widgets:
     title: Detections by Vendor Over Time
     isLive: false
     type: query
+  parameter-panel-1727886406081-0:
+    x: 2
+    y: 0
+    parameterIds:
+    - DetectionSourceCount
+    - included_productTypes
+    - min_or_equal_severity
+    height: 2
+    width: 10
+    title: Possible Incident Filters
+    type: parameterPanel
   d3bf7aaf-0866-4a49-9658-cdbd4537b4e2:
     x: 5
     y: 0
@@ -512,8 +524,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-09-27
-      version: 1.4.5
+      date: 2024-10-02
+      version: 1.5.0
       ```
     width: 3
     title: ''
@@ -914,14 +926,15 @@ widgets:
   note-1725902925766-0:
     x: 0
     y: 0
-    height: 8
+    height: 9
     text: "This query displays sensors with multiple detection types. These can be\
       \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
-      \ SIEM workbench. \n\n1. Click on the `aid` you would like to view. \n2. Click\
-      \ \"Create one-time incident\" after the results have loaded. \n3. Pivot to\
-      \ the workbench to view the incident. The incident may take a short amount of\
-      \ time to populate. \n\n**Note**: highlighted values will link to other components\
-      \ within the Falcon platform. "
+      \ SIEM workbench. \n\n1. Apply any required incident filters. The default values\
+      \ will include all detections that map to an Agent ID. \n2. Click on the `aid`\
+      \ you would like to view. \n3. Click \"Create one-time incident\" after the\
+      \ results have loaded. \n4. Pivot to the workbench to view the incident. The\
+      \ incident may take a short amount of time to populate. \n\n**Note**: highlighted\
+      \ values will link to other components within the Falcon platform. "
     width: 2
     title: ''
     type: note
@@ -1428,11 +1441,13 @@ widgets:
     type: note
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
-    y: 0
-    height: 8
+    y: 2
+    height: 7
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
+      | default(field=event.severity, value=0)
+      | event.severity>=?min_or_equal_severity
 
       // Identify events with NG-SIEM indicators.
       | #type=none
@@ -1462,12 +1477,13 @@ widgets:
           aid!=*
               | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
               | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
+              | match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
               | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false) ;
           * ;
       }
 
-      // Ensure we have an aid and ComputerName.
-      | aid=* ComputerName=*
+      // Ensure we have an aid.
+      | aid=*
 
       // Check if the field exists and then map the indicator name to the score.
       | case {
@@ -1479,13 +1495,19 @@ widgets:
       // Combine names to show where the alerts came from.
       | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
 
+      // Include from the drop-down.
+      | in(field=productTypes, values=[?included_productTypes])
+
       // Group the results.
       | groupBy(aid, function=[
               collect([ComputerName, productTypes, threat.indicator.name], limit=20),
               sum(event.severity, as=TotalRiskScore),
-              count(productTypes, distinct=true, as=ProductCount),
+              count(productTypes, distinct=true, as=DetectionSourceCount),
               count(as=DetectionCount)],
           limit=max)
+
+      // Filter for the minimum unique product count.
+      | DetectionSourceCount>=?DetectionSourceCount
 
       // Ensure there's a risk score.
       | TotalRiskScore>0
@@ -1575,6 +1597,53 @@ widgets:
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.17.0
 parameters:
+  DetectionSourceCount:
+    label: Minimum Unique Detection Sources
+    order: 1
+    type: text
+    defaultValue: '0'
+    width: 1
+    invalidInputPatterns:
+    - '[^\d+]'
+  included_productTypes:
+    label: Included Products
+    query: 'in(field=#Vendor, values=[?Vendor]) | default(field=event.severity, value=0)
+      | event.severity>=?min_or_equal_severity | #type=none | case {     Ngsiem.event.type="ngsiem-rule-trigger-event"         |
+      rename([[rule.name, threat.indicator.name], [Ngsiem.event.source_ips[0], source.ip],
+      [Ngsiem.event.hostnames[0], ComputerName], [Ngsiem.event.type, #event.module]])
+      ;     * ; } | case {     #event.module!=*         | rename([[Vendor.Product,
+      #event.module]])         | #event.module:=lower(#event.module) ;     * ; } |
+      rename([[agent.id, aid], [Vendor.SourceEndpointSensorId, aid], [Ngsiem.event.vendor,
+      #Vendor], [Vendor.threat_id, threat.indicator.name]]) | #Vendor:=lower(#Vendor)
+      | match(file="aid_master_main.csv", field=[aid], column=[aid], include=[aid,
+      ComputerName, LocalAddressIP4], strict=false) | case {     aid!=*         |
+      match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)         |
+      match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)         |
+      match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)          |
+      match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false) ;     *
+      ; } | aid=* | case {     threat.indicator.name=*         | format(format="%s\t->
+      %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name)
+      ;     * ; } | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
+      | groupby(productTypes, limit=100) | sort(productTypes, order=asc, limit=100)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 2
+    order: 2
+    valueField: productTypes
+  min_or_equal_severity:
+    label: Minimum Severity [0-100]
+    order: 0
+    type: text
+    defaultValue: '0'
+    width: 1
+    invalidInputPatterns:
+    - '[^\d+]'
   Vendor:
     label: Vendor
     query: top(#Vendor, limit=25) | sort(#Vendor, order=asc, limit=25)
@@ -1585,16 +1654,6 @@ parameters:
     width: 2
     order: 50
     valueField: '#Vendor'
-  ioc_actor_present:
-    label: Threat Actor Detection
-    order: 1
-    values:
-      '0': Exclude
-      '1': Require
-      '*': Optional
-    type: list
-    defaultValue: '*'
-    width: 4
   ioc_confidence_level:
     label: IOC Confidence Level
     order: 0
@@ -1604,6 +1663,16 @@ parameters:
       low: low
       unverified: unverified
       high: high
+    type: list
+    defaultValue: '*'
+    width: 4
+  ioc_actor_present:
+    label: Threat Actor Detection
+    order: 1
+    values:
+      '0': Exclude
+      '1': Require
+      '*': Optional
     type: list
     defaultValue: '*'
     width: 4
