@@ -16,6 +16,9 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - 351ed275-203b-4242-8f16-0be3e0269688
+    - 2463873a-0645-4f9e-8c8c-dbaf7b7c419c
+    - 67d29952-833b-4ee1-8254-639472715fe9
     - 7904f3b5-0d48-402e-93b7-88a708af3747
     - fa99cb2b-02a9-434e-b922-99f76f082229
     - 92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5
@@ -76,7 +79,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.5.0
+name: Next-Gen SIEM Reference Dashboard - v1.5.2
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -137,7 +140,7 @@ widgets:
     isLive: false
     type: query
   2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3:
-    x: 2
+    x: 0
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -173,8 +176,8 @@ widgets:
       | top(event.reason, limit=10)
     end: now
     start: 1d
-    width: 5
-    y: 0
+    width: 6
+    y: 8
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -277,61 +280,6 @@ widgets:
     title: High Entropy - TLDs
     isLive: false
     type: query
-  e56a243e-390f-43d7-a37a-5cd59319785c:
-    x: 2
-    height: 4
-    queryString: |-
-      // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
-        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=DetectionExcluded
-              | severity!="informational"
-              | #event.kind:="alert"
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-              | #event.kind="alert" ;
-      }
-
-      // Add a multipick array for value selection.
-      | in(field=#Vendor, values=[?Vendor])
-
-      // Build a timechart based on the vendor.
-      | timechart(#Vendor, limit=20)
-    end: now
-    start: 1d
-    width: 10
-    y: 0
-    interactions:
-    - name: filterClick
-      titleTemplate: '{{ fields.#Vendor }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
-        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
-        \    | #event.kind=\"alert\" ;\n} \n| #Vendor=?_Vendor"
-      useWidgetTimeWindow: true
-      arguments:
-        _Vendor: '["{{fields.#Vendor}}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
-    options:
-      series: {}
-      gradient: false
-      interpolation: step-after
-      showDataPoints: false
-      connect-points: false
-      stacking: none
-      yAxisScale: linear
-      plotType: area
-      regression: false
-      imputation: none
-    visualization: time-chart
-    title: Detections by Vendor Over Time
-    isLive: false
-    type: query
   parameter-panel-1727886406081-0:
     x: 2
     y: 0
@@ -400,6 +348,50 @@ widgets:
       interpolation: step-after
     visualization: time-chart
     title: IOC Matches - IP - Data Source
+    isLive: false
+    type: query
+  67d29952-833b-4ee1-8254-639472715fe9:
+    x: 8
+    height: 4
+    queryString: |-
+      // Search for Windows RDP events.
+      #event_simpleName=UserLogon
+      | event_platform="Win"
+      | LogonType=10
+
+      // Rename for parsing standards.
+      | rename([[RemoteIP, destination.ip], [UserName, user.name]])
+
+      // Ensure the destination.ip exists.
+      | destination.ip=*
+
+      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+      // Find the top 20 results.
+      | top([user.name], limit=10)
+    end: now
+    start: 1d
+    width: 4
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.user.name }}'
+      queryString: "#event_simpleName=UserLogon\n| event_platform=\"Win\"\n| LogonType=10\n\
+        | rename([[RemoteIP, destination.ip], [UserName, user.name]])\n| destination.ip=*\n\
+        | !match(file=\"aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4,\
+        \ strict=true)\n| user.name=?user_name "
+      useWidgetTimeWindow: true
+      arguments:
+        user_name: '["{{fields.user.name}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top RDP Users to Potentially Unmanaged Hosts
     isLive: false
     type: query
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
@@ -518,18 +510,6 @@ widgets:
     width: 2
     title: ''
     type: note
-  note-1726166476961-1:
-    x: 0
-    y: 0
-    height: 2
-    text: |
-      ```
-      date: 2024-10-02
-      version: 1.5.0
-      ```
-    width: 3
-    title: ''
-    type: note
   0cf0fe05-224f-49e4-88fa-f8139b045881:
     x: 2
     y: 0
@@ -635,7 +615,7 @@ widgets:
     type: query
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
     x: 0
-    y: 8
+    y: 16
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -697,7 +677,7 @@ widgets:
     isLive: false
     type: query
   fa99cb2b-02a9-434e-b922-99f76f082229:
-    x: 7
+    x: 6
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -736,8 +716,8 @@ widgets:
       | top(event.reason, limit=10)
     end: now
     start: 1d
-    width: 5
-    y: 0
+    width: 6
+    y: 8
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -921,6 +901,112 @@ widgets:
       isLive: false
       type: searchlink
     title: Detections - Tactic to Technique - Most Frequent
+    isLive: false
+    type: query
+  2463873a-0645-4f9e-8c8c-dbaf7b7c419c:
+    x: 2
+    height: 4
+    queryString: |-
+      // Search for Windows RDP events.
+      #event_simpleName=UserLogon
+      | event_platform="Win"
+      | LogonType=10
+
+      // Rename for parsing standards.
+      | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName, source.hostname]])
+
+      // Ensure the destination.ip exists.
+      | destination.ip=*
+
+      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+      // Add the ComputerName
+      | default(field=[source.hostname], value="-")
+      | format("%s  %s", field=[source.ip, source.hostname], as=source.details)
+
+      // Find the top 20 results.
+      | top([source.details, destination.ip], limit=15)
+
+      // Visualize the results.
+      | sankey(source="source.details", target="destination.ip")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.source }} -> {{ fields.target }}'
+      queryString: "#event_simpleName=UserLogon\n| event_platform=\"Win\"\n| LogonType=10\n\
+        | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName,\
+        \ source.hostname]])\n| destination.ip=*\n| !match(file=\"aid_master_main.csv\"\
+        , field=RemoteIP, column=LocalAddressIP4, strict=true)\n| default(field=[source.hostname],\
+        \ value=\"-\")\n| format(\"%s  %s\", field=[source.ip, source.hostname], as=source.details)\n\
+        | source.details=?source_details \n| destination.ip=?destination_ip "
+      useWidgetTimeWindow: true
+      arguments:
+        destination_ip: '["{{ fields.target }}"]'
+        source_details: '["{{ fields.source }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top RDP Sessions to Potentially Unmanaged Hosts
+    isLive: false
+    type: query
+  e56a243e-390f-43d7-a37a-5cd59319785c:
+    x: 2
+    height: 4
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+              | #event_simpleName=/Detection/
+              | #event_simpleName!=DetectionExcluded
+              | severity!="informational"
+              | #event.kind:="alert"
+              | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+              | #event.kind="alert" ;
+      }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
+      // Build a timechart based on the vendor.
+      | timechart(#Vendor, limit=20)
+    end: now
+    start: 1d
+    width: 10
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.#Vendor }}'
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
+        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
+        \    | #event.kind=\"alert\" ;\n} \n| #Vendor=?_Vendor"
+      useWidgetTimeWindow: true
+      arguments:
+        _Vendor: '["{{fields.#Vendor}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      showDataPoints: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Detections by Vendor Over Time
     isLive: false
     type: query
   note-1725902925766-0:
@@ -1172,7 +1258,7 @@ widgets:
     type: note
   7904f3b5-0d48-402e-93b7-88a708af3747:
     x: 0
-    y: 4
+    y: 12
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
@@ -1593,6 +1679,79 @@ widgets:
       gapBetweenRectangles: true
     visualization: heat-map
     title: Top Tactics and Techniques
+    isLive: false
+    type: query
+  note-1726166476961-1:
+    x: 0
+    y: 0
+    height: 2
+    text: |
+      ```
+      date: 2024-10-03
+      version: 1.5.2
+      ```
+    width: 3
+    title: ''
+    type: note
+  351ed275-203b-4242-8f16-0be3e0269688:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      // Search for Windows RDP events.
+      #event_simpleName=UserLogon
+      | event_platform="Win"
+      | LogonType=10
+
+      // Rename for parsing standards.
+      | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName, source.hostname], [UserName, user.name]])
+
+      // Ensure the destination.ip exists.
+      | destination.ip=*
+
+      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+      // Enrich the data.
+      | ipLocation(field=destination.ip)
+      | asn(field=destination.ip)
+
+      // Add default values.
+      | default(field=[destination.ip.city, destination.ip.state, destination.ip.country, destination.ip.org], value="-")
+
+      // Format the field order.
+      | groupBy([aid, source.hostname, source.ip, destination.ip, destination.ip.city, destination.ip.state, destination.ip.country, destination.ip.org],
+          function=[collect(user.name, limit=10), count(as=count)],
+          limit=max
+      )
+      // Sort the results.
+      | sort(field=count, limit=1000)
+
+      // Remove unnecessary fields.
+      | drop([destination.ip.asn, destination.ip.lat, destination.ip.lon])
+
+      // Include links to search.
+      | source.hostname:=format("[%s](/search/?term=_all:~'%s')", field=[source.hostname, source.hostname])
+      | source.ip:=format("[%s](/search/?term=_all:~'%s')", field=[source.ip, source.ip])
+      | destination.ip:=format("[%s](/search/?term=_all:~'%s')", field=[destination.ip, destination.ip])
+      | aid:=format("[%s](/hosts/hosts/host/%s/?filter=device_id:'%s')", field=[aid, cid, aid])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        aid:
+          color: '#126cc6'
+        destination.ip:
+          color: '#126cc6'
+        source.hostname:
+          color: '#126cc6'
+        source.ip:
+          color: '#126cc6'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: RDP Sessions to Potentially Unmanaged Hosts
     isLive: false
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.17.0
