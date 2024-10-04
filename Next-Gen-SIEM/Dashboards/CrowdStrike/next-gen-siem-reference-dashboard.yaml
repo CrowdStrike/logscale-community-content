@@ -79,7 +79,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.5.2
+name: Next-Gen SIEM Reference Dashboard - v1.5.3
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1480,13 +1480,10 @@ widgets:
       // Check to ensure the IP exists and it's routable.
       | case {
           destination.ip=*
-              | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
               | mapIp:=destination.ip ;
           aip=*
-              | !cidr(aip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
               | mapIp:=aip ;
           source.ip=*
-              | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
               | mapIp:=source.ip ;
       }
 
@@ -1689,8 +1686,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-10-03
-      version: 1.5.2
+      date: 2024-10-04
+      version: 1.5.3
       ```
     width: 3
     title: ''
