@@ -16,6 +16,9 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - 351ed275-203b-4242-8f16-0be3e0269688
+    - 2463873a-0645-4f9e-8c8c-dbaf7b7c419c
+    - 67d29952-833b-4ee1-8254-639472715fe9
     - 7904f3b5-0d48-402e-93b7-88a708af3747
     - fa99cb2b-02a9-434e-b922-99f76f082229
     - 92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5
@@ -71,11 +74,12 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - parameter-panel-1727886406081-0
     - note-1725902925766-0
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.4.4
+name: Next-Gen SIEM Reference Dashboard - v1.5.3
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -88,7 +92,7 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -136,13 +140,13 @@ widgets:
     isLive: false
     type: query
   2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3:
-    x: 2
-    height: 4
+    x: 0
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       | case {
           #type=falcon-raw-data
-              | #event_simpleName=/UserLogon$/
+              | #event_simpleName=/UserLogon$/F
               | #Vendor:="crowdstrike"
               | client.ip:=aip
               | user.name:=UserName
@@ -158,8 +162,8 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Ensure the user.name exists.
-      | user.name=/./
-      | user.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/
+      | user.name=/./F
+      | user.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/F
 
       // Alias the field if it does not exist.
       | case {
@@ -172,8 +176,8 @@ widgets:
       | top(event.reason, limit=10)
     end: now
     start: 1d
-    width: 5
-    y: 0
+    width: 6
+    y: 10
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -206,7 +210,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
           | destination.port:=RemotePort
@@ -227,9 +231,9 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
-      | dns.domainName=/^([a-z0-9]|\.).*?\./i
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
-      | dns.domainName!=/_/i
+      | dns.domainName=/^([a-z0-9]|\.).*?\./Fi
+      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/Fi
+      | dns.domainName!=/_/Fi
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
@@ -239,7 +243,7 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Extract the TLD with another regex.
-      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/
+      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/F
 
       // Display the top TLDs.
       | top(dns.tld, limit=10)
@@ -276,61 +280,17 @@ widgets:
     title: High Entropy - TLDs
     isLive: false
     type: query
-  e56a243e-390f-43d7-a37a-5cd59319785c:
+  parameter-panel-1727886406081-0:
     x: 2
-    height: 4
-    queryString: |-
-      // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
-        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/Detection/
-              | #event_simpleName!=DetectionExcluded
-              | severity!="informational"
-              | #event.kind:="alert"
-              | #Vendor:="crowdstrike" ;
-          #type!=falcon-raw-data
-              | #event.kind="alert" ;
-      }
-
-      // Add a multipick array for value selection.
-      | in(field=#Vendor, values=[?Vendor])
-
-      // Build a timechart based on the vendor.
-      | timechart(#Vendor, limit=20)
-    end: now
-    start: 1d
-    width: 10
     y: 0
-    interactions:
-    - name: filterClick
-      titleTemplate: '{{ fields.#Vendor }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
-        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
-        \    | #event.kind=\"alert\" ;\n} \n| #Vendor=?_Vendor"
-      useWidgetTimeWindow: true
-      arguments:
-        _Vendor: '["{{fields.#Vendor}}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
-    options:
-      series: {}
-      gradient: false
-      interpolation: step-after
-      showDataPoints: false
-      connect-points: false
-      stacking: none
-      yAxisScale: linear
-      plotType: area
-      regression: false
-      imputation: none
-    visualization: time-chart
-    title: Detections by Vendor Over Time
-    isLive: false
-    type: query
+    parameterIds:
+    - DetectionSourceCount
+    - included_productTypes
+    - min_or_equal_severity
+    height: 2
+    width: 10
+    title: Possible Incident Filters
+    type: parameterPanel
   d3bf7aaf-0866-4a49-9658-cdbd4537b4e2:
     x: 5
     y: 0
@@ -339,7 +299,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^Network/
+          | #event_simpleName=/^Network/F
           | (LocalAddressIP4=* OR RemoteAddressIP4=*)
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
@@ -357,8 +317,8 @@ widgets:
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
-      | regex("(^|,)((?<ioc.actorName>Actor\/.*?),|(?<ioc.malwareName>Malware\/.*?),)", field=ioc[0].labels, strict=false)
-      | regex("(^|,)(Vulnerability\/(?<ioc.CVE>.*?)(,|$))", field=ioc[0].labels, strict=false)
+      | regex("(^|,)((?<ioc.actorName>Actor\/.*?),|(?<ioc.malwareName>Malware\/.*?),)", field=ioc[0].labels, flags=F, strict=false)
+      | regex("(^|,)(Vulnerability\/(?<ioc.CVE>.*?)(,|$))", field=ioc[0].labels, flags=F, strict=false)
 
       // Rename fields for readability.
       | rename(field=[[ioc[0].malicious_confidence, ioc.confidence]])
@@ -390,6 +350,50 @@ widgets:
     title: IOC Matches - IP - Data Source
     isLive: false
     type: query
+  67d29952-833b-4ee1-8254-639472715fe9:
+    x: 8
+    height: 5
+    queryString: |-
+      // Search for Windows RDP events.
+      #event_simpleName=UserLogon
+      | event_platform="Win"
+      | LogonType=10
+
+      // Rename for parsing standards.
+      | rename([[RemoteIP, destination.ip], [UserName, user.name]])
+
+      // Ensure the destination.ip exists.
+      | destination.ip=*
+
+      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+      // Find the top 20 results.
+      | top([user.name], limit=10)
+    end: now
+    start: 1d
+    width: 4
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.user.name }}'
+      queryString: "#event_simpleName=UserLogon\n| event_platform=\"Win\"\n| LogonType=10\n\
+        | rename([[RemoteIP, destination.ip], [UserName, user.name]])\n| destination.ip=*\n\
+        | !match(file=\"aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4,\
+        \ strict=true)\n| user.name=?user_name "
+      useWidgetTimeWindow: true
+      arguments:
+        user_name: '["{{fields.user.name}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top RDP Users to Potentially Unmanaged Hosts
+    isLive: false
+    type: query
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
     x: 0
     y: 0
@@ -417,17 +421,17 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | #event_simpleName=/Detection/F
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/F
             | severity!="informational"
             | #event.kind:="alert"
             | threat.tactic.name[0]:=Tactic
             | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/./
+            | threat.technique.name[0]=/./F
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
             | #event.kind="alert" ;
@@ -499,23 +503,13 @@ widgets:
   692ee352-4067-4414-939a-c66985e8bd6b:
     x: 0
     y: 0
-    height: 4
-    text: 'This section shows failed logins across all data types. The data has been
-      enriched to include GeoIP and ASN details. These enrichment functions can be
-      applied to both first- and third-party data. '
+    height: 5
+    text: This section is related to authentication events from first- and third-party
+      data. CrowdStrike's first-party data can often be used as a replacement for
+      traditional log sources for these types of authentication queries, e.g. the
+      example of RDP sessions to unmanaged hosts. A large number of authentication-related
+      events are included in CrowdStrike sensor data by default.
     width: 2
-    title: ''
-    type: note
-  note-1726166476961-1:
-    x: 0
-    y: 0
-    height: 2
-    text: |
-      ```
-      date: 2024-09-26
-      version: 1.4.4
-      ```
-    width: 3
     title: ''
     type: note
   0cf0fe05-224f-49e4-88fa-f8139b045881:
@@ -526,7 +520,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
           | destination.port:=RemotePort
@@ -547,9 +541,9 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
-      | dns.domainName=/^([a-z0-9]|\.).*?\./i
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
-      | dns.domainName!=/_/i
+      | dns.domainName=/^([a-z0-9]|\.).*?\./Fi
+      | dns.domainName!=/_/Fi
+      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com|microsoft\.com|azureedge\.us|gstatic\.com)$/Fi
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
@@ -594,11 +588,11 @@ widgets:
     height: 2
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
-            | #event_simpleName=/Detection/
+            | #event_simpleName=/Detection/F
             | #event_simpleName!=DetectionExcluded
             | severity!="informational"
             | #event.kind:="alert"
@@ -623,13 +617,13 @@ widgets:
     type: query
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
     x: 0
-    y: 8
-    height: 4
+    y: 20
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFail/
+          | #event_simpleName=/UserLogonFail/F
           | #Vendor:="crowdstrike"
           | client.ip:=aip
           | user.name:=UserName
@@ -649,11 +643,11 @@ widgets:
       | asn(client.ip)
 
       // Ensure the user.name exists.
-      | user.name=/./
-      | user.name!=/^(-)$/i
+      | user.name=/./F
+      | user.name!=/^(-)$/Fi
 
       // Format the URL.
-      | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
+      | regex("^(?<user.name.stripped>.+?)(@|$)", flags=F, field=user.name, strict=false)
       | user.name.stripped:=lower(user.name.stripped)
       | user.name:=format("[%s](/search/?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
@@ -685,13 +679,13 @@ widgets:
     isLive: false
     type: query
   fa99cb2b-02a9-434e-b922-99f76f082229:
-    x: 7
-    height: 4
+    x: 6
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFail/
+          | #event_simpleName=/UserLogonFail/F
           | #Vendor:="crowdstrike"
           | client.ip:=aip
           | user.name:=UserName
@@ -711,8 +705,8 @@ widgets:
       | asn(client.ip)
 
       // Ensure the user.name exists.
-      | user.name=/./
-      | user.name!=/^(-)$/i
+      | user.name=/./F
+      | user.name!=/^(-)$/Fi
 
       // Alias the field if it does not exist.
       | case {
@@ -724,8 +718,8 @@ widgets:
       | top(event.reason, limit=10)
     end: now
     start: 1d
-    width: 5
-    y: 0
+    width: 6
+    y: 10
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -760,7 +754,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^Network/
+          | #event_simpleName=/^Network/F
           | (LocalAddressIP4=* OR RemoteAddressIP4=*)
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
@@ -779,12 +773,12 @@ widgets:
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
-      | regex("(^|,)((?<ioc.actorName>Actor\/.*?),|(?<ioc.malwareName>Malware\/.*?),)", field=ioc[0].labels, strict=false)
-      | regex("(^|,)(Vulnerability\/(?<ioc.CVE>.*?)(,|$))", field=ioc[0].labels, strict=false)
+      | regex("(^|,)((?<ioc.actorName>Actor\/.*?),|(?<ioc.malwareName>Malware\/.*?),)", field=ioc[0].labels, flags=F, strict=false)
+      | regex("(^|,)(Vulnerability\/(?<ioc.CVE>.*?)(,|$))", field=ioc[0].labels, flags=F, strict=false)
 
       | case {
           ioc.actorName=*
-            | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
+            | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, flags=F, strict=false)
             | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
             | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
             | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
@@ -859,17 +853,17 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | #event_simpleName=/Detection/F
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/F
             | severity!="informational"
             | #event.kind:="alert"
             | threat.tactic.name[0]:=Tactic
             | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/./
+            | threat.technique.name[0]=/./F
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
             | #event.kind="alert" ;
@@ -911,17 +905,124 @@ widgets:
     title: Detections - Tactic to Technique - Most Frequent
     isLive: false
     type: query
+  2463873a-0645-4f9e-8c8c-dbaf7b7c419c:
+    x: 2
+    height: 5
+    queryString: |-
+      // Search for Windows RDP events.
+      #event_simpleName=UserLogon
+      | event_platform="Win"
+      | LogonType=10
+
+      // Rename for parsing standards.
+      | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName, source.hostname]])
+
+      // Ensure the destination.ip exists.
+      | destination.ip=*
+
+      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+      // Add the ComputerName
+      | default(field=[source.hostname], value="-")
+      | format("%s  %s", field=[source.ip, source.hostname], as=source.details)
+
+      // Find the top 20 results.
+      | top([source.details, destination.ip], limit=15)
+
+      // Visualize the results.
+      | sankey(source="source.details", target="destination.ip")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.source }} -> {{ fields.target }}'
+      queryString: "#event_simpleName=UserLogon\n| event_platform=\"Win\"\n| LogonType=10\n\
+        | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName,\
+        \ source.hostname]])\n| destination.ip=*\n| !match(file=\"aid_master_main.csv\"\
+        , field=RemoteIP, column=LocalAddressIP4, strict=true)\n| default(field=[source.hostname],\
+        \ value=\"-\")\n| format(\"%s  %s\", field=[source.ip, source.hostname], as=source.details)\n\
+        | source.details=?source_details \n| destination.ip=?destination_ip "
+      useWidgetTimeWindow: true
+      arguments:
+        destination_ip: '["{{ fields.target }}"]'
+        source_details: '["{{ fields.source }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    title: Top RDP Sessions to Potentially Unmanaged Hosts
+    isLive: false
+    type: query
+  e56a243e-390f-43d7-a37a-5cd59319785c:
+    x: 2
+    height: 4
+    queryString: |-
+      // Filter to events with required fields, and rename fields to match CPS.
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
+      | case {
+          #type=falcon-raw-data
+              | #event_simpleName=/Detection/F
+              | #event_simpleName!=DetectionExcluded
+              | severity!="informational"
+              | #event.kind:="alert"
+              | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+              | #event.kind="alert" ;
+      }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
+      // Build a timechart based on the vendor.
+      | timechart(#Vendor, limit=20)
+    end: now
+    start: 1d
+    width: 10
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.#Vendor }}'
+      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
+        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
+        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
+        \    | #event.kind=\"alert\" ;\n} \n| #Vendor=?_Vendor"
+      useWidgetTimeWindow: true
+      arguments:
+        _Vendor: '["{{fields.#Vendor}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      gradient: false
+      interpolation: step-after
+      showDataPoints: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: area
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Detections by Vendor Over Time
+    isLive: false
+    type: query
   note-1725902925766-0:
     x: 0
     y: 0
-    height: 8
+    height: 9
     text: "This query displays sensors with multiple detection types. These can be\
       \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
-      \ SIEM workbench. \n\n1. Click on the `aid` you would like to view. \n2. Click\
-      \ \"Create one-time incident\" after the results have loaded. \n3. Pivot to\
-      \ the workbench to view the incident. The incident may take a short amount of\
-      \ time to populate. \n\n**Note**: highlighted values will link to other components\
-      \ within the Falcon platform. "
+      \ SIEM workbench. \n\n1. Apply any required incident filters. The default values\
+      \ will include all detections that map to an Agent ID. \n2. Click on the `aid`\
+      \ you would like to view. \n3. Click \"Create one-time incident\" after the\
+      \ results have loaded. \n4. Pivot to the workbench to view the incident. The\
+      \ incident may take a short amount of time to populate. \n\n**Note**: highlighted\
+      \ values will link to other components within the Falcon platform. "
     width: 2
     title: ''
     type: note
@@ -930,7 +1031,7 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -1005,7 +1106,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
           | destination.port:=RemotePort
@@ -1020,17 +1121,17 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Search for IOCs.
-      | ioc:lookup([dns.domainName, dns.tld], type="domain", confidenceThreshold=unverified, strict=true)
+      | ioc:lookup([dns.domainName], type="domain", confidenceThreshold=unverified, strict=true)
       | ioc[0].labels!=/DomainType\/KnownGood/i
 
       // Extract fields from the IOCs.
       | ioc[0].labels=*
-      | regex("(^|,)((?<ioc.actorName>Actor\/.*?),|(?<ioc.malwareName>Malware\/.*?),)", field=ioc[0].labels, strict=false)
-      | regex("(^|,)(Vulnerability\/(?<ioc.CVE>.*?)(,|$))", field=ioc[0].labels, strict=false)
+      | regex("(^|,)((?<ioc.actorName>Actor\/.*?),|(?<ioc.malwareName>Malware\/.*?),)", field=ioc[0].labels, flags=F, strict=false)
+      | regex("(^|,)(Vulnerability\/(?<ioc.CVE>.*?)(,|$))", field=ioc[0].labels, flags=F, strict=false)
 
       | case {
           ioc.actorName=*
-            | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
+            | regex("^Actor\/(?<ioc.actorName.firstName>.*?)(?<ioc.actorName.lastName>(BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, flags=F, strict=false)
             | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
             | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
             | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
@@ -1159,13 +1260,13 @@ widgets:
     type: note
   7904f3b5-0d48-402e-93b7-88a708af3747:
     x: 0
-    y: 4
-    height: 4
+    y: 15
+    height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
       | case {
           #type=falcon-raw-data
-              | #event_simpleName=/UserLogon$/
+              | #event_simpleName=/UserLogon$/F
               | #Vendor:="crowdstrike"
               | client.ip:=aip
               | user.name:=UserName
@@ -1186,11 +1287,11 @@ widgets:
       | asn(client.ip)
 
       // Ensure the user.name exists.
-      | user.name=/./
-      | user.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/
+      | user.name=/./F
+      | user.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/F
 
       // Format the URL.
-      | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
+      | regex("^(?<user.name.stripped>.+?)(@|$)", flags=F, field=user.name, strict=false)
       | user.name.stripped:=lower(user.name.stripped)
       | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
@@ -1224,7 +1325,7 @@ widgets:
       // Filter to events with required fields, and rename fields to match CPS.
       case {
         #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/
+          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
           | source.ip:=LocalAddressIP4
           | destination.ip:=RemoteAddressIP4
           | destination.port:=RemotePort
@@ -1245,9 +1346,9 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
-      | dns.domainName=/^([a-z0-9]|\.).*?\./i
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/i
-      | dns.domainName!=/_/i
+      | dns.domainName=/^([a-z0-9]|\.).*?\./Fi
+      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/Fi
+      | dns.domainName!=/_/Fi
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
@@ -1257,7 +1358,7 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Extract the TLD with another regex.
-      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/
+      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+?\.[a-z0-9]+?)$/F
 
       // Display the top TLDs.
       | timechart(dns.tld, limit=10)
@@ -1303,9 +1404,11 @@ widgets:
     height: 4
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+        OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
-            | #event_simpleName=/Detection/
+            | #event_simpleName=/Detection/F
             | #event_simpleName!=DetectionExcluded
             | severity!="informational"
             | #event.kind:="alert"
@@ -1319,7 +1422,7 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Find the top 10 event categories.
-      | Ngsiem.event.data_domain=/./
+      | Ngsiem.event.data_domain=/./F
       | top(Ngsiem.event.data_domain, limit=10)
     end: now
     start: 1d
@@ -1358,12 +1461,12 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=DetectionExcluded
+            | #event_simpleName=/Detection/F
+            | #event_simpleName!="DetectionExcluded"
             | severity!="informational"
             | #event.kind:="alert"
             | #Vendor:="crowdstrike"
@@ -1379,13 +1482,10 @@ widgets:
       // Check to ensure the IP exists and it's routable.
       | case {
           destination.ip=*
-              | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
               | mapIp:=destination.ip ;
           aip=*
-              | !cidr(aip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
               | mapIp:=aip ;
           source.ip=*
-              | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32", "::/0"])
               | mapIp:=source.ip ;
       }
 
@@ -1428,11 +1528,13 @@ widgets:
     type: note
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
-    y: 0
-    height: 8
+    y: 2
+    height: 7
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
+      | default(field=event.severity, value=0)
+      | event.severity>=?min_or_equal_severity
 
       // Identify events with NG-SIEM indicators.
       | #type=none
@@ -1442,6 +1544,14 @@ widgets:
           Ngsiem.parent.incident.id!=*
               | Ngsiem.parent.incident.id[0]!=*
               | Ngsiem.detection.id=* ;
+      }
+
+      // Rename events that might be missing the module value.
+      | case {
+          #event.module!=*
+              | rename([[Vendor.Product, #event.module]])
+              | #event.module:=lower(#event.module) ;
+          * ;
       }
 
       // Rename fields to keep the names common.
@@ -1454,22 +1564,37 @@ widgets:
           aid!=*
               | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
               | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
+              | match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
               | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false) ;
           * ;
       }
 
-      // Ensure we have an aid and ComputerName.
-      | aid=* ComputerName=*
+      // Ensure we have an aid.
+      | aid=*
 
       // Check if the field exists and then map the indicator name to the score.
       | case {
           threat.indicator.name=*
-              | format(format="%s -> (%s)", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
+              | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
           * ;
       }
 
+      // Combine names to show where the alerts came from.
+      | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
+
+      // Include from the drop-down.
+      | in(field=productTypes, values=[?included_productTypes])
+
       // Group the results.
-      | groupBy(aid, function=[collect([ComputerName, #Vendor, threat.indicator.name], limit=20), sum("event.severity", as=TotalRiskScore), count(as=DetectionCount)], limit=max)
+      | groupBy(aid, function=[
+              collect([ComputerName, productTypes, threat.indicator.name], limit=20),
+              sum(event.severity, as=TotalRiskScore),
+              count(productTypes, distinct=true, as=DetectionSourceCount),
+              count(as=DetectionCount)],
+          limit=max)
+
+      // Filter for the minimum unique product count.
+      | DetectionSourceCount>=?DetectionSourceCount
 
       // Ensure there's a risk score.
       | TotalRiskScore>0
@@ -1501,17 +1626,17 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)
+      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
-            | #event_simpleName=/Detection/
-            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/
+            | #event_simpleName=/Detection/F
+            | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/F
             | severity!="informational"
             | #event.kind:="alert"
             | threat.tactic.name[0]:=Tactic
             | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/./
+            | threat.technique.name[0]=/./F
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
             | #event.kind="alert" ;
@@ -1557,8 +1682,128 @@ widgets:
     title: Top Tactics and Techniques
     isLive: false
     type: query
+  note-1726166476961-1:
+    x: 0
+    y: 0
+    height: 2
+    text: |
+      ```
+      date: 2024-10-03
+      version: 1.5.3
+      ```
+    width: 3
+    title: ''
+    type: note
+  351ed275-203b-4242-8f16-0be3e0269688:
+    x: 0
+    y: 5
+    height: 5
+    queryString: |-
+      // Search for Windows RDP events.
+      #event_simpleName=UserLogon
+      | event_platform="Win"
+      | LogonType=10
+
+      // Rename for parsing standards.
+      | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName, source.hostname], [UserName, user.name]])
+
+      // Ensure the destination.ip exists.
+      | destination.ip=*
+
+      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+      // Enrich the data.
+      | ipLocation(field=destination.ip)
+      | asn(field=destination.ip)
+
+      // Add default values.
+      | default(field=[destination.ip.city, destination.ip.state, destination.ip.country, destination.ip.org], value="-")
+
+      // Format the field order.
+      | groupBy([aid, source.hostname, source.ip, destination.ip, destination.ip.city, destination.ip.state, destination.ip.country, destination.ip.org],
+          function=[collect(user.name, limit=10), count(as=count)],
+          limit=max
+      )
+      // Sort the results.
+      | sort(field=count, limit=1000)
+
+      // Remove unnecessary fields.
+      | drop([destination.ip.asn, destination.ip.lat, destination.ip.lon])
+
+      // Include links to search.
+      | source.hostname:=format("[%s](/search/?term=_all:~'%s')", field=[source.hostname, source.hostname])
+      | source.ip:=format("[%s](/search/?term=_all:~'%s')", field=[source.ip, source.ip])
+      | destination.ip:=format("[%s](/search/?term=_all:~'%s')", field=[destination.ip, destination.ip])
+      | aid:=format("[%s](/hosts/hosts/host/%s/?filter=device_id:'%s')", field=[aid, cid, aid])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        aid:
+          color: '#126cc6'
+        destination.ip:
+          color: '#126cc6'
+        source.hostname:
+          color: '#126cc6'
+        source.ip:
+          color: '#126cc6'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: RDP Sessions to Potentially Unmanaged Hosts
+    isLive: false
+    type: query
 $schema: https://schemas.humio.com/dashboard/v0.17.0
 parameters:
+  DetectionSourceCount:
+    label: Minimum Unique Detection Sources
+    order: 1
+    type: text
+    defaultValue: '0'
+    width: 1
+    invalidInputPatterns:
+    - '[^\d+]'
+  included_productTypes:
+    label: Included Products
+    query: 'in(field=#Vendor, values=[?Vendor]) | default(field=event.severity, value=0)
+      | event.severity>=?min_or_equal_severity | #type=none | case {     Ngsiem.event.type="ngsiem-rule-trigger-event"         |
+      rename([[rule.name, threat.indicator.name], [Ngsiem.event.source_ips[0], source.ip],
+      [Ngsiem.event.hostnames[0], ComputerName], [Ngsiem.event.type, #event.module]])
+      ;     * ; } | case {     #event.module!=*         | rename([[Vendor.Product,
+      #event.module]])         | #event.module:=lower(#event.module) ;     * ; } |
+      rename([[agent.id, aid], [Vendor.SourceEndpointSensorId, aid], [Ngsiem.event.vendor,
+      #Vendor], [Vendor.threat_id, threat.indicator.name]]) | #Vendor:=lower(#Vendor)
+      | match(file="aid_master_main.csv", field=[aid], column=[aid], include=[aid,
+      ComputerName, LocalAddressIP4], strict=false) | case {     aid!=*         |
+      match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)         |
+      match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)         |
+      match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)          |
+      match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4],
+      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false) ;     *
+      ; } | aid=* | case {     threat.indicator.name=*         | format(format="%s\t->
+      %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name)
+      ;     * ; } | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
+      | groupby(productTypes, limit=100) | sort(productTypes, order=asc, limit=100)'
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 2
+    order: 2
+    valueField: productTypes
+  min_or_equal_severity:
+    label: Minimum Severity [0-100]
+    order: 0
+    type: text
+    defaultValue: '0'
+    width: 1
+    invalidInputPatterns:
+    - '[^\d+]'
   Vendor:
     label: Vendor
     query: top(#Vendor, limit=25) | sort(#Vendor, order=asc, limit=25)
@@ -1569,16 +1814,6 @@ parameters:
     width: 2
     order: 50
     valueField: '#Vendor'
-  ioc_actor_present:
-    label: Threat Actor Detection
-    order: 1
-    values:
-      '0': Exclude
-      '1': Require
-      '*': Optional
-    type: list
-    defaultValue: '*'
-    width: 4
   ioc_confidence_level:
     label: IOC Confidence Level
     order: 0
@@ -1588,6 +1823,16 @@ parameters:
       low: low
       unverified: unverified
       high: high
+    type: list
+    defaultValue: '*'
+    width: 4
+  ioc_actor_present:
+    label: Threat Actor Detection
+    order: 1
+    values:
+      '0': Exclude
+      '1': Require
+      '*': Optional
     type: list
     defaultValue: '*'
     width: 4
