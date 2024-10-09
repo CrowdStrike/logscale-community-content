@@ -35,6 +35,7 @@
     Severity<100 | Sev:="5";
 }
 | groupBy([Sev, SeverityName], function=([count(detectID, as=SampleSize), avg(MTTReact, as=MTTReact), avg(MTTRespond, as=MTTRespond), avg(MTTResolve, as=MTTResolve)]))
+| SeverityName=*
 | sort(Sev, order=desc) 
 | drop([Sev])
 
