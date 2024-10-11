@@ -79,7 +79,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.5.4
+name: Next-Gen SIEM Reference Dashboard - v1.5.5
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -294,6 +294,7 @@ widgets:
     y: 0
     parameterIds:
     - DetectionSourceCount
+    - included_ProductModules
     - included_productTypes
     - min_or_equal_severity
     height: 2
@@ -1569,14 +1570,21 @@ widgets:
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
+
+      // Add a severity filter.
       | default(field=event.severity, value=0)
-      | event.severity>=?min_or_equal_severity
+      | event.severity>=?{min_or_equal_severity=0}
 
       // Identify events with NG-SIEM indicators.
-      | #type=none
+      | #type="none"
       | case {
           Ngsiem.event.type="ngsiem-rule-trigger-event"
-              | rename([[rule.name, threat.indicator.name], [Ngsiem.event.source_ips[0], source.ip], [Ngsiem.event.hostnames[0], ComputerName], [Ngsiem.event.type, #event.module]]) ;
+              | rename([
+                  [rule.name, threat.indicator.name],
+                  [Ngsiem.event.source_ips[0], source.ip],
+                  [Ngsiem.event.hostnames[0], ComputerName],
+                  [Ngsiem.event.type, #event.module]
+              ]) ;
           Ngsiem.parent.incident.id!=*
               | Ngsiem.parent.incident.id[0]!=*
               | Ngsiem.detection.id=* ;
@@ -1591,7 +1599,13 @@ widgets:
       }
 
       // Rename fields to keep the names common.
-      | rename([[agent.id, aid], [Vendor.SourceEndpointSensorId, aid], [Ngsiem.event.vendor, #Vendor], [Vendor.threat_id, threat.indicator.name]])
+      | rename([
+          [agent.id, aid],
+          [Vendor.SourceEndpointSensorId, aid],
+          [Ngsiem.event.vendor, #Vendor],
+          [Vendor.threat_id, threat.indicator],
+          [UserName, user.name]
+      ])
       | #Vendor:=lower(#Vendor)
 
       // Grab enrichment data.
@@ -1607,38 +1621,109 @@ widgets:
 
       // Ensure we have an aid.
       | aid=*
+      | aid!="NotMatched"
 
       // Check if the field exists and then map the indicator name to the score.
       | case {
           threat.indicator.name=*
-              | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name) ;
+              | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.asset) ;
           * ;
       }
 
       // Combine names to show where the alerts came from.
-      | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
+      | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes.asset)
 
-      // Include from the drop-down.
-      | in(field=productTypes, values=[?included_productTypes])
+      // Keep the asset and user values separate.
+      | rename([[event.severity, event.severity.asset]])
+
+      // Map events that have a username but no aid.
+      | join(
+          query={
+              Ngsiem.parent.incident.id!=*
+              | Ngsiem.parent.incident.id[0]!=*
+              | Ngsiem.detection.id=*
+              | user.name=* OR user.target.name=* OR email.to.address[0]=*
+              | agent.id!=*
+              | rename(field="user.target.name", as="user.name")
+              | default(field=event.severity, value=0)
+              | case {
+                  threat.indicator.name=*
+                      | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user) ;
+                  * ;
+              }
+              | case {
+                  #event.module!=*
+                      | rename([[Vendor.Product, #event.module]])
+                      | #event.module:=lower(#event.module) ;
+                  * ;
+              }
+              // Normalize the email address.
+              | case {
+                  email.to.address[0]=*
+                      | regex("(?<username>[^\@].*)@.+\.", field=email.to.address[0], flags=F)
+                      | rename(field="username", as="user.name");
+                  * ;
+              }
+              // Combine names to show where the alerts came from.
+              | rename([
+                  [event.module, #event.module],
+                  [event.severity, event.severity.user]
+              ])
+              | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes.user)
+              // Ensure we have real users.
+          },
+          field=[user.name],
+          include=[threat.indicator.map.user, productTypes.user, event.severity.user],
+          mode=left,
+          max=100
+      )
 
       // Group the results.
-      | groupBy(aid, function=[
-              collect([ComputerName, productTypes, threat.indicator.name], limit=20),
-              sum(event.severity, as=TotalRiskScore),
-              count(productTypes, distinct=true, as=DetectionSourceCount),
-              count(as=DetectionCount)],
-          limit=max)
+      | groupBy(aid,
+          function=[
+              collect([ComputerName, user.name, productTypes.asset, productTypes.user, threat.indicator.map.asset, threat.indicator.map.user], limit=1000),
+              sum(event.severity.asset, as=TotalAssetScore),
+              sum(event.severity.user, as=TotalUserScore),
+              count(productTypes.asset, distinct=true, as=AssetDetectionSourceCount),
+              count(productTypes.user, distinct=true, as=UserDetectionSourceCount),
+              count(as=DetectionCount)
+          ],
+          limit=max
+      )
 
-      // Filter for the minimum unique product count.
-      | DetectionSourceCount>=?DetectionSourceCount
+      // Get the total scores.
+      | TotalRiskScore:=TotalAssetScore+TotalUserScore
+      | UniqueDetectionSources:=AssetDetectionSourceCount+UserDetectionSourceCount
 
-      // Ensure there's a risk score.
-      | TotalRiskScore>0
+      // Filter for the minimum unique products count.
+      | UniqueDetectionSources>=?{DetectionSourceCount=0}
 
-      // Sort the results.
+      // Combine values.
+      | case {
+          threat.indicator.map.asset=* threat.indicator.map.user=*
+              | format(format="%s\n%s", field=[threat.indicator.map.asset, threat.indicator.map.user], as=threat.indicator.value) ;
+          threat.indicator.map.asset=*
+              | rename([[threat.indicator.map.asset, threat.indicator.value]]) ;
+          threat.indicator.map.user=*
+              | rename([[threat.indicator.map.user, threat.indicator.value]]) ;
+      }
+
+      | case {
+          productTypes.asset=* productTypes.user=*
+              | format(format="%s\n%s", field=[productTypes.asset, productTypes.user], as=ProductModules) ;
+          productTypes.asset=*
+              | rename([[productTypes.asset, ProductModules]]) ;
+          productTypes.user=*
+              | rename([[productTypes.user, ProductModules]]) ;
+      }
+
+      // Include from the drop-down.
+      | in(field=ProductModules, values=[?included_ProductModules])
+
+      // One last format of the output.
+      | default(field=user.name, value="-")
+      | groupby([aid, ComputerName, user.name, threat.indicator.value, ProductModules, TotalRiskScore, UniqueDetectionSources], function=[], limit=max)
       | sort(TotalRiskScore, limit=1000)
-
-      // Add a URL in markdown.
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
     end: now
     start: 1d
@@ -1724,8 +1809,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-10-08
-      version: 1.5.4
+      date: 2024-10-10
+      version: 1.5.5
       ```
     width: 3
     title: ''
@@ -1800,37 +1885,6 @@ parameters:
     width: 1
     invalidInputPatterns:
     - '[^\d+]'
-  included_productTypes:
-    label: Included Products
-    query: 'in(field=#Vendor, values=[?Vendor]) | default(field=event.severity, value=0)
-      | event.severity>=?min_or_equal_severity | #type=none | case {     Ngsiem.event.type="ngsiem-rule-trigger-event"         |
-      rename([[rule.name, threat.indicator.name], [Ngsiem.event.source_ips[0], source.ip],
-      [Ngsiem.event.hostnames[0], ComputerName], [Ngsiem.event.type, #event.module]])
-      ;     * ; } | case {     #event.module!=*         | rename([[Vendor.Product,
-      #event.module]])         | #event.module:=lower(#event.module) ;     * ; } |
-      rename([[agent.id, aid], [Vendor.SourceEndpointSensorId, aid], [Ngsiem.event.vendor,
-      #Vendor], [Vendor.threat_id, threat.indicator.name]]) | #Vendor:=lower(#Vendor)
-      | match(file="aid_master_main.csv", field=[aid], column=[aid], include=[aid,
-      ComputerName, LocalAddressIP4], strict=false) | case {     aid!=*         |
-      match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName],
-      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)         |
-      match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4],
-      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)         |
-      match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4],
-      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)          |
-      match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4],
-      include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false) ;     *
-      ; } | aid=* | case {     threat.indicator.name=*         | format(format="%s\t->
-      %s", field=[threat.indicator.name, event.severity], as=threat.indicator.name)
-      ;     * ; } | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
-      | groupby(productTypes, limit=100) | sort(productTypes, order=asc, limit=100)'
-    timeInterval: 1d
-    useDashboardTimeIfSet: true
-    type: query
-    defaultValue: '*'
-    width: 2
-    order: 2
-    valueField: productTypes
   min_or_equal_severity:
     label: Minimum Severity [0-100]
     order: 0
@@ -1839,6 +1893,35 @@ parameters:
     width: 1
     invalidInputPatterns:
     - '[^\d+]'
+  included_ProductModules:
+    label: Must Include
+    query: |-
+      in(field=#Vendor, values=[?Vendor])
+      | default(field=event.severity, value=0)
+      | #type=none
+      | case {
+          Ngsiem.event.type="ngsiem-rule-trigger-event"
+              | rename([[Ngsiem.event.type, #event.module]]) ;
+          Ngsiem.parent.incident.id!=*
+              | Ngsiem.parent.incident.id[0]!=*
+              | Ngsiem.detection.id=* ;
+      }
+      | case {
+          #event.module!=*
+              | rename([[Vendor.Product, #event.module]])
+              | #event.module:=lower(#event.module) ;
+          * ;
+      }
+      | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes)
+      | top(productTypes, limit=100)
+      | sort(productTypes, order=asc)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 2
+    order: 3
+    valueField: productTypes
   Vendor:
     label: Vendor
     query: top(#Vendor, limit=25) | sort(#Vendor, order=asc, limit=25)
