@@ -1725,7 +1725,6 @@ widgets:
       | groupby([aid, ComputerName, user.name, threat.indicator.value, ProductModules, TotalRiskScore, UniqueDetectionSources], function=[], limit=max)
       | sort(TotalRiskScore, limit=1000)
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
-      | aid:=format("[%s](/search/?term=_all:~'%s')", field=[aid, aid])
     end: now
     start: 1d
     width: 10
@@ -1761,6 +1760,7 @@ widgets:
         \ ;\n    text:contains(string=userArray, substring=user.target.name) ;\n}\n\
         | (user.name=* OR aid=*)"
       useWidgetTimeWindow: true
+      repoOrViewName:
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         aid: '["{{fields.aid}}"]'
@@ -1777,8 +1777,7 @@ widgets:
         agent.id:
           render-as: go_to_events_link
         aid:
-          color: '#126cc6'
-          render-as: link
+          render-as: value
       row-numbers-enabled: false
     visualization: table-view
     title: Risk Scores
