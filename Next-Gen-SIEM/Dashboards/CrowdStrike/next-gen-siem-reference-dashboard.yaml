@@ -1585,9 +1585,7 @@ widgets:
                   [Ngsiem.event.hostnames[0], ComputerName],
                   [Ngsiem.event.type, #event.module]
               ]) ;
-          Ngsiem.parent.incident.id!=*
-              | Ngsiem.parent.incident.id[0]!=*
-              | Ngsiem.detection.id=* ;
+          Ngsiem.detection.id=* ;
       }
 
       // Rename events that might be missing the module value.
@@ -1737,8 +1735,7 @@ widgets:
         ngsiem-rule-trigger-event\"\n      | rename([\n          [rule.name, threat.indicator.name],\n\
         \          [Ngsiem.event.source_ips[0], source.ip],\n          [Ngsiem.event.hostnames[0],\
         \ ComputerName],\n          [Ngsiem.event.type, #event.module]\n        ])\
-        \ ;\n    Ngsiem.parent.incident.id!=*\n      | Ngsiem.parent.incident.id[0]!=*\n\
-        \      | Ngsiem.detection.id=* ;\n}\n| case { \n    #event.module!=*\n   \
+        \ ;\n    Ngsiem.detection.id=* ;\n}\n| case { \n    #event.module!=*\n   \
         \   | rename([[Vendor.Product, #event.module]])\n      | lower(#event.module,\
         \ as=#event.module) ;\n    * ;\n}\n| rename([\n    [agent.id, aid],\n    [Vendor.SourceEndpointSensorId,\
         \ aid],\n    [Ngsiem.event.vendor, #Vendor],\n    [Vendor.threat_id, threat.indicator],\
@@ -1760,7 +1757,7 @@ widgets:
         \ ;\n    text:contains(string=userArray, substring=user.target.name) ;\n}\n\
         | (user.name=* OR aid=*)"
       useWidgetTimeWindow: true
-      repoOrViewName:
+      repoOrViewName: 
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         aid: '["{{fields.aid}}"]'
