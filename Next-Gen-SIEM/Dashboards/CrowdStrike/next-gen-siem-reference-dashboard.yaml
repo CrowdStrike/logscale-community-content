@@ -79,7 +79,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: NL - Next-Gen SIEM Reference Dashboard - v1.5.6
+name: Next-Gen SIEM Reference Dashboard - v1.5.7
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1881,8 +1881,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-10-10
-      version: 1.5.6
+      date: 2024-10-18
+      version: 1.5.7
       ```
     width: 3
     title: ''
