@@ -1752,15 +1752,15 @@ widgets:
         \ strict=false) ;\n    * ;\n}\n| rename([[user.target.name, user.name]])\n\
         | case { \n    email.to.address[0]=*\n      | regex(\"(?<username>[^\\@].*)@.+\\\
         .\", field=email.to.address[0], flags=F)\n      | rename(field=username, as=user.name)\
-        \ ;\n    * ;\n}\n| rename([[event.module, #event.module]])\n| userArray:=?userArray\n\
-        | case {\n    aid=?aid ;\n    text:contains(string=userArray, substring=user.name)\
-        \ ;\n    text:contains(string=userArray, substring=user.target.name) ;\n}\n\
+        \ ;\n    * ;\n}\n| rename([[event.module, #event.module]])\n| userList:=?userList\n\
+        | case {\n    aid=?aid ;\n    text:contains(string=userList, substring=user.name)\
+        \ ;\n    text:contains(string=userList, substring=user.target.name) ;\n}\n\
         | (user.name=* OR aid=*)"
       useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         aid: '["{{fields.aid}}"]'
-        userArray: '["{{ fields.user.name }}"]'
+        userList: '["{{ fields.user.name }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -1787,15 +1787,15 @@ widgets:
         \ strict=false) ;\n    * ;\n}\n| rename([[user.target.name, user.name]])\n\
         | case { \n    email.to.address[0]=*\n      | regex(\"(?<username>[^\\@].*)@.+\\\
         .\", field=email.to.address[0], flags=F)\n      | rename(field=username, as=user.name)\
-        \ ;\n    * ;\n}\n| rename([[event.module, #event.module]])\n| userArray:=?userArray\n\
-        | case {\n    aid=?aid ;\n    text:contains(string=userArray, substring=user.name)\
-        \ ;\n    text:contains(string=userArray, substring=user.target.name) ;\n}\n\
+        \ ;\n    * ;\n}\n| rename([[event.module, #event.module]])\n| userList:=?userList\n\
+        | case {\n    aid=?aid ;\n    text:contains(string=userList, substring=user.name)\
+        \ ;\n    text:contains(string=userList, substring=user.target.name) ;\n}\n\
         | (user.name=* OR aid=*)"
       useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         aid: '["{{fields.aid}}"]'
-        userArray: '["{{ fields.user.name }}"]'
+        userList: '["{{ fields.user.name }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
