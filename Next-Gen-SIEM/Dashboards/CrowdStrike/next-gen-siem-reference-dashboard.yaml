@@ -79,7 +79,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.5.6
+name: NL - Next-Gen SIEM Reference Dashboard - v1.5.6
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1048,7 +1048,7 @@ widgets:
       \ SIEM workbench. \n\n1. Apply any required incident filters. The default values\
       \ will include all detections that map to an Agent ID. \n2. Click on the `⋮\
       ` next to the aid you would like to create an incident for, followed by *Search\
-      \ Related Events*. \n3. Click \"Create one-time incident\" after the results\
+      \ Detection Events*. \n3. Click \"Create one-time incident\" after the results\
       \ have loaded. \n4. Pivot to the workbench to view the incident. The incident\
       \ may take a short amount of time to populate. \n\n**Note**: highlighted values\
       \ will link to other components within the Falcon platform. "
@@ -1728,8 +1728,8 @@ widgets:
     width: 10
     y: 2
     interactions:
-    - name: clickIncident
-      titleTemplate: Search Related Events
+    - name: searchDetections
+      titleTemplate: Search Detection Events
       queryString: "in(field=#Vendor, values=[?Vendor])\n| default(field=event.severity,\
         \ value=0)\n| event.severity>=0\n| #type=\"none\"\n| case { \n    Ngsiem.event.type=\"\
         ngsiem-rule-trigger-event\"\n      | rename([\n          [rule.name, threat.indicator.name],\n\
@@ -1757,7 +1757,41 @@ widgets:
         \ ;\n    text:contains(string=userArray, substring=user.target.name) ;\n}\n\
         | (user.name=* OR aid=*)"
       useWidgetTimeWindow: true
-      repoOrViewName: 
+      arguments:
+        Vendor: '["{{ parameters.Vendor }}"]'
+        aid: '["{{fields.aid}}"]'
+        userArray: '["{{ fields.user.name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    - name: searchAll
+      titleTemplate: Search All Events
+      queryString: "in(field=#Vendor, values=[?Vendor])\n| case { \n    Ngsiem.event.type=\"\
+        ngsiem-rule-trigger-event\"\n      | rename([\n          [rule.name, threat.indicator.name],\n\
+        \          [Ngsiem.event.source_ips[0], source.ip],\n          [Ngsiem.event.hostnames[0],\
+        \ ComputerName],\n          [Ngsiem.event.type, #event.module]\n        ])\
+        \ ;\n    * ;\n}\n| case { \n    #event.module!=*\n      | rename([[Vendor.Product,\
+        \ #event.module]])\n      | lower(#event.module, as=#event.module) ;\n   \
+        \ * ;\n}\n| rename([\n    [agent.id, aid],\n    [Vendor.SourceEndpointSensorId,\
+        \ aid],\n    [Ngsiem.event.vendor, #Vendor],\n    [Vendor.threat_id, threat.indicator],\
+        \ \n    [UserName, user.name]\n  ])\n| lower(#Vendor, as=#Vendor)\n| match(file=\"\
+        aid_master_main.csv\", field=aid, column=aid, include=[aid, ComputerName,\
+        \ LocalAddressIP4], strict=false)\n| case { \n    aid!=*\n      | match(file=\"\
+        aid_master_main.csv\", field=ComputerName, column=ComputerName, include=[aid,\
+        \ ComputerName, LocalAddressIP4], nrows=10, strict=false)\n      | match(file=\"\
+        aid_master_main.csv\", field=source.ip, column=LocalAddressIP4, include=[aid,\
+        \ ComputerName, LocalAddressIP4], nrows=10, strict=false)\n      | match(file=\"\
+        aid_master_main.csv\", field=client.ip, column=LocalAddressIP4, include=[aid,ComputerName,LocalAddressIP4],\
+        \ nrows=10, strict=false)\n      | match(file=\"aid_master_main.csv\", field=destination.ip,\
+        \ column=LocalAddressIP4, include=[aid, ComputerName, LocalAddressIP4], nrows=10,\
+        \ strict=false) ;\n    * ;\n}\n| rename([[user.target.name, user.name]])\n\
+        | case { \n    email.to.address[0]=*\n      | regex(\"(?<username>[^\\@].*)@.+\\\
+        .\", field=email.to.address[0], flags=F)\n      | rename(field=username, as=user.name)\
+        \ ;\n    * ;\n}\n| rename([[event.module, #event.module]])\n| userArray:=?userArray\n\
+        | case {\n    aid=?aid ;\n    text:contains(string=userArray, substring=user.name)\
+        \ ;\n    text:contains(string=userArray, substring=user.target.name) ;\n}\n\
+        | (user.name=* OR aid=*)"
+      useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         aid: '["{{fields.aid}}"]'
