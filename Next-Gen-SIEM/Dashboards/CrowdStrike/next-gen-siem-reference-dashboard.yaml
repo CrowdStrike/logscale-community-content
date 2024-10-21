@@ -1422,7 +1422,7 @@ widgets:
       // Display the top TLDs.
       | timechart(dns.tld, limit=10)
     end: now
-    start: 30d
+    start: 1d
     width: 7
     y: 0
     interactions:
