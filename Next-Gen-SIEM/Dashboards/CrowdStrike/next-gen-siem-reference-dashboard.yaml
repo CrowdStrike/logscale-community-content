@@ -45,6 +45,7 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - parameter-panel-1729528639988-0
     - de526ba2-2994-48ab-b5fa-7f3a8f8eeee6
     - 987bb4eb-028e-4f66-b773-a12a05f1d1c4
     - 0cf0fe05-224f-49e4-88fa-f8139b045881
@@ -79,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.5.7
+name: Next-Gen SIEM Reference Dashboard - v1.5.8
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -216,24 +217,27 @@ widgets:
     x: 0
     height: 4
     queryString: |-
+      // Add a parameter for entropy.
+      entropyValue:=?entropyValue
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
-          | source.ip:=LocalAddressIP4
-          | destination.ip:=RemoteAddressIP4
-          | destination.port:=RemotePort
-          | #Vendor:="crowdstrike"
-          | dns.domainName:=DomainName ;
-        #type!=falcon-raw-data
-          | url.domain=*
-          | dns.domainName:=url.domain ;
-        #type!=falcon-raw-data
-          | source.domain=*
-          | dns.domainName:=source.domain ;
-        #type!=falcon-raw-data
-          | dns.question.name=*
-          | dns.domainName:=dns.question.name ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
+            | source.ip:=LocalAddressIP4
+            | destination.ip:=RemoteAddressIP4
+            | destination.port:=RemotePort
+            | #Vendor:="crowdstrike"
+            | dns.domainName:=DomainName ;
+          #type!=falcon-raw-data
+            | url.domain=*
+            | dns.domainName:=url.domain ;
+          #type!=falcon-raw-data
+            | source.domain=*
+            | dns.domainName:=source.domain ;
+          #type!=falcon-raw-data
+            | dns.question.name=*
+            | dns.domainName:=dns.question.name ;
       }
 
       // Add a multipick array for value selection.
@@ -241,12 +245,12 @@ widgets:
 
       // Filter for Internet DNS names.
       | dns.domainName=/^([a-z0-9]|\.).*?\./Fi
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/Fi
+      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com|microsoft\.com|azureedge\.us|gstatic\.com)$/Fi
       | dns.domainName!=/_/Fi
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
-      | _shannonentropy>4.2
+      | test(_shannonentropy>=entropyValue)
 
       // Round to 1 decimal place.
       | dns.entropy:=format("%.1f", field=_shannonentropy)
@@ -258,7 +262,7 @@ widgets:
       | top(dns.tld, limit=10)
     end: now
     start: 1d
-    width: 5
+    width: 4
     y: 4
     interactions:
     - name: filterClick
@@ -421,7 +425,8 @@ widgets:
     height: 4
     text: "This section demonstrates the use of the [ioc:lookup](https://library.humio.com/data-analysis/functions-ioc-lookup.html)\
       \ function. This can be applied to IPs, domains, and URLs for both first- and\
-      \ third-party data.\n\n**Note**: highlighted values will link to other components\
+      \ third-party data. The confidence level must be selected for the query to execute,\
+      \ e.g. *all*. \n\n**Note**: highlighted values will link to other components\
       \ within the Falcon platform. "
     width: 2
     title: ''
@@ -493,6 +498,15 @@ widgets:
     width: 3
     title: IOC Filter
     type: parameterPanel
+  parameter-panel-1729528639988-0:
+    x: 2
+    y: 0
+    parameterIds:
+    - entropyValue
+    height: 4
+    width: 3
+    title: Entropy Value
+    type: parameterPanel
   d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
     x: 0
     y: 2
@@ -523,28 +537,31 @@ widgets:
     title: ''
     type: note
   0cf0fe05-224f-49e4-88fa-f8139b045881:
-    x: 2
-    y: 0
+    x: 4
+    y: 4
     height: 4
     queryString: |-
+      // Add a parameter for entropy.
+      entropyValue:=?entropyValue
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
-          | source.ip:=LocalAddressIP4
-          | destination.ip:=RemoteAddressIP4
-          | destination.port:=RemotePort
-          | #Vendor:="crowdstrike"
-          | dns.domainName:=DomainName ;
-        #type!=falcon-raw-data
-          | url.domain=*
-          | dns.domainName:=url.domain ;
-        #type!=falcon-raw-data
-          | source.domain=*
-          | dns.domainName:=source.domain ;
-        #type!=falcon-raw-data
-          | dns.question.name=*
-          | dns.domainName:=dns.question.name ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
+            | source.ip:=LocalAddressIP4
+            | destination.ip:=RemoteAddressIP4
+            | destination.port:=RemotePort
+            | #Vendor:="crowdstrike"
+            | dns.domainName:=DomainName ;
+          #type!=falcon-raw-data
+            | url.domain=*
+            | dns.domainName:=url.domain ;
+          #type!=falcon-raw-data
+            | source.domain=*
+            | dns.domainName:=source.domain ;
+          #type!=falcon-raw-data
+            | dns.question.name=*
+            | dns.domainName:=dns.question.name ;
       }
 
       // Add a multipick array for value selection.
@@ -557,7 +574,7 @@ widgets:
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
-      | _shannonentropy>4.2
+      | test(_shannonentropy>=entropyValue)
 
       // Round to 1 decimal place.
       | dns.entropy:=format("%.1f", field=_shannonentropy)
@@ -572,7 +589,7 @@ widgets:
       | dns.domainName:=format("[%s](/search/?term=_all:~'%s')", field=[dns.domainName, dns.domainName])
     end: now
     start: 1d
-    width: 10
+    width: 8
     options:
       cell-overflow: wrap-text
       configured-columns:
@@ -1281,9 +1298,10 @@ widgets:
     x: 0
     y: 0
     height: 4
-    text: 'This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)
-      function. This can be applied to any field and returns the entropy value. A
-      high entropy value generally translates to unique or interesting data. '
+    text: "This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)\
+      \ function for finding unique or interesting data.\n\nA minimum entropy level\
+      \ must be provided for the query to execute, e.g. *4*. The value range is generally\
+      \ 0 - 5, with a higher number being more unique. \n\n "
     width: 2
     title: ''
     type: note
@@ -1360,24 +1378,27 @@ widgets:
     x: 5
     height: 4
     queryString: |-
+      // Add a parameter for entropy.
+      entropyValue:=?entropyValue
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
-          | source.ip:=LocalAddressIP4
-          | destination.ip:=RemoteAddressIP4
-          | destination.port:=RemotePort
-          | #Vendor:="crowdstrike"
-          | dns.domainName:=DomainName ;
-        #type!=falcon-raw-data
-          | url.domain=*
-          | dns.domainName:=url.domain ;
-        #type!=falcon-raw-data
-          | source.domain=*
-          | dns.domainName:=source.domain ;
-        #type!=falcon-raw-data
-          | dns.question.name=*
-          | dns.domainName:=dns.question.name ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
+            | source.ip:=LocalAddressIP4
+            | destination.ip:=RemoteAddressIP4
+            | destination.port:=RemotePort
+            | #Vendor:="crowdstrike"
+            | dns.domainName:=DomainName ;
+          #type!=falcon-raw-data
+            | url.domain=*
+            | dns.domainName:=url.domain ;
+          #type!=falcon-raw-data
+            | source.domain=*
+            | dns.domainName:=source.domain ;
+          #type!=falcon-raw-data
+            | dns.question.name=*
+            | dns.domainName:=dns.question.name ;
       }
 
       // Add a multipick array for value selection.
@@ -1385,12 +1406,12 @@ widgets:
 
       // Filter for Internet DNS names.
       | dns.domainName=/^([a-z0-9]|\.).*?\./Fi
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com)$/Fi
+      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com|microsoft\.com|azureedge\.us|gstatic\.com)$/Fi
       | dns.domainName!=/_/Fi
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
-      | _shannonentropy>4.2
+      | test(_shannonentropy>=entropyValue)
 
       // Round to 1 decimal place.
       | dns.entropy:=format("%.1f", field=_shannonentropy)
@@ -1403,7 +1424,7 @@ widgets:
     end: now
     start: 30d
     width: 7
-    y: 4
+    y: 0
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
@@ -1882,7 +1903,7 @@ widgets:
     text: |
       ```
       date: 2024-10-18
-      version: 1.5.7
+      version: 1.5.8
       ```
     width: 3
     title: ''
@@ -2014,8 +2035,14 @@ parameters:
       unverified: unverified
       high: high
     type: list
-    defaultValue: '*'
     width: 4
+  entropyValue:
+    label: Minimum Entropy Value
+    order: 1
+    type: text
+    width: 4
+    invalidInputPatterns:
+    - ^[^\d*\.?\d+$]
   ioc_actor_present:
     label: Threat Actor Detection
     order: 1
