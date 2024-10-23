@@ -73,7 +73,6 @@ DeskShare,DSGuest.exe
 DW Service,dwagent.exe
 DW Service,dwagsvc.exe
 DameWare,dwrcs.exe
-eHorus,ehorus standalone.exe
 Pandora RC (eHorus),ehorus_agent.exe
 ESET Remote Administrator,einstaller.exe
 ESET Remote Administrator,era.exe
@@ -86,9 +85,6 @@ ezHelp,ezHelpManager.exe
 FastViewer,fastclient.exe
 FastViewer,fastmaster.exe
 FastViewer,FastViewer.exe
-FixMe.it,FixMeit Client.exe
-FixMe.it,FixMeit Expert Setup.exe
-FixMe.it,FixMeit Unattended Access Setup.exe
 FixMe.it,fixmeitclient.exe
 FleetDeck.io,fleetdeck_agent_svc.exe
 FleetDeck.io,fleetdeck_agent.exe
