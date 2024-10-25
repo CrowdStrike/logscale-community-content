@@ -1,0 +1,397 @@
+﻿rmm_program,rmm_binary
+Senso.cloud,aadg.exe
+Ericom AccessNow,accessserver.exe
+Acronis Cyber Protect (Remotix),AcronisCyberProtectConnectAgent.exe
+CentraStage (Now Datto),AEMAgent.exe
+AeroAdmin,aeroadmin.exe
+IntelliAdmin Remote Control,agent_setup_5.exe
+IntelliAdmin Remote Control,agent32.exe
+IntelliAdmin Remote Control,agent64.exe
+Ivanti Remote Control,AgentlessRC.exe
+RemoteCall,agentu.exe
+AliWangWang-remote-control,alitask.exe
+Alpemix,AlpemixService.exe
+Anyplace Control,apc_host.exe
+Ivanti Remote Control,ArcUI.exe
+Atera,atera_agent.exe
+Atera,ateraagent.exe
+Auvik,auvik.agent.exe
+Auvik,auvik.engine.exe
+AweRay,AweSun.exe
+pcAnywhere,awhost32.exe
+pcAnywhere,awrem32.exe
+N-Able Advanced Monitoring Agent,BASEClient.exe
+N-Able Advanced Monitoring Agent or BeAnyWhere,BASupApp.exe
+BeAnyWhere,BASupAppElev.exe
+BeAnyWhere,BASupAppSrvc.exe
+N-Able Advanced Monitoring Agent or BeAnyWhere,BASupSrvc.exe
+N-Able Advanced Monitoring Agent,BASupSrvcCnfg.exe
+BeAnyWhere,basupsrvcupdate.exe
+BeAnyWhere,BASupSysInf.exe
+N-Able Advanced Monitoring Agent or BeAnyWhere,BASupTSHelper.exe
+BeamYourScreen,beamyourscreen-host.exe
+BeamYourScreen,beamyourscreen.exe
+BeyondTrust (Bomgar),bomgar-pac.exe
+BeyondTrust (Bomgar),bomgar-rdp.exe
+BeyondTrust (Bomgar),bomgar-scc.exe
+CentraStage (Now Datto),CagService.exe
+MSP360,cbb.exe
+MSP360,CBBackupPlan.exe
+NetSupport Manager,client32.exe
+Sophos-Remote Management System,clientmrinit.exe
+MSP360,Cloud.Backup.RM.Service.exe
+MSP360,Cloud.Backup.Scheduler.exe
+CloudFlare Tunnel,cloudflared.exe
+MSP360,CloudRaCmd.exe
+MSP360,CloudRaSd.exe
+MSP360,CloudRaService.exe
+MSP360,CloudRaUtilities.exe
+Itarian,ComodoRemoteControl.exe
+Adobe Connect or MSP360,Connect.exe
+Adobe Connect,ConnectDetector.exe
+ConnectWise Control,connectwisechat-customer.exe
+ConnectWise Control,connectwisecontrol.client.exe
+CrossLoop,CrossLoopConnect.exe
+CrossLoop,crossloopservice.exe
+Absolute (Computrace),ctes.exe
+Absolute (Computrace),cteshostsvc.exe
+Absolute (Computrace),ctespersitence.exe
+Centurion,ctiserv.exe
+DameWare,DameWare Remote Support.exe
+Manage Engine (Desktop Central),dcagentregister.exe
+Manage Engine (Desktop Central),dcagentservice.exe
+Distant Desktop,dd.exe
+Distant Desktop,ddsystem.exe
+SkyFex,Deskroll.exe
+SkyFex,DeskRollUA.exe
+DesktopNow,desktopnow.exe
+Distant Desktop,distant-desktop.exe
+Domotz,Domotz Pro Desktop App.exe
+Domotz,domotz_bash.exe
+Domotz,domotz.exe
+DeskShare,DSGuest.exe
+DW Service,dwagent.exe
+DW Service,dwagsvc.exe
+DameWare,dwrcs.exe
+Pandora RC (eHorus),ehorus_agent.exe
+ESET Remote Administrator,einstaller.exe
+ESET Remote Administrator,era.exe
+ESET Remote Administrator,ERAAgent.exe
+ESET Remote Administrator,eratool.exe
+Ericom Connect,ericomconnnectconfigurationtool.exe
+ezHelp,ezhelpclient.exe
+ezHelp,ezhelpclientmanager.exe
+ezHelp,ezHelpManager.exe
+FastViewer,fastclient.exe
+FastViewer,fastmaster.exe
+FastViewer,FastViewer.exe
+FixMe.it,fixmeitclient.exe
+FleetDeck.io,fleetdeck_agent_svc.exe
+FleetDeck.io,fleetdeck_agent.exe
+FleetDeck.io,fleetdeck_commander_launcher.exe
+FleetDeck.io,fleetdeck_commander_svc.exe
+FleetDeck.io,fleetdeck_installer.exe
+GetScreen,getscreen.exe
+GoToAssist,GoTo Assist Opener.exe
+GoToAssist,gotoassist.exe
+GotoHTTP,GotoHTTP_x64.exe
+GotoHTTP,gotohttp.exe
+Goverlan,GovAgentInstallHelper.exe
+Goverlan,GovAgentx64.exe
+Goverlan,goverrmc.exe
+Goverlan,GovReachClient.exe
+GatherPlace-desktop sharing,gp3.exe
+GatherPlace-desktop sharing,gp4.exe
+GatherPlace-desktop sharing,gp5.exe
+Guacamole,guacd.exe
+HelpU,helpu_install.exe
+HelpU,HelpuManager.exe
+HelpU,HelpuUpdater.exe
+Instant Housecall,hsloader.exe
+I'm InTouch,I'm InTouch Go Installer.exe
+IntelliAdmin Remote Control,iadmin.exe
+Instant Housecall,ihcserver.exe
+I'm InTouch,iit.exe
+Netop Remote Control (Impero Connect),ImperoClientSVC.exe
+Netop Remote Control (Impero Connect),ImperoInit.exe
+ManageEngine,InstallShield Setup.exe
+Instant Housecall,instanthousecall.exe
+Insync,Insync.exe
+IntelliAdmin Remote Control,intelliadmin.exe
+I'm InTouch,intouch.exe
+Iperius Remote,iperius.exe
+Iperius Remote,iperiusremote.exe
+Rapid7,ir_agent.exe
+ISL Online,islalwaysonmonitor.exe
+ISL Online,isllight.exe
+ISL Online,ISLLightClient.exe
+ISL Online,isllightservice.exe
+LANDesk,issuser.exe
+Itarian,ITarianRemoteAccessSetup.exe
+Itarian,ITSMAgent.exe
+Itarian,ItsmRsp.exe
+Itarian,ITSMService.exe
+Ivanti Remote Control,IvantiRemoteControl.exe
+Jump Desktop,jumpclient.exe
+Jump Desktop,jumpconnect.exe
+Jump Desktop,jumpdesktop.exe
+Jump Desktop,jumpservice.exe
+Jump Desktop,jumpupdater.exe
+Kabuto,Kabuto.App.Runner.exe
+Syncro,Kabuto.Installer.exe
+Syncro,Kabuto.Service.Runner.exe
+Syncro,KabutoSetup.exe
+KHelpDesk,KHelpDesk.exe
+Quest KACE Agent (formerly Dell KACE),konea.exe
+LANDesk,landeskagentbootstrap.exe
+LANDesk,LANDeskPortalManager.exe
+Laplink Everywhere,laplink.exe
+Laplink Everywhere,laplinkeverywhere.exe
+LANDesk,ldinv32.exe
+LANDesk,ldsensors.exe
+Level.io,level-remote-control-ffmpeg.exe
+Level.io,level-windows-amd64.exe
+Level.io,level.exe
+Laplink Everywhere,llrcservice.exe
+LogMeIn rescue,lmi_rescue.exe
+LiteManager,lmnoipserver.exe
+LabTech RMM (Now ConnectWise Automate),ltsvc.exe
+LabTech RMM (Now ConnectWise Automate),ltsvcmon.exe
+LabTech RMM (Now ConnectWise Automate),lttray.exe
+ManageEngine,ManageEngine_Remote_Access_Plus.exe
+Any Support,ManualLauncher.exe
+Site24x7,MEAgentHelper.exe
+Sophos-Remote Management System,mgntsvc.exe
+Mikogo,mikogo-service.exe
+Mikogo,mikogo-starter.exe
+Mikogo,mikogo.exe
+Mikogo,mikogolauncher.exe
+MioNet (WD Anywhere Access),mionet.exe
+MioNet (WD Anywhere Access),mionetmanager.exe
+Site24x7,MonitoringAgent.exe
+mRemoteNG,mRemoteNG.exe
+Microsoft TSC,mstsc.exe
+Pcnow,mwcliun.exe
+MyGreenPC,mygreenpc.exe
+MyIVO,myivomanager.exe
+MyIVO,myivomgr.exe
+NoteOn-desktop sharing,nateon.exe
+NoteOn-desktop sharing,nateonmain.exe
+Netop Remote Control (Impero Connect),Netop Ondemand.exe
+Neturo,neturo.exe
+Netviewer,netviewer.exe
+ngrok,ngrok.exe
+Netop Remote Control (Impero Connect),ngstw32.exe
+Netop Remote Control (Impero Connect),nhostsvc.exe
+Netop Remote Control (Impero Connect),nhstw32.exe
+NinjaRMM,ninjarmm-cli.exe
+NinjaRMM,NinjaRMMAgenPatcher.exe
+NinjaRMM,ninjarmmagent.exe
+Netop Remote Control (aka Impero Connect),nldrw32.exe
+Neturo,ntrntservice.exe
+NTR Remote,NTRsupportPro_EN.exe
+Netviewer (GoToMeet),nvClient.exe
+NoMachine,nxd.exe
+OCS inventory,ocsinventory.exe
+OCS inventory,ocsservice.exe
+MSP360,Online Backup.exe
+Laplink Everywhere or Syspectr,OOSysAgent.exe
+SunLogin,OrayRemoteService.exe
+SunLogin,OrayRemoteShell.exe
+OptiTune,OTPowerShell.exe
+OptiTune,OTService.exe
+PSEXEC (Clone),paexec.exe
+pcAnywhere,pcaquickconnect.exe
+NetSupport Manager,pcicfgui.exe
+NetSupport Manager,pcictlui.exe
+Pulseway,PCMonitorManager.exe
+Pulseway,pcmonitorsrv.exe
+Pcnow,pcnmgr.exe
+TurboMeeting,pcstarter.exe
+Pcvisit,pcvisit_client.exe
+Pcvisit,pcvisit_service_client.exe
+Pcvisit,pcvisit-easysupport.exe
+Pcvisit,pcvisit.exe
+Pocket Controller,pocketcloudservice.exe
+Pocket Controller,pocketcontroller.exe
+Parallels Access,prl_deskctl_agent.exe
+Parallels Access,prl_deskctl_wizard.exe
+Parallels Access,prl_pm_service.exe
+PSEXEC,psexec.exe
+PSEXEC,psexecsvc.exe
+TeleDesktop,pstlaunch.exe
+TeleDesktop,ptdskclient.exe
+TeleDesktop,ptdskhost.exe
+QQ IM-remote assistance,qq.exe
+QQ IM-remote assistance,qqpcmgr.exe
+QQ IM-remote assistance,QQProtect.exe
+Microsoft Quick Assist,quickassist.exe
+RemoteCall,raautoup.exe
+Itarian,RAccess.exe
+RAdmin,Radmin.exe
+Rapid7,rapid7_agent_core.exe
+Rapid7,rapid7_endpoint_broker.exe
+RemoteCall,rcengmgru.exe
+RemoteCall,rcmgrsvc.exe
+RemoteCall,rcstartsupport.exe
+RuDesktop,rd.exe
+Rocket Remote Desktop,RDConsole.exe
+Itarian,RDesktop.exe
+Remote Desktop Plus,rdp.exe
+rdpwrap,RDPCheck.exe
+rdpwrap,RDPConf.exe
+rdpwrap,RDPWInst.exe
+PSEXEC (Clone),remcom.exe
+PSEXEC (Clone),remcomsvc.exe
+Remobo,remobo_client.exe
+Remobo,remobo_tracker.exe
+Remobo,remobo.exe
+SimpleHelp,remote access.exe
+MSP360,Remote Desktop.exe
+ScreenConnect,Remote Workforce Client.exe
+Chrome Remote Desktop,remote_host.exe
+Remote.it,remote-it-installer.exe
+Remote.it,remote.it.exe
+EMCO Remote Console,remoteconsole.exe
+Remote.it,remoteit.exe
+RemotePass,remotepass-access.exe
+RemotePC,RemotePC.exe
+RemotePC,remotepchost.exe
+RemotePC,remotepcservice.exe
+RemoteCall,remotesupportplayeru.exe
+RemoteView,remoteview.exe
+Chrome Remote Desktop,remoting_host.exe
+Remote Manipulator System,rfusclient.exe
+Itarian,RHost.exe
+Itarian,RmmService.exe
+Netop Remote Control (Impero Connect),rmserverconsolemediator.exe
+Rocket Remote Desktop,RocketRemoteDesktop_Setup.exe
+LiteManager,romfusclient.exe
+LiteManager,romserver.exe
+LiteManager,romviewer.exe
+Sophos-Remote Management System,routernt.exe
+Royal Apps,royalserver.exe
+Royal TS,royalts.exe
+RemotePass,rpaccess.exe
+Access Remote PC,rpcgrab.exe
+Absolute (Computrace),rpcld.exe
+Absolute (Computrace),rpcnet.exe
+Access Remote PC,rpcsetup.exe
+RemotePC,rpcsuite.exe
+RPort,rport.exe
+RemotePass,rpwhostscr.exe
+RAdmin,rserver3.exe
+RustDesk,rustdesk.exe
+Remote Utilities,rutserv.exe
+Remote Utilities,rutview.exe
+RemoteView,rv.exe
+RemoteView,rvagent.exe
+RemoteView,rvagtray.exe
+Comodo RMM,rviewer.exe
+RemoteCall,rxstartsupport.exe
+ITSupport247 (ConnectWise),saazapsc.exe
+ScreenConnect,screenconnect.clientservice.exe
+ScreenConnect,screenconnect.windowsclient.exe
+ScreenMeet,ScreenMeet.Support.exe
+ScreenMeet,ScreenMeetSupport.exe
+Seetrol,seetrolcenter.exe
+Seetrol,seetrolclient.exe
+Seetrol,seetrolmyservice.exe
+Seetrol,seetrolremote.exe
+Seetrol,seetrolsetting.exe
+Senso.cloud,SensoClient.exe
+Senso.cloud,SensoService.exe
+Laplink Everywhere,serverproxyservice.exe
+ServerEye,ServiceProxyLocalSys.exe
+ShowMyPC,showmypc.exe
+SimpleHelp,simplegatewayservice.exe
+SimpleHelp,simplehelpcustomer.exe
+SimpleHelp,simpleservice.exe
+Site24x7,Site24x7PluginAgent.exe
+Site24x7,Site24x7WindowsAgentTrayIcon.exe
+ShowMyPC,smpcsetup.exe
+Sorillus,Sorillus Launcher.exe
+Splashtop Remote,SplashtopSOS.exe
+Splashtop Remote,sragent.exe
+Splashtop Remote,srmanager.exe
+Splashtop Remote,srserver.exe
+Splashtop Remote,srservice.exe
+Splashtop Remote,strwinclt.exe
+SuperOps,superops.exe
+SuperOps,superopsticket.exe
+LogMeIn rescue,support-logmeinrescue.exe
+CrossTec Remote Control,supporttool.exe
+Supremo,supremo.exe
+Supremo,supremohelper.exe
+Supremo,supremoservice.exe
+Supremo,supremosystem.exe
+Syncro,Syncro.App.Runner.exe
+Syncro,Syncro.Installer.exe
+Syncro,Syncro.Overmind.Service.exe
+Syncro,Syncro.Service.exe
+Syncro,SyncroLive.Agent.exe
+Syncro,SyncroLive.Service.exe
+Atera,syncrosetup.exe
+SpyAnywhere,sysdiag.exe
+Tactical RMM,tacticalrmm.exe
+Tailscale,tailscale-ipn.exe
+Tailscale,tailscaled.exe
+BeAnyWhere,TakeControl.exe
+Tanium,TaniumClient.exe
+Tanium,TaniumCX.exe
+Tanium,TaniumExecWrapper.exe
+Tanium,TaniumFileInfo.exe
+rdp2tcp,tdp2tcp.exe
+DeskShare,TeamTaskManager.exe
+TeamViewer,teamviewer_desktop.exe
+TeamViewer,teamviewer_service.exe
+Microsoft RDP,termsrv.exe
+FixMe.it,TiClientCore.exe
+FixMe.it,TiExpertCore.exe
+FixMe.it,TiExpertStandalone.exe
+ToDesk,ToDesk_Service.exe
+ToDesk,ToDesk_Setup.exe
+ToDesk,todesk.exe
+Tanium,TPowerShell.exe
+Parallels Access,TSClient.exe
+Laplink Gold,tsircusr.exe
+TurboMeeting,turbomeeting.exe
+TurboMeeting,turbomeetingstarter.exe
+TightVNC,tvnserver.exe
+TightVNC,tvnviewer.exe
+UltraViewer,UltraViewer_Desktop.exe
+UltraViewer,UltraViewer_Service.exe
+UltraViewer,ultraviewer.exe
+VNC,vncserver.exe
+VNC,vncserverui.exe
+VNC,vncviewer.exe
+Pcnow,webexpcnow.exe
+WebRDP,webrdp.exe
+Weezo,weezo.exe
+Weezo,weezohttpd.exe
+N-Able Advanced Monitoring Agent,winagent.exe
+pcAnywhere,winaw32.exe
+SimpleHelp,windowslauncher.exe
+VNC,winvnc.exe
+TigerVNC,winvnc4.exe
+VNC,winvncsc.exe
+CrossLoop,WinVNCStub.exe
+VNC,winwvc.exe
+RES Automation Manager,wmc_deployer.exe
+RES Automation Manager,wmc.exe
+RES Automation Manager,wmcsvc.exe
+Pocket Controller,wysebrowser.exe
+PSEXEC (Clone),xcmd.exe
+PSEXEC (Clone),xcmdsvc.exe
+Xeox,xeox_service_windows.exe
+Xeox,xeox-agent_x64.exe
+Xeox,xeox-agent_x86.exe
+Pocket Controller (Soti Xsight),XSightService.exe
+Zoho Assist,za_connect.exe
+Zoho Assist,zaservice.exe
+ZeroTier,zero-powershell.exe
+Zoho Assist,ZMAgent.exe
+Zoho Assist,ZohoMeeting.exe
+Zoho Assist,zohotray.exe
+Zoho Assist,Zohours.exe
+Zoho Assist,ZohoURSService.exe
