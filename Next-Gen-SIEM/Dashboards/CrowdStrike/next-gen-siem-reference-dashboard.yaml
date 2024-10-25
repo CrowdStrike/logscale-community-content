@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.5.8
+name: Next-Gen SIEM Reference Dashboard - v1.6.0
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1062,13 +1062,14 @@ widgets:
     height: 9
     text: "This query displays sensors with multiple detection types. These can be\
       \ used to create ad-hoc incidents and demonstrate the power of the Next-Gen\
-      \ SIEM workbench. \n\n1. Apply any required incident filters. The default values\
-      \ will include all detections that map to an Agent ID. \n2. Click on the `⋮\
-      ` next to the aid you would like to create an incident for, followed by *Search\
-      \ Detection Events*. \n3. Click \"Create one-time incident\" after the results\
-      \ have loaded. \n4. Pivot to the workbench to view the incident. The incident\
-      \ may take a short amount of time to populate. \n\n**Note**: highlighted values\
-      \ will link to other components within the Falcon platform. "
+      \ SIEM workbench. \n\n1. Apply any required incident filters. The minimum number\
+      \ of detection sources must be specified, e.g. *3*. Click \"Apply\" after you've\
+      \ selected a value.  \n2. Click on the `⋮` next to the aid you would like to\
+      \ create an incident for, followed by *Search Detection Events*. \n3. Click\
+      \ \"Create one-time incident\" after the results have loaded. \n4. Pivot to\
+      \ the workbench to view the incident. The incident may take a short amount of\
+      \ time to populate. \n\n**Note**: highlighted values will link to other components\
+      \ within the Falcon platform. "
     width: 2
     title: ''
     type: note
@@ -1592,10 +1593,6 @@ widgets:
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
-      // Add a severity filter.
-      | default(field=event.severity, value=0)
-      | event.severity>=?{min_or_equal_severity=0}
-
       // Identify events with NG-SIEM indicators.
       | #type="none"
       | case {
@@ -1616,6 +1613,10 @@ widgets:
               | #event.module:=lower(#event.module) ;
           * ;
       }
+
+      // Add a severity filter.
+      | default(field=event.severity, value=0)
+      | event.severity>=?{min_or_equal_severity=0}
 
       // Rename fields to keep the names common.
       | rename([
@@ -1642,10 +1643,13 @@ widgets:
       | aid=*
       | aid!="NotMatched"
 
+      // Clean up the names for certain events.
+      | regex("^(?<threat.indicator.name>.+)\s+->\s\((?<event.severity>\d+)\)", field=threat.indicator.name, strict=false, flags=F)
+
       // Check if the field exists and then map the indicator name to the score.
       | case {
-          threat.indicator.name=*
-              | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.asset) ;
+          threat.indicator.name!=/\s+-> /F threat.indicator.name=*
+              | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.asset) ;
           * ;
       }
 
@@ -1667,7 +1671,7 @@ widgets:
               | default(field=event.severity, value=0)
               | case {
                   threat.indicator.name=*
-                      | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user) ;
+                      | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user) ;
                   * ;
               }
               | case {
@@ -1718,12 +1722,13 @@ widgets:
       | UniqueDetectionSources>=?{DetectionSourceCount=0}
 
       // Combine values.
+      // Regex to ensure it's not a blank line.
       | case {
-          threat.indicator.map.asset=* threat.indicator.map.user=*
+          threat.indicator.map.asset=/\w+/F threat.indicator.map.user=/\w+/F
               | format(format="%s\n%s", field=[threat.indicator.map.asset, threat.indicator.map.user], as=threat.indicator.value) ;
-          threat.indicator.map.asset=*
+          threat.indicator.map.asset=/\w+/F
               | rename([[threat.indicator.map.asset, threat.indicator.value]]) ;
-          threat.indicator.map.user=*
+          threat.indicator.map.user=/\w+/F
               | rename([[threat.indicator.map.user, threat.indicator.value]]) ;
       }
 
@@ -1738,6 +1743,10 @@ widgets:
 
       // Include from the drop-down.
       | in(field=ProductModules, values=[?included_ProductModules])
+
+      // Reduce the detection list to the first 10 to save space on the results, then remove any blank lines.
+      | regex("(?<threat.indicator.value>\A^.*(?:\R.*){10})", field=threat.indicator.value, strict=false, flags=F)
+      | replace("^\n", with="", field=threat.indicator.value)
 
       // One last format of the output.
       | default(field=user.name, value="-")
@@ -1902,8 +1911,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-10-18
-      version: 1.5.8
+      date: 2024-10-25
+      version: 1.6.0
       ```
     width: 3
     title: ''
@@ -1973,19 +1982,38 @@ parameters:
   DetectionSourceCount:
     label: Minimum Unique Detection Sources
     order: 1
-    type: text
-    defaultValue: '0'
+    values:
+    - '0'
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    - '6'
+    - '7'
+    - '8'
+    - '9'
+    - '10'
+    type: list
     width: 1
-    invalidInputPatterns:
-    - '[^\d+]'
   min_or_equal_severity:
     label: Minimum Severity [0-100]
     order: 0
-    type: text
+    values:
+    - '0'
+    - '10'
+    - '20'
+    - '30'
+    - '40'
+    - '50'
+    - '60'
+    - '70'
+    - '80'
+    - '90'
+    - '100'
+    type: list
     defaultValue: '0'
     width: 1
-    invalidInputPatterns:
-    - '[^\d+]'
   included_ProductModules:
     label: Must Include
     query: |-
