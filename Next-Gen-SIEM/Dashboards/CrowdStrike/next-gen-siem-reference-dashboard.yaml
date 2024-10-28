@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.6.0
+name: Next-Gen SIEM Reference Dashboard - v1.6.1
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1745,7 +1745,8 @@ widgets:
       | in(field=ProductModules, values=[?included_ProductModules])
 
       // Reduce the detection list to the first 10 to save space on the results, then remove any blank lines.
-      | regex("(?<threat.indicator.value>\A^.*(?:\R.*){10})", field=threat.indicator.value, strict=false, flags=F)
+      // "flags=F" is intentionally disabled on the next line for backwards compatibility with older engine builds.
+      //| regex("(?<threat.indicator.value>\A^.*(?:\R.*){10})", field=threat.indicator.value, strict=false)
       | replace("^\n", with="", field=threat.indicator.value)
 
       // One last format of the output.
@@ -1911,8 +1912,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-10-25
-      version: 1.6.0
+      date: 2024-10-28
+      version: 1.6.1
       ```
     width: 3
     title: ''
