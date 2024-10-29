@@ -1746,7 +1746,7 @@ widgets:
 
       // Remove any blank lines and then capture up to the first 10 values. Only done to save screen space.
       | replace("^\n", with="", field=threat.indicator.value)
-      | regex("^(?<threat.indicator.value>.*?(\n|$)(.*?\n){0,9})", field=threat.indicator.value, strict=false, flags=Fd)
+      | regex("^(?<threat.indicator.value>.*?(\n|$)(.*?\n){0,9})", field=threat.indicator.value, strict=false, flags=d)
 
       // One last format of the output.
       | default(field=user.name, value="-")
