@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.6.2
+name: Next-Gen SIEM Reference Dashboard - v1.6.3
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -145,18 +145,17 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/UserLogon$/F
-              | #Vendor:="crowdstrike"
-              | client.ip:=aip
-              | user.name:=UserName
-              | #event.module:="sso"
-              | event.reason:=name ;
-          #type!=falcon-raw-data
-              | event.category[0]=authentication
-              | #event.outcome=success
-              | #event.module=sso ;
+      case {
+        #type=falcon-raw-data
+            | #event_simpleName=/UserLogon$/F
+            | #Vendor:="crowdstrike"
+            | client.ip:=aip
+            | user.name:=UserName
+            | #event.module:="sso"
+            | event.reason:=name ;
+        #type!=falcon-raw-data
+            | #event.outcome=success
+            | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -170,6 +169,14 @@ widgets:
 
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
+
+      // Rename events that might have multiple username fields.
+      | case {
+          user.name="-"
+            | user.target.name=/./F
+            | rename([[user.target.name, user.name]]) ;
+          * ;
+      }
 
       // Ensure the user.name exists.
       | user.name=/./F
@@ -194,11 +201,13 @@ widgets:
       queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogon$/\n\
         \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
         \    | #event.module:=\"sso\"\n    | event.reason:=Technique ;\n  #type!=falcon-raw-data\n\
-        \    | #event.outcome=failure\n    | #event.module=sso ;\n}\n| client.ip=*\n\
-        | ipLocation(client.ip)\n| asn(client.ip)\n| user.name=/./\n| user.name!=/(\\\
-        $$|^DWM-|^LOCAL\\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\
-        \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
-        \ ;\n    * ;\n}\n| event.reason=?event_reason"
+        \    | #event.outcome=failure\n    | event.category[0]=authentication ;\n\
+        }\n| client.ip=*\n| ipLocation(client.ip)\n| asn(client.ip)\n| case {\n  \
+        \  user.name=\"-\"\n      | user.target.name=/./F\n      | rename([[user.target.name,\
+        \ user.name]]) ;\n    * ;\n}\n| user.name=/./\n| user.name!=/(\\$$|^DWM-|^LOCAL\\\
+        sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\\SYSTEM$|^scheduled_tasks$)/\n\
+        | case {\n    event.reason!=*\n      | event.reason:=event.action ;\n    *\
+        \ ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
@@ -658,7 +667,7 @@ widgets:
           | event.reason:=name ;
         #type!=falcon-raw-data
           | #event.outcome=failure
-          | #event.module=sso ;
+          | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -673,8 +682,21 @@ widgets:
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
+      // Rename events that might have multiple username fields.
+      | case {
+          user.name="-"
+            | user.target.name=/./F
+            | rename([[user.target.name, user.name]]) ;
+          * ;
+      }
+
       // Enrich the source IP.
-      | client.ip=*
+      | case {
+          client.ip="-"
+            | source.ip=/^\d/F
+            | rename([[source.ip, client.ip]]) ;
+          client.ip=/^\d/F ;
+      }
       | ipLocation(client.ip)
       | asn(client.ip)
 
@@ -729,7 +751,7 @@ widgets:
           | event.reason:=name ;
         #type!=falcon-raw-data
           | #event.outcome=failure
-          | #event.module=sso ;
+          | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -743,6 +765,14 @@ widgets:
 
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
+
+      // Rename events that might have multiple username fields.
+      | case {
+          user.name="-"
+            | user.target.name=/./F
+            | rename([[user.target.name, user.name]]) ;
+          * ;
+      }
 
       // Enrich the source IP.
       | client.ip=*
@@ -771,11 +801,13 @@ widgets:
       queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogonFailed/\n\
         \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
         \    | #event.module:=\"sso\"\n    | event.reason:=name ;\n  #type!=falcon-raw-data\n\
-        \    | #event.outcome=failure\n    | #event.module=sso ;\n}\n| client.ip=*\n\
-        | ipLocation(client.ip)\n| asn(client.ip)\n| user.name=/./\n| user.name!=/(\\\
-        $$|^DWM-|^LOCAL\\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\
-        \\SYSTEM$|^scheduled_tasks$)/\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
-        \ ;\n    * ;\n}\n| event.reason=?event_reason"
+        \    | #event.outcome=failure\n    | event.category[0]=authentication ;\n\
+        }\n| client.ip=*\n| ipLocation(client.ip)\n| asn(client.ip)\n| case {\n  \
+        \  user.name=\"-\"\n      | user.target.name=/./F\n      | rename([[user.target.name,\
+        \ user.name]]) ;\n    * ;\n}\n| user.name=/./\n| user.name!=/(\\$$|^DWM-|^LOCAL\\\
+        sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\\SYSTEM$|^scheduled_tasks$)/\n\
+        | case {\n    event.reason!=*\n      | event.reason:=event.action ;\n    *\
+        \ ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
       arguments:
         event_reason: '["{{fields.event.reason}}"]'
@@ -1312,18 +1344,17 @@ widgets:
     height: 5
     queryString: |-
       // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #event_simpleName=/UserLogon$/F
-              | #Vendor:="crowdstrike"
-              | client.ip:=aip
-              | user.name:=UserName
-              | #event.module:="sso"
-              | event.reason:=name ;
-          #type!=falcon-raw-data
-              | event.category[0] = authentication
-              | #event.outcome=success
-              | #event.module=sso ;
+      case {
+        #type=falcon-raw-data
+            | #event_simpleName=/UserLogon$/F
+            | #Vendor:="crowdstrike"
+            | client.ip:=aip
+            | user.name:=UserName
+            | #event.module:="sso"
+            | event.reason:=name ;
+        #type!=falcon-raw-data
+            | #event.outcome=success
+            | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -1338,14 +1369,28 @@ widgets:
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
+      // Rename events that might have multiple username fields.
+      | case {
+          user.name="-"
+            | user.target.name=/./F
+            | rename([[user.target.name, user.name]]) ;
+          * ;
+      }
+
       // Enrich the source IP.
-      | client.ip=*
+      | case {
+          client.ip="-"
+            | source.ip=/^\d/F
+            | rename([[source.ip, client.ip]]) ;
+          client.ip=/^\d/F ;
+      }
       | ipLocation(client.ip)
       | asn(client.ip)
 
       // Ensure the user.name exists.
       | user.name=/./F
       | user.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/F
+      | user.target.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/F
 
       // Format the URL.
       | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
@@ -1363,7 +1408,7 @@ widgets:
       | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
       | sort(count, limit=1000)
     end: now
-    start: 1d
+    start: 7d
     width: 12
     options:
       cell-overflow: wrap-text
@@ -1746,7 +1791,7 @@ widgets:
 
       // Remove any blank lines and then capture up to the first 10 values. Only done to save screen space.
       | replace("^\n", with="", field=threat.indicator.value)
-      | regex("^(?<threat.indicator.value>.*?(\n|$)(.*?\n){0,9})", field=threat.indicator.value, strict=false, flags=d)
+      | regex("^(?<threat.indicator.value>.*?(\n|$)(.*?\n){0,9})", field=threat.indicator.value, strict=false, flags=Fd)
 
       // One last format of the output.
       | default(field=user.name, value="-")
@@ -1911,8 +1956,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-10-29
-      version: 1.6.2
+      date: 2024-11-07
+      version: 1.6.3
       ```
     width: 3
     title: ''
