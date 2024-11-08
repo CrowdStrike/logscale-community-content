@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.6.3
+name: Next-Gen SIEM Reference Dashboard - v1.6.4
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1170,10 +1170,11 @@ widgets:
     text: |-
       * [Data onboarding](/data-connectors/)
       * [Advanced event search](/investigate/search)
-      * [Incidents](/xdr/incidents)
-      * [SOAR dashboard](/workflow/fusion/dashboard)
-      * [Detection posture](/xdr/rules/detection-posture)
+      * [Rules](/xdr/rules)
+      * [Detection coverage](/xdr/rules/detection-coverage)
       * [Detections](/unified-detections)
+      * [Incidents](/xdr/incidents)
+      * [Fusion SOAR dashboard](/workflow/fusion/dashboard)
     width: 3
     title: Next-Gen SIEM Components
     type: note
@@ -1956,8 +1957,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-11-07
-      version: 1.6.3
+      date: 2024-11-08
+      version: 1.6.4
       ```
     width: 3
     title: ''
