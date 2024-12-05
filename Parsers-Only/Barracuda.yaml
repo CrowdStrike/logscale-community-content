@@ -1,0 +1,91 @@
+name: Barracuda
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.3.0
+script: |-
+  // #region PREPARSE
+  /************************************************************
+  ****** Parse timestamp and log headers
+  ****** Extract message field for parsing
+  ****** Parse structured data
+  ************************************************************/
+  //Custom Section to fix issues related to SYSLOG format
+
+  //remove carriage returns and new lines this causes issues parsing JSON
+  replace(regex="\n", replacement="")|
+  replace(regex="\r", replacement="")|
+  //cutout the json and place into named group json based on regex of the brackets
+  /.*?(?<json>{.*})$/|
+  //drop the rawstring unsure if this is doing anything
+  drop(fields="rawstring")|
+
+  //process the json against json named group next line was updated to use field=json from standard all other code is from Crowdstrike
+  parseJson(field="json",prefix="Vendor.", excludeEmpty=true, handleNull=discard)
+  | findTimestamp(field=Vendor.timestamp,timezone=UTC)
+  | drop(Vendor.timestamp)
+
+  // #endregion
+
+  // #region METADATA
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser.version := "1.0.0"
+  | Vendor := "barracuda"
+  | ecs.version := "8.11.0"
+  | event.module := "emailsecurity"
+  | Cps.version := "1.0.0"
+
+  // #endregion
+
+  // #region NORMALIZATION
+  /************************************************************
+  ****** Parse unstructured data (i.e. message field)
+  ****** Normalize fields to data model
+  ************************************************************/
+
+  | event.kind := "event"
+  | event.category[0] := "email"
+  | event.type[0] := "info"
+  | email.from.address[0] := rename(Vendor.env_from)
+  | email.message_id := rename(Vendor.message_id)
+  | destination.domain := rename(Vendor.dst_domain)
+  | source.geo.country_iso_code := rename(Vendor.geoip)
+  | splitString(field=Vendor.attachments,by=",",as=email.attachments)
+  | drop([Vendor.attachments])
+  | source.ip := rename(Vendor.src_ip)
+  | email.subject := rename(Vendor.subject)
+  | email.attachments.file.size := rename(Vendor.size)
+
+  | event.action := rename(Vendor.recipients[0].action)
+  | email.to.address[0] := rename(Vendor.recipients[0].email)
+  | event.reason := rename(Vendor.recipients[0].reason)
+
+  | case {
+      event.action = "allowed"
+          | event.outcome := "success" ;
+      in(event.action, values=["aborted", "quarantined", "blocked", "redirected", "rejected"])
+          | event.outcome := "failure" ;
+      *
+          | event.outcome := "unknown" ;
+
+  }
+
+  // #endregion
+
+  // #region POST-NORMALIZATION
+  /************************************************************
+  ****** Post Normalization
+  ****** Custom parser logic needed after normalization
+  ************************************************************/
+
+
+  // #endregion
+tagFields:
+- Cps.version
+- Vendor
+- ecs.version
+- event.dataset
+- event.kind
+- event.module
+- event.outcome
+- observer.type
