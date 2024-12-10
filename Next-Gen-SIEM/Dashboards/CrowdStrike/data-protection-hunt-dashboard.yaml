@@ -1,0 +1,756 @@
+sections:
+  section-1730074198311-0:
+    collapsed: false
+    order: 0
+    title: Dashboard Overview
+    widgetIds:
+    - note-1722798540561-0
+  section-1730074235310-1:
+    collapsed: false
+    order: 1
+    title: Detections
+    widgetIds:
+    - 3ddf5c8f-176e-431c-833d-80e4ad0a2125
+    - 19205f93-86bc-4950-aebe-fe6edcac0293
+    - be6e9a3d-2a14-41a8-8195-acd76e657070
+    - e45216b5-3df1-4ab5-9982-35b817e6c048
+    - 31c2fd7d-1e26-4505-ba5c-dfc7b1fd63e5
+    - 593842e7-c3c6-470e-9417-a035df31895c
+  section-1730074342736-0:
+    collapsed: true
+    order: 2
+    title: Details
+    widgetIds:
+    - 65576136-90d4-4581-a522-3b5b03772355
+    - 1c7a880e-aaf4-479a-b00b-cad3b26d6502
+    - ac9b863b-6e70-41dd-9a8e-13bf8b25b5f2
+    - 8adabff3-31f7-4257-bc1e-e7ed7b0e5dd1
+    - 1a95ae89-e0ea-4546-a3a8-ab0689e36afb
+    - 85df8da0-2932-4db1-a4ae-c0efd4b5fd69
+    - df3a9924-4194-44c9-b6b7-a77b9ccadca8
+    - 9d19bf24-f7ea-4567-8fe2-d0e28c5193d0
+    - 77404264-78b7-4087-b405-8f7a8dd1ea30
+    - c2fe35c9-defc-411e-be90-a94c7cc3721b
+    - 4f4fbf2b-f8d5-4955-a784-36109feb3d2c
+    - cab873ea-35ce-4bfe-a18c-008bc570d1a3
+    - a2d5d5fc-6980-4be6-ae0a-d1ab60fe48a7
+    - 02788037-1f4b-4463-be0f-12834d31d2e5
+    - 749ced6f-5975-484c-ad4f-942941665494
+name: AA - Data Protection Hunt Dashboard
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  ac9b863b-6e70-41dd-9a8e-13bf8b25b5f2:
+    x: 0
+    y: 34
+    height: 4
+    queryString: |
+      "#event_simpleName" = UserLogonFailed2
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | worldMap(ip=RemoteAddressIP4)
+    visualization: world-map
+    end: now
+    start: 7d
+    width: 4
+    title: Failed Logon Global Map
+    isLive: false
+    type: query
+  a2d5d5fc-6980-4be6-ae0a-d1ab60fe48a7:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      #event_simpleName=Event_IdpDetectionSummaryEvent
+      | rename([AgentIdString], as = aid)
+      | rename([SourceAccountName], as = UserName)
+      | join(query={#event_simpleName=ProcessRollup2}, field=[aid], include=[ComputerName], mode=left)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | format("[FalconHostLink](%s)", field=["FalconHostLink"], as="FalconHostLink")
+      | table([@timestamp, aid, ComputerName, UserName, SourceEndpointHostName, SourceEndpointIpAddress, SourceEndpointSensorId, TargetAccountName, TargetEndpointHostName, TargetServiceAccessIdentifier, TargetEndpointSensorId, SeverityName, Tactic, Technique, DetectName, Description, FalconHostLink], limit=20000)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: ITP Detections Detail
+    isLive: false
+    type: query
+  593842e7-c3c6-470e-9417-a035df31895c:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | rename([AssessedFileName], as = FileName)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | stats([sum(Size)])
+      | unit:convert(_sum, as=totalMB, to=M)
+      | totalMB:=format("%.2f", field=totalMB)
+      | drop(["_sum"])
+    end: now
+    start: 30d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Total Egress (MB)
+    isLive: false
+    type: query
+  65576136-90d4-4581-a522-3b5b03772355:
+    x: 0
+    y: 22
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | parseJson(DataEgressDestination)
+      | parseJson(DataProtectionProperties)
+      | parseJson(DataProtectionSimilarFiles)
+      | split(DataEgressDestination)
+      | split(DataProtectionProperties)
+      | split(DataProtectionSimilarFiles)
+      | rename([AssessedFileName], as = FileName)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | parseUrl(web_destination[0].host_url[0], as=url)
+      | groupBy([url.host, UserName], function=sum("Size"), limit=10)
+    visualization: heat-map
+    end: now
+    start: 30d
+    width: 12
+    title: Egress by Destination
+    isLive: false
+    type: query
+  c2fe35c9-defc-411e-be90-a94c7cc3721b:
+    x: 0
+    y: 14
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | parseJson(DataEgressDestination)
+      | parseJson(DataProtectionProperties)
+      | parseJson(DataProtectionSimilarFiles)
+      | split(DataEgressDestination)
+      | split(DataProtectionProperties)
+      | split(DataProtectionSimilarFiles)
+      | rename([AssessedFileName], as = FileName)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | sankey(target=web_destination[0].host_url[0], source=origin_web_locations[0].host_url[0])
+    visualization: sankey
+    end: now
+    start: 30d
+    width: 6
+    title: Data Flow (URL)
+    isLive: false
+    type: query
+  9d19bf24-f7ea-4567-8fe2-d0e28c5193d0:
+    x: 0
+    y: 18
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | parseJson(DataEgressDestination)
+      | parseJson(DataProtectionProperties)
+      | parseJson(DataProtectionSimilarFiles)
+      | split(DataEgressDestination)
+      | split(DataProtectionProperties)
+      | split(DataProtectionSimilarFiles)
+      | rename([AssessedFileName], as = FileName)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | sankey(target=web_destination[0].cloud_username[0], source=UserName)
+    visualization: sankey
+    end: now
+    start: 30d
+    width: 6
+    title: Data Flow (User)
+    isLive: false
+    type: query
+  1c7a880e-aaf4-479a-b00b-cad3b26d6502:
+    x: 4
+    y: 34
+    height: 4
+    queryString: |-
+      "#event_simpleName" = UserLogonFailed2
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      |!cidr(RemoteAddressIP4, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", 127.0.0.1])
+      | RemoteAddressIP4=*
+      | ipLocation(field=RemoteAddressIP4)
+      | format("%s,%s,%s", field=[RemoteAddressIP4.city, RemoteAddressIP4.state, RemoteAddressIP4.country], as="Location")
+      | groupBy(field=[UserName, Location], function=([max("@timestamp", as=LatestLogon), count(aid)]))
+      | LatestLogon:=formatTime(field="LatestLogon", format="%Y/%m/%d %H:%M:%S")
+    end: now
+    start: 7d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Failed Logins
+    isLive: false
+    type: query
+  be6e9a3d-2a14-41a8-8195-acd76e657070:
+    x: 9
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=Event_EppDetectionSummaryEvent
+      | rename([AgentIdString], as = aid)
+      | join(query={#event_simpleName=ProcessRollup2}, field=[aid], include=[ComputerName], mode=left)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | case {
+      #event_simpleName = "Event_EppDetectionSummaryEvent" | #event_simpleName := "EPP Detection";
+      *
+      }
+      | groupBy([#event_simpleName])
+    end: now
+    start: 15m
+    width: 3
+    options:
+      thresholdConfig: {}
+    visualization: gauge
+    title: Endpoint Detections
+    isLive: false
+    type: query
+  02788037-1f4b-4463-be0f-12834d31d2e5:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      #event_simpleName=Event_DataProtectionDetectionSummaryEvent
+      | rename([AgentId], as = aid)
+      | match(file="aid_master_main.csv", field=aid, include=[ComputerName], strict=false)
+      | rename(["Filename"], as = FileName)
+      | rename(["Destination.USB.DeviceInstanceID"], as = USBInfo)
+      | rename(["Destination.Web.Username"], as = DestinationUserName)
+      | rename(["Destination.Web.URL"], as = DestinationUrl)
+      | rename([Name], as = DetectionAlertName)
+      | rename(["AnodeIndicators[0].Explanation"], as = AnomalyDetectionDetail)
+      | format("[FalconHostLink](%s)", field=["FalconHostLink"], as="FalconHostLink")
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | table([@timestamp, aid, ComputerName, UserName, FileName, USBInfo, DestinationUserName, DestinationUrl, SeverityName, Tactic, Technique, ResponseAction, IsClipboard, DetectionAlertName, Description, AnomalyDetectionDetail, DataVolume, FalconHostLink], limit=20000)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        FalconHostLink:
+          render-as: link
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DP Detections Detail
+    isLive: false
+    type: query
+  749ced6f-5975-484c-ad4f-942941665494:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | parseJson(DataEgressDestination)
+      | parseJson(DataProtectionProperties)
+      | parseJson(DataProtectionSimilarFiles)
+      | split(DataEgressDestination)
+      | split(DataProtectionProperties)
+      | split(DataProtectionSimilarFiles)
+      | rename([AssessedFileName], as = FileName)
+      | rename([NormalizedPath], as = FilePath)
+      | rename(["origin_web_locations[0].cloud_username[0]"], as = SourceUserName)
+      | rename(["origin_web_locations[0].host_url[0]"], as = SourceUrl)
+      | rename(["usb_destination[0].disk_parent_device_instance_id[0]"], as = USBInfo)
+      | rename(["printer_destination[0].printer_driver_name[0]"], as = PrinterDriver)
+      | rename(["web_destination[0].cloud_username[0]"], as = DestinationUserName)
+      | rename(["web_destination[0].host_url[0]"], as = DestinationUrl)
+      | rename(["classifications[0].classification_name[0]"], as = Classification)
+      | rename(["content_patterns[0].content_pattern_name[0]"], as = ContentPattern)
+      | rename(["similar_files[0].similar_source_file[0]"], as = SimilarSourceFile)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | table([@timestamp, aid, ComputerName, UserName, FileName, FilePath, SourceUserName, SourceUrl, USBInfo, PrinterDriver, DestinationUserName, DestinationUrl, Classification, ContentPattern, SimilarSourceFile, Size, event_platform], limit=20000)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Egress Activity
+    isLive: false
+    type: query
+  85df8da0-2932-4db1-a4ae-c0efd4b5fd69:
+    x: 0
+    y: 26
+    height: 4
+    queryString: |-
+      #repo=base_sensor #event_simpleName=UserLogon event_platform=Win
+      | $falcon/investigate:LogonTypeName()
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | timeChart(LogonTypeName, function=count(UserSid))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Host Logon Events
+    isLive: false
+    type: query
+  19205f93-86bc-4950-aebe-fe6edcac0293:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |
+      // Add a severity filter.
+      | default(field=event.severity, value=0)
+      | event.severity>=0
+
+      // Identify events with NG-SIEM indicators.
+      | #type="none"
+      | case {
+          Ngsiem.event.type="ngsiem-rule-trigger-event"
+              | rename([
+                  [rule.name, threat.indicator.name],
+                  [Ngsiem.event.source_ips[0], source.ip],
+                  [Ngsiem.event.hostnames[0], ComputerName],
+                  [Ngsiem.event.type, #event.module]
+              ]) ;
+          Ngsiem.detection.id=* ;
+      }
+
+      // Rename events that might be missing the module value.
+      | case {
+          #event.module!=*
+              | rename([[Vendor.Product, #event.module]])
+              | #event.module:=lower(#event.module) ;
+          * ;
+      }
+
+      // Rename fields to keep the names common.
+      | rename([
+          [agent.id, aid],
+          [Vendor.SourceEndpointSensorId, aid],
+          [Ngsiem.event.vendor, #Vendor],
+          [Vendor.threat_id, threat.indicator],
+          [UserName, user.name]
+      ])
+      | #Vendor:=lower(#Vendor)
+
+      // Grab enrichment data.
+      | match(file="aid_master_main.csv", field=[aid], column=[aid], include=[aid, ComputerName, LocalAddressIP4], strict=false)
+      | case {
+          aid!=*
+              | match(file="aid_master_main.csv", field=[ComputerName], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
+              | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
+              | match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false)
+              | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10, strict=false) ;
+          * ;
+      }
+
+      // Ensure we have an aid.
+      | aid=*
+      | aid!="NotMatched"
+      // Combine names to show where the alerts came from.
+      | format(format="%s", field=[#Vendor], as=productTypes.asset)
+
+      // Keep the asset and user values separate.
+      | rename([[event.severity, event.severity.asset]])
+
+      // Map events that have a username but no aid.
+      | join(
+          query={
+              Ngsiem.parent.incident.id!=*
+              | Ngsiem.parent.incident.id[0]!=*
+              | Ngsiem.detection.id=*
+              | user.name=* OR user.target.name=* OR email.to.address[0]=*
+              | agent.id!=*
+              | rename(field="user.target.name", as="user.name")
+              | default(field=event.severity, value=0)
+              | case {
+                  threat.indicator.name=*
+                      | format(format="%s\t-> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user) ;
+                  * ;
+              }
+              | case {
+                  #event.module!=*
+                      | rename([[Vendor.Product, #event.module]])
+                      | #event.module:=lower(#event.module) ;
+                  * ;
+              }
+              // Normalize the email address.
+              | case {
+                  email.to.address[0]=*
+                      | regex("(?<username>[^\@].*)@.+\.", field=email.to.address[0], flags=F)
+                      | rename(field="username", as="user.name");
+                  * ;
+              }
+              // Combine names to show where the alerts came from.
+              | rename([
+                  [event.module, #event.module],
+                  [event.severity, event.severity.user]
+              ])
+              | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes.user)
+              // Ensure we have real users.
+          },
+          field=[user.name],
+          include=[threat.indicator.map.user, productTypes.user, event.severity.user],
+          mode=left,
+          max=100
+      )
+
+      | ComputerName=?ComputerName
+
+      // Group the results.
+      | groupBy(aid,
+          function=[
+              collect([ComputerName, user.name, productTypes.asset, productTypes.user, threat.indicator.map.asset, threat.indicator.map.user], limit=1000),
+              sum(event.severity.asset, as=TotalAssetScore),
+              sum(event.severity.user, as=TotalUserScore),
+              count(productTypes.asset, distinct=true, as=AssetDetectionSourceCount),
+              count(productTypes.user, distinct=true, as=UserDetectionSourceCount),
+              count(as=DetectionCount)
+          ],
+          limit=max
+      )
+
+      // Get the total scores.
+      | TotalRiskScore:=TotalAssetScore+TotalUserScore
+      | UniqueDetectionSources:=AssetDetectionSourceCount+UserDetectionSourceCount
+
+      // Filter for the minimum unique products count.
+      | UniqueDetectionSources>=0
+
+
+      | groupBy([ComputerName, productTypes.asset], function=[sum(TotalRiskScore)], limit=max)
+      | sort(_sum, limit=10)
+    end: now
+    start: 7d
+    width: 12
+    options:
+      xAxisTitle: Host
+      colorPalette: greenRed
+      yAxisTitle: Detection Source
+      withLegendTitle: false
+      withYAxisTitle: false
+      includeHistogram: false
+      reversePalette: false
+      yLabelLimit: 208
+    visualization: heat-map
+    title: SIEM Unified Detections
+    isLive: false
+    type: query
+  df3a9924-4194-44c9-b6b7-a77b9ccadca8:
+    x: 6
+    y: 18
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | parseJson(DataEgressDestination)
+      | parseJson(DataProtectionProperties)
+      | parseJson(DataProtectionSimilarFiles)
+      | split(DataEgressDestination)
+      | split(DataProtectionProperties)
+      | split(DataProtectionSimilarFiles)
+      | rename([AssessedFileName], as = FileName)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | sankey(target=web_destination[0].host_url[0], source=labels[0].label_name[0])
+    visualization: sankey
+    end: now
+    start: 30d
+    width: 6
+    title: Data Flow (Label)
+    isLive: false
+    type: query
+  note-1722798540561-0:
+    x: 0
+    y: 0
+    height: 5
+    text: |-
+      This dashboard is designed to correlate detections and telemetry across Data, Identity and Endpoint Protection on the Falcon platform. Use this dashboard as a starting point for your investigations or hypothesis based hunt exercises, and pivot into NG-SIEM to access all available telemetry.
+
+      Some example use cases include:
+      - Monitoring risky user behaviour around termination dates
+      - Monitoring data egress from hosts under attack
+      - Detecting potential insider threat
+
+      Minimum license required
+      - Falcon Insight XDR
+      - Falcon Data Protection
+      Optional:
+      - Falcon Identity Threat Protection
+      - Falcon NG SIEM
+    width: 12
+    title: Data Protection Hunt Dashboard
+    type: note
+  4f4fbf2b-f8d5-4955-a784-36109feb3d2c:
+    x: 0
+    y: 8
+    height: 6
+    queryString: |-
+      #repo=base_sensor
+      | !in(#event_simpleName, values=[SensorHeartbeat, EndOfProcess, ChannelVersionRequired, CurrentSystemTags, TerminateProcess, "LFO*", "ObPost*"])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName #event_simpleName=?events
+      | case {
+          #event_simpleName = "NetworkConnectIP4"
+              | DestIP := RemoteAddressIP4;
+          *
+              | DestIP := RemoteAddressIP6;
+      }
+      | format("Local Port: %s;Destination IP: %s;Remote Port: %s;File Name: %s;Target File Name: %s;CommandLine: %s;SHA256: %s;MD5: %s;SHA256: %s;AV Hits: %s;Domain Name: %s;Registry Name: %s;Registry String: %s;Registry Value: %s;Source Thread Module: %s;Target Thread Module: %s;Injected DLL: %s;Volume Drive Letter: %s;Volume File System Device: %s;Volume Real DeviceName: %s;Volume Mount Point: %s;Pattern Id: %s;Tree Id: %s;Logon Time: %s;Logon Domain: %s;Logon Type: %s;PID: %s;Parent ProcessId: %s;AsepWritten Count: %s;DnsRequest Count: %s;NetworkBind Count: %s;NetworkCapableAsepWrite Count: %s;NetworkClose Count: %s;NetworkConnectCount: %s;NetworkListen Count: %s;NetworkRecvAccept Count: %s;NewExecutableWritten Count: %s;SuspectStack Count: %s;", field=[LocalPort, DestIP, RemotePort, ImageFileName, TargetFileName, CommandLine, SHA256HashData, MD5HashData, sha256, detectionCount, DomainName, RegObjectName, RegStringValue, RegValueName, SourceThreadModule, TargetThreadModule, InjectedDll, VolumeDriveLetter, VolumeFileSystemDevice, VolumeRealDeviceName, VolumeMountPoint, PatternId, TreeId, LogonTime, LogonDomain, LogonType, RawProcessId, ParentProcessId, AsepWrittenCount, DnsRequestCount, NetworkBindCount, NetworkCapableAsepWriteCount, NetworkCloseCount, NetworkConnectCount, NetworkListenCount, NetworkRecvAcceptCount, NewExecutableWrittenCount, SuspectStackCount], as=Attributes)
+      | splitString(Attributes, by=";", as=Attributes)
+      | split(Attributes)
+      | Attributes != *null
+      | case {
+          TargetProcessId != *
+              | ProcessId := ContextProcessId;
+          ContextProcessId != *
+              | ProcessId := TargetProcessId;
+          *;
+      }
+      | rename([ImageFileName], as = FileName)
+      | groupBy([@timestamp, aid, ComputerName, TreeId, PatternId, ParentProcessId, ProcessId, #event_simpleName, FileName, DomainName, DestIP, TargetFileName, UserSid, UserName], function=[collect([Attributes])], limit=max)
+      | default(field=[aid, ComputerName, FileName, TreeId, PatternId, ParentProcessId, ProcessId, DomainName, DestIP, TargetFileName, UserSid, UserName, Attributes], value="--", replaceEmpty=true)
+      | timestamp_UTC_readable := formatTime("%FT%T%z", field=@timestamp)
+      | table([@timestamp, timestamp_UTC_readable, aid, ComputerName, TreeId, PatternId, ParentProcessId, ProcessId, #event_simpleName, FileName, DomainName, DestIP, TargetFileName, UserSid, UserName, Attributes], sortby=Time, order=desc, limit=5000)
+    end: now
+    start: 15m
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Host Timeline
+    isLive: false
+    type: query
+  3ddf5c8f-176e-431c-833d-80e4ad0a2125:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | parseJson(DataEgressDestination)
+      | parseJson(DataProtectionProperties)
+      | parseJson(DataProtectionSimilarFiles)
+      | split(DataEgressDestination)
+      | split(DataProtectionProperties)
+      | split(DataProtectionSimilarFiles)
+      | rename([AssessedFileName], as = FileName)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | groupBy(["web_destination[0].web_location_name[0]", UserName],function = sum(Size))
+    end: now
+    start: 7d
+    width: 12
+    options:
+      series: {}
+      labelAngle: 14
+      valuesOnBars: true
+      yScaleType: linear
+      xAxisTitle: Web Destination
+      barChartType: stacked
+      legend: true
+      yAxisTitle: Total
+      labelLimit: 600
+      maxSeriesCount: 50
+      seriesPadding: 0.17
+      sortOrder: descending
+      categoryPadding: 0.42
+      inputDataFormat: ''
+    visualization: bar-chart
+    title: Egress by destination
+    isLive: false
+    type: query
+  1a95ae89-e0ea-4546-a3a8-ab0689e36afb:
+    x: 0
+    y: 30
+    height: 4
+    queryString: |-
+      #repo=base_sensor #event_simpleName=UserLogon LogonType=10
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | RemoteAddressIP4=*
+      | !cidr(RemoteAddressIP4, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(RemoteAddressIP4)
+      | worldMap(ip=RemoteAddressIP4, magnitude=count(aid))
+    visualization: world-map
+    end: now
+    start: 7d
+    width: 4
+    title: RDP connections by destination IP
+    isLive: false
+    type: query
+  77404264-78b7-4087-b405-8f7a8dd1ea30:
+    x: 6
+    y: 14
+    height: 4
+    queryString: |-
+      #event_simpleName=DataEgress
+      | parseJson(DataEgressDestination)
+      | parseJson(DataProtectionProperties)
+      | parseJson(DataProtectionSimilarFiles)
+      | split(DataEgressDestination)
+      | split(DataProtectionProperties)
+      | split(DataProtectionSimilarFiles)
+      | rename([AssessedFileName], as = FileName)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | sankey(target=usb_destination[0].disk_parent_device_instance_id[0], source=origin_web_locations[0].host_url[0])
+    visualization: sankey
+    end: now
+    start: 30d
+    width: 6
+    title: Data Flow (USB)
+    isLive: false
+    type: query
+  e45216b5-3df1-4ab5-9982-35b817e6c048:
+    x: 6
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=Event_IdpDetectionSummaryEvent
+      | rename([AgentIdString], as = aid)
+      | rename([SourceAccountName], as = UserName)
+      | join(query={#event_simpleName=ProcessRollup2}, field=[aid], include=[ComputerName], mode=left)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | case {
+      #event_simpleName = "Event_IdpDetectionSummaryEvent" | #event_simpleName := "ITP Detection";
+      *
+      }
+      | groupBy([#event_simpleName])
+    end: now
+    start: 15m
+    width: 3
+    options:
+      thresholdConfig: {}
+    visualization: gauge
+    title: Identity Detections
+    isLive: false
+    type: query
+  31c2fd7d-1e26-4505-ba5c-dfc7b1fd63e5:
+    x: 3
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=Event_DataProtectionDetectionSummaryEvent
+      | rename([AgentId], as = aid)
+      | match(file="aid_master_main.csv", field=aid, include=[ComputerName], strict=false)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | case {
+      #event_simpleName = "Event_DataProtectionDetectionSummaryEvent" | #event_simpleName := "DP Detection";
+      *
+      }
+      | groupBy([#event_simpleName])
+    end: now
+    start: 15m
+    width: 3
+    options:
+      thresholdConfig:
+        palette: Blue red diverging
+        reversePalette: false
+        thresholds:
+        - value: 50
+    visualization: gauge
+    title: Data Protection Detections
+    isLive: false
+    type: query
+  cab873ea-35ce-4bfe-a18c-008bc570d1a3:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      #event_simpleName=Event_EppDetectionSummaryEvent
+      | rename([AgentIdString], as = aid)
+      | join(query={#event_simpleName=ProcessRollup2}, field=[aid], include=[ComputerName], mode=left)
+      | default(value="-", field=[ComputerName, aid, UserName, FileName])
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+      | rename([Name], as = DetectionAlertName)
+      | format("[FalconHostLink](%s)", field=["FalconHostLink"], as="FalconHostLink")
+      | table([@timestamp, aid, ComputerName, UserName, FileName, FilePath, CommandLine, ParentImageFileName, ParentImageFilePath, ParentCommandLine, SeverityName, Tactic, Technique, DetectionAlertName, Description, FalconHostLink], limit=20000)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        CommandLine:
+          width: 500
+        Description:
+          width: 500
+        ParentCommandLine:
+          width: 500
+      row-numbers-enabled: false
+    visualization: table-view
+    title: EPP Detections Detail
+    isLive: false
+    type: query
+  8adabff3-31f7-4257-bc1e-e7ed7b0e5dd1:
+    x: 4
+    y: 30
+    height: 4
+    queryString: |-
+      #repo=base_sensor #event_simpleName=UserLogon event_platform=Win UserSid="S-1-5-21-*"
+      | passwordAge:=(now()-(PasswordLastSet*1000))/1000/60/60/24
+      | PasswordAgeDays:=round("passwordAge")
+      | $falcon/investigate:LogonTypeName()
+      | case {
+          UserIsAdmin="0" | UserIsAdmin:="No" ;
+          UserIsAdmin="1" | UserIsAdmin:="Yes" ;
+          * ;
+        }
+      | case {
+          RemoteAccount="0" | RemoteAccount:="No" ;
+          RemoteAccount="1" | RemoteAccount:="Yes" ;
+          * ;
+        }
+      | LogonTime:=LogonTime*1000
+      | LogonTime_UTC_readable := formatTime("%FT%T%z", field=LogonTime)
+      | table([LogonTime, LogonTime_UTC_readable, ComputerName, UserName, PasswordAgeDays, UserSid, LogonTypeName, LogonDomain, LogonServer, RemoteAccount, UserIsAdmin], sortby=LogonTime, order=desc, limit=20000)
+      | default(field=[aid, ComputerName, FileName, UserName, PasswordAgeDays, LogonDomain, LogonTime, LogonServer, LogonTime_UTC_readable], value="--", replaceEmpty=true)
+      | match(file="aid_master_main.csv", field=ComputerName, include=[aid], strict=false)
+      | ComputerName=?ComputerName aid=?aid UserName=?UserName FileName=?FileName
+    end: now
+    start: 15m
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Logon Details
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.17.0
+parameters:
+  ComputerName:
+    label: Computer Name
+    order: 50
+    type: text
+    defaultValue: '*'
+    width: 1
+  FileName:
+    label: File Name
+    order: 50
+    type: text
+    defaultValue: '*'
+    width: 1
