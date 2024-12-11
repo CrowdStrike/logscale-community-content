@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.6.4
+name: Next-Gen SIEM Reference Dashboard - v1.6.5
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -92,8 +92,11 @@ widgets:
     x: 0
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -118,8 +121,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
-      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
-        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n    OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
         Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
         )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
         \      | #event_simpleName!=DetectionExcluded|severity!=\"informational\"\n\
@@ -128,6 +132,7 @@ widgets:
       useWidgetTimeWindow: true
       arguments:
         _Vendor: '["{{fields.#Vendor}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -144,18 +149,21 @@ widgets:
     x: 0
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-            | #event_simpleName=/UserLogon$/F
-            | #Vendor:="crowdstrike"
-            | client.ip:=aip
-            | user.name:=UserName
-            | #event.module:="sso"
-            | event.reason:=name ;
-        #type!=falcon-raw-data
-            | #event.outcome=success
-            | event.category[0]=authentication ;
+      | case {
+          #type=falcon-raw-data
+              | #event_simpleName=/UserLogon$/F
+              | #Vendor:="crowdstrike"
+              | client.ip:=aip
+              | user.name:=UserName
+              | #event.module:="sso"
+              | event.reason:=name ;
+          #type!=falcon-raw-data
+              | #event.outcome=success
+              | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -198,18 +206,20 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogon$/\n\
-        \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
-        \    | #event.module:=\"sso\"\n    | event.reason:=Technique ;\n  #type!=falcon-raw-data\n\
-        \    | #event.outcome=failure\n    | event.category[0]=authentication ;\n\
-        }\n| client.ip=*\n| ipLocation(client.ip)\n| asn(client.ip)\n| case {\n  \
-        \  user.name=\"-\"\n      | user.target.name=/./F\n      | rename([[user.target.name,\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/UserLogon$/\n\
+        \      | #Vendor:=\"crowdstrike\"\n      | client.ip:=aip\n      | user.name:=UserName\n\
+        \      | #event.module:=\"sso\"\n      | event.reason:=Technique ;\n    #type!=falcon-raw-data\n\
+        \      | #event.outcome=failure\n      | event.category[0]=authentication\
+        \ ;\n}\n| client.ip=*\n| ipLocation(client.ip)\n| asn(client.ip)\n| case {\n\
+        \    user.name=\"-\"\n      | user.target.name=/./F\n      | rename([[user.target.name,\
         \ user.name]]) ;\n    * ;\n}\n| user.name=/./\n| user.name!=/(\\$$|^DWM-|^LOCAL\\\
         sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\\SYSTEM$|^scheduled_tasks$)/\n\
         | case {\n    event.reason!=*\n      | event.reason:=event.action ;\n    *\
         \ ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
       isLive: false
@@ -226,8 +236,11 @@ widgets:
     x: 0
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Add a parameter for entropy.
-      entropyValue:=?entropyValue
+      | entropyValue:=?entropyValue
 
       // Filter to events with required fields, and rename fields to match CPS.
       | case {
@@ -276,20 +289,22 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
-        \    | source.ip:=LocalAddressIP4\n    | destination.ip:=RemoteAddressIP4\n\
-        \    | destination.port:=RemotePort\n    | #Vendor:=\"crowdstrike\"\n    |\
-        \ dns.domainName:=DomainName ;\n  #type!=falcon-raw-data\n    | url.domain=*\n\
-        \    | dns.domainName:=url.domain ;\n  #type!=falcon-raw-data\n    | source.domain=*\n\
-        \    | dns.domainName:=source.domain ;\n  #type!=falcon-raw-data\n    | dns.question.name=*\n\
-        \    | dns.domainName:=dns.question.name ;\n}\n| dns.domainName=/^([a-z0-9]|\\\
-        \\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\.com|cloudsink\\\
-        .net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\.com|azure\\.com|live\\\
-        .com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n| _shannonentropy>4.2\n\
-        | format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n| dns.domainName=/\\\
-        .(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
+        \      | source.ip:=LocalAddressIP4\n      | destination.ip:=RemoteAddressIP4\n\
+        \      | destination.port:=RemotePort\n      | #Vendor:=\"crowdstrike\"\n\
+        \      | dns.domainName:=DomainName ;\n    #type!=falcon-raw-data\n      |\
+        \ url.domain=*\n      | dns.domainName:=url.domain ;\n    #type!=falcon-raw-data\n\
+        \      | source.domain=*\n      | dns.domainName:=source.domain ;\n    #type!=falcon-raw-data\n\
+        \      | dns.question.name=*\n      | dns.domainName:=dns.question.name ;\n\
+        }\n| dns.domainName=/^([a-z0-9]|\\\\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\\
+        .com|cloudsink\\.net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\\
+        .com|azure\\.com|live\\.com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n\
+        | _shannonentropy>4.2\n| format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n\
+        | dns.domainName=/\\.(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         dns_tld: '["{{fields.dns.tld}}"]'
       openInNewTab: true
       isLive: false
@@ -319,17 +334,20 @@ widgets:
     y: 0
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/^Network/F
-          | (LocalAddressIP4=* OR RemoteAddressIP4=*)
-          | source.ip:=LocalAddressIP4
-          | destination.ip:=RemoteAddressIP4
-          | destination.port:=RemotePort
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | (source.ip=* OR destination.ip=*) ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/^Network/F
+            | (LocalAddressIP4=* OR RemoteAddressIP4=*)
+            | source.ip:=LocalAddressIP4
+            | destination.ip:=RemoteAddressIP4
+            | destination.port:=RemotePort
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | (source.ip=* OR destination.ip=*) ;
       }
 
       // Add a multipick array for value selection.
@@ -377,8 +395,11 @@ widgets:
     x: 8
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Search for Windows RDP events.
-      #event_simpleName=UserLogon
+      | #event_simpleName=UserLogon
       | event_platform="Win"
       | LogonType=10
 
@@ -400,12 +421,14 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.user.name }}'
-      queryString: "#event_simpleName=UserLogon\n| event_platform=\"Win\"\n| LogonType=10\n\
-        | rename([[RemoteIP, destination.ip], [UserName, user.name]])\n| destination.ip=*\n\
-        | !match(file=\"aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4,\
-        \ strict=true)\n| user.name=?user_name "
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| #event_simpleName=UserLogon\n| event_platform=\"\
+        Win\"\n| LogonType=10\n| rename([[RemoteIP, destination.ip], [UserName, user.name]])\n\
+        | destination.ip=*\n| !match(file=\"aid_master_main.csv\", field=RemoteIP,\
+        \ column=LocalAddressIP4, strict=true)\n| user.name=?user_name "
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         user_name: '["{{fields.user.name}}"]'
       openInNewTab: true
       isLive: false
@@ -444,8 +467,11 @@ widgets:
     x: 0
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -477,8 +503,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
-        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n    OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
         Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
         )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
         \      | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
@@ -490,6 +517,7 @@ widgets:
       useWidgetTimeWindow: true
       arguments:
         _Vendor: '["{{ fields.source }}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
         threat_tactic_name_0_: '["{{ fields.target }}"]'
       openInNewTab: true
       isLive: false
@@ -522,7 +550,8 @@ widgets:
     height: 2
     queryString: |-
       // Read the CSV and count.
-      readFile("aid_master_main.csv")
+      | readFile("aid_master_main.csv")
+      | in(field=cid, values=[?cid_input])
       | count()
     end: now
     start: 1d
@@ -550,8 +579,11 @@ widgets:
     y: 4
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Add a parameter for entropy.
-      entropyValue:=?entropyValue
+      | entropyValue:=?entropyValue
 
       // Filter to events with required fields, and rename fields to match CPS.
       | case {
@@ -623,8 +655,11 @@ widgets:
     y: 4
     height: 2
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -656,18 +691,21 @@ widgets:
     y: 20
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFail/F
-          | #Vendor:="crowdstrike"
-          | client.ip:=aip
-          | user.name:=UserName
-          | #event.module:="sso"
-          | event.reason:=name ;
-        #type!=falcon-raw-data
-          | #event.outcome=failure
-          | event.category[0]=authentication ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/UserLogonFail/F
+            | #Vendor:="crowdstrike"
+            | client.ip:=aip
+            | user.name:=UserName
+            | #event.module:="sso"
+            | event.reason:=name ;
+          #type!=falcon-raw-data
+            | #event.outcome=failure
+            | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -740,18 +778,21 @@ widgets:
     x: 6
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/UserLogonFail/F
-          | #Vendor:="crowdstrike"
-          | client.ip:=aip
-          | user.name:=UserName
-          | #event.module:="sso"
-          | event.reason:=name ;
-        #type!=falcon-raw-data
-          | #event.outcome=failure
-          | event.category[0]=authentication ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/UserLogonFail/F
+            | #Vendor:="crowdstrike"
+            | client.ip:=aip
+            | user.name:=UserName
+            | #event.module:="sso"
+            | event.reason:=name ;
+          #type!=falcon-raw-data
+            | #event.outcome=failure
+            | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -798,18 +839,20 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/UserLogonFailed/\n\
-        \    | #Vendor:=\"crowdstrike\"\n    | client.ip:=aip\n    | user.name:=UserName\n\
-        \    | #event.module:=\"sso\"\n    | event.reason:=name ;\n  #type!=falcon-raw-data\n\
-        \    | #event.outcome=failure\n    | event.category[0]=authentication ;\n\
-        }\n| client.ip=*\n| ipLocation(client.ip)\n| asn(client.ip)\n| case {\n  \
-        \  user.name=\"-\"\n      | user.target.name=/./F\n      | rename([[user.target.name,\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/UserLogonFailed/\n\
+        \      | #Vendor:=\"crowdstrike\"\n      | client.ip:=aip\n      | user.name:=UserName\n\
+        \      | #event.module:=\"sso\"\n      | event.reason:=name ;\n    #type!=falcon-raw-data\n\
+        \      | #event.outcome=failure\n      | event.category[0]=authentication\
+        \ ;\n}\n| client.ip=*\n| ipLocation(client.ip)\n| asn(client.ip)\n| case {\n\
+        \    user.name=\"-\"\n      | user.target.name=/./F\n      | rename([[user.target.name,\
         \ user.name]]) ;\n    * ;\n}\n| user.name=/./\n| user.name!=/(\\$$|^DWM-|^LOCAL\\\
         sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\\sLOGON$|^NT\\sAUTHORITY\\\\SYSTEM$|^scheduled_tasks$)/\n\
         | case {\n    event.reason!=*\n      | event.reason:=event.action ;\n    *\
         \ ;\n}\n| event.reason=?event_reason"
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         event_reason: '["{{fields.event.reason}}"]'
       openInNewTab: true
       isLive: false
@@ -828,17 +871,20 @@ widgets:
     y: 4
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/^Network/F
-          | (LocalAddressIP4=* OR RemoteAddressIP4=*)
-          | source.ip:=LocalAddressIP4
-          | destination.ip:=RemoteAddressIP4
-          | destination.port:=RemotePort
-          | #Vendor:="crowdstrike" ;
-        #type!=falcon-raw-data
-          | (source.ip=* OR destination.ip=*) ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/^Network/F
+            | (LocalAddressIP4=* OR RemoteAddressIP4=*)
+            | source.ip:=LocalAddressIP4
+            | destination.ip:=RemoteAddressIP4
+            | destination.port:=RemotePort
+            | #Vendor:="crowdstrike" ;
+          #type!=falcon-raw-data
+            | (source.ip=* OR destination.ip=*) ;
       }
 
       // Add a multipick array for value selection.
@@ -929,8 +975,11 @@ widgets:
     x: 6
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -962,8 +1011,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
-      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
-        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n    OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
         Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
         )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
         \      | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
@@ -974,6 +1024,7 @@ widgets:
         \ \n| threat.tactic.name[0]=?threat_tactic_name_0_"
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         threat_tactic_name_0_: '["{{ fields.source }}"]'
         threat_technique_name_0_: '["{{ fields.target }}"]'
       openInNewTab: true
@@ -986,8 +1037,11 @@ widgets:
     x: 2
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Search for Windows RDP events.
-      #event_simpleName=UserLogon
+      | #event_simpleName=UserLogon
       | event_platform="Win"
       | LogonType=10
 
@@ -1017,14 +1071,17 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }} -> {{ fields.target }}'
-      queryString: "#event_simpleName=UserLogon\n| event_platform=\"Win\"\n| LogonType=10\n\
-        | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName,\
-        \ source.hostname]])\n| destination.ip=*\n| !match(file=\"aid_master_main.csv\"\
-        , field=RemoteIP, column=LocalAddressIP4, strict=true)\n| default(field=[source.hostname],\
-        \ value=\"-\")\n| format(\"%s  %s\", field=[source.ip, source.hostname], as=source.details)\n\
-        | source.details=?source_details \n| destination.ip=?destination_ip "
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| #event_simpleName=UserLogon\n| event_platform=\"\
+        Win\"\n| LogonType=10\n| rename([[LocalIP, source.ip], [RemoteIP, destination.ip],\
+        \ [ComputerName, source.hostname]])\n| destination.ip=*\n| !match(file=\"\
+        aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4, strict=true)\n\
+        | default(field=[source.hostname], value=\"-\")\n| format(\"%s  %s\", field=[source.ip,\
+        \ source.hostname], as=source.details)\n| source.details=?source_details \n\
+        | destination.ip=?destination_ip "
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         destination_ip: '["{{ fields.target }}"]'
         source_details: '["{{ fields.source }}"]'
       openInNewTab: true
@@ -1037,8 +1094,11 @@ widgets:
     x: 2
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -1063,13 +1123,15 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/Detection/\n\
-        \    | #event_simpleName!=DetectionExcluded\n    | severity!=\"informational\"\
-        \n    | #event.kind:=\"alert\"\n    | #Vendor:=\"crowdstrike\" ;\n  #type!=falcon-raw-data\n\
-        \    | #event.kind=\"alert\" ;\n} \n| #Vendor=?_Vendor"
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
+        \      | #event_simpleName!=DetectionExcluded\n      | severity!=\"informational\"\
+        \n      | #event.kind:=\"alert\"\n      | #Vendor:=\"crowdstrike\" ;\n   \
+        \ #type!=falcon-raw-data\n      | #event.kind=\"alert\" ;\n} \n| #Vendor=?_Vendor"
       useWidgetTimeWindow: true
       arguments:
         _Vendor: '["{{fields.#Vendor}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -1109,8 +1171,11 @@ widgets:
     x: 4
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -1140,8 +1205,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.category }}'
-      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
-        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n    OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
         Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
         )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
         \      | #event_simpleName!=DetectionExcluded\n      | severity!=\"informational\"\
@@ -1151,6 +1217,7 @@ widgets:
         | event.category=?event_category"
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         event_category: '["{{fields.event.category}}"]'
       openInNewTab: true
       isLive: false
@@ -1183,18 +1250,21 @@ widgets:
     y: 8
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-          | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
-          | source.ip:=LocalAddressIP4
-          | destination.ip:=RemoteAddressIP4
-          | destination.port:=RemotePort
-          | #Vendor:="crowdstrike"
-          | dns.domainName:=DomainName ;
-        #type!=falcon-raw-data
-          | (url.domain=* OR source.domain=* OR dns.question.name=*)
-          | rename([[url.domain, dns.domainName], [source.domain, dns.domainName], [dns.question.name, dns.domainName]]) ;
+      | case {
+          #type=falcon-raw-data
+            | #event_simpleName=/^(DnsRequest|TlsClientHello)/F
+            | source.ip:=LocalAddressIP4
+            | destination.ip:=RemoteAddressIP4
+            | destination.port:=RemotePort
+            | #Vendor:="crowdstrike"
+            | dns.domainName:=DomainName ;
+          #type!=falcon-raw-data
+            | (url.domain=* OR source.domain=* OR dns.question.name=*)
+            | rename([[url.domain, dns.domainName], [source.domain, dns.domainName], [dns.question.name, dns.domainName]]) ;
       }
 
       // Add a multipick array for value selection.
@@ -1344,18 +1414,21 @@ widgets:
     y: 15
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      case {
-        #type=falcon-raw-data
-            | #event_simpleName=/UserLogon$/F
-            | #Vendor:="crowdstrike"
-            | client.ip:=aip
-            | user.name:=UserName
-            | #event.module:="sso"
-            | event.reason:=name ;
-        #type!=falcon-raw-data
-            | #event.outcome=success
-            | event.category[0]=authentication ;
+      | case {
+          #type=falcon-raw-data
+              | #event_simpleName=/UserLogon$/F
+              | #Vendor:="crowdstrike"
+              | client.ip:=aip
+              | user.name:=UserName
+              | #event.module:="sso"
+              | event.reason:=name ;
+          #type!=falcon-raw-data
+              | #event.outcome=success
+              | event.category[0]=authentication ;
       }
 
       // Enrich specific events with SubStatus.
@@ -1409,7 +1482,7 @@ widgets:
       | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
       | sort(count, limit=1000)
     end: now
-    start: 7d
+    start: 1d
     width: 12
     options:
       cell-overflow: wrap-text
@@ -1425,8 +1498,11 @@ widgets:
     x: 5
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Add a parameter for entropy.
-      entropyValue:=?entropyValue
+      | entropyValue:=?entropyValue
 
       // Filter to events with required fields, and rename fields to match CPS.
       | case {
@@ -1475,20 +1551,22 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
-      queryString: "case { \n  #type=falcon-raw-data\n    | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
-        \    | source.ip:=LocalAddressIP4\n    | destination.ip:=RemoteAddressIP4\n\
-        \    | destination.port:=RemotePort\n    | #Vendor:=\"crowdstrike\"\n    |\
-        \ dns.domainName:=DomainName ;\n  #type!=falcon-raw-data\n    | url.domain=*\n\
-        \    | dns.domainName:=url.domain ;\n  #type!=falcon-raw-data\n    | source.domain=*\n\
-        \    | dns.domainName:=source.domain ;\n  #type!=falcon-raw-data\n    | dns.question.name=*\n\
-        \    | dns.domainName:=dns.question.name ;\n}\n| dns.domainName=/^([a-z0-9]|\\\
-        \\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\.com|cloudsink\\\
-        .net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\.com|azure\\.com|live\\\
-        .com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n| _shannonentropy>4.2\n\
-        | format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n| dns.domainName=/\\\
-        .(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/^(DnsRequest|TlsClientHello)/\n\
+        \      | source.ip:=LocalAddressIP4\n      | destination.ip:=RemoteAddressIP4\n\
+        \      | destination.port:=RemotePort\n      | #Vendor:=\"crowdstrike\"\n\
+        \      | dns.domainName:=DomainName ;\n    #type!=falcon-raw-data\n      |\
+        \ url.domain=*\n      | dns.domainName:=url.domain ;\n    #type!=falcon-raw-data\n\
+        \      | source.domain=*\n      | dns.domainName:=source.domain ;\n    #type!=falcon-raw-data\n\
+        \      | dns.question.name=*\n      | dns.domainName:=dns.question.name ;\n\
+        }\n| dns.domainName=/^([a-z0-9]|\\\\.).*?\\\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\\
+        .com|cloudsink\\.net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\\
+        .com|azure\\.com|live\\.com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n\
+        | _shannonentropy>4.2\n| format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n\
+        | dns.domainName=/\\.(?<dns.tld>[a-z0-9-]+?\\.[a-z0-9]+?)$/ \n| dns.tld=?dns_tld"
       useWidgetTimeWindow: true
       arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
         dns_tld: '["{{fields.dns.tld}}"]'
       openInNewTab: true
       isLive: false
@@ -1509,8 +1587,11 @@ widgets:
     x: 8
     height: 4
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -1537,9 +1618,10 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.Ngsiem.event.data_domain }}'
-      queryString: "// Filter to events with required fields, and rename fields to\
-        \ match CPS.\n(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
-        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n// Filter to events with required fields, and rename\
+        \ fields to match CPS.\n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n    OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
         Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
         )\n| case {\n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
         \      | #event_simpleName!=DetectionExcluded\n      | severity!=\"informational\"\
@@ -1550,6 +1632,7 @@ widgets:
       useWidgetTimeWindow: true
       arguments:
         Ngsiem_event_data_domain: '["{{ fields.Ngsiem.event.data_domain }}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -1566,8 +1649,11 @@ widgets:
     y: 13
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -1636,6 +1722,9 @@ widgets:
     x: 2
     height: 7
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Add a multipick array for value selection.
       | in(field=#Vendor, values=[?Vendor])
 
@@ -1806,7 +1895,8 @@ widgets:
     interactions:
     - name: searchDetections
       titleTemplate: Search Detection Events
-      queryString: "in(field=#Vendor, values=[?Vendor])\n| default(field=event.severity,\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| in(field=#Vendor, values=[?Vendor])\n| default(field=event.severity,\
         \ value=0)\n| event.severity>=0\n| #type=\"none\"\n| case { \n    Ngsiem.event.type=\"\
         ngsiem-rule-trigger-event\"\n      | rename([\n          [rule.name, threat.indicator.name],\n\
         \          [Ngsiem.event.source_ips[0], source.ip],\n          [Ngsiem.event.hostnames[0],\
@@ -1836,29 +1926,32 @@ widgets:
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         aid: '["{{fields.aid}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
         userList: '["{{ fields.user.name }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
     - name: searchAll
       titleTemplate: Search All Events
-      queryString: "in(field=#Vendor, values=[?Vendor])\n| case { \n    Ngsiem.event.type=\"\
-        ngsiem-rule-trigger-event\"\n      | rename([\n          [rule.name, threat.indicator.name],\n\
-        \          [Ngsiem.event.source_ips[0], source.ip],\n          [Ngsiem.event.hostnames[0],\
-        \ ComputerName],\n          [Ngsiem.event.type, #event.module]\n        ])\
-        \ ;\n    * ;\n}\n| case { \n    #event.module!=*\n      | rename([[Vendor.Product,\
-        \ #event.module]])\n      | lower(#event.module, as=#event.module) ;\n   \
-        \ * ;\n}\n| rename([\n    [agent.id, aid],\n    [Vendor.SourceEndpointSensorId,\
-        \ aid],\n    [Ngsiem.event.vendor, #Vendor],\n    [Vendor.threat_id, threat.indicator],\
-        \ \n    [UserName, user.name]\n  ])\n| lower(#Vendor, as=#Vendor)\n| match(file=\"\
-        aid_master_main.csv\", field=aid, column=aid, include=[aid, ComputerName,\
-        \ LocalAddressIP4], strict=false)\n| case { \n    aid!=*\n      | match(file=\"\
-        aid_master_main.csv\", field=ComputerName, column=ComputerName, include=[aid,\
-        \ ComputerName, LocalAddressIP4], nrows=10, strict=false)\n      | match(file=\"\
-        aid_master_main.csv\", field=source.ip, column=LocalAddressIP4, include=[aid,\
-        \ ComputerName, LocalAddressIP4], nrows=10, strict=false)\n      | match(file=\"\
-        aid_master_main.csv\", field=client.ip, column=LocalAddressIP4, include=[aid,ComputerName,LocalAddressIP4],\
-        \ nrows=10, strict=false)\n      | match(file=\"aid_master_main.csv\", field=destination.ip,\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| in(field=#Vendor, values=[?Vendor])\n| case { \n\
+        \    Ngsiem.event.type=\"ngsiem-rule-trigger-event\"\n      | rename([\n \
+        \         [rule.name, threat.indicator.name],\n          [Ngsiem.event.source_ips[0],\
+        \ source.ip],\n          [Ngsiem.event.hostnames[0], ComputerName],\n    \
+        \      [Ngsiem.event.type, #event.module]\n        ]) ;\n    * ;\n}\n| case\
+        \ { \n    #event.module!=*\n      | rename([[Vendor.Product, #event.module]])\n\
+        \      | lower(#event.module, as=#event.module) ;\n    * ;\n}\n| rename([\n\
+        \    [agent.id, aid],\n    [Vendor.SourceEndpointSensorId, aid],\n    [Ngsiem.event.vendor,\
+        \ #Vendor],\n    [Vendor.threat_id, threat.indicator], \n    [UserName, user.name]\n\
+        \  ])\n| lower(#Vendor, as=#Vendor)\n| match(file=\"aid_master_main.csv\"\
+        , field=aid, column=aid, include=[aid, ComputerName, LocalAddressIP4], strict=false)\n\
+        | case { \n    aid!=*\n      | match(file=\"aid_master_main.csv\", field=ComputerName,\
+        \ column=ComputerName, include=[aid, ComputerName, LocalAddressIP4], nrows=10,\
+        \ strict=false)\n      | match(file=\"aid_master_main.csv\", field=source.ip,\
+        \ column=LocalAddressIP4, include=[aid, ComputerName, LocalAddressIP4], nrows=10,\
+        \ strict=false)\n      | match(file=\"aid_master_main.csv\", field=client.ip,\
+        \ column=LocalAddressIP4, include=[aid,ComputerName,LocalAddressIP4], nrows=10,\
+        \ strict=false)\n      | match(file=\"aid_master_main.csv\", field=destination.ip,\
         \ column=LocalAddressIP4, include=[aid, ComputerName, LocalAddressIP4], nrows=10,\
         \ strict=false) ;\n    * ;\n}\n| rename([[user.target.name, user.name]])\n\
         | case { \n    email.to.address[0]=*\n      | regex(\"(?<username>[^\\@].*)@.+\\\
@@ -1871,6 +1964,7 @@ widgets:
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         aid: '["{{fields.aid}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
         userList: '["{{ fields.user.name }}"]'
       openInNewTab: true
       isLive: false
@@ -1894,8 +1988,11 @@ widgets:
     x: 4
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Filter to events with required fields, and rename fields to match CPS.
-      (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/Fi)
         OR (#event_simpleName="Event_EppDetectionSummaryEvent" OR #event_simpleName="Event_IdpDetectionSummaryEvent" OR #event_simpleName="Event_DataProtectionDetectionSummaryEvent")
       | case {
           #type=falcon-raw-data
@@ -1923,8 +2020,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.Tactic }}, {{ fields.Technique }}'
-      queryString: "(#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
-        \ \n  OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i)\
+        \ \n    OR (#event_simpleName=\"Event_EppDetectionSummaryEvent\" OR #event_simpleName=\"\
         Event_IdpDetectionSummaryEvent\" OR #event_simpleName=\"Event_DataProtectionDetectionSummaryEvent\"\
         )\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/Detection/\n\
         \      | #event_simpleName!=/DetectionExcluded|Event_XdrDetectionSummaryEvent/\n\
@@ -1937,6 +2035,7 @@ widgets:
       arguments:
         Tactic: '["{{fields.Tactic}}"]'
         Technique: '["{{fields.Technique}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -1957,8 +2056,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-11-08
-      version: 1.6.4
+      date: 2024-12-11
+      version: 1.6.5
       ```
     width: 3
     title: ''
@@ -1968,8 +2067,11 @@ widgets:
     y: 5
     height: 5
     queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
       // Search for Windows RDP events.
-      #event_simpleName=UserLogon
+      | #event_simpleName=UserLogon
       | event_platform="Win"
       | LogonType=10
 
@@ -2025,6 +2127,21 @@ widgets:
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.17.0
 parameters:
+  cid_input:
+    label: CID
+    query: |-
+      #data_source_name=cid_name #repo=sensor_metadata #type=metadata-parser
+      | cid=* name=*
+      | top([cid, name], limit=100)
+      | cidname_cid:=format("%s -> %s", field=[name, cid])
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: cid
+    type: query
+    labelField: cidname_cid
   DetectionSourceCount:
     label: Minimum Unique Detection Sources
     order: 1
@@ -2095,7 +2212,7 @@ parameters:
     useDashboardTimeIfSet: true
     type: query
     defaultValue: '*'
-    width: 2
+    width: 1
     order: 50
     valueField: '#Vendor'
   ioc_confidence_level:
