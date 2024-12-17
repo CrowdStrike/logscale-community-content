@@ -1,0 +1,31 @@
+#####
+## Sample configuration file for Linux or Microsoft Windows.
+## This is YAML, so structure and indentation is important.
+## Lines can be uncommented by removing the #. You should not need to change the number of spaces after that.
+## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
+#####
+ 
+sources:
+  syslog_udp_1514:
+    type: syslog
+    mode: udp
+    port: 1514
+    sink: next-gen-siem
+ 
+  syslog_tcp_1514:
+    type: syslog
+    mode: tcp
+    port: 1514
+    sink: next-gen-siem
+     
+sinks:
+  next-gen-siem:
+    type: hec
+    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
+    proxy: none
+    workers: 4
+    ## This sets the maximum single event size to. You can change as needed. the maximum value is 950000.
+    maxEventSize: 910000
+    ## This sets the maximum payload size for a single batch of events. The max value is maxBatchSize: 16777216.
+    maxBatchSize: 5242880
