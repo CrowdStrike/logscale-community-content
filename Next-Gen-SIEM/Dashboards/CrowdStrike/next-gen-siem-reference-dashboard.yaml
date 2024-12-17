@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.6.5
+name: Next-Gen SIEM Reference Dashboard - v1.6.6
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -2056,8 +2056,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2024-12-11
-      version: 1.6.5
+      date: 2024-12-12
+      version: 1.6.6
       ```
     width: 3
     title: ''
@@ -2134,6 +2134,7 @@ parameters:
       | cid=* name=*
       | top([cid, name], limit=100)
       | cidname_cid:=format("%s -> %s", field=[name, cid])
+      | sort(name, order=asc, limit=1000)
     timeInterval: 1d
     useDashboardTimeIfSet: true
     defaultValue: '*'
