@@ -1,6 +1,7 @@
 # Dashboard Screenshots
 
 ## Importing the Dashboard
+
 1. Download the YAML file [here](next-gen-siem-reference-dashboard.yaml)
 2. In Falcon, Click Menu -> Next-Gen SIEM -> Dashboards
 3. Click Create Dashboards -> Import Dashboard
@@ -8,4 +9,5 @@
 5. Click "Import"
 
 ## [next-gen-siem-reference-dashboard](next-gen-siem-reference-dashboard.yaml)
+
 ![Screenshot 1](screenshots/next-gen-siem-reference-dashboard.png)
