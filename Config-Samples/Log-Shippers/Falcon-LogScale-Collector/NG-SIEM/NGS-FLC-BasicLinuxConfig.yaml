@@ -5,9 +5,9 @@
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
 
-## dataDirectory is NOT used with Data Ingest / Fleet configuration.
-## Comment out this line if using Fleet Management.
-#dataDirectory: /var/lib/humio-log-collector
+## Uncomment dataDirectory if you need to manually set the directory.
+## Note: Not used with Data Ingest / Fleet Management configuration
+#dataDirectory: C:\ProgramData\LogScale Collector
 
 sources:  
   ## Collect syslog udp 1514.
@@ -18,13 +18,15 @@ sources:
     sink: next-gen-siem-syslog-udp
     maxEventSize: 2048
 
-  ## Collect syslog tcp 1515.
-  syslog_tcp_1515:
-    type: syslog
-    mode: tcp
-    port: 1515
-    sink: next-gen-siem-syslog-tcp
-    maxEventSize: 900000 
+  ## Collect local files.
+  var_log:
+    type: file
+    include:
+      - /var/log/apache2/access.log
+      - /var/log/*.log
+    exclude:
+      - /var/log/*.gz
+    sink: next-gen-siem-fileread
  
 ## Each sink will have a unique token and url that correspond to Data Connector you wish to send data to.     
 sinks:
@@ -40,13 +42,13 @@ sinks:
     maxBatchSize: 5242880
     workers: 4
    
-   ## This sink receives data from "syslog_tcp_1515" source above 
-  next-gen-siem-syslog-tcp:
+   ## This sink receives data from "var_log" source above 
+  next-gen-siem-fileread:
     type: hec
     ## Replace with your specified ingest token.
     token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
-    # NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
+    ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     maxEventSize: 910000
     maxBatchSize: 5242880
