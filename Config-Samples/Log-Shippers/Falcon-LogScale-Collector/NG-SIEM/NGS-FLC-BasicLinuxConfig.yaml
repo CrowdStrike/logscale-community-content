@@ -5,34 +5,18 @@
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
 
-## Uncomment dataDirectory if you need to manually set the directory.
-## Note: Not used with Data Ingest / Fleet configuration
+## dataDirectory is NOT used with Data Ingest / Fleet configuration.
+## Comment out this line if using Fleet Management.
 #dataDirectory: /var/lib/humio-log-collector
 
-sources:
-  ## Collect local files.
-  var_log:
-    type: file
-    include: /var/log/*.log
-    exclude: /var/log/*.gz
-    sink: next-gen-siem-file
-    ## Optional: Exclude files with specific extensions
-    #excludeExtensions:
-    #   - "gz"
-    #   - "zip"
- 
-  
-  ## For Syslog sources, you may configure multiple sources, each with unique port, protocol, and sink configurations. 
-  
+sources:  
   ## Collect syslog udp 1514.
   syslog_udp_1514:
     type: syslog
     mode: udp
     port: 1514
     sink: next-gen-siem-syslog-udp
-    ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated
     maxEventSize: 2048
-
 
   ## Collect syslog tcp 1515.
   syslog_tcp_1515:
@@ -40,104 +24,30 @@ sources:
     mode: tcp
     port: 1515
     sink: next-gen-siem-syslog-tcp
-    ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated
     maxEventSize: 900000 
  
 ## Each sink will have a unique token and url that correspond to Data Connector you wish to send data to.     
 sinks:
-
-  ## This sink matches to the configuration in the "UDP Syslog" source above 
+  ## This sink receives data from "syslog_udp_1514" source above  
   next-gen-siem-syslog-udp:
-    type: hec
-    # Replace with your specified ingest token.
-    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    # Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
-    # NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
-    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
-    ## Keep this option as "none" unless you actually need a proxy.
-    proxy: none
-    ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
-    maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 16777216.
-    maxBatchSize: 5242880
-    ## Uncomment if you would like to force a specific level of type and level compression. 9 is the highest.
-    ## Default is "auto", which attempts "gzip" and its default compression but falls back to "none" if unsupported.
-    #compression: gzip
-    #compressionLevel: 9
-    ## Uncomment if you want to use disk for event queue storage instead of memory.
-    ## Please note this may be slower than a memory queue.
-    ## Configure the queue for buffering events
-    ## You may use a disk queue to persist syslog messages,
-    ## ensuring data integrity during network issues or system restarts.
-    #queue:
-      #type: disk
-      #fullAction: pause
-      #maxLimitInMB: 4096
-      ## A large disk queue is used to ensure data persistence and handle
-      ## high volumes of incoming syslog data, providing a robust buffer
-      ## against network issues or temporary outages.
-    ## Add more workers to processing. The default is 4 workers. 
-    ## This can be increased if FLC is falling behind on processing.
-    workers: 4
-   
-   ## This sink matches to the configuration in the "TCP Syslog" source above 
-  next-gen-siem-syslog-tcp:
-    type: hec
-    # Replace with your specified ingest token.
-    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-    # Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
-    # NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
-    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
-    ## Keep this option as "none" unless you actually need a proxy.
-    proxy: none
-    ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
-    maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a batch of events being uploaded together. The max value is maxBatchSize: 16777216.
-    maxBatchSize: 5242880
-    ## Uncomment if you would like to force a specific level of type and level compression. 9 is the highest.
-    ## Default is "auto", which attempts "gzip" and its default compression but falls back to "none" if unsupported.
-    #compression: gzip
-    #compressionLevel: 9
-    ## Uncomment if you want to use disk for event queue storage instead of memory.
-    ## Please note this may be slower than a memory queue.
-    ## Configure the queue for buffering events
-    ## You may use a disk queue to persist syslog messages,
-    ## ensuring data integrity during network issues or system restarts.
-    #queue:
-      #type: disk
-      #fullAction: pause
-      #maxLimitInMB: 4096
-      ## A large disk queue is used to ensure data persistence and handle
-      ## high volumes of incoming syslog data, providing a robust buffer
-      ## against network issues or temporary outages.
-    ## Add more workers to processing. The default is 4 workers. 
-    ## This can be increased if FLC is falling behind on processing.
-    workers: 4
-
-  ## This sink matches to the configuration in the "file" type source above  
-  next-gen-siem-file:
     type: hec
     ## Replace with your specified ingest token.
     token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
-    ## Keep this option as "none" unless you actually need a proxy.
-    proxy: none
-    ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
     maxEventSize: 910000
-    ## This sets the maximum payload size for a batch of events being uploaded together. The max value is maxBatchSize: 16777216.
     maxBatchSize: 5242880
-    ## Uncomment if you would like to force a specific level of type and level compression. 9 is the highest.
-    ## Default is "auto", which attempts "gzip" and its default compression but falls back to "none" if unsupported.
-    #compression: gzip
-    #compressionLevel: 9
-    ## Uncomment if you want to use disk for event queue storage instead of memory.
-    ## Please note this may be slower than a memory queue.
-    #queue:
-      #type: disk
-      #fullAction: pause
-      #maxLimitInMB: 4096
-    ## Add more workers to processing. The default is 4 workers. 
-    ## This can be increased if FLC is falling behind on processing.
+    workers: 4
+   
+   ## This sink receives data from "syslog_tcp_1515" source above 
+  next-gen-siem-syslog-tcp:
+    type: hec
+    ## Replace with your specified ingest token.
+    token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
+    # NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
+    url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
+    maxEventSize: 910000
+    maxBatchSize: 5242880
     workers: 4

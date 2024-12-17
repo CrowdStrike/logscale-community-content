@@ -5,17 +5,14 @@
 ## Config options have a single #, comments have a ##. Only uncomment the single # lines if you need them.
 #####
 
-## Uncomment dataDirectory if you need to manually set the directory.
-## Note: Not used with Data Ingest / Fleet configuration
+## dataDirectory is NOT used with Data Ingest / Fleet configuration.
+## Comment out this line if using Fleet Management.
 #dataDirectory: C:\ProgramData\LogScale Collector
  
 sources:
-  # Collect windows event logs
+  ## Collect windows event logs
   windows_events:
     type: wineventlog
-    ## Add other channels by simple adding additional "name" lines.
-    ## The following command can be used to find other channels:
-    ## Get-WinEvent -ListLog * -EA silentlycontinue | sort-object -Property Recordcount -desc
     channels:
       - name: Application
       - name: Security
@@ -24,20 +21,18 @@ sources:
       - name: ForwardedEvents
     sink: next-gen-siem-windows
 
-  ## For Syslog sources, you may configure multiple sources, each with unique port, protocol, and sink configurations. 
   ## Collect syslog udp 1514.
   syslog_udp_1514:
     type: syslog
     mode: udp
     port: 1514
-    ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated.
     maxEventSize: 2048
     sink: next-gen-siem-syslog-udp
 
 ## Each sink will have a unique token and url that correspond to Data Connector you wish to send data to.     
 sinks:
 
-  ## This sink matches to the configuration in the "Windows" type sources above  
+  ## This sink receives data from "windows_events" source above   
   next-gen-siem-windows:
     type: hec
     ## Replace with your specified ingest token.
@@ -45,15 +40,11 @@ sinks:
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
-    ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
     maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 16777216.
     maxBatchSize: 5242880
-    ## Add more workers to processing. The default is 4 workers. 
-    ## This can be increased if FLC is falling behind on processing.
     workers: 4
   
-  ## This sink matches to the configuration in the "UDP Syslog" source above 
+  ## This sink receives data from "syslog_udp_1514" source above  
   next-gen-siem-syslog-udp:
     type: hec
     ## Replace with your specified ingest token.
@@ -61,12 +52,6 @@ sinks:
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
-    ## Keep this option as "none" unless you actually need a proxy.
-    proxy: none
-    ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
     maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 16777216.
     maxBatchSize: 5242880
-    ## Add more workers to processing. The default is 4 workers. 
-    ## This can be increased if FLC is falling behind on processing.
     workers: 4

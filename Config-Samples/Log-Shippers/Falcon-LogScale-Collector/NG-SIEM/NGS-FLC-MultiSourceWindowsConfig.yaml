@@ -10,7 +10,7 @@
 #dataDirectory: C:\ProgramData\LogScale Collector
  
 sources:
-  # Collect windows event logs
+  ## Collect windows event logs
   windows_events:
     type: wineventlog
     ## Add other channels by simple adding additional "name" lines.
