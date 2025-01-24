@@ -2166,6 +2166,7 @@ parameters:
     - '9'
     - '10'
     type: list
+    defaultValue: '0'
     width: 1
   min_or_equal_severity:
     label: Minimum Severity [0-100]
