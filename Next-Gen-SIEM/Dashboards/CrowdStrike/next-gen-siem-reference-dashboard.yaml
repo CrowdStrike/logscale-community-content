@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.6.7
+name: Next-Gen SIEM Reference Dashboard - v1.7.0
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1724,6 +1724,48 @@ widgets:
     x: 2
     height: 7
     queryString: |-
+      // Define table used for mapping events.
+      // Map events that have a username but no aid.
+      | defineTable(query=
+          {
+              Ngsiem.parent.incident.id!=*
+              | Ngsiem.parent.incident.id[0]!=*
+              | Ngsiem.detection.id=*
+              | Vendor.EventType!=CRAggregateResultEvent
+              | user.name=* OR user.target.name=* OR email.to.address[0]=*
+              | agent.id!=*
+              | rename(field="user.target.name", as="user.name")
+              | default(field=event.severity, value=0)
+              | case {
+                  threat.indicator.name=*
+                      | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user) ;
+                  * ;
+              }
+              | case {
+                  #event.module!=*
+                      | rename([[Vendor.Product, #event.module]])
+                      | #event.module:=lower(#event.module) ;
+                  * ;
+              }
+              // Normalize the email address.
+              | case {
+                  email.to.address[0]=*
+                      | regex("(?<username>[^\@].*)@.+\.", field=email.to.address[0], flags=F)
+                      | rename(field="username", as="user.name");
+                  * ;
+              }
+              // Combine names to show where the alerts came from.
+              | rename([
+                  [event.module, #event.module],
+                  [event.severity, event.severity.user]
+              ])
+              | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes.user)
+              // Ensure we have real users.
+          },
+          include=[user.name, threat.indicator.map.user, productTypes.user, event.severity.user],
+          name="user_event_table"
+      )
+
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
@@ -1742,6 +1784,8 @@ widgets:
               ]) ;
           Ngsiem.detection.id=* ;
       }
+      // For Falcon detections because we are pulling the Ngsiem detections, not the DetectName=*
+      | rename(field="host.hostname", as="ComputerName")
 
       // Rename events that might be missing the module value.
       | case {
@@ -1797,47 +1841,7 @@ widgets:
       | rename([[event.severity, event.severity.asset]])
 
       // Map events that have a username but no aid.
-      | join(
-          query={
-              Ngsiem.parent.incident.id!=*
-              | Ngsiem.parent.incident.id[0]!=*
-              | Ngsiem.detection.id=*
-              | Vendor.EventType!=CRAggregateResultEvent
-              | user.name=* OR user.target.name=* OR email.to.address[0]=*
-              | agent.id!=*
-              | rename(field="user.target.name", as="user.name")
-              | default(field=event.severity, value=0)
-              | case {
-                  threat.indicator.name=*
-                      | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user) ;
-                  * ;
-              }
-              | case {
-                  #event.module!=*
-                      | rename([[Vendor.Product, #event.module]])
-                      | #event.module:=lower(#event.module) ;
-                  * ;
-              }
-              // Normalize the email address.
-              | case {
-                  email.to.address[0]=*
-                      | regex("(?<username>[^\@].*)@.+\.", field=email.to.address[0], flags=F)
-                      | rename(field="username", as="user.name");
-                  * ;
-              }
-              // Combine names to show where the alerts came from.
-              | rename([
-                  [event.module, #event.module],
-                  [event.severity, event.severity.user]
-              ])
-              | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes.user)
-              // Ensure we have real users.
-          },
-          field=[user.name],
-          include=[threat.indicator.map.user, productTypes.user, event.severity.user],
-          mode=left,
-          max=100
-      )
+      | match(file="user_event_table", field=[user.name], strict=false)
 
       // Group the results.
       | groupBy(aid,
@@ -2059,8 +2063,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-01-16
-      version: 1.6.7
+      date: 2025-01-22
+      version: 1.6.8
       ```
     width: 3
     title: ''
