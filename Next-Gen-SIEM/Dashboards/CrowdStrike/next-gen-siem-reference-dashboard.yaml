@@ -2063,8 +2063,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-01-22
-      version: 1.6.8
+      date: 2025-01-24
+      version: 1.7.0
       ```
     width: 3
     title: ''
