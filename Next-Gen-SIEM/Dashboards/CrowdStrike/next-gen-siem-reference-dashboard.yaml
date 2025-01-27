@@ -743,7 +743,7 @@ widgets:
       | user.name!=/^(-)$/Fi
 
       // Format the URL.
-      | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
+      | regex("^\\W*?(?<user.name.stripped>\\w.+?)(@|$)", field=user.name, strict=false)
       | user.name.stripped:=lower(user.name.stripped)
       | user.name:=format("[%s](/search/?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
@@ -1467,7 +1467,7 @@ widgets:
       | user.target.name!=/(\$$|^DWM-|^LOCAL\sSERVICE$|^UMFD-|^$|^SYSTEM$|^ANONYMOUS\sLOGON$|^NT\sAUTHORITY\\SYSTEM$|^scheduled_tasks$)/F
 
       // Format the URL.
-      | regex("^*(?<user.name.stripped>\w.+?)(@|$)", field=user.name, strict=false)
+      | regex("^\\W*?(?<user.name.stripped>\\w.+?)(@|$)", field=user.name, strict=false)
       | user.name.stripped:=lower(user.name.stripped)
       | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
