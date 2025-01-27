@@ -1728,7 +1728,8 @@ widgets:
       // Map events that have a username but no aid.
       | defineTable(query=
           {
-              Ngsiem.parent.incident.id!=*
+              #repo=xdr_indicatorsrepo OR #repo=xdr_eventsarchive
+              | Ngsiem.parent.incident.id!=*
               | Ngsiem.parent.incident.id[0]!=*
               | Ngsiem.detection.id=*
               | Vendor.EventType!=CRAggregateResultEvent
@@ -1736,31 +1737,24 @@ widgets:
               | agent.id!=*
               | rename(field="user.target.name", as="user.name")
               | default(field=event.severity, value=0)
+              | default(field="threat.indicator.name", "Generic Alert")
+              | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user)
               | case {
-                  threat.indicator.name=*
-                      | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.user) ;
-                  * ;
-              }
-              | case {
-                  #event.module!=*
+                  #event.module!=* Vendor.Product=*
                       | rename([[Vendor.Product, #event.module]])
                       | #event.module:=lower(#event.module) ;
                   * ;
               }
               // Normalize the email address.
-              | case {
-                  email.to.address[0]=*
-                      | regex("(?<username>[^\@].*)@.+\.", field=email.to.address[0], flags=F)
-                      | rename(field="username", as="user.name");
-                  * ;
-              }
+              | regex("(?<username>[^\@].*)@.+\.", field=email.to.address[0], strict=false, flags=F)
+
               // Combine names to show where the alerts came from.
               | rename([
                   [event.module, #event.module],
-                  [event.severity, event.severity.user]
+                  [event.severity, event.severity.user],
+                  [username, user.name]
               ])
               | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes.user)
-              // Ensure we have real users.
           },
           include=[user.name, threat.indicator.map.user, productTypes.user, event.severity.user],
           name="user_event_table"
@@ -1773,7 +1767,9 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Identify events with NG-SIEM indicators.
-      | #type="none" AND Vendor.EventType!=CRAggregateResultEvent
+      | #repo=xdr_indicatorsrepo OR #repo=xdr_eventsarchive
+      | #type="none"
+      | Vendor.EventType!=CRAggregateResultEvent
       | case {
           Ngsiem.event.type="ngsiem-rule-trigger-event"
               | rename([
@@ -1789,7 +1785,7 @@ widgets:
 
       // Rename events that might be missing the module value.
       | case {
-          #event.module!=*
+          #event.module!=* Vendor.Product=*
               | rename([[Vendor.Product, #event.module]])
               | #event.module:=lower(#event.module) ;
           * ;
@@ -1827,12 +1823,8 @@ widgets:
       // Clean up the names for certain events.
       | regex("^(?<threat.indicator.name>.+)\s+->\s\((?<event.severity>\d+)\)", field=threat.indicator.name, strict=false, flags=F)
 
-      // Check if the field exists and then map the indicator name to the score.
-      | case {
-          threat.indicator.name!=/\s+-> /F threat.indicator.name=*
-              | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.asset) ;
-          * ;
-      }
+      // Map the indicator name to the score.
+      | format(format="%s -> %s", field=[threat.indicator.name, event.severity], as=threat.indicator.map.asset)
 
       // Combine names to show where the alerts came from.
       | format(format="%s: %s", field=[#Vendor, #event.module], as=productTypes.asset)
@@ -1841,7 +1833,7 @@ widgets:
       | rename([[event.severity, event.severity.asset]])
 
       // Map events that have a username but no aid.
-      | match(file="user_event_table", field=[user.name], strict=false)
+      | match(file="user_event_table", field=[user.name], nrows=max, strict=false)
 
       // Group the results.
       | groupBy(aid,
@@ -1864,16 +1856,6 @@ widgets:
       | UniqueDetectionSources>=?{DetectionSourceCount=0}
 
       // Combine values.
-      // Regex to ensure it's not a blank line.
-      | case {
-          threat.indicator.map.asset=/\w+/F threat.indicator.map.user=/\w+/F
-              | format(format="%s\n%s", field=[threat.indicator.map.asset, threat.indicator.map.user], as=threat.indicator.value) ;
-          threat.indicator.map.asset=/\w+/F
-              | rename([[threat.indicator.map.asset, threat.indicator.value]]) ;
-          threat.indicator.map.user=/\w+/F
-              | rename([[threat.indicator.map.user, threat.indicator.value]]) ;
-      }
-
       | case {
           productTypes.asset=* productTypes.user=*
               | format(format="%s\n%s", field=[productTypes.asset, productTypes.user], as=ProductModules) ;
@@ -1887,11 +1869,9 @@ widgets:
       | in(field=ProductModules, values=[?included_ProductModules])
 
       // Remove any blank lines and then capture up to the first 10 values. Only done to save screen space.
-      | replace("^\n", with="", field=threat.indicator.value)
       | regex("^(?<threat.indicator.value>.*?(\n|$)(.*?\n){0,9})", field=threat.indicator.value, strict=false, flags=Fd)
 
       // One last format of the output.
-      | default(field=user.name, value="-")
       | groupby([aid, ComputerName, user.name, threat.indicator.value, ProductModules, TotalRiskScore, UniqueDetectionSources], function=[], limit=max)
       | sort(TotalRiskScore, limit=1000)
       | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
