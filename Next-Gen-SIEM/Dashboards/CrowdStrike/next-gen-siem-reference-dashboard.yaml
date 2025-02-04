@@ -80,7 +80,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.8.0
+name: Next-Gen SIEM Reference Dashboard - v1.8.1
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -1905,18 +1905,6 @@ widgets:
       | in(field=#repo.cid, values=[?cid_input])
       | in(field=#Vendor, values=[?Vendor])
 
-      // Alias fields for Falcon events.
-      | case {
-          #Vendor=crowdstrike #event.module=falcon
-              | agent.id=* aid!=*
-              | ComputerName!=* host.hostname=*
-              | LocalAddressIP4!=* source.ip=*
-              | aid:=agent.id
-              | ComputerName:=host.hostname
-              | LocalAddressIP4:=source.ip ;
-          * ;
-      }
-
       // Add a severity filter.
       | default(field=event.severity, value=0)
       | default(field=threat.indicator.name, "Indicator")
@@ -1925,6 +1913,8 @@ widgets:
           // Exit the case statement if we have what we need.
           aid=* ComputerName=* LocalAddressIP4=* ;
           // Check everything else.
+          aid!=* host.hostname=*
+              | match(file="aid_master_main.csv", field=[host.hostname], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;
           aid!=* source.ip=*
               | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
           aid!=* source.nat.ip=*
@@ -1944,7 +1934,7 @@ widgets:
       | query.event.severity.asset:=event.severity
 
       // Filter out certain usernames.
-      | user.name!=/^(-)$/
+      | user.name!=/^-$/
 
       // Map events that have a username but no aid.
       | match(file="user_detection_table", field=[user.name], nrows=100, strict=false)
@@ -2016,31 +2006,34 @@ widgets:
         \            function=selectLast(Attributes.update_status),\n            limit=max\n\
         \        )\n        | Attributes.update_status=closed\n    }, \n    include=[Attributes.composite_id,\
         \ Attributes.update_status], \n    name=\"detection_status_table\"\n)\n\n\
-        // Add a multipick array for value selection.\n| in(field=#repo.cid, values=[?cid_input])\n\
-        | in(field=#Vendor, values=[?Vendor])\n\n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n\
-        | #type=none\n| #event.kind=alert\n| Ngsiem.detection.id=*\n| Vendor.EventType!=CRAggregateResultEvent\n\
-        | !match(file=\"detection_status_table\", field=[Ngsiem.alert.id], column=Attributes.composite_id)\n\
-        \n// Alias fields for Falcon events.\n| case {\n    #Vendor=crowdstrike #event.module=falcon\n\
-        \        | agent.id=* aid!=* \n        | ComputerName!=* host.hostname=* \n\
-        \        | LocalAddressIP4!=* source.ip=*\n        | aid:=agent.id\n     \
-        \   | ComputerName:=host.hostname \n        | LocalAddressIP4:=source.ip ;\n\
-        \    * ;\n}\n\n// Extract the user.name from emails. \n| case { \n    email.to.address[0]=*\n\
+        // Create a table to do username matching. \n| defineTable(query=\n    {\n\
+        \        createEvents([\"\"])\n        | user.name.list:=?user_name\n    \
+        \    | splitString(user.name.list, by=\"\\n\", as=user.name.list)\n      \
+        \  | split(user.name.list)\n    }, \n    include=[user.name.list], \n    name=\"\
+        user_match_table\"\n)\n\n// Add a multipick array for value selection.\n|\
+        \ in(field=#repo.cid, values=[?cid_input])\n| in(field=#Vendor, values=[?Vendor])\n\
+        \n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n| #type=none\n| #event.kind=alert\n\
+        | Ngsiem.detection.id=*\n| Vendor.EventType!=CRAggregateResultEvent\n| !match(file=\"\
+        detection_status_table\", field=[Ngsiem.alert.id], column=Attributes.composite_id)\n\
+        \n// Extract the user.name from emails. \n| case { \n    email.to.address[0]=*\n\
         \      | regex(\"(?<user.name>.+)@\", field=email.to.address[0], flags=F)\
         \ ;\n    user.email=*\n      | regex(\"(?<user.name>.+)@\", field=user.email,\
         \ flags=F) ;\n    * ;\n}\n\n| case {\n    // Exit the case statement if we\
         \ have what we need. \n    aid=* ComputerName=* LocalAddressIP4=* ;\n    //\
-        \ Check everything else. \n    aid!=* source.ip=*\n        | match(file=\"\
-        aid_master_main.csv\", field=[source.ip], column=[LocalAddressIP4], include=[aid,\
-        \ ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* source.nat.ip=*\n\
-        \        | match(file=\"aid_master_main.csv\", field=[source.nat.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* client.ip=*\n\
-        \        | match(file=\"aid_master_main.csv\", field=[client.ip], column=[LocalAddressIP4],\
+        \ Do a lookup on certain Falcon events.\n    aid!=* host.hostname=*\n    \
+        \    | match(file=\"aid_master_main.csv\", field=[host.hostname], column=[ComputerName],\
+        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10, ignoreCase=true)\
+        \ ;\n    aid!=* source.ip=*\n        | match(file=\"aid_master_main.csv\"\
+        , field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName,\
+        \ LocalAddressIP4], nrows=10) ;\n    aid!=* source.nat.ip=*\n        | match(file=\"\
+        aid_master_main.csv\", field=[source.nat.ip], column=[LocalAddressIP4], include=[aid,\
+        \ ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* client.ip=*\n  \
+        \      | match(file=\"aid_master_main.csv\", field=[client.ip], column=[LocalAddressIP4],\
         \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* destination.ip=*\n\
         \        | match(file=\"aid_master_main.csv\", field=[destination.ip], column=[LocalAddressIP4],\
         \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    * ;\n}\n\n\
-        // Get the list of usernames. \n| user.name.list:=?user_name\n\n// Find the\
-        \ results. \n| case {\n    aid=?aid ;\n    text:contains(string=user.name.list,\
-        \ substring=user.name) ;\n}"
+        // Find the results. \n| case {\n    aid=?aid ;\n    match(file=\"user_match_table\"\
+        , field=user.name, column=user.name.list, ignoreCase=true) ;\n}"
       useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
@@ -2052,27 +2045,30 @@ widgets:
       type: searchlink
     - name: searchAll
       titleTemplate: Search All Events
-      queryString: "// Add value selection filters. \n| in(field=#repo.cid, values=[?cid_input])\n\
-        | in(field=#Vendor, values=[?Vendor])\n\n// Remove aggregated events.\n| Vendor.EventType!=CRAggregateResultEvent\n\
-        \n// Alias fields for Falcon events.\n| case {\n    #Vendor=crowdstrike #event.module=falcon\n\
-        \        | agent.id=* aid!=* \n        | ComputerName!=* host.hostname=* \n\
-        \        | LocalAddressIP4!=* source.ip=*\n        | aid:=agent.id\n     \
-        \   | ComputerName:=host.hostname \n        | LocalAddressIP4:=source.ip ;\n\
-        \    * ;\n}\n\n| case { \n    email.to.address[0]=*\n      | regex(\"(?<user.name>.+)@\"\
-        , field=email.to.address[0], flags=F) ;\n    user.email=*\n      | regex(\"\
-        (?<user.name>.+)@\", field=user.email, flags=F) ;\n    * ;\n}\n\n| case {\n\
-        \    // Exit the case statement if we have what we need. \n    aid=* ComputerName=*\
-        \ LocalAddressIP4=* ;\n    // Check everything else. \n    aid!=* source.ip=*\n\
+      queryString: "// Create a table to do username matching. \n| defineTable(query=\n\
+        \    {\n        createEvents([\"\"])\n        | user.name.list:=?user_name\n\
+        \        | splitString(user.name.list, by=\"\\n\", as=user.name.list)\n  \
+        \      | split(user.name.list)\n    }, \n    include=[user.name.list], \n\
+        \    name=\"user_match_table\"\n)\n\n// Add value selection filters. \n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n| in(field=#Vendor, values=[?Vendor])\n\n// Remove\
+        \ aggregated events.\n| Vendor.EventType!=CRAggregateResultEvent\n\n| case\
+        \ { \n    email.to.address[0]=*\n      | regex(\"(?<user.name>.+)@\", field=email.to.address[0],\
+        \ flags=F) ;\n    user.email=*\n      | regex(\"(?<user.name>.+)@\", field=user.email,\
+        \ flags=F) ;\n    * ;\n}\n\n| case {\n    // Exit the case statement if we\
+        \ have what we need. \n    aid=* ComputerName=* LocalAddressIP4=* ;\n    //\
+        \ Check everything else. \n    aid!=* host.hostname=*\n        | match(file=\"\
+        aid_master_main.csv\", field=[host.hostname], column=[ComputerName], include=[aid,\
+        \ ComputerName, LocalAddressIP4], ignoreCase=true) ;\n    aid!=* source.ip=*\n\
         \        | match(file=\"aid_master_main.csv\", field=[source.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* source.nat.ip=*\n\
+        \ include=[aid, ComputerName, LocalAddressIP4]) ;\n    aid!=* source.nat.ip=*\n\
         \        | match(file=\"aid_master_main.csv\", field=[source.nat.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* client.ip=*\n\
+        \ include=[aid, ComputerName, LocalAddressIP4]) ;\n    aid!=* client.ip=*\n\
         \        | match(file=\"aid_master_main.csv\", field=[client.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* destination.ip=*\n\
+        \ include=[aid, ComputerName, LocalAddressIP4]) ;\n    aid!=* destination.ip=*\n\
         \        | match(file=\"aid_master_main.csv\", field=[destination.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    * ;\n}\n\n\
-        | user.name.list:=?user_name\n\n| case {\n    aid=?aid ;\n    text:contains(string=user.name.list,\
-        \ substring=user.name) ;\n}"
+        \ include=[aid, ComputerName, LocalAddressIP4]) ;\n    * ;\n}\n\n| case {\n\
+        \    aid=?aid ;\n    match(file=\"user_match_table\", field=user.name, column=user.name.list,\
+        \ ignoreCase=true) ;\n}"
       useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
@@ -2169,8 +2165,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-02-03
-      version: 1.8.0
+      date: 2025-02-04
+      version: 1.8.1
       ```
     width: 3
     title: ''
