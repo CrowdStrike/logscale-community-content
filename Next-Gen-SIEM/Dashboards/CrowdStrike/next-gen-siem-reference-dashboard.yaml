@@ -1937,7 +1937,7 @@ widgets:
       | user.name!=/^-$/
 
       // Map events that have a username but no aid.
-      | match(file="user_detection_table", field=[user.name], nrows=100, strict=false)
+      | match(file="user_detection_table", field=[user.name], nrows=100, ignoreCase=true, strict=false)
 
       // Group the results.
       | groupBy([aid, ComputerName],
