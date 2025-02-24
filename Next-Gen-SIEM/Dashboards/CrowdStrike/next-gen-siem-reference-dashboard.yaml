@@ -16,6 +16,7 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - d8580d71-0371-4219-912a-c25569a028a3
     - 351ed275-203b-4242-8f16-0be3e0269688
     - 2463873a-0645-4f9e-8c8c-dbaf7b7c419c
     - 67d29952-833b-4ee1-8254-639472715fe9
@@ -204,7 +205,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 10
+    y: 15
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -499,6 +500,96 @@ widgets:
     width: 2
     title: ''
     type: note
+  d8580d71-0371-4219-912a-c25569a028a3:
+    x: 0
+    y: 10
+    height: 5
+    queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
+      // Get UserLogon events for Windows RDP sessions
+      | #event_simpleName=UserLogon #repo=base_sensor
+      | event_platform=Win LogonType=10 RemoteAddressIP4=*
+
+      // Create UserName + UserSid Hash
+      | UserHash:=concat([UserName, UserSid])
+      | UserHash:=crypto:md5([UserHash])
+
+      // Perform initial aggregation; groupBy() will sort by UserHash then LogonTime
+      | groupBy([UserHash, LogonTime], function=[collect([UserName, RemoteAddressIP4, ComputerName, aid], limit=100)], limit=max)
+
+      // Get geoIP for Remote IP
+      | ipLocation(RemoteAddressIP4)
+      | RemoteAddressIP4.lat=* RemoteAddressIP4.lon=*
+
+      // Use new neighbor() function to get results for previous row
+      | neighbor([LogonTime, RemoteAddressIP4, UserHash, RemoteAddressIP4.country, RemoteAddressIP4.lat, RemoteAddressIP4.lon, ComputerName], prefix=prev)
+
+      // Make sure neighbor() sequence does not span UserHash values; will occur at the end of a series
+      | test(UserHash==prev.UserHash)
+
+      // Calculate logon time delta in milliseconds from LogonTime to prev.LogonTime and round
+      | LogonDelta:=(LogonTime-prev.LogonTime)*1000
+      | LogonDelta:=round(LogonDelta)
+
+      // Turn logon time delta from milliseconds to human readable
+      | TimeToTravel:=formatDuration(LogonDelta, precision=2)
+
+      // Calculate distance between Login 1 and Login 2
+      | DistanceKm:=(geography:distance(lat1="RemoteAddressIP4.lat", lat2="prev.RemoteAddressIP4.lat", lon1="RemoteAddressIP4.lon", lon2="prev.RemoteAddressIP4.lon"))/1000 | DistanceKm:=round(DistanceKm)
+
+      // Calculate speed required to get from Login 1 to Login 2
+      | SpeedKph:=DistanceKm/(LogonDelta/1000/60/60) | SpeedKph:=round(SpeedKph)
+
+      // SET THRESHOLD: 1234kph is MACH 1
+      | test(SpeedKph>1234)
+
+      // Format LogonTime Values
+      | LogonTime:=LogonTime*1000
+      | formatTime(format="%F %T %Z", as="LogonTime", field="LogonTime")
+      | prev.LogonTime:=prev.LogonTime*1000
+      | formatTime(format="%F %T %Z", as="prev.LogonTime", field="prev.LogonTime")
+
+      // Make fields easier to read
+      | Travel:=format(format="%s → %s", field=[prev.RemoteAddressIP4.country, RemoteAddressIP4.country])
+      | IPs:=format(format="%s → %s", field=[prev.RemoteAddressIP4, RemoteAddressIP4])
+      | Logons:=format(format="%s → %s", field=[prev.LogonTime, LogonTime])
+
+      // Format the URLs.
+      | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
+      | regex("^\\W*(?<user.name.stripped>\\w.+?)@?$", field=UserName, strict=false)
+      | user.name.stripped:=lower(user.name.stripped)
+      | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, user.name.stripped])
+
+      // Express SpeedKph as a value of MACH
+      | Mach:=SpeedKph/1234 | Mach:=round(Mach)
+      | Speed:=format(format="MACH %s", field=[Mach])
+
+      // Output results to table and sort by highest speed
+      | groupby([aid, ComputerName, UserName, IPs, Travel, SpeedKph, DistanceKm, Logons, TimeToTravel], function=[], limit=max)
+      | sort(SpeedKph, limit=1000)
+
+      // Format distance and speed fields to include comma and unit of measure
+      | format("%,.0f km",field=["DistanceKm"], as="DistanceKm")
+      | format("%,.0f km/h",field=["SpeedKph"], as="SpeedKph")
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        ComputerName:
+          color: '#126cc6'
+        UserName:
+          color: '#91BD0F'
+        aid:
+          render-as: go_to_events_link
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Impossible Travel
+    isLive: false
+    type: query
   note-1725900646032-0:
     x: 0
     y: 0
@@ -739,7 +830,7 @@ widgets:
     type: query
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
     x: 0
-    y: 20
+    y: 25
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -893,7 +984,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 10
+    y: 15
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -1510,7 +1601,7 @@ widgets:
     type: note
   7904f3b5-0d48-402e-93b7-88a708af3747:
     x: 0
-    y: 15
+    y: 20
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -2180,7 +2271,7 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-02-11
+      date: 2025-02-24
       version: 1.8.2
       ```
     width: 3
@@ -2251,7 +2342,7 @@ widgets:
     title: RDP Sessions to Potentially Unmanaged Hosts
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.17.0
+$schema: https://schemas.humio.com/dashboard/v0.18.0
 parameters:
   cid_input:
     label: CID
