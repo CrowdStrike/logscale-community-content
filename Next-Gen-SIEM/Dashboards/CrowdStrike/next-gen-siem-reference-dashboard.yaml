@@ -16,7 +16,6 @@ sections:
       end: now
       start: 1d
     widgetIds:
-    - d8580d71-0371-4219-912a-c25569a028a3
     - 351ed275-203b-4242-8f16-0be3e0269688
     - 2463873a-0645-4f9e-8c8c-dbaf7b7c419c
     - 67d29952-833b-4ee1-8254-639472715fe9
@@ -46,6 +45,7 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - d8580d71-0371-4219-912a-c25569a028a3
     - parameter-panel-1729528639988-0
     - de526ba2-2994-48ab-b5fa-7f3a8f8eeee6
     - 987bb4eb-028e-4f66-b773-a12a05f1d1c4
@@ -205,7 +205,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 15
+    y: 10
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -244,9 +244,20 @@ widgets:
     isLive: false
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
-    x: 0
+    x: 5
     height: 4
     queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net"
+          | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
+          | split(ignoreDomain)
+        },
+        include=[ignoreDomain],
+        name="ignore_domain_table"
+      )
+
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
@@ -260,11 +271,12 @@ widgets:
       | case {
           #type=falcon-raw-data
             | #repo=base_sensor
-            | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F
+            | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
             | source.ip:=LocalAddressIP4
             | destination.ip:=RemoteAddressIP4
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike"
+            | #event.module:="falcon"
             | dns.domainName:=DomainName ;
           #type!=falcon-raw-data
             | #event.kind=*
@@ -284,9 +296,8 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
-      | dns.domainName=/^[a-z0-9.]+\./i
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com|microsoft\.com|azureedge\.us|gstatic\.com)$/i
-      | dns.domainName!=/_/F
+      | lower(dns.domainName, as=dns.domainName)
+      | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
@@ -296,14 +307,14 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Extract the TLD with another regex.
-      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+\.[a-z0-9]+)$/F
+      | dns.domainName=/(?<dns.tld>[^._]+\.[a-z]{2,})$/F
 
       // Display the top TLDs.
       | top(dns.tld, limit=10)
     end: now
     start: 1d
-    width: 4
-    y: 4
+    width: 7
+    y: 0
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
@@ -502,7 +513,7 @@ widgets:
     type: note
   d8580d71-0371-4219-912a-c25569a028a3:
     x: 0
-    y: 10
+    y: 13
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -675,6 +686,9 @@ widgets:
   parameter-panel-1729528639988-0:
     x: 2
     y: 0
+    description: "A minimum entropy level must be provided for the query to execute,\
+      \ e.g. *4*. The value range is generally 0 - 5, with a higher number being more\
+      \ unique. \n"
     parameterIds:
     - entropyValue
     height: 4
@@ -712,10 +726,20 @@ widgets:
     title: ''
     type: note
   0cf0fe05-224f-49e4-88fa-f8139b045881:
-    x: 4
-    y: 4
-    height: 4
+    x: 0
+    height: 5
     queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net"
+          | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
+          | split(ignoreDomain)
+        },
+        include=[ignoreDomain],
+        name="ignore_domain_table"
+      )
+
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
@@ -729,11 +753,12 @@ widgets:
       | case {
           #type=falcon-raw-data
             | #repo=base_sensor
-            | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F
+            | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
             | source.ip:=LocalAddressIP4
             | destination.ip:=RemoteAddressIP4
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike"
+            | #event.module:="falcon"
             | dns.domainName:=DomainName ;
           #type!=falcon-raw-data
             | #event.kind=*
@@ -753,9 +778,8 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
-      | dns.domainName=/^[a-z0-9.]+\./i
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com|microsoft\.com|azureedge\.us|gstatic\.com)$/i
-      | dns.domainName!=/_/i
+      | lower(dns.domainName, as=dns.domainName)
+      | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
@@ -765,7 +789,7 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Format the output.
-      | groupby([#Vendor, dns.domainName, dns.entropy], function=[selectLast(@timestamp), count(as=count)], limit=max)
+      | groupby([#Vendor, #event.module, dns.domainName, dns.entropy], function=[selectLast(@timestamp), count(as=count)], limit=max)
       | sort(dns.entropy, limit=1000)
       | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
       | rename([[@timestamp, lastSeen]])
@@ -774,14 +798,67 @@ widgets:
       | dns.domainName:=format("[%s](/search/?term=_all:~'%s')", field=[dns.domainName, dns.domainName])
     end: now
     start: 1d
-    width: 8
+    width: 12
+    y: 8
+    interactions:
+    - name: filterClick
+      titleTemplate: Search DNS Events
+      queryString: |-
+        // Add a multipick array for value selection.
+        | in(field=#repo.cid, values=[?cid_input])
+
+        // Exclude XDR repos.
+        | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
+
+        // Filter to events with required fields, and rename fields to match CPS.
+        | case {
+            #type=falcon-raw-data
+              | #repo=base_sensor
+              | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F
+              | source.ip:=LocalAddressIP4
+              | destination.ip:=RemoteAddressIP4
+              | destination.port:=RemotePort
+              | #Vendor:="crowdstrike"
+              | dns.domainName:=DomainName ;
+            #type!=falcon-raw-data
+              | #event.kind=*
+              | url.domain=*
+              | dns.domainName:=url.domain ;
+            #type!=falcon-raw-data
+              | #event.kind=*
+              | source.domain=*
+              | dns.domainName:=source.domain ;
+            #type!=falcon-raw-data
+              | #event.kind=*
+              | dns.question.name=*
+              | dns.domainName:=dns.question.name ;
+        }
+
+        // Add a multipick array for value selection.
+        | in(field=#Vendor, values=[?Vendor])
+
+        // Filter for Internet DNS names.
+        | lower(dns.domainName, as=dns.domainName)
+
+        | input.dns.domainName:=?dns_domainName
+        | input.dns.domainName=/\[(?<query.dns.domainName>[^\]]+)\]/F
+
+        | test(dns.domainName==query.dns.domainName)
+      useWidgetTimeWindow: true
+      arguments:
+        Vendor: '["{{ parameters.Vendor }}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
+        dns_domainName: '["{{ fields.dns.domainName }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       cell-overflow: wrap-text
       configured-columns:
         ioc.malwareName:
           render-as: go_to_events_link
         '#Vendor':
-          render-as: go_to_events_link
+          render-as: value
         source.ip:
           render-as: go_to_events_link
         ioc.actorName:
@@ -830,7 +907,7 @@ widgets:
     type: query
   92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
     x: 0
-    y: 25
+    y: 20
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -984,7 +1061,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 15
+    y: 10
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -1592,16 +1669,14 @@ widgets:
     x: 0
     y: 0
     height: 4
-    text: "This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)\
-      \ function for finding unique or interesting data.\n\nA minimum entropy level\
-      \ must be provided for the query to execute, e.g. *4*. The value range is generally\
-      \ 0 - 5, with a higher number being more unique. \n\n "
+    text: "This section demonstrates the use of various functions for finding unique\
+      \ or interesting data.\n\n "
     width: 2
     title: ''
     type: note
   7904f3b5-0d48-402e-93b7-88a708af3747:
     x: 0
-    y: 20
+    y: 15
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -1687,9 +1762,20 @@ widgets:
     isLive: false
     type: query
   39c7025d-8b8d-483b-80d2-1f68f3cc1832:
-    x: 5
+    x: 0
     height: 4
     queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net"
+          | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
+          | split(ignoreDomain)
+        },
+        include=[ignoreDomain],
+        name="ignore_domain_table"
+      )
+
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
@@ -1703,11 +1789,12 @@ widgets:
       | case {
           #type=falcon-raw-data
             | #repo=base_sensor
-            | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F
+            | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
             | source.ip:=LocalAddressIP4
             | destination.ip:=RemoteAddressIP4
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike"
+            | #event.module:="falcon"
             | dns.domainName:=DomainName ;
           #type!=falcon-raw-data
             | #event.kind=*
@@ -1727,9 +1814,8 @@ widgets:
       | in(field=#Vendor, values=[?Vendor])
 
       // Filter for Internet DNS names.
-      | dns.domainName=/^[a-z0-9.]+\./i
-      | dns.domainName!=/\.(internal|local|amazonaws\.com|cloudsink\.net|cloudfront\.net|googlesyndication\.com|footprintdns\.com|azure\.com|live\.com|microsoft\.com|azureedge\.us|gstatic\.com)$/i
-      | dns.domainName!=/_/F
+      | lower(dns.domainName, as=dns.domainName)
+      | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
 
       // Check entropy.
       | shannonEntropy(dns.domainName)
@@ -1739,14 +1825,14 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Extract the TLD with another regex.
-      | dns.domainName=/\.(?<dns.tld>[a-z0-9-]+\.[a-z0-9]+)$/F
+      | dns.domainName=/(?<dns.tld>[^._]+\.[a-z]{2,})$/F
 
       // Display the top TLDs.
       | timechart(dns.tld, limit=10)
     end: now
     start: 1d
-    width: 7
-    y: 0
+    width: 12
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
@@ -2399,10 +2485,15 @@ parameters:
   entropyValue:
     label: Minimum Entropy Value
     order: 1
-    type: text
+    values:
+      '0': 0 - No Entropy
+      '1': '1'
+      '2': '2'
+      '3': '3'
+      '4': '4'
+      '5': 5 - High Entropy
+    type: list
     width: 4
-    invalidInputPatterns:
-    - ^[^\d*\.?\d+$]
   ioc_actor_present:
     label: Threat Actor Detection
     order: 1
