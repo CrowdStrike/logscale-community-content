@@ -91,7 +91,7 @@ sharedTimeInterval:
 widgets:
   6ba8f44f-0bd2-41c3-9db8-016f34e89e30:
     x: 0
-    height: 4
+    height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
@@ -116,7 +116,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 4
+    y: 5
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.#Vendor }}'
@@ -135,9 +135,10 @@ widgets:
       isLive: false
       type: searchlink
     options:
-      enableTrellis: false
       legendPosition: right
       series: {}
+      legendLabelOverflow: truncate
+      enableTrellis: false
       withLegendTitle: false
     visualization: pie-chart
     title: Total Detections by Vendor
@@ -245,12 +246,12 @@ widgets:
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
     x: 5
-    height: 4
+    height: 5
     queryString: |-
       defineTable(
         query={
           createEvents([""])
-          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net"
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
           | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
           | split(ignoreDomain)
         },
@@ -358,7 +359,7 @@ widgets:
   d3bf7aaf-0866-4a49-9658-cdbd4537b4e2:
     x: 5
     y: 0
-    height: 4
+    height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
@@ -503,7 +504,7 @@ widgets:
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
     x: 0
     y: 0
-    height: 4
+    height: 5
     text: This section provides example queries around detections for first- and third-party
       data, specifically the tagged event `#event.type=alert`. That event type is
       part of [CPS](https://library.humio.com/logscale-parsing-standard/pasta.html)
@@ -513,7 +514,7 @@ widgets:
     type: note
   d8580d71-0371-4219-912a-c25569a028a3:
     x: 0
-    y: 13
+    y: 15
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -604,7 +605,7 @@ widgets:
   note-1725900646032-0:
     x: 0
     y: 0
-    height: 4
+    height: 5
     text: "This section demonstrates the use of the [ioc:lookup](https://library.humio.com/data-analysis/functions-ioc-lookup.html)\
       \ function. This can be applied to IPs, domains, and URLs for both first- and\
       \ third-party data. The confidence level must be selected for the query to execute,\
@@ -648,7 +649,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 8
+    y: 10
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
@@ -679,7 +680,7 @@ widgets:
     parameterIds:
     - ioc_actor_present
     - ioc_confidence_level
-    height: 4
+    height: 5
     width: 3
     title: IOC Filter
     type: parameterPanel
@@ -691,7 +692,7 @@ widgets:
       \ unique. \n"
     parameterIds:
     - entropyValue
-    height: 4
+    height: 5
     width: 3
     title: Entropy Value
     type: parameterPanel
@@ -732,7 +733,7 @@ widgets:
       defineTable(
         query={
           createEvents([""])
-          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net"
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
           | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
           | split(ignoreDomain)
         },
@@ -799,7 +800,7 @@ widgets:
     end: now
     start: 1d
     width: 12
-    y: 8
+    y: 10
     interactions:
     - name: filterClick
       titleTemplate: Search DNS Events
@@ -1102,8 +1103,8 @@ widgets:
     type: query
   b3427008-ad73-4cee-9411-0536dbb67e03:
     x: 0
-    y: 4
-    height: 4
+    y: 5
+    height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
@@ -1256,7 +1257,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 8
+    y: 10
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
@@ -1346,7 +1347,7 @@ widgets:
     type: query
   e56a243e-390f-43d7-a37a-5cd59319785c:
     x: 2
-    height: 4
+    height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
@@ -1422,7 +1423,7 @@ widgets:
     type: note
   020a3b23-8ea8-4e85-a8ef-5b35026fdfc4:
     x: 4
-    height: 4
+    height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
@@ -1452,7 +1453,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 4
+    y: 5
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.category }}'
@@ -1498,8 +1499,8 @@ widgets:
     type: note
   e2f5106a-a03e-49f4-b23a-416d6ff85fbc:
     x: 0
-    y: 8
-    height: 4
+    y: 10
+    height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
@@ -1668,7 +1669,7 @@ widgets:
   987bb4eb-028e-4f66-b773-a12a05f1d1c4:
     x: 0
     y: 0
-    height: 4
+    height: 5
     text: "This section demonstrates the use of various functions for finding unique\
       \ or interesting data.\n\n "
     width: 2
@@ -1763,12 +1764,12 @@ widgets:
     type: query
   39c7025d-8b8d-483b-80d2-1f68f3cc1832:
     x: 0
-    height: 4
+    height: 5
     queryString: |-
       defineTable(
         query={
           createEvents([""])
-          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net"
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
           | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
           | split(ignoreDomain)
         },
@@ -1832,7 +1833,7 @@ widgets:
     end: now
     start: 1d
     width: 12
-    y: 4
+    y: 5
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.dns.tld }}'
@@ -1870,7 +1871,7 @@ widgets:
     type: query
   5777baf2-55e4-4311-ae40-6bd0457c32ec:
     x: 8
-    height: 4
+    height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
@@ -1897,7 +1898,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 4
+    y: 5
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.Ngsiem.event.data_domain }}'
@@ -1927,7 +1928,7 @@ widgets:
     type: query
   b6ed9d1a-d340-45d7-93f2-5b75d384d66c:
     x: 0
-    y: 13
+    y: 15
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -2317,7 +2318,7 @@ widgets:
     end: now
     start: 1d
     width: 8
-    y: 13
+    y: 15
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.Tactic }}, {{ fields.Technique }}'
