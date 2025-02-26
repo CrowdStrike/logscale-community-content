@@ -379,7 +379,7 @@ widgets:
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
             | #event.kind=*
-            | (source.ip=* OR destination.ip=*) ;
+            | (source.ip=* OR client.ip=* OR destination.ip=*) ;
       }
 
       // Add a multipick array for value selection.
@@ -387,6 +387,14 @@ widgets:
 
       // Get the confidence level.
       | ioc_confidence_level:=?ioc_confidence_level
+
+      // Alias the source IP.
+      | case {
+          source.ip!=*
+            | client.ip=*
+            | source.ip:=client.ip ;
+          * ;
+      }
 
       // Check for IOCs.
       | case {
@@ -1124,7 +1132,7 @@ widgets:
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
             | #event.kind=*
-            | (source.ip=* OR destination.ip=*) ;
+            | (source.ip=* OR client.ip=* OR destination.ip=*) ;
       }
 
       // Add a multipick array for value selection.
@@ -1132,6 +1140,14 @@ widgets:
 
       // Get the confidence level.
       | ioc_confidence_level:=?ioc_confidence_level
+
+      // Alias the source IP.
+      | case {
+          source.ip!=*
+            | client.ip=*
+            | source.ip:=client.ip ;
+          * ;
+      }
 
       // Check for IOCs.
       | case {
