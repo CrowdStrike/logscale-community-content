@@ -16,16 +16,14 @@ sections:
       end: now
       start: 1d
     widgetIds:
-    - 351ed275-203b-4242-8f16-0be3e0269688
-    - 2463873a-0645-4f9e-8c8c-dbaf7b7c419c
-    - 67d29952-833b-4ee1-8254-639472715fe9
     - 7904f3b5-0d48-402e-93b7-88a708af3747
     - fa99cb2b-02a9-434e-b922-99f76f082229
     - 92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5
     - 692ee352-4067-4414-939a-c66985e8bd6b
     - 2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3
+    - 24f9305c-79e7-4e6a-b41c-3a7a97acafc5
     order: 4
-    title: Logon Events
+    title: Authentication Metrics
   section-1726166115962-0:
     collapsed: true
     timeSelector:
@@ -45,14 +43,26 @@ sections:
       end: now
       start: 1d
     widgetIds:
-    - d8580d71-0371-4219-912a-c25569a028a3
     - parameter-panel-1729528639988-0
     - de526ba2-2994-48ab-b5fa-7f3a8f8eeee6
     - 987bb4eb-028e-4f66-b773-a12a05f1d1c4
     - 0cf0fe05-224f-49e4-88fa-f8139b045881
     - 39c7025d-8b8d-483b-80d2-1f68f3cc1832
+    order: 6
+    title: DNS Anomalies
+  section-1740676837160-0:
+    collapsed: true
     order: 5
-    title: Anomalies
+    title: Authentication Anomalies
+    widgetIds:
+    - note-1740678456112-1
+    - 351ed275-203b-4242-8f16-0be3e0269688
+    - 67d29952-833b-4ee1-8254-639472715fe9
+    - 2463873a-0645-4f9e-8c8c-dbaf7b7c419c
+    - d8580d71-0371-4219-912a-c25569a028a3
+    - e0bafc1b-67f0-4e86-87f8-54f91c294e8d
+    - ed995041-d1c5-4f63-a1be-f587eaa19487
+    - parameter-panel-1740674595020-0
   section-1726164099750-0:
     collapsed: true
     timeSelector:
@@ -81,7 +91,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.8.2
+name: Next-Gen SIEM Reference Dashboard - v1.9.0
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -89,6 +99,85 @@ sharedTimeInterval:
   isLive: false
   start: 1d
 widgets:
+  e0bafc1b-67f0-4e86-87f8-54f91c294e8d:
+    x: 6
+    height: 5
+    queryString: |
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreUserNameList:="DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks|*$"
+          | splitString(field=ignoreUserNameList, by="\|", as=ignoreUserName)
+          | split(ignoreUserName)
+        },
+        include=[ignoreUserName],
+        name="ignore_username_table"
+      )
+
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
+      // Search for Windows Interactive and RDP events.
+      | #event_simpleName=UserLogonFailed OR event_simpleName=UserLogonFailed2
+      | #repo=base_sensor
+      | #type=falcon-raw-data
+      | event_platform="Win"
+      | ComputerName=*
+      | UserName=*
+
+      // Ignore certain usernames.
+      | !match(file="ignore_username_table", field=UserName, column=ignoreUserName, mode=glob)
+      | UserName=/\w/F
+
+      // Format the aid and ComputerName.
+      | format("%s -> %s", field=[aid, ComputerName], as=host.details)
+
+      // Group the results.
+      | groupBy(UserName, function=[count(aid, distinct=true, as=host.distinct.count), collect(host.details, limit=5)], limit=max)
+
+      // Rename for the widget.
+      | rename([[host.details, "host.details [max 5 displayed]"]])
+
+      // Filter minimum number of hosts.
+      | host.distinct.count>=?minDistinctHostsFailed
+
+      // Sort the results
+      | sort(host.distinct.count, limit=100)
+    end: now
+    start: 1d
+    width: 6
+    y: 2
+    interactions:
+    - name: filterClick
+      titleTemplate: 'Event Details: {{ fields.UserName }}'
+      queryString: |-
+        // Add a multipick array for value selection.
+        | in(field=#repo.cid, values=[?cid_input])
+
+        // Search for Windows Interactive and RDP events.
+        | #event_simpleName=UserLogonFailed OR event_simpleName=UserLogonFailed2
+        | #repo=base_sensor
+        | #type=falcon-raw-data
+        | event_platform="Win"
+        | ComputerName=*
+        | UserName=?UserName
+      useWidgetTimeWindow: true
+      arguments:
+        UserName: '["{{fields.UserName}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        user.name:
+          color: '#91BD0F'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Failed Logons to Multiple Hosts
+    isLive: false
+    type: query
   6ba8f44f-0bd2-41c3-9db8-016f34e89e30:
     x: 0
     height: 5
@@ -142,106 +231,6 @@ widgets:
       withLegendTitle: false
     visualization: pie-chart
     title: Total Detections by Vendor
-    isLive: false
-    type: query
-  2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3:
-    x: 0
-    height: 5
-    queryString: |-
-      // Add a multipick array for value selection.
-      | in(field=#repo.cid, values=[?cid_input])
-
-      // Exclude XDR repos.
-      | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
-
-      // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-              | #repo=base_sensor
-              | #event_simpleName=/UserLogon$/F
-              | #Vendor:="crowdstrike"
-              | client.ip:=aip
-              | user.name:=UserName
-              | #event.module:="sso"
-              | event.reason:=name ;
-          #type!=falcon-raw-data
-              | #event.kind=*
-              | #event.outcome=success
-              | event.category[0]=authentication ;
-      }
-
-      // Enrich specific events with SubStatus.
-      | case {
-          #type=falcon-raw-data
-            | SubStatus=*
-            | $falcon/helper:enrich(field=SubStatus)
-            | event.reason:=SubStatus ;
-          * ;
-      }
-
-      // Add a multipick array for value selection.
-      | in(field=#Vendor, values=[?Vendor])
-
-      // Rename events that might have multiple username fields.
-      | case {
-          user.name="-"
-            | user.target.name=/\w/F
-            | rename([[user.target.name, user.name]]) ;
-          * ;
-      }
-
-      // Ensure the user.name exists.
-      | user.name=/\w+/F
-      | user.name!=/^(?:DWM-|UMFD-|LOCAL SERVICE|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks)$|\$$|^$/F
-
-      // Alias the field if it does not exist.
-      | case {
-          event.reason!=*
-            | event.reason:=event.action ;
-          * ;
-      }
-
-      // Format the results.
-      | top(event.reason, limit=10)
-    end: now
-    start: 1d
-    width: 6
-    y: 10
-    interactions:
-    - name: filterClick
-      titleTemplate: '{{ fields.event.reason }}'
-      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
-        \ values=[?cid_input])\n\n// Exclude XDR repos.\n| #repo!=xdr_indicatorsrepo\
-        \ #repo!=xdr_eventsarchive\n\n// Filter to events with required fields, and\
-        \ rename fields to match CPS.\n| case {\n    #type=falcon-raw-data\n     \
-        \   | #repo=base_sensor\n        | #event_simpleName=/UserLogon$/F\n     \
-        \   | #Vendor:=\"crowdstrike\"\n        | client.ip:=aip\n        | user.name:=UserName\n\
-        \        | #event.module:=\"sso\"\n        | event.reason:=name ;\n    #type!=falcon-raw-data\n\
-        \        | #event.kind=* \n        | #event.outcome=success\n        | event.category[0]=authentication\
-        \ ;\n}\n\n// Enrich specific events with SubStatus.\n| case {\n    #type=falcon-raw-data\n\
-        \      | SubStatus=*\n      | $falcon/helper:enrich(field=SubStatus)\n   \
-        \   | event.reason:=SubStatus ;\n    * ;\n}\n\n// Add a multipick array for\
-        \ value selection.\n| in(field=#Vendor, values=[?Vendor])\n\n// Rename events\
-        \ that might have multiple username fields.\n| case {\n    user.name=\"-\"\
-        \n      | user.target.name=/\\w+/F\n      | rename([[user.target.name, user.name]])\
-        \ ;\n    * ;\n}\n\n// Ensure the user.name exists and is not a system account.\n\
-        | user.name=/\\w+/F\n| user.name!=/^(?:DWM-|UMFD-|LOCAL SERVICE|SYSTEM|ANONYMOUS\
-        \ LOGON|NT AUTHORITY\\\\SYSTEM|scheduled_tasks)$|\\$$|^$/F\n\n// Alias the\
-        \ field if it does not exist.\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
-        \ ;\n    * ;\n}\n\n| event.reason=?event_reason"
-      useWidgetTimeWindow: true
-      arguments:
-        cid_input: '["{{ parameters.cid_input }}"]'
-        event_reason: '["{{fields.event.reason}}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
-    options:
-      legendPosition: right
-      series: {}
-      withLegendTitle: false
-    visualization: pie-chart
-    title: Authentication - Top Success Reasons
     isLive: false
     type: query
   de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
@@ -347,6 +336,17 @@ widgets:
     title: High Entropy - TLDs
     isLive: false
     type: query
+  note-1740678456112-1:
+    x: 0
+    y: 0
+    height: 2
+    text: "This section contains potentially suspicious logon events from CrowdStrike's\
+      \ first-party data. You can use the parameter panel to modify various thresholds.\
+      \ Details on RDP sessions to potentially unmanaged hosts can be found below\
+      \ that.  \n        "
+    width: 3
+    title: ''
+    type: note
   parameter-panel-1727886406081-0:
     x: 2
     y: 0
@@ -442,73 +442,6 @@ widgets:
     title: IOC Matches - IP - Data Source
     isLive: false
     type: query
-  67d29952-833b-4ee1-8254-639472715fe9:
-    x: 8
-    height: 5
-    queryString: |-
-      // Add a multipick array for value selection.
-      | in(field=#repo.cid, values=[?cid_input])
-
-      // Search for Windows RDP events.
-      | #event_simpleName=UserLogon
-      | #repo=base_sensor
-      | #type=falcon-raw-data
-      | event_platform="Win"
-      | LogonType=10
-
-      // Rename for parsing standards.
-      | rename([[RemoteIP, destination.ip], [UserName, user.name]])
-
-      // Ensure the destination.ip exists.
-      | destination.ip=*
-
-      // Identify anything where the remote IP is not a known Agent ID for this CID.
-      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
-
-      // Find the top 20 results.
-      | top([user.name], limit=10)
-    end: now
-    start: 1d
-    width: 4
-    y: 0
-    interactions:
-    - name: filterClick
-      titleTemplate: '{{ fields.user.name }}'
-      queryString: |-
-        // Add a multipick array for value selection.
-        | in(field=#repo.cid, values=[?cid_input])
-
-        // Search for Windows RDP events.
-        | #event_simpleName=UserLogon
-        | #repo=base_sensor
-        | #type=falcon-raw-data
-        | event_platform="Win"
-        | LogonType=10
-
-        // Rename for parsing standards.
-        | rename([[RemoteIP, destination.ip], [UserName, user.name]])
-
-        // Ensure the destination.ip exists.
-        | destination.ip=*
-
-        // Identify anything where the remote IP is not a known Agent ID for this CID.
-        | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
-
-        | user.name=?user_name
-      useWidgetTimeWindow: true
-      arguments:
-        cid_input: '["{{ parameters.cid_input }}"]'
-        user_name: '["{{fields.user.name}}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
-    options:
-      legendPosition: right
-      series: {}
-    visualization: pie-chart
-    title: Top RDP Users to Potentially Unmanaged Hosts
-    isLive: false
-    type: query
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
     x: 0
     y: 0
@@ -522,15 +455,17 @@ widgets:
     type: note
   d8580d71-0371-4219-912a-c25569a028a3:
     x: 0
-    y: 15
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
       // Get UserLogon events for Windows RDP sessions
-      | #event_simpleName=UserLogon #repo=base_sensor
-      | event_platform=Win LogonType=10 RemoteAddressIP4=*
+      | #event_simpleName=UserLogon
+      | #repo=base_sensor
+      | event_platform=Win
+      | LogonType=10
+      | RemoteAddressIP4=*
 
       // Create UserName + UserSid Hash
       | UserHash:=concat([UserName, UserSid])
@@ -563,7 +498,7 @@ widgets:
       | SpeedKph:=DistanceKm/(LogonDelta/1000/60/60) | SpeedKph:=round(SpeedKph)
 
       // SET THRESHOLD: 1234kph is MACH 1
-      | test(SpeedKph>1234)
+      | test(SpeedKph>=?minSpeedKph)
 
       // Format LogonTime Values
       | LogonTime:=LogonTime*1000
@@ -583,8 +518,8 @@ widgets:
       | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, user.name.stripped])
 
       // Express SpeedKph as a value of MACH
-      | Mach:=SpeedKph/1234 | Mach:=round(Mach)
-      | Speed:=format(format="MACH %s", field=[Mach])
+      | Mach:=SpeedKph/1235 | Mach:=round(Mach)
+      | Speed:=format(format="Mach %s", field=[Mach])
 
       // Output results to table and sort by highest speed
       | groupby([aid, ComputerName, UserName, IPs, Travel, SpeedKph, DistanceKm, Logons, TimeToTravel], function=[], limit=max)
@@ -596,6 +531,21 @@ widgets:
     end: now
     start: 1d
     width: 12
+    y: 7
+    interactions:
+    - name: filterClick
+      titleTemplate: 'Event Details: {{ fields.aid }}'
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Get UserLogon events for Windows RDP sessions\n\
+        | #event_simpleName=UserLogon \n| #repo=base_sensor\n| event_platform=Win\
+        \ \n| LogonType=10 \n| RemoteAddressIP4=*\n| aid=?aid"
+      useWidgetTimeWindow: true
+      arguments:
+        aid: '["{{fields.aid}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       cell-overflow: wrap-text
       configured-columns:
@@ -704,33 +654,15 @@ widgets:
     width: 3
     title: Entropy Value
     type: parameterPanel
-  d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
-    x: 0
-    y: 2
-    height: 2
-    queryString: |-
-      // Read the CSV and count.
-      | readFile("aid_master_main.csv")
-      | in(field=cid, values=[?cid_input])
-      | count()
-    end: now
-    start: 1d
-    width: 3
-    options:
-      default: {}
-    visualization: single-value
-    title: Sensor Count
-    isLive: false
-    type: query
   692ee352-4067-4414-939a-c66985e8bd6b:
     x: 0
     y: 0
     height: 5
     text: This section is related to authentication events from first- and third-party
       data. CrowdStrike's first-party data can often be used as a replacement for
-      traditional log sources for these types of authentication queries, e.g. the
-      example of RDP sessions to unmanaged hosts. A large number of authentication-related
-      events are included in CrowdStrike sensor data by default.
+      traditional log sources for these types of authentication queries, e.g. failed
+      logon events. A large number of authentication-related events are included in
+      CrowdStrike sensor data by default.
     width: 2
     title: ''
     type: note
@@ -914,11 +846,145 @@ widgets:
     title: Total Detections
     isLive: false
     type: query
-  92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
-    x: 0
-    y: 20
+  parameter-panel-1740674595020-0:
+    x: 3
+    y: 0
+    parameterIds:
+    - minDistinctHostsFailed
+    - minDistinctHostsSuccess
+    - minSpeedKph
+    height: 2
+    width: 9
+    title: Authentication Anomaly Parameters
+    type: parameterPanel
+  2bfe1dd0-47fa-44e7-bb72-4b0249ff7bd3:
+    x: 2
     height: 5
     queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreUserNameList:="DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks|*$"
+          | splitString(field=ignoreUserNameList, by="\|", as=ignoreUserName)
+          | split(ignoreUserName)
+        },
+        include=[ignoreUserName],
+        name="ignore_username_table"
+      )
+
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
+      // Exclude XDR repos.
+      | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
+
+      // Filter to events with required fields, and rename fields to match CPS.
+      | case {
+          #type=falcon-raw-data
+              | #repo=base_sensor
+              | #event_simpleName=/UserLogon$/F
+              | #Vendor:="crowdstrike"
+              | client.ip:=aip
+              | user.name:=UserName
+              | #event.module:="sso"
+              | event.reason:=name ;
+          #type!=falcon-raw-data
+              | #event.kind=*
+              | #event.outcome=success
+              | event.category[0]=authentication ;
+      }
+
+      // Enrich specific events with SubStatus.
+      | case {
+          #type=falcon-raw-data
+            | SubStatus=*
+            | $falcon/helper:enrich(field=SubStatus)
+            | event.reason:=SubStatus ;
+          * ;
+      }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
+      // Rename events that might have multiple username fields.
+      | case {
+          user.name="-"
+            | user.target.name=/\w/F
+            | rename([[user.target.name, user.name]]) ;
+          * ;
+      }
+
+      // Ensure the user.name exists and is not a system account.
+      | !match(file="ignore_username_table", field=user.name, column=ignoreUserName, mode=glob)
+      | !match(file="ignore_username_table", field=user.target.name, column=ignoreUserName, mode=glob)
+      | user.name=/\w+/F
+
+      // Alias the field if it does not exist.
+      | case {
+          event.reason!=*
+            | event.reason:=event.action ;
+          * ;
+      }
+
+      // Format the results.
+      | top(event.reason, limit=10)
+    end: now
+    start: 1d
+    width: 5
+    y: 0
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.event.reason }}'
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Exclude XDR repos.\n| #repo!=xdr_indicatorsrepo\
+        \ #repo!=xdr_eventsarchive\n\n// Filter to events with required fields, and\
+        \ rename fields to match CPS.\n| case {\n    #type=falcon-raw-data\n     \
+        \   | #repo=base_sensor\n        | #event_simpleName=/UserLogon$/F\n     \
+        \   | #Vendor:=\"crowdstrike\"\n        | client.ip:=aip\n        | user.name:=UserName\n\
+        \        | #event.module:=\"sso\"\n        | event.reason:=name ;\n    #type!=falcon-raw-data\n\
+        \        | #event.kind=* \n        | #event.outcome=success\n        | event.category[0]=authentication\
+        \ ;\n}\n\n// Enrich specific events with SubStatus.\n| case {\n    #type=falcon-raw-data\n\
+        \      | SubStatus=*\n      | $falcon/helper:enrich(field=SubStatus)\n   \
+        \   | event.reason:=SubStatus ;\n    * ;\n}\n\n// Add a multipick array for\
+        \ value selection.\n| in(field=#Vendor, values=[?Vendor])\n\n// Rename events\
+        \ that might have multiple username fields.\n| case {\n    user.name=\"-\"\
+        \n      | user.target.name=/\\w+/F\n      | rename([[user.target.name, user.name]])\
+        \ ;\n    * ;\n}\n\n// Ensure the user.name exists and is not a system account.\n\
+        | user.name=/\\w+/F\n| user.name!=/^(?:DWM-|UMFD-|LOCAL SERVICE|SYSTEM|ANONYMOUS\
+        \ LOGON|NT AUTHORITY\\\\SYSTEM|scheduled_tasks)$|\\$$|^$/F\n\n// Alias the\
+        \ field if it does not exist.\n| case {\n    event.reason!=*\n      | event.reason:=event.action\
+        \ ;\n    * ;\n}\n\n| event.reason=?event_reason"
+      useWidgetTimeWindow: true
+      arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
+        event_reason: '["{{fields.event.reason}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Authentication by Top Success Reasons
+    isLive: false
+    type: query
+  92b7b703-b9e6-43c3-b5bb-02b3c5f3fee5:
+    x: 0
+    y: 15
+    height: 5
+    queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreUserNameList:="DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks|*$"
+          | splitString(field=ignoreUserNameList, by="\|", as=ignoreUserName)
+          | split(ignoreUserName)
+        },
+        include=[ignoreUserName],
+        name="ignore_username_table"
+      )
+
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
@@ -968,9 +1034,10 @@ widgets:
       | ipLocation(client.ip)
       | asn(client.ip)
 
-      // Ensure the user.name exists.
+      // Ensure the user.name exists and is not a system account.
+      | !match(file="ignore_username_table", field=user.name, column=ignoreUserName, mode=glob)
+      | !match(file="ignore_username_table", field=user.target.name, column=ignoreUserName, mode=glob)
       | user.name=/\w+/F
-      | user.name!=/^-$/F
 
       // Format the URL.
       | regex("^(?<user.name.stripped>[^@]+)(?:@|$)", field=user.name, strict=false)
@@ -1001,13 +1068,24 @@ widgets:
           width: 298
       row-numbers-enabled: false
     visualization: table-view
-    title: Authentication - Failure
+    title: Failed Authentication Events
     isLive: false
     type: query
   fa99cb2b-02a9-434e-b922-99f76f082229:
-    x: 6
+    x: 7
     height: 5
     queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreUserNameList:="DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks|*$"
+          | splitString(field=ignoreUserNameList, by="\|", as=ignoreUserName)
+          | split(ignoreUserName)
+        },
+        include=[ignoreUserName],
+        name="ignore_username_table"
+      )
+
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
@@ -1055,9 +1133,10 @@ widgets:
       | ipLocation(client.ip)
       | asn(client.ip)
 
-      // Ensure the user.name exists.
+      // Ensure the user.name exists and is not a system account.
+      | !match(file="ignore_username_table", field=user.name, column=ignoreUserName, mode=glob)
+      | !match(file="ignore_username_table", field=user.target.name, column=ignoreUserName, mode=glob)
       | user.name=/\w+/F
-      | user.name!=/^-$/F
 
       // Alias the field if it does not exist.
       | case {
@@ -1069,8 +1148,8 @@ widgets:
       | top(event.reason, limit=10)
     end: now
     start: 1d
-    width: 6
-    y: 10
+    width: 5
+    y: 0
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.event.reason }}'
@@ -1106,7 +1185,7 @@ widgets:
       series: {}
       withLegendTitle: false
     visualization: pie-chart
-    title: Authentication - Top Failure Reasons
+    title: Authentication by Top Failure Reasons
     isLive: false
     type: query
   b3427008-ad73-4cee-9411-0536dbb67e03:
@@ -1300,7 +1379,7 @@ widgets:
     isLive: false
     type: query
   2463873a-0645-4f9e-8c8c-dbaf7b7c419c:
-    x: 2
+    x: 0
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -1335,7 +1414,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 0
+    y: 12
     interactions:
     - name: filterClick
       titleTemplate: '{{ fields.source }} -> {{ fields.target }}'
@@ -1419,6 +1498,147 @@ widgets:
       imputation: none
     visualization: time-chart
     title: Detections by Vendor Over Time
+    isLive: false
+    type: query
+  ed995041-d1c5-4f63-a1be-f587eaa19487:
+    x: 0
+    height: 5
+    queryString: |+
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreUserNameList:="DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks|*$"
+          | splitString(field=ignoreUserNameList, by="\|", as=ignoreUserName)
+          | split(ignoreUserName)
+        },
+        include=[ignoreUserName],
+        name="ignore_username_table"
+      )
+
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
+      // Search for Windows RDP events.
+      | #event_simpleName=UserLogon
+      | #repo=base_sensor
+      | #type=falcon-raw-data
+      | event_platform="Win"
+      | LogonType=2 OR LogonType=10
+      | ComputerName=*
+      | UserName=*
+
+      // Ignore certain usernames.
+      | !match(file="ignore_username_table", field=UserName, column=ignoreUserName, mode=glob)
+      | UserName=/\w/F
+
+      // Format the aid and ComputerName.
+      | format("%s -> %s", field=[aid, ComputerName], as=host.details)
+
+      // Group the results.
+      | groupBy(UserName, function=[count(aid, distinct=true, as=host.distinct.count), collect(host.details, limit=5)], limit=max)
+
+      // Rename for the widget.
+      | rename([[host.details, "host.details [max 5 displayed]"]])
+
+      // Filter minimum number of hosts.
+      | host.distinct.count>=?minDistinctHostsSuccess
+
+      // Sort the results
+      | sort(host.distinct.count, limit=100)
+
+    end: now
+    start: 1d
+    width: 6
+    y: 2
+    interactions:
+    - name: filterClick
+      titleTemplate: 'Event Details: {{ fields.UserName }}'
+      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Search for Windows RDP events.\n| #event_simpleName=UserLogon\n\
+        | #repo=base_sensor\n| #type=falcon-raw-data\n| event_platform=\"Win\"\n|\
+        \ LogonType=2 OR LogonType=10 \n| ComputerName=*\n| UserName=?UserName"
+      useWidgetTimeWindow: true
+      arguments:
+        UserName: '["{{fields.UserName}}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        user.name:
+          color: '#91BD0F'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Successful Logons to Multiple Hosts
+    isLive: false
+    type: query
+  67d29952-833b-4ee1-8254-639472715fe9:
+    x: 6
+    height: 5
+    queryString: |-
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
+      // Search for Windows RDP events.
+      | #event_simpleName=UserLogon
+      | #repo=base_sensor
+      | #type=falcon-raw-data
+      | event_platform="Win"
+      | LogonType=10
+
+      // Rename for parsing standards.
+      | rename([[RemoteIP, destination.ip], [UserName, user.name]])
+
+      // Ensure the destination.ip exists.
+      | destination.ip=*
+
+      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+      // Find the top 20 results.
+      | top([user.name], limit=10)
+    end: now
+    start: 1d
+    width: 6
+    y: 12
+    interactions:
+    - name: filterClick
+      titleTemplate: '{{ fields.user.name }}'
+      queryString: |-
+        // Add a multipick array for value selection.
+        | in(field=#repo.cid, values=[?cid_input])
+
+        // Search for Windows RDP events.
+        | #event_simpleName=UserLogon
+        | #repo=base_sensor
+        | #type=falcon-raw-data
+        | event_platform="Win"
+        | LogonType=10
+
+        // Rename for parsing standards.
+        | rename([[RemoteIP, destination.ip], [UserName, user.name]])
+
+        // Ensure the destination.ip exists.
+        | destination.ip=*
+
+        // Identify anything where the remote IP is not a known Agent ID for this CID.
+        | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+
+        | user.name=?user_name
+      useWidgetTimeWindow: true
+      arguments:
+        cid_input: '["{{ parameters.cid_input }}"]'
+        user_name: '["{{fields.user.name}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top RDP Users to Potentially Unmanaged Hosts
     isLive: false
     type: query
   note-1725902925766-0:
@@ -1693,9 +1913,20 @@ widgets:
     type: note
   7904f3b5-0d48-402e-93b7-88a708af3747:
     x: 0
-    y: 15
+    y: 10
     height: 5
     queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreUserNameList:="DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks|*$"
+          | splitString(field=ignoreUserNameList, by="\|", as=ignoreUserName)
+          | split(ignoreUserName)
+        },
+        include=[ignoreUserName],
+        name="ignore_username_table"
+      )
+
       // Add a multipick array for value selection.
       | in(field=#repo.cid, values=[?cid_input])
 
@@ -1746,9 +1977,9 @@ widgets:
       | asn(client.ip)
 
       // Ensure the user.name exists and is not a system account.
+      | !match(file="ignore_username_table", field=user.name, column=ignoreUserName, mode=glob)
+      | !match(file="ignore_username_table", field=user.target.name, column=ignoreUserName, mode=glob)
       | user.name=/\w+/F
-      | user.name!=/^(?:DWM-|LOCAL SERVICE|UMFD-|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks)$|\$$|^$/F
-      | user.target.name!=/^(?:DWM-|LOCAL SERVICE|UMFD-|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks)$|\$$|^$/F
 
       // Format the URL.
       | regex("^\\W*(?<user.name.stripped>\\w.+?)@?$", field=user.name, strict=false)
@@ -1775,7 +2006,7 @@ widgets:
           color: '#91BD0F'
       row-numbers-enabled: false
     visualization: table-view
-    title: Authentication - Success
+    title: Successful Authentication Events
     isLive: false
     type: query
   39c7025d-8b8d-483b-80d2-1f68f3cc1832:
@@ -2017,6 +2248,122 @@ widgets:
     width: 6
     title: ''
     type: note
+  24f9305c-79e7-4e6a-b41c-3a7a97acafc5:
+    x: 0
+    height: 5
+    queryString: |-
+      defineTable(
+        query={
+          createEvents([""])
+          | ignoreUserNameList:="DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\SYSTEM|scheduled_tasks|*$"
+          | splitString(field=ignoreUserNameList, by="\|", as=ignoreUserName)
+          | split(ignoreUserName)
+        },
+        include=[ignoreUserName],
+        name="ignore_username_table"
+      )
+
+      // Add a multipick array for value selection.
+      | in(field=#repo.cid, values=[?cid_input])
+
+      // Exclude XDR repos.
+      | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
+
+      // Filter to events with required fields, and rename fields to match CPS.
+      | case {
+          #type=falcon-raw-data
+              | #repo=base_sensor
+              | #event_simpleName=/UserLogon$/F
+              | #Vendor:="crowdstrike"
+              | client.ip:=aip
+              | user.name:=UserName
+              | #event.module:="sso"
+              | event.reason:=name ;
+          #type!=falcon-raw-data
+              | #event.kind=*
+              | #event.outcome=success
+              | event.category[0]=authentication ;
+      }
+
+      // Add a multipick array for value selection.
+      | in(field=#Vendor, values=[?Vendor])
+
+      // Rename events that might have multiple username fields.
+      | case {
+          user.name="-"
+            | user.target.name=/\w/F
+            | rename([[user.target.name, user.name]]) ;
+          * ;
+      }
+
+      // Ensure the user.name exists and is not a system account.
+      | !match(file="ignore_username_table", field=user.name, column=ignoreUserName, mode=glob)
+      | !match(file="ignore_username_table", field=user.target.name, column=ignoreUserName, mode=glob)
+      | user.name=/\w+/F
+
+      // Format the results.
+      | timechart(#Vendor, limit=10)
+    end: now
+    start: 1d
+    width: 12
+    y: 5
+    interactions:
+    - name: filterClick
+      titleTemplate: 'Vendor: {{ fields.#Vendor }}'
+      queryString: "defineTable(\n  query={\n    createEvents([\"\"])\n    | ignoreUserNameList:=\"\
+        DWM-*|LOCAL SERVICE|UMFD-*|SYSTEM|ANONYMOUS LOGON|NT AUTHORITY\\\\SYSTEM|scheduled_tasks|*$\"\
+        \n    | splitString(field=ignoreUserNameList, by=\"\\|\", as=ignoreUserName)\n\
+        \    | split(ignoreUserName)\n  }, \n  include=[ignoreUserName], \n  name=\"\
+        ignore_username_table\"\n)\n\n// Add a multipick array for value selection.\n\
+        | in(field=#repo.cid, values=[?cid_input])\n\n// Exclude XDR repos.\n| #repo!=xdr_indicatorsrepo\
+        \ #repo!=xdr_eventsarchive\n\n// Filter to events with required fields, and\
+        \ rename fields to match CPS.\n| case {\n    #type=falcon-raw-data\n     \
+        \   | #repo=base_sensor\n        | #event_simpleName=/UserLogon$/F\n     \
+        \   | #Vendor:=\"crowdstrike\"\n        | client.ip:=aip\n        | user.name:=UserName\n\
+        \        | #event.module:=\"sso\"\n        | event.reason:=name ;\n    #type!=falcon-raw-data\n\
+        \        | #event.kind=*\n        | #event.outcome=success\n        | event.category[0]=authentication\
+        \ ;\n}\n\n// Add a multipick array for value selection.\n| in(field=#Vendor,\
+        \ values=[?Vendor])\n\n// Rename events that might have multiple username\
+        \ fields.\n| case {\n    user.name=\"-\"\n      | user.target.name=/\\w/F\n\
+        \      | rename([[user.target.name, user.name]]) ;\n    * ;\n}\n\n// Ensure\
+        \ the user.name exists and is not a system account.\n| !match(file=\"ignore_username_table\"\
+        , field=user.name, column=ignoreUserName, mode=glob)\n| !match(file=\"ignore_username_table\"\
+        , field=user.target.name, column=ignoreUserName, mode=glob)\n| user.name=/\\\
+        w+/F\n\n| #Vendor=?Vendor"
+      useWidgetTimeWindow: true
+      arguments:
+        Vendor: '["{{ fields.#Vendor }}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+      series: {}
+      interpolation: step-after
+    visualization: time-chart
+    title: Authentication by Vendor Over Time
+    isLive: false
+    type: query
+  d4487ff0-b9c0-49cc-82f2-bd8d6caaab40:
+    x: 0
+    y: 2
+    height: 2
+    queryString: |-
+      // Read the CSV and count.
+      | readFile("aid_master_main.csv")
+      | in(field=cid, values=[?cid_input])
+      | count()
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Sensor Count
+    isLive: false
+    type: query
   1648bf3c-b982-4b6c-a381-4e4b8b2f92ac:
     x: 2
     height: 7
@@ -2374,15 +2721,15 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-02-24
-      version: 1.8.2
+      date: 2025-02-27
+      version: 1.9.0
       ```
     width: 3
     title: ''
     type: note
   351ed275-203b-4242-8f16-0be3e0269688:
     x: 0
-    y: 5
+    y: 17
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -2463,6 +2810,40 @@ parameters:
     valueField: cid
     type: query
     labelField: cidname_cid
+  minSpeedKph:
+    label: Minimum KPH Speed
+    order: 2
+    values:
+      '100': 100 KPH
+      '500': 500 KPH
+      '1000': 1000 KPH
+      '1235': 1235 KPH - Mach 1
+    type: list
+    width: 1
+  minDistinctHostsSuccess:
+    label: Logon Success - Minimum Hosts
+    order: 0
+    values:
+    - '5'
+    - '10'
+    - '25'
+    - '50'
+    - '75'
+    - '100'
+    type: list
+    width: 1
+  minDistinctHostsFailed:
+    label: Logon Failed - Minimum Hosts
+    order: 1
+    values:
+    - '5'
+    - '10'
+    - '25'
+    - '50'
+    - '75'
+    - '100'
+    type: list
+    width: 1
   Vendor:
     label: Vendor
     query: top(#Vendor, limit=25) | sort(#Vendor, order=asc, limit=25)
