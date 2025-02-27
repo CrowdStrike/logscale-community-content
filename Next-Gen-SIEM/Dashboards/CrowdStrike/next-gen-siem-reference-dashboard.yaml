@@ -132,6 +132,9 @@ widgets:
       // Format the aid and ComputerName.
       | format("%s -> %s", field=[aid, ComputerName], as=host.details)
 
+      // Put the username in lowercase.
+      | lower(field=UserName, as=UserName)
+
       // Group the results.
       | groupBy(UserName, function=[count(aid, distinct=true, as=host.distinct.count), collect(host.details, limit=5)], limit=max)
 
@@ -160,6 +163,10 @@ widgets:
         | #type=falcon-raw-data
         | event_platform="Win"
         | ComputerName=*
+
+        // Put the username in lowercase.
+        | lower(field=UserName, as=UserName)
+
         | UserName=?UserName
       useWidgetTimeWindow: true
       arguments:
@@ -422,7 +429,6 @@ widgets:
             | ioc.actorName.exists:=1 ;
           ioc.actorName!=*
             | ioc.actorName.exists:=0 ;
-          * ;
       }
 
       // Only display selected values.
@@ -466,6 +472,10 @@ widgets:
       | event_platform=Win
       | LogonType=10
       | RemoteAddressIP4=*
+      | UserName=/\w/F
+
+      // Put the username in lowercase.
+      | lower(field=UserName, as=UserName)
 
       // Create UserName + UserSid Hash
       | UserHash:=concat([UserName, UserSid])
@@ -522,7 +532,7 @@ widgets:
       | Speed:=format(format="Mach %s", field=[Mach])
 
       // Output results to table and sort by highest speed
-      | groupby([aid, ComputerName, UserName, IPs, Travel, SpeedKph, DistanceKm, Logons, TimeToTravel], function=[], limit=max)
+      | groupby([aid, ComputerName, UserName, IPs, Travel, SpeedKph, DistanceKm, TimeToTravel, Logons], function=[], limit=max)
       | sort(SpeedKph, limit=1000)
 
       // Format distance and speed fields to include comma and unit of measure
@@ -554,7 +564,7 @@ widgets:
         UserName:
           color: '#91BD0F'
         aid:
-          render-as: go_to_events_link
+          render-as: value
       row-numbers-enabled: false
     visualization: table-view
     title: Impossible Travel
@@ -1065,7 +1075,6 @@ widgets:
         user.name:
           color: '#126cc6'
           render-as: link
-          width: 298
       row-numbers-enabled: false
     visualization: table-view
     title: Failed Authentication Events
@@ -1247,16 +1256,15 @@ widgets:
       | iplocation(ioc[0].indicator)
 
       | case {
-          ioc.actorName=*
+            ioc.actorName=/\w/F
             | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
-            | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
-            | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
-            | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
+            | ioc.actorName.firstName.lower:=lower(ioc.actorName.firstName)
+            | ioc.actorName.lastName.lower:=lower(ioc.actorName.lastName)
+            | ioc.actorName.firstName.upper:=upper(ioc.actorName.firstName)
+            | ioc.actorName.lastName.upper:=upper(ioc.actorName.lastName)
+            | ioc.actorName:=format("[%s %s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName.firstName.upper, ioc.actorName.lastName.upper, ioc.actorName.firstName.lower, ioc.actorName.lastName.lower]) ;
           * ;
       }
-
-      // Set default values to keep the results consistent.
-      | default(field=[#Vendor, source.ip, source.ip.country, destination.ip, destination.port, destination.ip.country, ioc.malwareName, ioc.CVE], value="-")
 
       // Format the URLs.
       | ioc[0].indicator:=format("[%s](/intelligence/graph?indicators=ip:'%s'&selectedIndicator=%s)", field=[ioc[0].indicator, ioc[0].indicator, ioc[0].indicator])
@@ -1269,6 +1277,7 @@ widgets:
 
       // Rename fields for readability.
       | rename(field=[[ioc[0].indicator, ioc.ip], [ioc[0].malicious_confidence, ioc.confidence], [ioc[0].indicator.country, ioc.ip.country], [_count, count], [@timestamp, lastSeen]])
+      | default(field=[#Vendor, source.ip, source.ip.country, destination.ip, destination.port, ioc.ip.country, ioc.malwareName], value="-")
 
       // Create values for the value selector
       | case {
@@ -1276,7 +1285,6 @@ widgets:
             | ioc.actorName.exists:=1 ;
           ioc.actorName!=*
             | ioc.actorName.exists:=0 ;
-          * ;
       }
 
       // Only display selected values.
@@ -1300,7 +1308,7 @@ widgets:
             conditions:
             - color: '#C93637'
               condition:
-                arg: ''
+                arg: '-'
                 type: Present
           render-as: link
         source.ip:
@@ -1392,24 +1400,21 @@ widgets:
       | event_platform="Win"
       | LogonType=10
 
-      // Rename for parsing standards.
-      | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName, source.hostname]])
-
-      // Ensure the destination.ip exists.
-      | destination.ip=*
+      // Ensure the RemoteIP exists.
+      | RemoteIP!=0.0.0.0
 
       // Identify anything where the remote IP is not a known Agent ID for this CID.
       | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
 
       // Add the ComputerName
-      | default(field=[source.hostname], value="-")
-      | format("%s  %s", field=[source.ip, source.hostname], as=source.details)
+      | default(field=[ComputerName], value="-")
+      | format("%s  %s", field=[LocalIP, ComputerName], as=source.details)
 
       // Find the top 20 results.
-      | top([source.details, destination.ip], limit=15)
+      | top([source.details, RemoteIP], limit=15)
 
       // Visualize the results.
-      | sankey(source="source.details", target="destination.ip")
+      | sankey(source="source.details", target="RemoteIP")
     visualization: sankey
     end: now
     start: 1d
@@ -1421,14 +1426,12 @@ widgets:
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Search for Windows RDP events.\n| #event_simpleName=UserLogon\n\
         | #repo=base_sensor\n| #type=falcon-raw-data\n| event_platform=\"Win\"\n|\
-        \ LogonType=10\n\n// Rename for parsing standards.\n| rename([[LocalIP, source.ip],\
-        \ [RemoteIP, destination.ip], [ComputerName, source.hostname]])\n\n// Ensure\
-        \ the destination.ip exists.\n| destination.ip=*\n\n// Identify anything where\
-        \ the remote IP is not a known Agent ID for this CID.\n| !match(file=\"aid_master_main.csv\"\
-        , field=destination.ip, column=LocalAddressIP4, strict=true)\n\n// Add the\
-        \ ComputerName\n| default(field=[source.hostname], value=\"-\")\n| format(\"\
-        %s  %s\", field=[source.ip, source.hostname], as=source.details)\n\n| source.details=?source_details\
-        \ \n| destination.ip=?destination_ip"
+        \ LogonType=10\n\n// Ensure the destination.ip exists.\n| RemoteIP=*\n\n//\
+        \ Identify anything where the remote IP is not a known Agent ID for this CID.\n\
+        | !match(file=\"aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4,\
+        \ strict=true)\n\n// Add the ComputerName\n| default(field=[ComputerName],\
+        \ value=\"-\")\n| format(\"%s  %s\", field=[LocalIP, ComputerName], as=source.details)\n\
+        \n| source.details=?source_details \n| RemoteIP=?destination_ip"
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
@@ -1534,6 +1537,9 @@ widgets:
       // Format the aid and ComputerName.
       | format("%s -> %s", field=[aid, ComputerName], as=host.details)
 
+      // Put the username in lowercase.
+      | lower(field=UserName, as=UserName)
+
       // Group the results.
       | groupBy(UserName, function=[count(aid, distinct=true, as=host.distinct.count), collect(host.details, limit=5)], limit=max)
 
@@ -1556,7 +1562,8 @@ widgets:
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Search for Windows RDP events.\n| #event_simpleName=UserLogon\n\
         | #repo=base_sensor\n| #type=falcon-raw-data\n| event_platform=\"Win\"\n|\
-        \ LogonType=2 OR LogonType=10 \n| ComputerName=*\n| UserName=?UserName"
+        \ LogonType=2 OR LogonType=10 \n| ComputerName=*\n\n// Put the username in\
+        \ lowercase.\n| lower(field=UserName, as=UserName)\n\n| UserName=?UserName"
       useWidgetTimeWindow: true
       arguments:
         UserName: '["{{fields.UserName}}"]'
@@ -1588,17 +1595,17 @@ widgets:
       | event_platform="Win"
       | LogonType=10
 
-      // Rename for parsing standards.
-      | rename([[RemoteIP, destination.ip], [UserName, user.name]])
-
-      // Ensure the destination.ip exists.
-      | destination.ip=*
+      // Ensure the RemoteIP exists.
+      | RemoteIP!=0.0.0.0
 
       // Identify anything where the remote IP is not a known Agent ID for this CID.
       | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
 
+      // Lowercase the username.
+      | lower(field=UserName, as=UserName)
+
       // Find the top 20 results.
-      | top([user.name], limit=10)
+      | top([UserName], limit=10)
     end: now
     start: 1d
     width: 6
@@ -1617,16 +1624,16 @@ widgets:
         | event_platform="Win"
         | LogonType=10
 
-        // Rename for parsing standards.
-        | rename([[RemoteIP, destination.ip], [UserName, user.name]])
-
         // Ensure the destination.ip exists.
-        | destination.ip=*
+        | RemoteIP=*
 
         // Identify anything where the remote IP is not a known Agent ID for this CID.
         | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
 
-        | user.name=?user_name
+        // Lowercase the username.
+        | lower(field=UserName, as=UserName)
+
+        | UserName=?user_name
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
@@ -1777,7 +1784,7 @@ widgets:
           ioc_confidence_level="high"
             | ioc:lookup([dns.domainName], type="domain", confidenceThreshold=high, strict=true) ;
       }
-      | ioc[0].labels!=/DomainType\/KnownGood/i
+      | ioc[0].labels!=/DomainType\/KnownGood/Fi
       | test(ioc[0].malicious_confidence==ioc_confidence_level)
 
       // Extract fields from the IOCs.
@@ -1785,31 +1792,31 @@ widgets:
       | regex("(^|,)(?:Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false)
 
       | case {
-          ioc.actorName=*
+            ioc.actorName=/\w/F
             | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
-            | ioc.actorName.firstName:=lower(ioc.actorName.firstName)
-            | ioc.actorName.lastName:=lower(ioc.actorName.lastName)
-            | ioc.actorName:=format("[%s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName, ioc.actorName.firstName, ioc.actorName.lastName]) ;
+            | ioc.actorName.firstName.lower:=lower(ioc.actorName.firstName)
+            | ioc.actorName.lastName.lower:=lower(ioc.actorName.lastName)
+            | ioc.actorName.firstName.upper:=upper(ioc.actorName.firstName)
+            | ioc.actorName.lastName.upper:=upper(ioc.actorName.lastName)
+            | ioc.actorName:=format("[%s %s](/intelligence-v2/actors/%s-%s)", field=[ioc.actorName.firstName.upper, ioc.actorName.lastName.upper, ioc.actorName.firstName.lower, ioc.actorName.lastName.lower]) ;
           * ;
       }
 
       // Find the Agent ID details.
       | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
 
-      // Set default values to keep the results consistent.
-      | default(field=[#Vendor, source.ip, dns.domainName, ioc.malwareName, ioc.CVE], value="-")
-
       // Format for URL linking.
       | dns.domainName:=format("[%s](/intelligence/graph?indicators=domain:%s&selectedIndicator=%s)", field=[dns.domainName, dns.domainName, dns.domainName])
 
       // Group the results together.
-      | groupby([#Vendor, ComputerName, source.ip, dns.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
+      | groupby([#Vendor, ComputerName, source.ip, destination.ip, dns.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence], function=[selectlast(@timestamp), count()], limit=max)
 
       // Format the timestamp.
       | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
 
       // Rename fields for readability.
-      | rename(field=[[ioc[0].malicious_confidence, ioc.confidence], [destination.ip.country, country], [_count, count], [@timestamp, lastSeen]])
+      | rename(field=[[ioc[0].malicious_confidence, ioc.confidence], [_count, count], [@timestamp, lastSeen]])
+      | default(field=[#Vendor, source.ip, dns.domainName, ioc.malwareName], value="-")
 
       // Create values for the value selector
       | case {
@@ -1817,7 +1824,6 @@ widgets:
             | ioc.actorName.exists:=1 ;
           ioc.actorName!=*
             | ioc.actorName.exists:=0 ;
-          * ;
       }
 
       // Only display selected values.
@@ -1907,7 +1913,8 @@ widgets:
     y: 0
     height: 5
     text: "This section demonstrates the use of various functions for finding unique\
-      \ or interesting data.\n\n "
+      \ or interesting data. A value of `1` is considered low entropy, while a value\
+      \ of `5` is consider high entropy. \n\n "
     width: 2
     title: ''
     type: note
@@ -2201,11 +2208,11 @@ widgets:
 
       // Check to ensure the IP exist.
       | case {
-          destination.ip=*
+          !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
               | mapIp:=destination.ip ;
-          aip=*
+          !cidr(aip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
               | mapIp:=aip ;
-          source.ip=*
+          !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
               | mapIp:=source.ip ;
       }
 
@@ -2742,50 +2749,56 @@ widgets:
       | event_platform="Win"
       | LogonType=10
 
-      // Rename for parsing standards.
-      | rename([[LocalIP, source.ip], [RemoteIP, destination.ip], [ComputerName, source.hostname], [UserName, user.name]])
-
-      // Ensure the destination.ip exists.
-      | destination.ip=*
+      // Ensure the RemoteIP exists.
+      | RemoteIP!=0.0.0.0
 
       // Identify anything where the remote IP is not a known Agent ID for this CID.
       | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
 
       // Enrich the data.
-      | ipLocation(field=destination.ip)
-      | asn(field=destination.ip)
+      | ipLocation(field=RemoteIP)
+      | asn(field=RemoteIP)
 
       // Add default values.
-      | default(field=[destination.ip.city, destination.ip.state, destination.ip.country, destination.ip.org], value="-")
+      | default(field=[RemoteIP.city, RemoteIP.state, RemoteIP.country, RemoteIP.org], value="-")
+
+      // Lowercase the username.
+      | lower(field=UserName, as=UserName)
 
       // Format the field order.
-      | groupBy([aid, source.hostname, source.ip, destination.ip, destination.ip.city, destination.ip.state, destination.ip.country, destination.ip.org],
-          function=[collect(user.name, limit=10), count(as=count)],
+      | groupBy([aid, ComputerName, LocalIP, RemoteIP, RemoteIP.city, RemoteIP.state, RemoteIP.country, RemoteIP.org],
+          function=[collect(UserName, limit=5), count(as=count)],
           limit=max
       )
       // Sort the results.
       | sort(field=count, limit=1000)
 
       // Remove unnecessary fields.
-      | drop([destination.ip.asn, destination.ip.lat, destination.ip.lon])
+      | drop([RemoteIP.asn, RemoteIP.lat, RemoteIP.lon])
 
       // Include links to search.
-      | source.hostname:=format("[%s](/search/?term=_all:~'%s')", field=[source.hostname, source.hostname])
-      | source.ip:=format("[%s](/search/?term=_all:~'%s')", field=[source.ip, source.ip])
-      | destination.ip:=format("[%s](/search/?term=_all:~'%s')", field=[destination.ip, destination.ip])
+      | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
+      | LocalIP:=format("[%s](/search/?term=_all:~'%s')", field=[LocalIP, LocalIP])
+      | RemoteIP:=format("[%s](/search/?term=_all:~'%s')", field=[RemoteIP, RemoteIP])
     end: now
     start: 1d
     width: 12
     options:
       cell-overflow: wrap-text
       configured-columns:
+        LocalIP:
+          color: '#126cc6'
         aid:
           render-as: go_to_events_link
-        destination.ip:
-          color: '#126cc6'
         source.hostname:
           color: '#126cc6'
         source.ip:
+          color: '#126cc6'
+        destination.ip:
+          color: '#126cc6'
+        RemoteIP:
+          color: '#126cc6'
+        ComputerName:
           color: '#126cc6'
       row-numbers-enabled: false
     visualization: table-view
@@ -2811,13 +2824,13 @@ parameters:
     type: query
     labelField: cidname_cid
   minSpeedKph:
-    label: Minimum KPH Speed
+    label: Minimum km/h Speed
     order: 2
     values:
-      '100': 100 KPH
-      '500': 500 KPH
-      '1000': 1000 KPH
-      '1235': 1235 KPH - Mach 1
+    - '100'
+    - '500'
+    - '1000'
+    - '1235'
     type: list
     width: 1
   minDistinctHostsSuccess:
@@ -2884,12 +2897,11 @@ parameters:
     label: Minimum Entropy Value
     order: 1
     values:
-      '0': 0 - No Entropy
-      '1': '1'
-      '2': '2'
-      '3': '3'
-      '4': '4'
-      '5': 5 - High Entropy
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
     type: list
     width: 4
   ioc_actor_present:
