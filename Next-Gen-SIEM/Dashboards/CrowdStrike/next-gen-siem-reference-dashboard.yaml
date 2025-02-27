@@ -2222,9 +2222,13 @@ widgets:
     start: 1d
     width: 4
     options:
-      autoRotate: true
-      projection: orthographic
-      zLevel: 1
+      magnitudeMode: size
+      series: {}
+      projection: mercator
+      autoRotate: false
+      norm: true
+      opacityMode: size
+      zLevel: 0
     visualization: world-map
     title: World Map of Detection IPs
     isLive: false
