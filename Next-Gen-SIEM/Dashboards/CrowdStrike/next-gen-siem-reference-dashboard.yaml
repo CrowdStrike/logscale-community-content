@@ -418,7 +418,7 @@ widgets:
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
-      | regex("(^|,)(Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false)
+      | regex("(^|,)(Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false, flags=F)
 
       // Rename fields for readability.
       | rename(field=[[ioc[0].malicious_confidence, ioc.confidence]])
@@ -1050,7 +1050,7 @@ widgets:
       | user.name=/\w+/F
 
       // Format the URL.
-      | regex("^(?<user.name.stripped>[^@]+)(?:@|$)", field=user.name, strict=false)
+      | regex("^(?<user.name.stripped>[^@]+)(?:@|$)", field=user.name, strict=false, flags=F)
       | user.name.stripped:=lower(user.name.stripped)
       | user.name:=format("[%s](/search/?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
@@ -1252,12 +1252,12 @@ widgets:
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
-      | regex("(^|,)(?:Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false)
+      | regex("(^|,)(?:Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false, flags=F)
       | iplocation(ioc[0].indicator)
 
       | case {
             ioc.actorName=/\w/F
-            | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
+            | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false, flags=F)
             | ioc.actorName.firstName.lower:=lower(ioc.actorName.firstName)
             | ioc.actorName.lastName.lower:=lower(ioc.actorName.lastName)
             | ioc.actorName.firstName.upper:=upper(ioc.actorName.firstName)
@@ -1789,11 +1789,11 @@ widgets:
 
       // Extract fields from the IOCs.
       | ioc[0].labels=*
-      | regex("(^|,)(?:Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false)
+      | regex("(^|,)(?:Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false, flags=F)
 
       | case {
             ioc.actorName=/\w/F
-            | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false)
+            | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false, flags=F)
             | ioc.actorName.firstName.lower:=lower(ioc.actorName.firstName)
             | ioc.actorName.lastName.lower:=lower(ioc.actorName.lastName)
             | ioc.actorName.firstName.upper:=upper(ioc.actorName.firstName)
@@ -1989,7 +1989,7 @@ widgets:
       | user.name=/\w+/F
 
       // Format the URL.
-      | regex("^\\W*(?<user.name.stripped>\\w.+?)@?$", field=user.name, strict=false)
+      | regex("^\\W*(?<user.name.stripped>\\w.+?)@?$", field=user.name, strict=false, flags=F)
       | user.name.stripped:=lower(user.name.stripped)
       | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
@@ -2223,7 +2223,6 @@ widgets:
     width: 4
     options:
       magnitudeMode: size
-      series: {}
       projection: mercator
       autoRotate: false
       norm: true
