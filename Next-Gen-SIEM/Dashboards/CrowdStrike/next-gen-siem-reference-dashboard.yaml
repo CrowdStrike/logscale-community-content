@@ -102,7 +102,7 @@ widgets:
   e0bafc1b-67f0-4e86-87f8-54f91c294e8d:
     x: 6
     height: 5
-    queryString: |
+    queryString: |-
       defineTable(
         query={
           createEvents([""])
@@ -127,7 +127,7 @@ widgets:
 
       // Ignore certain usernames.
       | !match(file="ignore_username_table", field=UserName, column=ignoreUserName, mode=glob)
-      | UserName=/\w/F
+      | UserName=/\w+/F
 
       // Format the aid and ComputerName.
       | format("%s -> %s", field=[aid, ComputerName], as=host.details)
@@ -145,7 +145,15 @@ widgets:
       | host.distinct.count>=?minDistinctHostsFailed
 
       // Sort the results
-      | sort(host.distinct.count, limit=100)
+      | sort(host.distinct.count, limit=1000)
+
+      // Format the URL.
+      | regex("^(?<UserName.stripped>[^@+]+)(?=\+|@|$)", field=UserName, strict=false, flags=F)
+      | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, UserName.stripped])
+      | drop([UserName.stripped])
+
+      // Rename for the widget.
+      | rename([[host.details, "Agent IDs [Sample of 5 Maximum]"], [host.distinct.count, "Total Unique Agent IDs"]])
     end: now
     start: 1d
     width: 6
@@ -170,7 +178,7 @@ widgets:
         | UserName=?UserName
       useWidgetTimeWindow: true
       arguments:
-        UserName: '["{{fields.UserName}}"]'
+        UserName: '["{{ fields.UserName }}"]'
         cid_input: '["{{ parameters.cid_input }}"]'
       openInNewTab: true
       isLive: false
@@ -178,6 +186,8 @@ widgets:
     options:
       cell-overflow: wrap-text
       configured-columns:
+        UserName:
+          color: '#126cc6'
         user.name:
           color: '#91BD0F'
       row-numbers-enabled: false
@@ -269,8 +279,8 @@ widgets:
           #type=falcon-raw-data
             | #repo=base_sensor
             | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
-            | source.ip:=LocalAddressIP4
-            | destination.ip:=RemoteAddressIP4
+            | source.ip:=LocalIP
+            | destination.ip:=RemoteIP
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike"
             | #event.module:="falcon"
@@ -304,7 +314,7 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Extract the TLD with another regex.
-      | dns.domainName=/(?<dns.tld>[^._]+\.[a-z]{2,})$/F
+      | regex("(?<dns.tld>[^._]+\.[a-z]{2,})$", field=dns.domainName, as=dns.tld, flags=F)
 
       // Display the top TLDs.
       | top(dns.tld, limit=10)
@@ -314,24 +324,35 @@ widgets:
     y: 0
     interactions:
     - name: filterClick
-      titleTemplate: '{{ fields.dns.tld }}'
-      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
-        \ values=[?cid_input])\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F\n\
-        \      | source.ip:=LocalAddressIP4\n      | destination.ip:=RemoteAddressIP4\n\
-        \      | destination.port:=RemotePort\n      | #Vendor:=\"crowdstrike\"\n\
-        \      | dns.domainName:=DomainName ;\n    #type!=falcon-raw-data\n      |\
-        \ url.domain=*\n      | dns.domainName:=url.domain ;\n    #type!=falcon-raw-data\n\
-        \      | source.domain=*\n      | dns.domainName:=source.domain ;\n    #type!=falcon-raw-data\n\
-        \      | dns.question.name=*\n      | dns.domainName:=dns.question.name ;\n\
-        }\n| dns.domainName=/^[a-z0-9.]+\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\\
-        .com|cloudsink\\.net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\\
-        .com|azure\\.com|live\\.com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n\
-        | _shannonentropy>4.2\n| format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n\
-        | dns.domainName=/\\.(?<dns.tld>[a-z0-9-]+\\.[a-z0-9]+)$/F\n| dns.tld=?dns_tld"
+      titleTemplate: 'Search Events: {{ fields.dns.tld }}'
+      queryString: "defineTable(\n  query={\n    createEvents([\"\"])\n    | ignoreDomainList:=\"\
+        *_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net\
+        \ *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com\
+        \ *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net\
+        \ *.optimizely.com\"\n    | splitString(field=ignoreDomainList, by=\" \",\
+        \ as=ignoreDomain)\n    | split(ignoreDomain)\n  },\n  include=[ignoreDomain],\n\
+        \  name=\"ignore_domain_table\"\n)\n\n// Add a multipick array for value selection.\n\
+        | in(field=#repo.cid, values=[?cid_input])\n\n// Exclude XDR repos.\n| #repo!=xdr_indicatorsrepo\
+        \ #repo!=xdr_eventsarchive\n\n// Add a parameter for entropy.\n| entropyValue:=?entropyValue\n\
+        \n// Add a multipick array for value selection.\n| in(field=#repo.cid, values=[?cid_input])\n\
+        | case { \n    #type=falcon-raw-data\n      | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)\n\
+        \      | source.ip:=LocalIP\n      | destination.ip:=RemoteIP\n      | destination.port:=RemotePort\n\
+        \      | #Vendor:=\"crowdstrike\"\n      | dns.domainName:=DomainName ;\n\
+        \    #type!=falcon-raw-data\n      | url.domain=*\n      | dns.domainName:=url.domain\
+        \ ;\n    #type!=falcon-raw-data\n      | source.domain=*\n      | dns.domainName:=source.domain\
+        \ ;\n    #type!=falcon-raw-data\n      | dns.question.name=*\n      | dns.domainName:=dns.question.name\
+        \ ;\n}\n\n// Add a multipick array for value selection.\n| in(field=#Vendor,\
+        \ values=[?Vendor])\n\n// Ignore specific domains. \n| lower(dns.domainName,\
+        \ as=dns.domainName)\n| !match(file=ignore_domain_table, field=dns.domainName,\
+        \ column=ignoreDomain, mode=glob)\n\n// Check entropy.\n| shannonEntropy(dns.domainName)\n\
+        | test(_shannonentropy>=entropyValue)\n\n// Round to 1 decimal place.\n| dns.entropy:=format(\"\
+        %.1f\", field=_shannonentropy)\n\n// Extract the TLD with another regex.\n\
+        | regex(\"(?<dns.tld>[^._]+\\.[a-z]{2,})$\", field=dns.domainName, flags=F)\n\n| dns.tld=?dns_tld"
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
-        dns_tld: '["{{fields.dns.tld}}"]'
+        dns_tld: '["{{ fields.dns.tld }}"]'
+        entropyValue: '["{{ parameters.entropyValue }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -379,9 +400,9 @@ widgets:
           #type=falcon-raw-data
             | #repo=base_sensor
             | #event_simpleName=NetworkConnectIP4
-            | (LocalAddressIP4=* OR RemoteAddressIP4=*)
-            | source.ip:=LocalAddressIP4
-            | destination.ip:=RemoteAddressIP4
+            | (LocalIP=* OR RemoteIP=*)
+            | source.ip:=LocalIP
+            | destination.ip:=RemoteIP
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
@@ -405,7 +426,7 @@ widgets:
 
       // Check for IOCs.
       | case {
-          ioc_confidence_level="unverified"
+          ioc_confidence_level="unverified" OR ioc_confidence_level="all"
             | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=unverified, strict=true) ;
           ioc_confidence_level="low"
             | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=low, strict=true) ;
@@ -414,7 +435,13 @@ widgets:
           ioc_confidence_level="high"
             | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=high, strict=true) ;
       }
-      | test(ioc[0].malicious_confidence==ioc_confidence_level)
+
+      | case{
+          ioc_confidence_level="all"
+            | ioc[0].malicious_confidence=* ;
+          *
+            | test(ioc[0].malicious_confidence==ioc_confidence_level) ;
+      }
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
@@ -445,7 +472,7 @@ widgets:
       series: {}
       interpolation: step-after
     visualization: time-chart
-    title: IOC Matches - IP - Data Source
+    title: IP IOC Matches by Data Source
     isLive: false
     type: query
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
@@ -471,8 +498,8 @@ widgets:
       | #repo=base_sensor
       | event_platform=Win
       | LogonType=10
-      | RemoteAddressIP4=*
-      | UserName=/\w/F
+      | RemoteIP=*
+      | UserName=/\w+/F
 
       // Put the username in lowercase.
       | lower(field=UserName, as=UserName)
@@ -482,14 +509,14 @@ widgets:
       | UserHash:=crypto:md5([UserHash])
 
       // Perform initial aggregation; groupBy() will sort by UserHash then LogonTime
-      | groupBy([UserHash, LogonTime], function=[collect([UserName, RemoteAddressIP4, ComputerName, aid], limit=100)], limit=max)
+      | groupBy([UserHash, LogonTime], function=[collect([UserName, RemoteIP, ComputerName, aid], limit=100)], limit=max)
 
       // Get geoIP for Remote IP
-      | ipLocation(RemoteAddressIP4)
-      | RemoteAddressIP4.lat=* RemoteAddressIP4.lon=*
+      | ipLocation(RemoteIP)
+      | RemoteIP.lat=* RemoteIP.lon=*
 
       // Use new neighbor() function to get results for previous row
-      | neighbor([LogonTime, RemoteAddressIP4, UserHash, RemoteAddressIP4.country, RemoteAddressIP4.lat, RemoteAddressIP4.lon, ComputerName], prefix=prev)
+      | neighbor([LogonTime, RemoteIP, UserHash, RemoteIP.country, RemoteIP.lat, RemoteIP.lon, ComputerName], prefix=prev)
 
       // Make sure neighbor() sequence does not span UserHash values; will occur at the end of a series
       | test(UserHash==prev.UserHash)
@@ -502,10 +529,12 @@ widgets:
       | TimeToTravel:=formatDuration(LogonDelta, precision=2)
 
       // Calculate distance between Login 1 and Login 2
-      | DistanceKm:=(geography:distance(lat1="RemoteAddressIP4.lat", lat2="prev.RemoteAddressIP4.lat", lon1="RemoteAddressIP4.lon", lon2="prev.RemoteAddressIP4.lon"))/1000 | DistanceKm:=round(DistanceKm)
+      | DistanceKm:=(geography:distance(lat1="RemoteIP.lat", lat2="prev.RemoteIP.lat", lon1="RemoteIP.lon", lon2="prev.RemoteIP.lon"))/1000
+      | DistanceKm:=round(DistanceKm)
 
       // Calculate speed required to get from Login 1 to Login 2
-      | SpeedKph:=DistanceKm/(LogonDelta/1000/60/60) | SpeedKph:=round(SpeedKph)
+      | SpeedKph:=DistanceKm/(LogonDelta/1000/60/60)
+      | SpeedKph:=round(SpeedKph)
 
       // SET THRESHOLD: 1234kph is MACH 1
       | test(SpeedKph>=?minSpeedKph)
@@ -517,38 +546,34 @@ widgets:
       | formatTime(format="%F %T %Z", as="prev.LogonTime", field="prev.LogonTime")
 
       // Make fields easier to read
-      | Travel:=format(format="%s → %s", field=[prev.RemoteAddressIP4.country, RemoteAddressIP4.country])
-      | IPs:=format(format="%s → %s", field=[prev.RemoteAddressIP4, RemoteAddressIP4])
+      | Travel:=format(format="%s → %s", field=[prev.RemoteIP.country, RemoteIP.country])
+      | IPs:=format(format="%s → %s", field=[prev.RemoteIP, RemoteIP])
       | Logons:=format(format="%s → %s", field=[prev.LogonTime, LogonTime])
 
-      // Format the URLs.
-      | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
-      | regex("^\\W*(?<user.name.stripped>\\w.+?)@?$", field=UserName, strict=false)
-      | user.name.stripped:=lower(user.name.stripped)
-      | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, user.name.stripped])
-
-      // Express SpeedKph as a value of MACH
-      | Mach:=SpeedKph/1235 | Mach:=round(Mach)
-      | Speed:=format(format="Mach %s", field=[Mach])
+      // Include links to search.
+      | aid:=format("[%s](/search/host?term=_all:~'%s')", field=[aid, aid])
+      | ComputerName:=format("[%s](/search/host?term=_all:~'%s')", field=[ComputerName, ComputerName])
+      | RemoteIP:=format("[%s](/search/ipv4?term=_all:~'%s')", field=[RemoteIP, RemoteIP])
+      | regex("^(?<UserName.stripped>[^@+]+)(?=\+|@|$)", field=UserName, strict=false, flags=F)
+      | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, UserName.stripped])
 
       // Output results to table and sort by highest speed
       | groupby([aid, ComputerName, UserName, IPs, Travel, SpeedKph, DistanceKm, TimeToTravel, Logons], function=[], limit=max)
       | sort(SpeedKph, limit=1000)
-
-      // Format distance and speed fields to include comma and unit of measure
-      | format("%,.0f km",field=["DistanceKm"], as="DistanceKm")
-      | format("%,.0f km/h",field=["SpeedKph"], as="SpeedKph")
+      | rename([[DistanceKm, "Distance km"],[SpeedKph, "Speed km/h"]])
     end: now
     start: 1d
     width: 12
     y: 7
     interactions:
     - name: filterClick
-      titleTemplate: 'Event Details: {{ fields.aid }}'
+      titleTemplate: 'Search Events: Agent ID and UserName'
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Get UserLogon events for Windows RDP sessions\n\
         | #event_simpleName=UserLogon \n| #repo=base_sensor\n| event_platform=Win\
-        \ \n| LogonType=10 \n| RemoteAddressIP4=*\n| aid=?aid"
+        \ \n| LogonType=10 \n| RemoteIP=*\n\n| input.aid:=?aid\n| input.aid=/\\[(?<input.aid>.+?)\\\
+        ]/F\n| test(aid==input.aid)\n\n| input.UserName:=?UserName\n| input.UserName=/\\\
+        [(?<input.UserName>.+?)\\]/F\n| test(UserName==input.UserName)\n"
       useWidgetTimeWindow: true
       arguments:
         aid: '["{{fields.aid}}"]'
@@ -561,13 +586,29 @@ widgets:
       configured-columns:
         ComputerName:
           color: '#126cc6'
+        Speed km/h:
+          color:
+            defaultColor: '#29a34bff'
+            reversePalette: false
+            thresholds:
+            - color: '#91c569ff'
+              value: 100
+            - color: '#e4df80ff'
+              value: 200
+            - color: '#f7bd75ff'
+              value: 500
+            - color: '#f26b53ff'
+              value: 1000
+            - color: '#f15249ff'
+              value: 1235
         UserName:
           color: '#91BD0F'
         aid:
-          render-as: value
+          color: '#126cc6'
+          render-as: link
       row-numbers-enabled: false
     visualization: table-view
-    title: Impossible Travel
+    title: Travel Speed Between Logons
     isLive: false
     type: query
   note-1725900646032-0:
@@ -600,7 +641,7 @@ widgets:
             | #Vendor:="crowdstrike"
             | threat.tactic.name[0]:=Tactic
             | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/\w/F ;
+            | threat.technique.name[0]=/\w+/F ;
           #type!=falcon-raw-data
             | #event.kind=* ;
       }
@@ -705,8 +746,8 @@ widgets:
           #type=falcon-raw-data
             | #repo=base_sensor
             | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
-            | source.ip:=LocalAddressIP4
-            | destination.ip:=RemoteAddressIP4
+            | source.ip:=LocalIP
+            | destination.ip:=RemoteIP
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike"
             | #event.module:="falcon"
@@ -753,23 +794,38 @@ widgets:
     y: 10
     interactions:
     - name: filterClick
-      titleTemplate: Search DNS Events
+      titleTemplate: 'Search Events: FQDN'
       queryString: |-
+        defineTable(
+          query={
+            createEvents([""])
+            | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
+            | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
+            | split(ignoreDomain)
+          },
+          include=[ignoreDomain],
+          name="ignore_domain_table"
+        )
+
         // Add a multipick array for value selection.
         | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
 
+        // Add a parameter for entropy.
+        | entropyValue:=?entropyValue
+
         // Filter to events with required fields, and rename fields to match CPS.
         | case {
             #type=falcon-raw-data
               | #repo=base_sensor
-              | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F
-              | source.ip:=LocalAddressIP4
-              | destination.ip:=RemoteAddressIP4
+              | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
+              | source.ip:=LocalIP
+              | destination.ip:=RemoteIP
               | destination.port:=RemotePort
               | #Vendor:="crowdstrike"
+              | #event.module:="falcon"
               | dns.domainName:=DomainName ;
             #type!=falcon-raw-data
               | #event.kind=*
@@ -790,16 +846,24 @@ widgets:
 
         // Filter for Internet DNS names.
         | lower(dns.domainName, as=dns.domainName)
+        | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
 
-        | input.dns.domainName:=?dns_domainName
-        | input.dns.domainName=/\[(?<query.dns.domainName>[^\]]+)\]/F
+        // Check entropy.
+        | shannonEntropy(dns.domainName)
+        | test(_shannonentropy>=entropyValue)
 
-        | test(dns.domainName==query.dns.domainName)
+        // Round to 1 decimal place.
+        | dns.entropy:=format("%.1f", field=_shannonentropy)
+
+        | input.dns.domainName:=?dns_domainname
+        | input.dns.domainName=/\[(?<input.dns.domainName>.+?)\]/F
+        | test(dns.domainName==input.dns.domainName)
       useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
         cid_input: '["{{ parameters.cid_input }}"]'
-        dns_domainName: '["{{ fields.dns.domainName }}"]'
+        dns_domainname: '["{{ fields.dns.domainName }}"]'
+        entropyValue: '["{{ parameters.entropyValue }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -919,7 +983,7 @@ widgets:
       // Rename events that might have multiple username fields.
       | case {
           user.name="-"
-            | user.target.name=/\w/F
+            | user.target.name=/\w+/F
             | rename([[user.target.name, user.name]]) ;
           * ;
       }
@@ -1050,9 +1114,9 @@ widgets:
       | user.name=/\w+/F
 
       // Format the URL.
-      | regex("^(?<user.name.stripped>[^@]+)(?:@|$)", field=user.name, strict=false, flags=F)
+      | regex("^(?<user.name.stripped>[^@+]+)(?=\+|@|$)", field=user.name, strict=false, flags=F)
       | user.name.stripped:=lower(user.name.stripped)
-      | user.name:=format("[%s](/search/?term=_all:~'%s')", field=[user.name, user.name.stripped])
+      | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
       // Alias the field if it does not exist.
       | case {
@@ -1213,9 +1277,9 @@ widgets:
           #type=falcon-raw-data
             | #repo=base_sensor
             | #event_simpleName=NetworkConnectIP4
-            | (LocalAddressIP4=* OR RemoteAddressIP4=*)
-            | source.ip:=LocalAddressIP4
-            | destination.ip:=RemoteAddressIP4
+            | (LocalIP=* OR RemoteIP=*)
+            | source.ip:=LocalIP
+            | destination.ip:=RemoteIP
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike" ;
           #type!=falcon-raw-data
@@ -1239,7 +1303,7 @@ widgets:
 
       // Check for IOCs.
       | case {
-          ioc_confidence_level="unverified"
+          ioc_confidence_level="unverified" OR ioc_confidence_level="all"
             | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=unverified, strict=true) ;
           ioc_confidence_level="low"
             | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=low, strict=true) ;
@@ -1248,7 +1312,13 @@ widgets:
           ioc_confidence_level="high"
             | ioc:lookup([source.ip, destination.ip], type="ip_address", confidenceThreshold=high, strict=true) ;
       }
-      | test(ioc[0].malicious_confidence==ioc_confidence_level)
+
+      | case {
+          ioc_confidence_level="all"
+            | ioc[0].malicious_confidence=* ;
+          *
+            | test(ioc[0].malicious_confidence==ioc_confidence_level) ;
+      }
 
       // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels=*
@@ -1256,7 +1326,7 @@ widgets:
       | iplocation(ioc[0].indicator)
 
       | case {
-            ioc.actorName=/\w/F
+            ioc.actorName=/\w+/F
             | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false, flags=F)
             | ioc.actorName.firstName.lower:=lower(ioc.actorName.firstName)
             | ioc.actorName.lastName.lower:=lower(ioc.actorName.lastName)
@@ -1322,7 +1392,7 @@ widgets:
           render-as: value
       row-numbers-enabled: false
     visualization: table-view
-    title: IOC Matches - IP
+    title: IP IOC Matches
     isLive: false
     type: query
   422e0b37-a2cc-4f9a-97d7-e8fb9cbd48b2:
@@ -1343,7 +1413,7 @@ widgets:
             | #Vendor:="crowdstrike"
             | threat.tactic.name[0]:=Tactic
             | threat.technique.name[0]:=Technique
-            | threat.technique.name[0]=/\w/F ;
+            | threat.technique.name[0]=/\w+/F ;
           #type!=falcon-raw-data
             | #event.kind=* ;
       }
@@ -1366,7 +1436,7 @@ widgets:
       titleTemplate: '{{ fields.source }}, {{ fields.target }}'
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
-        \ Ngsiem.alert.id=/(?:thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -1422,20 +1492,20 @@ widgets:
     y: 12
     interactions:
     - name: filterClick
-      titleTemplate: '{{ fields.source }} -> {{ fields.target }}'
+      titleTemplate: 'Search Events: {{ fields.source }} -> {{ fields.target }}'
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Search for Windows RDP events.\n| #event_simpleName=UserLogon\n\
         | #repo=base_sensor\n| #type=falcon-raw-data\n| event_platform=\"Win\"\n|\
-        \ LogonType=10\n\n// Ensure the destination.ip exists.\n| RemoteIP=*\n\n//\
-        \ Identify anything where the remote IP is not a known Agent ID for this CID.\n\
-        | !match(file=\"aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4,\
+        \ LogonType=10\n\n// Ensure the destination.ip exists.\n| RemoteIP!=0.0.0.0\n\
+        \n// Identify anything where the remote IP is not a known Agent ID for this\
+        \ CID.\n| !match(file=\"aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4,\
         \ strict=true)\n\n// Add the ComputerName\n| default(field=[ComputerName],\
         \ value=\"-\")\n| format(\"%s  %s\", field=[LocalIP, ComputerName], as=source.details)\n\
-        \n| source.details=?source_details \n| RemoteIP=?destination_ip"
+        \n| source.details=?source_details \n| RemoteIP=?remote_ip"
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
-        destination_ip: '["{{ fields.target }}"]'
+        remote_ip: '["{{ fields.target }}"]'
         source_details: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
@@ -1476,7 +1546,7 @@ widgets:
       titleTemplate: '{{ fields.#Vendor }}'
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
-        \ Ngsiem.alert.id=/(?:thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -1506,7 +1576,7 @@ widgets:
   ed995041-d1c5-4f63-a1be-f587eaa19487:
     x: 0
     height: 5
-    queryString: |+
+    queryString: |-
       defineTable(
         query={
           createEvents([""])
@@ -1532,26 +1602,30 @@ widgets:
 
       // Ignore certain usernames.
       | !match(file="ignore_username_table", field=UserName, column=ignoreUserName, mode=glob)
-      | UserName=/\w/F
+      | UserName=/\w+/F
 
       // Format the aid and ComputerName.
       | format("%s -> %s", field=[aid, ComputerName], as=host.details)
 
       // Put the username in lowercase.
-      | lower(field=UserName, as=UserName)
+      | UserName:=lower(UserName)
 
       // Group the results.
       | groupBy(UserName, function=[count(aid, distinct=true, as=host.distinct.count), collect(host.details, limit=5)], limit=max)
-
-      // Rename for the widget.
-      | rename([[host.details, "host.details [max 5 displayed]"]])
 
       // Filter minimum number of hosts.
       | host.distinct.count>=?minDistinctHostsSuccess
 
       // Sort the results
-      | sort(host.distinct.count, limit=100)
+      | sort(host.distinct.count, limit=1000)
 
+      // Format the URL.
+      | regex("^(?<UserName.stripped>[^@+]+)(?=\+|@|$)", field=UserName, strict=false, flags=F)
+      | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, UserName.stripped])
+      | drop([UserName.stripped])
+
+      // Rename for the widget.
+      | rename([[host.details, "Agent IDs [Sample of 5 Maximum]"], [host.distinct.count, "Total Unique Agent IDs"]])
     end: now
     start: 1d
     width: 6
@@ -1566,7 +1640,7 @@ widgets:
         \ lowercase.\n| lower(field=UserName, as=UserName)\n\n| UserName=?UserName"
       useWidgetTimeWindow: true
       arguments:
-        UserName: '["{{fields.UserName}}"]'
+        UserName: '["{{ fields.UserName }}"]'
         cid_input: '["{{ parameters.cid_input }}"]'
       openInNewTab: true
       isLive: false
@@ -1574,6 +1648,8 @@ widgets:
     options:
       cell-overflow: wrap-text
       configured-columns:
+        UserName:
+          color: '#91BD0F'
         user.name:
           color: '#91BD0F'
       row-numbers-enabled: false
@@ -1602,7 +1678,7 @@ widgets:
       | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
 
       // Lowercase the username.
-      | lower(field=UserName, as=UserName)
+      | UserName:=lower(UserName)
 
       // Find the top 20 results.
       | top([UserName], limit=10)
@@ -1612,7 +1688,7 @@ widgets:
     y: 12
     interactions:
     - name: filterClick
-      titleTemplate: '{{ fields.user.name }}'
+      titleTemplate: 'Search Events: {{ fields.user.name }}'
       queryString: |-
         // Add a multipick array for value selection.
         | in(field=#repo.cid, values=[?cid_input])
@@ -1624,20 +1700,20 @@ widgets:
         | event_platform="Win"
         | LogonType=10
 
-        // Ensure the destination.ip exists.
-        | RemoteIP=*
+        // Ensure the RemoteIP exists.
+        | RemoteIP!=0.0.0.0
 
         // Identify anything where the remote IP is not a known Agent ID for this CID.
         | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
 
         // Lowercase the username.
-        | lower(field=UserName, as=UserName)
+        | UserName:=lower(UserName)
 
         | UserName=?user_name
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
-        user_name: '["{{fields.user.name}}"]'
+        user_name: '["{{ fields.UserName }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -1702,7 +1778,7 @@ widgets:
       titleTemplate: '{{ fields.event.category }}'
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
-        \ Ngsiem.alert.id=/(?:thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -1756,8 +1832,8 @@ widgets:
           #type=falcon-raw-data
             | #repo=base_sensor
             | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F
-            | source.ip:=LocalAddressIP4
-            | destination.ip:=RemoteAddressIP4
+            | source.ip:=LocalIP
+            | destination.ip:=RemoteIP
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike"
             | dns.domainName:=DomainName ;
@@ -1775,7 +1851,7 @@ widgets:
 
       // Check for IOCs.
       | case {
-          ioc_confidence_level="unverified"
+          ioc_confidence_level="unverified" OR ioc_confidence_level="all"
             | ioc:lookup([dns.domainName], type="domain", confidenceThreshold=unverified, strict=true) ;
           ioc_confidence_level="low"
             | ioc:lookup([dns.domainName], type="domain", confidenceThreshold=low, strict=true) ;
@@ -1784,15 +1860,23 @@ widgets:
           ioc_confidence_level="high"
             | ioc:lookup([dns.domainName], type="domain", confidenceThreshold=high, strict=true) ;
       }
+
+      | case {
+          ioc_confidence_level="all"
+            | ioc[0].malicious_confidence=* ;
+          *
+            | test(ioc[0].malicious_confidence==ioc_confidence_level) ;
+      }
+
+      // Look for anything with an IOC label, then extract fields.
       | ioc[0].labels!=/DomainType\/KnownGood/Fi
-      | test(ioc[0].malicious_confidence==ioc_confidence_level)
 
       // Extract fields from the IOCs.
       | ioc[0].labels=*
       | regex("(^|,)(?:Actor/(?<ioc.actorName>[^,]+)|Malware/(?<ioc.malwareName>[^,]+))(,|$)", field=ioc[0].labels, strict=false, flags=F)
 
       | case {
-            ioc.actorName=/\w/F
+            ioc.actorName=/\w+/F
             | regex("^(?<ioc.actorName.firstName>.+?)(?<ioc.actorName.lastName>(?:BEAR|BUFFALO|CHOLLIMA|CRANE|HAWK|JACKAL|KITTEN|LEOPARD|LYNX|OCELOT|PANDA|SPHINX|SPIDER|TIGER|WOLF))$", field=ioc.actorName, strict=false, flags=F)
             | ioc.actorName.firstName.lower:=lower(ioc.actorName.firstName)
             | ioc.actorName.lastName.lower:=lower(ioc.actorName.lastName)
@@ -1833,7 +1917,7 @@ widgets:
       | sort(count, limit=1000)
 
       // Add a URL in markdown.
-      | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
+      | ComputerName:=format("[%s](/search/host?term=_all:~'%s')", field=[ComputerName, ComputerName])
       | drop([ioc.actorName.exists])
     end: now
     start: 1d
@@ -1864,7 +1948,7 @@ widgets:
           render-as: link
       row-numbers-enabled: false
     visualization: table-view
-    title: IOC Matches - DNS
+    title: Domain IOC Matches
     isLive: false
     type: query
   66a7420e-0bac-48b6-adc0-499f03b66f9c:
@@ -1989,7 +2073,7 @@ widgets:
       | user.name=/\w+/F
 
       // Format the URL.
-      | regex("^\\W*(?<user.name.stripped>\\w.+?)@?$", field=user.name, strict=false, flags=F)
+      | regex("^(?<user.name.stripped>[^@+]+)(?=\+|@|$)", field=user.name, strict=false, flags=F)
       | user.name.stripped:=lower(user.name.stripped)
       | user.name:=format("[%s](/search/user?term=_all:~'%s')", field=[user.name, user.name.stripped])
 
@@ -2045,8 +2129,8 @@ widgets:
           #type=falcon-raw-data
             | #repo=base_sensor
             | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
-            | source.ip:=LocalAddressIP4
-            | destination.ip:=RemoteAddressIP4
+            | source.ip:=LocalIP
+            | destination.ip:=RemoteIP
             | destination.port:=RemotePort
             | #Vendor:="crowdstrike"
             | #event.module:="falcon"
@@ -2080,7 +2164,7 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Extract the TLD with another regex.
-      | dns.domainName=/(?<dns.tld>[^._]+\.[a-z]{2,})$/F
+      | regex("(?<dns.tld>[^._]+\.[a-z]{2,})$", field=dns.domainName, flags=F)
 
       // Display the top TLDs.
       | timechart(dns.tld, limit=10)
@@ -2090,24 +2174,78 @@ widgets:
     y: 5
     interactions:
     - name: filterClick
-      titleTemplate: '{{ fields.dns.tld }}'
-      queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
-        \ values=[?cid_input])\n| case { \n    #type=falcon-raw-data\n      | #event_simpleName=/^(?:DnsRequest|TlsClientHello)/F\n\
-        \      | source.ip:=LocalAddressIP4\n      | destination.ip:=RemoteAddressIP4\n\
-        \      | destination.port:=RemotePort\n      | #Vendor:=\"crowdstrike\"\n\
-        \      | dns.domainName:=DomainName ;\n    #type!=falcon-raw-data\n      |\
-        \ url.domain=*\n      | dns.domainName:=url.domain ;\n    #type!=falcon-raw-data\n\
-        \      | source.domain=*\n      | dns.domainName:=source.domain ;\n    #type!=falcon-raw-data\n\
-        \      | dns.question.name=*\n      | dns.domainName:=dns.question.name ;\n\
-        }\n| dns.domainName=/^[a-z0-9.]+\\./i\n| dns.domainName!=/\\.(internal|local|amazonaws\\\
-        .com|cloudsink\\.net|cloudfront\\.net|googlesyndication\\.com|footprintdns\\\
-        .com|azure\\.com|live\\.com)$/i\n| dns.domainName!=/_/i\n| shannonEntropy(dns.domainName)\n\
-        | _shannonentropy>4.2\n| format(\"%.1f\", field=_shannonentropy, as=dns.entropy)\n\
-        | dns.domainName=/\\.(?<dns.tld>[a-z0-9-]+\\.[a-z0-9]+)$/F\n| dns.tld=?dns_tld"
+      titleTemplate: 'Search Events: {{ fields.dns.tld }}'
+      queryString: |-
+        defineTable(
+          query={
+            createEvents([""])
+            | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
+            | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
+            | split(ignoreDomain)
+          },
+          include=[ignoreDomain],
+          name="ignore_domain_table"
+        )
+
+        // Add a multipick array for value selection.
+        | in(field=#repo.cid, values=[?cid_input])
+
+        // Exclude XDR repos.
+        | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
+
+        // Add a parameter for entropy.
+        | entropyValue:=?entropyValue
+
+        // Filter to events with required fields, and rename fields to match CPS.
+        | case {
+            #type=falcon-raw-data
+              | #repo=base_sensor
+              | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
+              | source.ip:=LocalIP
+              | destination.ip:=RemoteIP
+              | destination.port:=RemotePort
+              | #Vendor:="crowdstrike"
+              | #event.module:="falcon"
+              | dns.domainName:=DomainName ;
+            #type!=falcon-raw-data
+              | #event.kind=*
+              | url.domain=*
+              | dns.domainName:=url.domain ;
+            #type!=falcon-raw-data
+              | #event.kind=*
+              | source.domain=*
+              | dns.domainName:=source.domain ;
+            #type!=falcon-raw-data
+              | #event.kind=*
+              | dns.question.name=*
+              | dns.domainName:=dns.question.name ;
+        }
+
+        // Add a multipick array for value selection.
+        | in(field=#Vendor, values=[?Vendor])
+
+        // Filter for Internet DNS names.
+        | lower(dns.domainName, as=dns.domainName)
+        | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
+
+        // Check entropy.
+        | shannonEntropy(dns.domainName)
+        | test(_shannonentropy>=entropyValue)
+
+        // Round to 1 decimal place.
+        | dns.entropy:=format("%.1f", field=_shannonentropy)
+
+        // Extract the TLD with another regex.
+        | regex("(?<dns.tld>[^._]+\.[a-z]{2,})$", field=dns.domainName, flags=F)
+
+        // Display the top TLDs.
+        | dns.tld=?dns_tld
       useWidgetTimeWindow: true
       arguments:
+        Vendor: '["{{ parameters.Vendor }}"]'
         cid_input: '["{{ parameters.cid_input }}"]'
-        dns_tld: '["{{fields.dns.tld}}"]'
+        dns_tld: '["{{ fields.dns.tld }}"]'
+        entropyValue: '["{{ parameters.entropyValue }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -2131,7 +2269,7 @@ widgets:
       | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
-      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(?:thirdparty|ngsiem)/F #event.kind=alert) OR
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
         ((#event_simpleName=Event_EppDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)
           AND (#repo=detections #type=falcon-raw-data))
 
@@ -2158,7 +2296,7 @@ widgets:
       titleTemplate: '{{ fields.Ngsiem.event.data_domain }}'
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
-        \ Ngsiem.alert.id=/(?:thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -2197,8 +2335,8 @@ widgets:
       | case {
           #type=falcon-raw-data
             | #Vendor:="crowdstrike"
-            | destination.ip:=RemoteAddressIP4
-            | source.ip:=LocalAddressIP4 ;
+            | destination.ip:=RemoteIP
+            | source.ip:=LocalIP ;
           #type!=falcon-raw-data
             | #event.kind=* ;
       }
@@ -2301,7 +2439,7 @@ widgets:
       // Rename events that might have multiple username fields.
       | case {
           user.name="-"
-            | user.target.name=/\w/F
+            | user.target.name=/\w+/F
             | rename([[user.target.name, user.name]]) ;
           * ;
       }
@@ -2334,7 +2472,7 @@ widgets:
         \        | #event.kind=*\n        | #event.outcome=success\n        | event.category[0]=authentication\
         \ ;\n}\n\n// Add a multipick array for value selection.\n| in(field=#Vendor,\
         \ values=[?Vendor])\n\n// Rename events that might have multiple username\
-        \ fields.\n| case {\n    user.name=\"-\"\n      | user.target.name=/\\w/F\n\
+        \ fields.\n| case {\n    user.name=\"-\"\n      | user.target.name=/\\w+/F\n\
         \      | rename([[user.target.name, user.name]]) ;\n    * ;\n}\n\n// Ensure\
         \ the user.name exists and is not a system account.\n| !match(file=\"ignore_username_table\"\
         , field=user.name, column=ignoreUserName, mode=glob)\n| !match(file=\"ignore_username_table\"\
@@ -2437,7 +2575,7 @@ widgets:
                       | regex("^(?<user.name>.+)@", field=email.to.address[0]) ;
               }
               // Ensure the user.name has at least a letter or number.
-              | user.name=/\w/F
+              | user.name=/\w+/F
 
               // Rename fields for the table.
               | query.event.severity.user:=event.severity
@@ -2475,7 +2613,7 @@ widgets:
 
       | case {
           // Exit the case statement if we have what we need.
-          aid=* ComputerName=* LocalAddressIP4=* ;
+          aid=* ComputerName=* LocalIP=* ;
           // Check everything else.
           aid!=* host.hostname=*
               | match(file="aid_master_main.csv", field=[host.hostname], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;
@@ -2553,7 +2691,7 @@ widgets:
       | array:drop("query.vendor_module[]")
 
       // Format the ComputerName.
-      | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
+      | ComputerName:=format("[%s](/search/host?term=_all:~'%s')", field=[ComputerName, ComputerName])
 
       // Sort the results.
       | sort(score.total, limit=1000)
@@ -2578,7 +2716,7 @@ widgets:
         \      | regex(\"^(?<user.name>[^@]+)@\", field=email.to.address[0]) ;\n \
         \   user.email=*\n      | regex(\"^(?<user.name>[^@]+)@\", field=user.email)\
         \ ;\n    * ;\n}\n\n| case {\n    // Exit the case statement if we have what\
-        \ we need. \n    aid=* ComputerName=* LocalAddressIP4=* ;\n    // Do a lookup\
+        \ we need. \n    aid=* ComputerName=* LocalIP=* ;\n    // Do a lookup\
         \ on certain Falcon events.\n    aid!=* host.hostname=*\n        | match(file=\"\
         aid_master_main.csv\", field=[host.hostname], column=[ComputerName], include=[aid,\
         \ ComputerName, LocalAddressIP4], nrows=10, ignoreCase=true) ;\n    aid!=*\
@@ -2619,7 +2757,7 @@ widgets:
         \      | regex(\"^(?<user.name>[^@]+)@\", field=email.to.address[0]) ;\n \
         \   user.email=*\n      | regex(\"^(?<user.name>[^@]+)@\", field=user.email)\
         \ ;\n    * ;\n}\n\n| case {\n    // Exit the case statement if we have what\
-        \ we need. \n    aid=* ComputerName=* LocalAddressIP4=* ;\n    // Do a lookup\
+        \ we need. \n    aid=* ComputerName=* LocalIP=* ;\n    // Do a lookup\
         \ on certain Falcon events.\n    aid!=* host.hostname=*\n        | match(file=\"\
         aid_master_main.csv\", field=[host.hostname], column=[ComputerName], include=[aid,\
         \ ComputerName, LocalAddressIP4], nrows=10, ignoreCase=true) ;\n    aid!=*\
@@ -2667,7 +2805,7 @@ widgets:
       | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
-      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(?:thirdparty|ngsiem)/F #event.kind=alert) OR
+      | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
         ((#event_simpleName=Event_EppDetectionSummaryEvent OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)
           AND (#repo=detections #type=falcon-raw-data))
 
@@ -2697,7 +2835,7 @@ widgets:
       titleTemplate: '{{ fields.Tactic }}, {{ fields.Technique }}'
       queryString: "// Add a multipick array for value selection.\n| in(field=#repo.cid,\
         \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
-        \ Ngsiem.alert.id=/(?:thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -2739,7 +2877,6 @@ widgets:
     type: note
   351ed275-203b-4242-8f16-0be3e0269688:
     x: 0
-    y: 17
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -2756,7 +2893,7 @@ widgets:
       | RemoteIP!=0.0.0.0
 
       // Identify anything where the remote IP is not a known Agent ID for this CID.
-      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+      | !match(file="aid_master_main.csv", field=LocalIP, column=LocalAddressIP4, strict=true)
 
       // Enrich the data.
       | ipLocation(field=RemoteIP)
@@ -2766,39 +2903,85 @@ widgets:
       | default(field=[RemoteIP.city, RemoteIP.state, RemoteIP.country, RemoteIP.org], value="-")
 
       // Lowercase the username.
-      | lower(field=UserName, as=UserName)
+      | UserName:=lower(UserName)
+
+      // Include links to search.
+      | aid:=format("[%s](/search/host?term=_all:~'%s')", field=[aid, aid])
+      | ComputerName:=format("[%s](/search/host?term=_all:~'%s')", field=[ComputerName, ComputerName])
+      | LocalIP:=format("[%s](/search/ipv4?term=_all:~'%s')", field=[LocalIP, LocalIP])
+      | RemoteIP:=format("[%s](/search/ipv4?term=_all:~'%s')", field=[RemoteIP, RemoteIP])
+      | regex("^(?<UserName.stripped>[^@+]+)(?=\+|@|$)", field=UserName, strict=false, flags=F)
+      | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, UserName.stripped])
+
+      // Remove unnecessary fields.
+      | drop([RemoteIP.asn, RemoteIP.lat, RemoteIP.lon, UserName.stripped])
 
       // Format the field order.
-      | groupBy([aid, ComputerName, LocalIP, RemoteIP, RemoteIP.city, RemoteIP.state, RemoteIP.country, RemoteIP.org],
-          function=[collect(UserName, limit=5), count(as=count)],
+      | groupBy([aid, ComputerName, UserName, LocalIP, RemoteIP, RemoteIP.city, RemoteIP.state, RemoteIP.country, RemoteIP.org],
+          function=[collect(UserName, limit=10), count(as=count)],
           limit=max
       )
       // Sort the results.
       | sort(field=count, limit=1000)
-
-      // Remove unnecessary fields.
-      | drop([RemoteIP.asn, RemoteIP.lat, RemoteIP.lon])
-
-      // Include links to search.
-      | ComputerName:=format("[%s](/search/?term=_all:~'%s')", field=[ComputerName, ComputerName])
-      | LocalIP:=format("[%s](/search/?term=_all:~'%s')", field=[LocalIP, LocalIP])
-      | RemoteIP:=format("[%s](/search/?term=_all:~'%s')", field=[RemoteIP, RemoteIP])
     end: now
     start: 1d
     width: 12
+    y: 17
+    interactions:
+    - name: clickFilter
+      titleTemplate: 'Search Events: Agent ID and UserName'
+      queryString: |-
+        // Add a multipick array for value selection.
+        | in(field=#repo.cid, values=[?cid_input])
+
+        // Search for Windows RDP events.
+        | #event_simpleName=UserLogon
+        | #repo=base_sensor
+        | #type=falcon-raw-data
+        | event_platform="Win"
+        | LogonType=10
+
+        // Ensure the RemoteIP exists.
+        | RemoteIP!=0.0.0.0
+
+        // Identify anything where the remote IP is not a known Agent ID for this CID.
+        | !match(file="aid_master_main.csv", field=LocalIP, column=LocalAddressIP4, strict=true)
+
+        // Enrich the data.
+        | ipLocation(field=RemoteIP)
+        | asn(field=RemoteIP)
+
+        | input.aid:=?aid
+        | input.aid=/\[(?<input.aid>.+?)\]/F
+        | test(aid==input.aid)
+
+        | input.UserName:=?UserName
+        | input.UserName=/\[(?<input.UserName>.+?)\]/F
+        | test(UserName==input.UserName)
+      useWidgetTimeWindow: true
+      arguments:
+        UserName: '["{{ fields.UserName }}"]'
+        aid: '["{{ fields.aid }}"]'
+        cid_input: '["{{ parameters.cid_input }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
     options:
       cell-overflow: wrap-text
       configured-columns:
-        LocalIP:
-          color: '#126cc6'
         aid:
-          render-as: go_to_events_link
+          color: '#126cc6'
+          render-as: link
         source.hostname:
           color: '#126cc6'
         source.ip:
           color: '#126cc6'
         destination.ip:
           color: '#126cc6'
+        LocalIP:
+          color: '#126cc6'
+        UserName:
+          color: '#91BD0F'
         RemoteIP:
           color: '#126cc6'
         ComputerName:
@@ -2833,7 +3016,6 @@ parameters:
     - '100'
     - '500'
     - '1000'
-    - '1235'
     type: list
     width: 1
   minDistinctHostsSuccess:
@@ -2874,6 +3056,7 @@ parameters:
     label: IOC Confidence Level
     order: 0
     values:
+    - all
     - unverified
     - low
     - medium
