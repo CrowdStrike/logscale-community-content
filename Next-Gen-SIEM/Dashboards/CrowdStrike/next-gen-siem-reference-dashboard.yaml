@@ -91,7 +91,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 2
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.9.0
+name: ' Next-Gen SIEM Reference Dashboard - v1.9.1'
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -378,6 +378,7 @@ widgets:
     x: 2
     y: 0
     parameterIds:
+    - definedQueryMode
     - detectionSourceCount
     height: 2
     width: 10
@@ -2102,7 +2103,10 @@ widgets:
       \ Detection Events*. \n3. Click \"Create one-time incident\" after the results\
       \ have loaded. \n4. Pivot to the workbench to view the incident. The incident\
       \ may take a short amount of time to populate. \n\n**Note**: highlighted values\
-      \ will link to other components within the Falcon platform. "
+      \ will link to other components within the Falcon platform. \n\nThe majority\
+      \ of environments will use \"verbose\" mode. The \"fast\" query mode can be\
+      \ used in large environments to reduce query time, although some detections\
+      \ may be absent from results. "
     width: 2
     title: ''
     type: note
@@ -3184,21 +3188,62 @@ widgets:
       | default(field=event.severity, value=0)
       | default(field=threat.indicator.name, "Indicator")
 
+      // Set a user input for fast vs verbose.
+      | definedQueryMode:=?definedQueryMode
+
       | case {
-          // Exit the case statement if we have what we need.
-          aid=* ComputerName=* LocalIP=* ;
-          // Check everything else.
-          aid!=* host.hostname=*
-              | match(file="aid_master_main.csv", field=[host.hostname], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;
-          aid!=* source.ip=*
-              | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
-          aid!=* source.nat.ip=*
-              | match(file="aid_master_main.csv", field=[source.nat.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
-          aid!=* client.ip=*
-              | match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
-          aid!=* destination.ip=*
-              | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
-          * ;
+          // Use "nrows=10" in the query.
+          definedQueryMode:="verbose"
+               // Exit the case statement if we have what we need.
+              | case {
+                  aid=* ComputerName=* LocalIP=* ;
+                  // Check everything else.
+                  aid!=* host.hostname=*
+                      | match(file="aid_master_main.csv", field=[host.hostname], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;
+                  aid!=* source.ip=*
+                      | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  aid!=* source.nat.ip=*
+                      | match(file="aid_master_main.csv", field=[source.nat.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  aid!=* client.ip=*
+                      | match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  aid!=* destination.ip=*
+                      | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  * ;
+              } ;
+          // Remove nrows to improve speed in large environments.
+          definedQueryMode:="fast"
+              | case {
+                  aid=* ComputerName=* LocalIP=* ;
+                  // Check everything else.
+                  aid!=* host.hostname=*
+                      | match(file="aid_master_main.csv", field=[host.hostname], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;
+                  aid!=* source.ip=*
+                      | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4]) ;
+                  aid!=* source.nat.ip=*
+                      | match(file="aid_master_main.csv", field=[source.nat.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4]) ;
+                  aid!=* client.ip=*
+                      | match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4]) ;
+                  aid!=* destination.ip=*
+                      | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4]) ;
+                  * ;
+              } ;
+          // Default if nothing is specified.
+          *
+              | case {
+                  aid=* ComputerName=* LocalIP=* ;
+                  // Check everything else.
+                  aid!=* host.hostname=*
+                      | match(file="aid_master_main.csv", field=[host.hostname], column=[ComputerName], include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;
+                  aid!=* source.ip=*
+                      | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  aid!=* source.nat.ip=*
+                      | match(file="aid_master_main.csv", field=[source.nat.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  aid!=* client.ip=*
+                      | match(file="aid_master_main.csv", field=[client.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  aid!=* destination.ip=*
+                      | match(file="aid_master_main.csv", field=[destination.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;
+                  * ;
+              } ;
       }
 
       // Create the output line.
@@ -3288,27 +3333,63 @@ widgets:
         \n// Extract the user.name from emails. \n| case { \n    email.to.address[0]=*\n\
         \      | regex(\"^(?<user.name>[^@]+)@\", field=email.to.address[0]) ;\n \
         \   user.email=*\n      | regex(\"^(?<user.name>[^@]+)@\", field=user.email)\
-        \ ;\n    * ;\n}\n\n| case {\n    // Exit the case statement if we have what\
-        \ we need. \n    aid=* ComputerName=* LocalIP=* ;\n    // Do a lookup on certain\
-        \ Falcon events.\n    aid!=* host.hostname=*\n        | match(file=\"aid_master_main.csv\"\
+        \ ;\n    * ;\n}\n\n// Set a user input for fast vs verbose. \n| definedQueryMode:=?definedQueryMode\n\
+        \n| case {\n    // Use \"nrows=10\" in the query.\n    definedQueryMode:=\"\
+        verbose\"\n         // Exit the case statement if we have what we need.\n\
+        \        | case {\n            aid=* ComputerName=* LocalIP=* ;\n        \
+        \    // Check everything else.\n            aid!=* host.hostname=*\n     \
+        \           | match(file=\"aid_master_main.csv\", field=[host.hostname], column=[ComputerName],\
+        \ include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;\n     \
+        \       aid!=* source.ip=*\n                | match(file=\"aid_master_main.csv\"\
+        , field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName,\
+        \ LocalAddressIP4], nrows=10) ;\n            aid!=* source.nat.ip=*\n    \
+        \            | match(file=\"aid_master_main.csv\", field=[source.nat.ip],\
+        \ column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4],\
+        \ nrows=10) ;\n            aid!=* client.ip=*\n                | match(file=\"\
+        aid_master_main.csv\", field=[client.ip], column=[LocalAddressIP4], include=[aid,\
+        \ ComputerName, LocalAddressIP4], nrows=10) ;\n            aid!=* destination.ip=*\n\
+        \                | match(file=\"aid_master_main.csv\", field=[destination.ip],\
+        \ column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4],\
+        \ nrows=10) ;\n            * ;\n        } ;\n    // Remove nrows to improve\
+        \ speed in large environments.\n    definedQueryMode:=\"fast\"\n        |\
+        \ case {\n            aid=* ComputerName=* LocalIP=* ;\n            // Check\
+        \ everything else.\n            aid!=* host.hostname=*\n                |\
+        \ match(file=\"aid_master_main.csv\", field=[host.hostname], column=[ComputerName],\
+        \ include=[aid, ComputerName, LocalAddressIP4], ignoreCase=true) ;\n     \
+        \       aid!=* source.ip=*\n                | match(file=\"aid_master_main.csv\"\
+        , field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName,\
+        \ LocalAddressIP4]) ;\n            aid!=* source.nat.ip=*\n              \
+        \  | match(file=\"aid_master_main.csv\", field=[source.nat.ip], column=[LocalAddressIP4],\
+        \ include=[aid, ComputerName, LocalAddressIP4]) ;\n            aid!=* client.ip=*\n\
+        \                | match(file=\"aid_master_main.csv\", field=[client.ip],\
+        \ column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4])\
+        \ ;\n            aid!=* destination.ip=*\n                | match(file=\"\
+        aid_master_main.csv\", field=[destination.ip], column=[LocalAddressIP4], include=[aid,\
+        \ ComputerName, LocalAddressIP4]) ;\n            * ;\n        } ;\n    //\
+        \ Default if nothing is specified. \n    *\n        | case {\n           \
+        \ aid=* ComputerName=* LocalIP=* ;\n            // Check everything else.\n\
+        \            aid!=* host.hostname=*\n                | match(file=\"aid_master_main.csv\"\
         , field=[host.hostname], column=[ComputerName], include=[aid, ComputerName,\
-        \ LocalAddressIP4], nrows=10, ignoreCase=true) ;\n    aid!=* source.ip=*\n\
-        \        | match(file=\"aid_master_main.csv\", field=[source.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* source.nat.ip=*\n\
-        \        | match(file=\"aid_master_main.csv\", field=[source.nat.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* client.ip=*\n\
-        \        | match(file=\"aid_master_main.csv\", field=[client.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    aid!=* destination.ip=*\n\
-        \        | match(file=\"aid_master_main.csv\", field=[destination.ip], column=[LocalAddressIP4],\
-        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n    * ;\n}\n\n\
-        // Get the user list.\n| user.name.list:=?user_name\n| kvParse(user.name.list)\n\
-        \n// Find the results. \n| case {\n    aid=?aid ;\n    text:contains(string=lower(\"\
-        user.name.list\"), substring=lower(\"user.name\")) ;\n}"
+        \ LocalAddressIP4], ignoreCase=true) ;\n            aid!=* source.ip=*\n \
+        \               | match(file=\"aid_master_main.csv\", field=[source.ip], column=[LocalAddressIP4],\
+        \ include=[aid, ComputerName, LocalAddressIP4], nrows=10) ;\n            aid!=*\
+        \ source.nat.ip=*\n                | match(file=\"aid_master_main.csv\", field=[source.nat.ip],\
+        \ column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4],\
+        \ nrows=10) ;\n            aid!=* client.ip=*\n                | match(file=\"\
+        aid_master_main.csv\", field=[client.ip], column=[LocalAddressIP4], include=[aid,\
+        \ ComputerName, LocalAddressIP4], nrows=10) ;\n            aid!=* destination.ip=*\n\
+        \                | match(file=\"aid_master_main.csv\", field=[destination.ip],\
+        \ column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4],\
+        \ nrows=10) ;\n            * ;\n        } ;\n}\n\n// Get the user list.\n\
+        | user.name.list:=?user_name\n| kvParse(user.name.list)\n\n// Find the results.\
+        \ \n| case {\n    aid=?aid ;\n    text:contains(string=lower(\"user.name.list\"\
+        ), substring=lower(\"user.name\")) ;\n}"
       useWidgetTimeWindow: true
       arguments:
-        Vendor: '["{{ parameters.Vendor }}"]'
-        aid: '["{{fields.aid}}"]'
         cid_input: '["{{ parameters.cid_input }}"]'
+        aid: '["{{fields.aid}}"]'
+        Vendor: '["{{ parameters.Vendor }}"]'
+        definedQueryMode: '["{{ parameters.definedQueryMode }}"]'
         user_name: '["{{ fields.user.name }}"]'
       openInNewTab: true
       isLive: false
@@ -3441,8 +3522,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-02-28
-      version: 1.9.0
+      date: 2025-03-03
+      version: 1.9.1
       ```
     width: 3
     title: ''
@@ -3635,9 +3716,18 @@ parameters:
     - high
     type: list
     width: 4
+  definedQueryMode:
+    label: Query Mode
+    order: 2
+    values:
+    - verbose
+    - fast
+    type: list
+    defaultValue: verbose
+    width: 1
   detectionSourceCount:
     label: Minimum Detection Sources
-    order: 1
+    order: 0
     values:
     - '1'
     - '2'
