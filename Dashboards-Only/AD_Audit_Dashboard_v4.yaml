@@ -1,0 +1,267 @@
+name: Audit_Dashboard_v4
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  eb406367-877e-4674-af38-6672b7332ff2:
+    x: 0
+    y: 24
+    height: 4
+    queryString: |
+      #event_simpleName=UserLogonFailed OR #event_simpleName=UserLogonFailed2
+      | groupBy([UserName, name, aid, aip, ComputerName, event_platform, LocalIP, LogonDomain, LogonServer, LogonType], function=[count(@timestamp), selectLast([@timestamp])])
+      | table([@timestamp, UserName, ComputerName, aid, aip, event_platform, LocalIP, LogonDomain, LogonType])
+      | UserName=?SAM_Account_Name
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Failed Logon Activity
+    isLive: false
+    type: query
+  89ddd19d-2ca0-4b9b-98df-9253e141f1ba:
+    x: 0
+    y: 6
+    height: 6
+    queryString: |
+      #event_simpleName=ActiveDirectoryAuditUserModified
+      | ActiveDirectoryAuditActionType=0
+      | setField(target="ActiveDirectoryAuditActionType", value=if(ActiveDirectoryAuditActionType == 0,
+      then="Active_Directory_Account_Created", else="No Data"))
+      | PerformedOnAccountName=?SAM_Account_Name
+      | PerformedByAccountObjectName=?Performed_by_SAM_Account_Name
+      | timeChart(ActiveDirectoryAuditActionType, span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Active Directory User Accounts Created per 24(h) Over 7 days.
+    isLive: false
+    type: query
+  7bb06766-4419-4a28-9050-e17553246ce7:
+    x: 0
+    y: 12
+    height: 4
+    queryString: |-
+      name=ActiveDirectoryAudit*
+      | setField(target="ActiveDirectoryAuditActionType", value=if(ActiveDirectoryAuditActionType == 4,
+      then="GROUP_MEMBER_ADDED", else=(if(ActiveDirectoryAuditActionType == 0,
+      then="CREATED", else=(if(ActiveDirectoryAuditActionType == 1,
+      then="DELETED", else=(if(ActiveDirectoryAuditActionType == 2,
+      then="MODIFIED", else=(if(ActiveDirectoryAuditActionType == 8,
+      then="GROUP_MEMBER_REMOVED", else=(if(ActiveDirectoryAuditActionType == 16,
+      then="PASSWORD_CHANGE", else=(if(ActiveDirectoryAuditActionType == 32,
+      then="PASSWORD_RESET", else=(if(ActiveDirectoryAuditActionType == 64,
+      then="ENABLED", else=(if(ActiveDirectoryAuditActionType == 128, then="DISABLED", else=(if(ActiveDirectoryAuditActionType == 256, then="LOCKED",
+      else=(if(ActiveDirectoryAuditActionType == 512, then="UNLOCKED", else=(UNKNOWN)))))))))))))))))))))))
+      |
+      groupBy([@timestamp,ActiveDirectoryAuditActionType,ComputerName,TargetDomainControllerHostName,DetectName,Severity,AddedPrivileges,GroupMemberAccountName,PerformedOnAccountName,PerformedByAccountObjectName]) | sort(@timestamp, limit=20000)
+      | PerformedOnAccountName=?SAM_Account_Name
+      | PerformedByAccountObjectName=?Performed_by_SAM_Account_Name
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: AD Activity
+    isLive: false
+    type: query
+  a118e2d6-11cf-41c0-aea4-d4f65beb8bf2:
+    x: 0
+    y: 16
+    height: 4
+    queryString: |
+      #event_simpleName=UserAccountCreated OR event.action="CreateAccount"
+      | rename(field="user.name", as="UserName")
+      | rename(field="host.os.name", as="event_platform")
+      | rename(field="source.ip", as="LocalIP")
+      | rename(field="host.hostname", as="ComputerName")
+      | rename(field="source.nat.ip", as="aip")
+      | rename(field="threat.technique.name[0]", as="name")
+      | table([@timestamp, UserName, aid, aip, ComputerName, event_platform, LocalIP, name, process.command_line], limit=20000)
+      | sort(@timestamp)
+      | UserName=?SAM_Account_Name
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Local User Accounts Created
+    isLive: false
+    type: query
+  a519495d-574a-40eb-b4bd-d3a15174f642:
+    x: 0
+    y: 0
+    height: 6
+    queryString: |-
+      #event_simpleName="UserAccountCreated"
+      | UserName=?SAM_Account_Name
+      | timeChart(#event_simpleName, span=1d)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Local User Accounts Created per 24(h) Over 7 days.
+    isLive: false
+    type: query
+  40f44160-108b-4d78-908a-26d9fab37b0e:
+    x: 4
+    y: 0
+    height: 6
+    queryString: |-
+      #event_simpleName="UserAccountDeleted"
+      | UserName=?SAM_Account_Name
+      | timeChart(#event_simpleName, span=1d)
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Local User Accounts Deleted per 24(h) Over 7 days.
+    isLive: false
+    type: query
+  8560c532-d432-4f41-9b38-a3c2db2f34c7:
+    x: 4
+    y: 24
+    height: 4
+    queryString: |
+      #event_simpleName=UserLogon
+      | groupBy([UserName, name, aid, aip, ComputerName, event_platform, LocalIP, LogonDomain, LogonServer, LogonType], function=[count(@timestamp), selectLast([@timestamp])])
+      | table([@timestamp, UserName, ComputerName, aid, aip, event_platform, LocalIP, LogonDomain, LogonType], limit=20000)
+      | UserName=?SAM_Account_Name
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: User Logon Activity
+    isLive: false
+    type: query
+  ad00dbad-cb93-4855-985c-94acae972c8e:
+    x: 8
+    y: 6
+    height: 6
+    queryString: |
+      name=ActiveDirectoryAudit*
+      | setField(target="ActiveDirectoryAuditActionType", value=if(ActiveDirectoryAuditActionType == 4,
+      then="GROUP_MEMBER_ADDED", else=(if(ActiveDirectoryAuditActionType == 0,
+      then="CREATED", else=(if(ActiveDirectoryAuditActionType == 1,
+      then="DELETED", else=(if(ActiveDirectoryAuditActionType == 2,
+      then="MODIFIED", else=(if(ActiveDirectoryAuditActionType == 8,
+      then="GROUP_MEMBER_REMOVED", else=(if(ActiveDirectoryAuditActionType == 16,
+      then="PASSWORD_CHANGE", else=(if(ActiveDirectoryAuditActionType == 32,
+      then="PASSWORD_RESET", else=(if(ActiveDirectoryAuditActionType == 64,
+      then="ENABLED", else=(if(ActiveDirectoryAuditActionType == 128, then="DISABLED", else=(if(ActiveDirectoryAuditActionType == 256, then="LOCKED",
+      else=(if(ActiveDirectoryAuditActionType == 512, then="UNLOCKED", else=(UNKNOWN)))))))))))))))))))))))
+      | PerformedOnAccountName=?SAM_Account_Name
+      | PerformedByAccountObjectName=?Performed_by_SAM_Account_Name
+      | groupBy([ActiveDirectoryAuditActionType])
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 4
+    title: AD Activity by Type per 24h over 7 days
+    isLive: false
+    type: query
+  27f4890b-63ec-449f-ac24-259e6c2b45f2:
+    x: 8
+    y: 24
+    height: 4
+    queryString: |
+      #event_simpleName=UserLogoff
+      | groupBy([UserName, name, aid, aip, ComputerName, event_platform, LocalIP, LogonDomain, LogonServer, LogonType], function=[count(@timestamp), selectLast([@timestamp])])
+      | table([@timestamp, UserName, ComputerName, aid, aip, event_platform, LocalIP, LogonDomain, LogonType], limit=20000)
+      | UserName=?SAM_Account_Name
+    end: now
+    start: 7d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: User Logoff Activity
+    isLive: false
+    type: query
+  1a03720d-2760-4023-a966-63e14e247097:
+    x: 4
+    y: 6
+    height: 6
+    queryString: |-
+      #event_simpleName=ActiveDirectoryAuditUserModified
+      | ActiveDirectoryAuditActionType=1
+      | setField(target="ActiveDirectoryAuditActionType", value=if(ActiveDirectoryAuditActionType == 1,
+      then="Active_Directory_Account_Deleted", else="No Data"))
+      | PerformedOnAccountName=?SAM_Account_Name
+      | PerformedByAccountObjectName=?Performed_by_SAM_Account_Name
+      | timeChart(ActiveDirectoryAuditActionType, span=1d)
+    end: now
+    start: 30d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Active Directory User Accounts Deleted per 24(h) Over 7 days.
+    isLive: false
+    type: query
+  61521e1c-cbb1-4db9-b905-4fead33489c7:
+    x: 8
+    y: 0
+    height: 6
+    queryString: |+
+      #event_simpleName=UserLogonFailed OR #event_simpleName=UserLogonFailed2
+      | UserName=?SAM_Account_Name
+      | timeChart(#event_simpleName, span=1d)
+
+    end: now
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Failed Logon Attemps per 24h in the past 7 days
+    isLive: false
+    type: query
+  624694b4-9438-48ed-82d4-6784849fb182:
+    x: 0
+    y: 20
+    height: 4
+    queryString: |
+      #event_simpleName=UserAccountDeleted
+      | groupBy([UserName, aid, aip, ComputerName, event_platform, LocalIP, name], function=selectLast([@timestamp]))
+      | table([@timestamp, UserName, ComputerName, aid, aip, event_platform, LocalIP, name])
+      | sort(@timestamp)
+      | UserName=?SAM_Account_Name
+    end: now
+    start: 7d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Local User Accounts Deleted
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.18.0
