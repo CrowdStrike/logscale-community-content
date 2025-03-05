@@ -1,0 +1,15 @@
+name: COL-MerakiWebhook
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.3.0
+script: |2-
+
+  parseJson() | parseTimestamp(field=occurredAt)
+tagFields:
+- Cps.version
+- Vendor
+- ecs.version
+- event.dataset
+- event.kind
+- event.module
+- event.outcome
+- observer.type
