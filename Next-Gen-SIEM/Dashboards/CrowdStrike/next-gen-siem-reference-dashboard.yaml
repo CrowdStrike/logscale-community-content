@@ -35,7 +35,7 @@ sections:
     - e2f5106a-a03e-49f4-b23a-416d6ff85fbc
     - b3427008-ad73-4cee-9411-0536dbb67e03
     - d3bf7aaf-0866-4a49-9658-cdbd4537b4e2
-    order: 3
+    order: 2
     title: IOC Hunting
   section-1726164862426-1:
     collapsed: true
@@ -48,11 +48,11 @@ sections:
     - 987bb4eb-028e-4f66-b773-a12a05f1d1c4
     - 0cf0fe05-224f-49e4-88fa-f8139b045881
     - 39c7025d-8b8d-483b-80d2-1f68f3cc1832
-    order: 6
+    order: 5
     title: DNS Anomalies
   section-1740676837160-0:
     collapsed: true
-    order: 5
+    order: 6
     title: Authentication Anomalies
     widgetIds:
     - note-1740678456112-1
@@ -89,7 +89,7 @@ sections:
     - parameter-panel-1727886406081-0
     - note-1725902925766-0
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
-    order: 2
+    order: 3
     title: Possible Incidents
 name: Next-Gen SIEM Reference Dashboard - v1.9.1
 updateFrequency: never
