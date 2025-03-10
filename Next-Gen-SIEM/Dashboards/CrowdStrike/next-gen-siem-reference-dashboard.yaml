@@ -44,7 +44,6 @@ sections:
       start: 1d
     widgetIds:
     - parameter-panel-1729528639988-0
-    - de526ba2-2994-48ab-b5fa-7f3a8f8eeee6
     - 987bb4eb-028e-4f66-b773-a12a05f1d1c4
     - 0cf0fe05-224f-49e4-88fa-f8139b045881
     - 39c7025d-8b8d-483b-80d2-1f68f3cc1832
@@ -53,7 +52,7 @@ sections:
   section-1740676837160-0:
     collapsed: true
     order: 5
-    title: Authentication Anomalies
+    title: 'Falcon: Authentication Anomalies'
     widgetIds:
     - note-1740678456112-1
     - 351ed275-203b-4242-8f16-0be3e0269688
@@ -153,7 +152,7 @@ widgets:
       | drop([UserName.stripped])
 
       // Rename for the widget.
-      | rename([[host.details, "Agent IDs [Sample of 5 Maximum]"], [host.distinct.count, "Total Unique Agent IDs"]])
+      | rename([[host.details, "Agent IDs [Sample of 5 Maximum]"], [host.distinct.count, "Unique Agent IDs"]])
     end: now
     start: 1d
     width: 6
@@ -220,7 +219,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 5
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.#Vendor }}'
@@ -249,121 +248,6 @@ widgets:
     title: Total Detections by Vendor
     isLive: false
     type: query
-  de526ba2-2994-48ab-b5fa-7f3a8f8eeee6:
-    x: 5
-    height: 5
-    queryString: |-
-      defineTable(
-        query={
-          createEvents([""])
-          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
-          | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
-          | split(ignoreDomain)
-        },
-        include=[ignoreDomain],
-        name="ignore_domain_table"
-      )
-
-      // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
-
-      // Exclude XDR repos.
-      | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
-
-      // Add a parameter for entropy.
-      | entropyValue:=?entropyValue
-
-      // Filter to events with required fields, and rename fields to match CPS.
-      | case {
-          #type=falcon-raw-data
-            | #repo=base_sensor
-            | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)
-            | source.ip:=LocalIP
-            | destination.ip:=RemoteIP
-            | destination.port:=RemotePort
-            | #Vendor:="crowdstrike"
-            | #event.module:="falcon"
-            | dns.domainName:=DomainName ;
-          #type!=falcon-raw-data
-            | #event.kind=*
-            | url.domain=*
-            | dns.domainName:=url.domain ;
-          #type!=falcon-raw-data
-            | #event.kind=*
-            | source.domain=*
-            | dns.domainName:=source.domain ;
-          #type!=falcon-raw-data
-            | #event.kind=*
-            | dns.question.name=*
-            | dns.domainName:=dns.question.name ;
-      }
-
-      // Add a multipick array for value selection.
-      | in(field=#Vendor, values=[?Vendor])
-
-      // Filter for Internet DNS names.
-      | lower(dns.domainName, as=dns.domainName)
-      | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
-
-      // Check entropy.
-      | shannonEntropy(dns.domainName)
-      | test(_shannonentropy>=entropyValue)
-
-      // Round to 1 decimal place.
-      | dns.entropy:=format("%.1f", field=_shannonentropy)
-
-      // Extract the TLD with another regex.
-      | regex("(?<dns.tld>[^._]+\.[a-z]{2,})$", field=dns.domainName, flags=F)
-
-      // Display the top TLDs.
-      | top(dns.tld, limit=10)
-    end: now
-    start: 1d
-    width: 7
-    y: 0
-    interactions:
-    - name: filterClick
-      titleTemplate: 'Search Events: {{ fields.dns.tld }}'
-      queryString: "defineTable(\n  query={\n    createEvents([\"\"])\n    | ignoreDomainList:=\"\
-        *_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net\
-        \ *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com\
-        \ *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net\
-        \ *.optimizely.com\"\n    | splitString(field=ignoreDomainList, by=\" \",\
-        \ as=ignoreDomain)\n    | split(ignoreDomain)\n  },\n  include=[ignoreDomain],\n\
-        \  name=\"ignore_domain_table\"\n)\n\n// Add a multipick array for value selection.\n\
-        | default(field=#repo.cid, value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\
-        \n// Exclude XDR repos.\n| #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive\n\
-        \n// Add a parameter for entropy.\n| entropyValue:=?entropyValue\n| case {\
-        \ \n    #type=falcon-raw-data\n      | (#event_simpleName=DnsRequest OR #event_simpleName=TlsClientHello)\n\
-        \      | source.ip:=LocalIP\n      | destination.ip:=RemoteIP\n      | destination.port:=RemotePort\n\
-        \      | #Vendor:=\"crowdstrike\"\n      | dns.domainName:=DomainName ;\n\
-        \    #type!=falcon-raw-data\n      | url.domain=*\n      | dns.domainName:=url.domain\
-        \ ;\n    #type!=falcon-raw-data\n      | source.domain=*\n      | dns.domainName:=source.domain\
-        \ ;\n    #type!=falcon-raw-data\n      | dns.question.name=*\n      | dns.domainName:=dns.question.name\
-        \ ;\n}\n\n// Add a multipick array for value selection.\n| in(field=#Vendor,\
-        \ values=[?Vendor])\n\n// Ignore specific domains. \n| lower(dns.domainName,\
-        \ as=dns.domainName)\n| !match(file=ignore_domain_table, field=dns.domainName,\
-        \ column=ignoreDomain, mode=glob)\n\n// Check entropy.\n| shannonEntropy(dns.domainName)\n\
-        | test(_shannonentropy>=entropyValue)\n\n// Round to 1 decimal place.\n| dns.entropy:=format(\"\
-        %.1f\", field=_shannonentropy)\n\n// Extract the TLD with another regex.\n\
-        | regex(\"(?<dns.tld>[^._]+\\.[a-z]{2,})$\", field=dns.domainName, flags=F)\n\
-        \n| dns.tld=?dns_tld"
-      useWidgetTimeWindow: true
-      arguments:
-        cid_input: '["{{ parameters.cid_input }}"]'
-        dns_tld: '["{{ fields.dns.tld }}"]'
-        entropyValue: '["{{ parameters.entropyValue }}"]'
-      openInNewTab: true
-      isLive: false
-      type: searchlink
-    options:
-      legendPosition: right
-      series: {}
-      withLegendTitle: false
-    visualization: pie-chart
-    title: High Entropy - TLDs
-    isLive: false
-    type: query
   note-1740678456112-1:
     x: 0
     y: 0
@@ -387,7 +271,7 @@ widgets:
     type: parameterPanel
   d3bf7aaf-0866-4a49-9658-cdbd4537b4e2:
     x: 5
-    height: 5
+    height: 4
     queryString: |-
       // Add a multipick array for value selection.
       | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
@@ -565,7 +449,7 @@ widgets:
   12c3ee21-5f64-483e-bfbb-e61a848e2c77:
     x: 0
     y: 0
-    height: 5
+    height: 4
     text: This section provides example queries around detections for first- and third-party
       data, specifically the tagged event `#event.type=alert`. That event type is
       part of [CPS](https://library.humio.com/logscale-parsing-standard/pasta.html)
@@ -702,7 +586,7 @@ widgets:
   note-1725900646032-0:
     x: 0
     y: 0
-    height: 5
+    height: 4
     text: "This section demonstrates the use of the [ioc:lookup](https://library.humio.com/data-analysis/functions-ioc-lookup.html)\
       \ function. This can be applied to IPs, domains, and URLs for both first- and\
       \ third-party data. The confidence level must be selected for the query to execute,\
@@ -746,7 +630,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 10
+    y: 9
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }}, {{ fields.target }}'
@@ -778,19 +662,19 @@ widgets:
     parameterIds:
     - ioc_actor_present
     - ioc_confidence_level
-    height: 5
+    height: 4
     width: 3
     title: IOC Filter
     type: parameterPanel
   parameter-panel-1729528639988-0:
-    x: 2
-    y: 0
+    x: 0
+    y: 2
     description: "A minimum entropy level must be provided for the query to execute,\
       \ e.g. *4*. The value range is generally 0 - 5, with a higher number being more\
       \ unique. \n"
     parameterIds:
     - entropyValue
-    height: 5
+    height: 2
     width: 3
     title: Entropy Value
     type: parameterPanel
@@ -813,7 +697,7 @@ widgets:
       defineTable(
         query={
           createEvents([""])
-          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.crowdstrike.com *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
           | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
           | split(ignoreDomain)
         },
@@ -870,40 +754,28 @@ widgets:
       | dns.entropy:=format("%.1f", field=_shannonentropy)
 
       // Format the output.
-      | groupby([#Vendor, #event.module, dns.domainName, dns.entropy], function=[selectLast(@timestamp), count(as=count)], limit=max)
-      | sort(dns.entropy, limit=1000)
-      | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
+      | groupby([dns.entropy, #Vendor, #event.module, dns.domainName], function=[collect(source.ip, limit=10), selectLast(@timestamp), count(as=count)], limit=max)
       | rename([[@timestamp, lastSeen]])
 
       // Add a URL in markdown.
       | dns.domainName:=format("[%s](/search/?term=_all:~'%s')", field=[dns.domainName, dns.domainName])
+
+      // Fix the column order.
+      | table([lastSeen, dns.entropy, source.ip, dns.domainName, #Vendor, #event.module, count], limit=1000, sortby=dns.entropy)
+      | formatTime(format="%F %T %Z", field=lastSeen, as=lastSeen)
     end: now
     start: 1d
     width: 12
-    y: 10
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: FQDN'
       queryString: |-
-        defineTable(
-          query={
-            createEvents([""])
-            | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
-            | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
-            | split(ignoreDomain)
-          },
-          include=[ignoreDomain],
-          name="ignore_domain_table"
-        )
-
         // Add a multipick array for value selection.
         | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
-
-        // Add a parameter for entropy.
-        | entropyValue:=?entropyValue
 
         // Filter to events with required fields, and rename fields to match CPS.
         | case {
@@ -933,17 +805,8 @@ widgets:
         // Add a multipick array for value selection.
         | in(field=#Vendor, values=[?Vendor])
 
-        // Filter for Internet DNS names.
+        // Filter for results.
         | lower(dns.domainName, as=dns.domainName)
-        | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
-
-        // Check entropy.
-        | shannonEntropy(dns.domainName)
-        | test(_shannonentropy>=entropyValue)
-
-        // Round to 1 decimal place.
-        | dns.entropy:=format("%.1f", field=_shannonentropy)
-
         | input.dns.domainName:=?dns_domainname
         | input.dns.domainName=/\[(?<input.dns.domainName>.+?)\]/F
         | test(dns.domainName==input.dns.domainName)
@@ -952,19 +815,23 @@ widgets:
         Vendor: '["{{ parameters.Vendor }}"]'
         cid_input: '["{{ parameters.cid_input }}"]'
         dns_domainname: '["{{ fields.dns.domainName }}"]'
-        entropyValue: '["{{ parameters.entropyValue }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
     options:
       cell-overflow: wrap-text
       configured-columns:
+        aid:
+          color: '#126cc6'
+          render-as: link
         ioc.malwareName:
           render-as: go_to_events_link
         '#Vendor':
           render-as: value
+        ComputerName:
+          color: '#126cc6'
         source.ip:
-          render-as: go_to_events_link
+          render-as: value
         ioc.actorName:
           render-as: go_to_events_link
         dns.domainName:
@@ -972,7 +839,7 @@ widgets:
           render-as: link
       row-numbers-enabled: false
     visualization: table-view
-    title: High Entropy DNS Domains
+    title: High Entropy FQDNs
     isLive: false
     type: query
   4d157e50-d35e-43ac-98ab-bd5415a4192d:
@@ -1205,7 +1072,7 @@ widgets:
             | #repo=base_sensor
             | #event_simpleName=/UserLogonFail/F
             | #Vendor:="crowdstrike"
-            | client.ip:=aip
+            | client.ip:=LocalIP
             | user.name:=UserName
             | #event.module:="sso"
             | event.reason:=name ;
@@ -1242,8 +1109,6 @@ widgets:
             | rename([[source.ip, client.ip]]) ;
           client.ip=/^\d+/F ;
       }
-      | ipLocation(client.ip)
-      | asn(client.ip)
 
       // Ensure the user.name exists and is not a system account.
       | !match(file="ignore_username_table", field=user.name, column=ignoreUserName, mode=glob)
@@ -1262,13 +1127,22 @@ widgets:
           * ;
       }
 
+      // Group the results.
+      | groupby([#Vendor, user.name, client.ip], function=[collect(event.reason, limit=10), selectLast(@timestamp), count(as=count)], limit=max)
+
+      // Enrich the results.
+      | ipLocation(client.ip)
+      | asn(client.ip)
+
       // Format the results.
-      | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
-      | sort(count, limit=1000)
+      | rename([[@timestamp, lastSeen]])
+      | table([lastSeen, #Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.org, count], sortby=lastSeen, order=des, limit=1000)
+      | formatTime(format="%F %T %Z", field=lastSeen, as=lastSeen)
+      | default(field=[client.ip.country, client.ip.org], value="-")
     end: now
     start: 1d
     width: 12
-    y: 15
+    y: 14
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: Username and Reason'
@@ -1345,10 +1219,13 @@ widgets:
             * ;
         }
 
-        | event.reason=?event_reason
+        | input.event.reason:=?event_reason
+        | splitString(field=input.event.reason, by="\n", as=input.event.reason)
+        | split(input.event.reason)
         | input.user.name:=?user_name
         | input.user.name=/\[(?<input.user.name>.+?)\]/F
         | test(lower(user.name)==lower(input.user.name))
+        | test(event.reason==input.event.reason)
       useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
@@ -1362,7 +1239,9 @@ widgets:
       cell-overflow: wrap-text
       configured-columns:
         client.ip:
-          render-as: go_to_events_link
+          render-as: value
+        event.reason:
+          width: 400
         user.name:
           color: '#126cc6'
           render-as: link
@@ -1617,17 +1496,13 @@ widgets:
       }
 
       // Format the URLs.
-      | ioc[0].indicator:=format("[%s](/intelligence/graph?indicators=ip:'%s'&selectedIndicator=%s)", field=[ioc[0].indicator, ioc[0].indicator, ioc[0].indicator])
+      | format("[%s](/intelligence/graph?indicators=ip:'%s'&selectedIndicator=%s)", field=[ioc[0].indicator, ioc[0].indicator, ioc[0].indicator], as=ioc[0].indicator)
 
       // Group the results together.
-      | groupby([#Vendor, source.ip, destination.ip, destination.port, ioc[0].indicator, ioc[0].indicator.country, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence, ioc.CVE], function=[selectlast(@timestamp), count()], limit=max)
-
-      // Format the timestamp.
-      | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
+      | groupby([#Vendor, source.ip, destination.ip, destination.port, ioc[0].indicator, ioc[0].indicator.country, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence], function=[selectlast(@timestamp), count()], limit=max)
 
       // Rename fields for readability.
       | rename(field=[[ioc[0].indicator, ioc.ip], [ioc[0].malicious_confidence, ioc.confidence], [ioc[0].indicator.country, ioc.ip.country], [_count, count], [@timestamp, lastSeen]])
-      | default(field=[#Vendor, source.ip, source.ip.country, destination.ip, destination.port, ioc.ip.country, ioc.malwareName], value="-")
 
       // Create values for the value selector
       | case {
@@ -1640,13 +1515,14 @@ widgets:
       // Only display selected values.
       | ioc.actorName.exists=?ioc_actor_present
 
-      // Sort the results.
-      | sort(count, limit=1000)
-      | drop([ioc.actorName.exists])
+      // Format the results.
+      | table([lastSeen, #Vendor, source.ip, destination.ip, destination.port, ioc.ip, ioc.actorName, ioc.malwareName, ioc.ip.country, ioc.confidence, count], sortby=lastSeen, order=des, limit=1000)
+      | formatTime(format="%F %T %Z", field=lastSeen, as=lastSeen)
+      | default(field=[#Vendor, source.ip, ioc.ip.country, destination.ip, destination.port, ioc.ip.country, ioc.malwareName], value="-")
     end: now
     start: 1d
     width: 12
-    y: 5
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: IOC IP'
@@ -1798,7 +1674,7 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 10
+    y: 9
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }}, {{ fields.target }}'
@@ -1843,8 +1719,9 @@ widgets:
       // Ensure the RemoteIP exists.
       | RemoteIP!=0.0.0.0
 
-      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      // Identify anything where the IP is not a known Agent ID for this CID.
       | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+      | match(file="aid_master_main.csv", field=LocalIP, column=LocalAddressIP4, strict=true)
 
       // Add the ComputerName
       | default(field=[ComputerName], value="-")
@@ -1886,7 +1763,7 @@ widgets:
     type: query
   e56a243e-390f-43d7-a37a-5cd59319785c:
     x: 2
-    height: 5
+    height: 4
     queryString: |-
       // Add a multipick array for value selection.
       | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
@@ -1997,7 +1874,7 @@ widgets:
       | drop([UserName.stripped])
 
       // Rename for the widget.
-      | rename([[host.details, "Agent IDs [Sample of 5 Maximum]"], [host.distinct.count, "Total Unique Agent IDs"]])
+      | rename([[host.details, "Agent IDs [Sample of 5 Maximum]"], [host.distinct.count, "Unique Agent IDs"]])
     end: now
     start: 1d
     width: 6
@@ -2047,8 +1924,9 @@ widgets:
       // Ensure the RemoteIP exists.
       | RemoteIP!=0.0.0.0
 
-      // Identify anything where the remote IP is not a known Agent ID for this CID.
+      // Identify anything where the IP is not a known Agent ID for this CID.
       | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+      | match(file="aid_master_main.csv", field=LocalIP, column=LocalAddressIP4, strict=true)
 
       // Lowercase the username.
       | UserName:=lower(UserName)
@@ -2148,7 +2026,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 5
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.event.category }}'
@@ -2267,17 +2145,13 @@ widgets:
       | match(file="aid_master_main.csv", field=[source.ip], column=[LocalAddressIP4], include=[aid, ComputerName, LocalAddressIP4], strict=false)
 
       // Format for URL linking.
-      | dns.domainName:=format("[%s](/intelligence/graph?indicators=domain:%s&selectedIndicator=%s)", field=[dns.domainName, dns.domainName, dns.domainName])
+      | format("[%s](/intelligence/graph?indicators=domain:%s&selectedIndicator=%s)", field=[dns.domainName, dns.domainName, dns.domainName], as=ioc.domainName)
 
       // Group the results together.
-      | groupby([#Vendor, ComputerName, source.ip, destination.ip, dns.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence], function=[selectlast(@timestamp), count()], limit=max)
-
-      // Format the timestamp.
-      | @timestamp:=formatTime(format="%F %T %Z", field="@timestamp")
+      | groupby([#Vendor, ComputerName, source.ip, destination.ip, destination.port, ioc.domainName, ioc.actorName, ioc.malwareName, ioc[0].malicious_confidence], function=[selectlast(@timestamp), count()], limit=max)
 
       // Rename fields for readability.
       | rename(field=[[ioc[0].malicious_confidence, ioc.confidence], [_count, count], [@timestamp, lastSeen]])
-      | default(field=[#Vendor, source.ip, dns.domainName, ioc.malwareName], value="-")
 
       // Create values for the value selector
       | case {
@@ -2290,16 +2164,14 @@ widgets:
       // Only display selected values.
       | ioc.actorName.exists=?ioc_actor_present
 
-      // Sort the results.
-      | sort(count, limit=1000)
-
-      // Add a URL in markdown.
-      | ComputerName:=format("[%s](/search/host?term=_all:~'%s')", field=[ComputerName, ComputerName])
-      | drop([ioc.actorName.exists])
+      // Format the results.
+      | table([lastSeen, #Vendor, source.ip, destination.ip, destination.port, ioc.domainName, ioc.actorName, ioc.malwareName, ioc.confidence, count], sortby=lastSeen, order=des, limit=1000)
+      | formatTime(format="%F %T %Z", field=lastSeen, as=lastSeen)
+      | default(field=[#Vendor, source.ip, destination.ip, destination.port, ioc.malwareName], value="-")
     end: now
     start: 1d
     width: 12
-    y: 10
+    y: 9
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: IOC DNS'
@@ -2372,14 +2244,14 @@ widgets:
         // Only display selected values.
         | ioc.actorName.exists=?ioc_actor_present
 
-        | input.dns.domainName:=?dns_domainName
-        | input.dns.domainName=/\[(?<input.dns.domainName>.+?)\]/F
-        | test(ioc[0].indicator==input.dns.domainName)
+        | input.ioc.domainName:=?ioc_domainName
+        | input.ioc.domainName=/\[(?<input.ioc.domainName>.+?)\]/F
+        | test(ioc[0].indicator==input.ioc.domainName)
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
         Vendor: '["{{ parameters.Vendor }}"]'
-        dns_domainName: '["{{ fields.dns.domainName }}"]'
+        ioc_domainName: '["{{ fields.ioc.domainName }}"]'
         ioc_confidence_level: '["{{ parameters.ioc_confidence_level }}"]'
         ioc_actor_present: '["{{ parameters.ioc_actor_present }}"]'
       openInNewTab: true
@@ -2388,6 +2260,8 @@ widgets:
     options:
       cell-overflow: wrap-text
       configured-columns:
+        ioc.domainName:
+          color: '#AFDDF4'
         '#Vendor':
           render-as: value
         ComputerName:
@@ -2458,11 +2332,11 @@ widgets:
   987bb4eb-028e-4f66-b773-a12a05f1d1c4:
     x: 0
     y: 0
-    height: 5
-    text: "This section demonstrates the use of various functions for finding unique\
-      \ or interesting data. A value of `1` is considered low entropy, while a value\
-      \ of `5` is consider high entropy. \n\n "
-    width: 2
+    height: 2
+    text: "This section demonstrates the use of the [shannonEntropy](https://library.humio.com/data-analysis/functions-shannonentropy.html)\
+      \ function to find unique or interesting DNS requests . A value of `1` is considered\
+      \ low entropy, while a value of `5` is consider high entropy. \n\n "
+    width: 3
     title: ''
     type: note
   7904f3b5-0d48-402e-93b7-88a708af3747:
@@ -2489,7 +2363,7 @@ widgets:
               | #repo=base_sensor
               | #event_simpleName=/UserLogon$/F
               | #Vendor:="crowdstrike"
-              | client.ip:=aip
+              | client.ip:=LocalIP
               | user.name:=UserName
               | #event.module:="sso"
               | event.reason:=name ;
@@ -2526,8 +2400,6 @@ widgets:
             | rename([[source.ip, client.ip]]) ;
           client.ip=/^\d+/F ;
       }
-      | ipLocation(client.ip)
-      | asn(client.ip)
 
       // Ensure the user.name exists and is not a system account.
       | !match(file="ignore_username_table", field=user.name, column=ignoreUserName, mode=glob)
@@ -2546,13 +2418,22 @@ widgets:
           * ;
       }
 
+      // Group the results.
+      | groupby([#Vendor, user.name, client.ip], function=[collect(event.reason, limit=10), selectLast(@timestamp), count(as=count)], limit=max)
+
+      // Enrich the results.
+      | ipLocation(client.ip)
+      | asn(client.ip)
+
       // Format the results.
-      | groupby([#Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.state, client.ip.city, client.ip.org], function=count(as=count), limit=max)
-      | sort(count, limit=1000)
+      | rename([[@timestamp, lastSeen]])
+      | table([lastSeen, #Vendor, user.name, client.ip, event.reason, client.ip.country, client.ip.org, count], sortby=lastSeen, order=des, limit=1000)
+      | formatTime(format="%F %T %Z", field=lastSeen, as=lastSeen)
+      | default(field=[client.ip.country, client.ip.org], value="-")
     end: now
     start: 1d
     width: 12
-    y: 10
+    y: 9
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: Username and Reason'
@@ -2629,10 +2510,13 @@ widgets:
             * ;
         }
 
-        | event.reason=?event_reason
+        | input.event.reason:=?event_reason
+        | splitString(field=input.event.reason, by="\n", as=input.event.reason)
+        | split(input.event.reason)
         | input.user.name:=?user_name
         | input.user.name=/\[(?<input.user.name>.+?)\]/F
         | test(lower(user.name)==lower(input.user.name))
+        | test(event.reason==input.event.reason)
       useWidgetTimeWindow: true
       arguments:
         Vendor: '["{{ parameters.Vendor }}"]'
@@ -2645,6 +2529,8 @@ widgets:
     options:
       cell-overflow: wrap-text
       configured-columns:
+        event.reason:
+          width: 322
         user.name:
           color: '#91BD0F'
       row-numbers-enabled: false
@@ -2653,13 +2539,13 @@ widgets:
     isLive: false
     type: query
   39c7025d-8b8d-483b-80d2-1f68f3cc1832:
-    x: 0
-    height: 5
+    x: 3
+    height: 4
     queryString: |-
       defineTable(
         query={
           createEvents([""])
-          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
+          | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.crowdstrike.com *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
           | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
           | split(ignoreDomain)
         },
@@ -2722,23 +2608,12 @@ widgets:
       | timechart(dns.tld, limit=10)
     end: now
     start: 1d
-    width: 12
-    y: 5
+    width: 9
+    y: 0
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.dns.tld }}'
       queryString: |-
-        defineTable(
-          query={
-            createEvents([""])
-            | ignoreDomainList:="*_* *.amazonaws.com *.azure.com *.azureedge.us *.azurefd.net *.cloudsink.net *.cloudfront.net *.fastly-edge.com *.footprintdns.com *.googleapis.com *.googlesyndication.com *.gstatic.com *.internal *.local *.live.com *.microsoft.com *.msedge.net *.optimizely.com"
-            | splitString(field=ignoreDomainList, by=" ", as=ignoreDomain)
-            | split(ignoreDomain)
-          },
-          include=[ignoreDomain],
-          name="ignore_domain_table"
-        )
-
         // Add a multipick array for value selection.
         | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
 
@@ -2778,7 +2653,6 @@ widgets:
 
         // Filter for Internet DNS names.
         | lower(dns.domainName, as=dns.domainName)
-        | !match(file=ignore_domain_table, field=dns.domainName, column=ignoreDomain, mode=glob)
 
         // Check entropy.
         | shannonEntropy(dns.domainName)
@@ -2810,7 +2684,7 @@ widgets:
       connect-points: false
       imputation: none
     visualization: time-chart
-    title: High Entropy - TLDs Over Time
+    title: High Entropy TLDs Over Time
     isLive: false
     type: query
   5777baf2-55e4-4311-ae40-6bd0457c32ec:
@@ -2842,7 +2716,7 @@ widgets:
     end: now
     start: 1d
     width: 4
-    y: 5
+    y: 4
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.Ngsiem.event.data_domain }}'
@@ -2874,7 +2748,7 @@ widgets:
     type: query
   b6ed9d1a-d340-45d7-93f2-5b75d384d66c:
     x: 0
-    y: 15
+    y: 14
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
@@ -2914,11 +2788,11 @@ widgets:
     start: 1d
     width: 4
     options:
-      magnitudeMode: size
+      magnitudeMode: opacity
       projection: mercator
       autoRotate: false
       norm: true
-      opacityMode: size
+      opacityMode: opacity
       zLevel: 0
     visualization: world-map
     title: World Map of Detection IPs
@@ -2952,7 +2826,7 @@ widgets:
     type: note
   24f9305c-79e7-4e6a-b41c-3a7a97acafc5:
     x: 0
-    height: 5
+    height: 4
     queryString: |-
       defineTable(
         query={
@@ -3491,7 +3365,7 @@ widgets:
     end: now
     start: 1d
     width: 8
-    y: 15
+    y: 14
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.Tactic }}, {{ fields.Technique }}'
@@ -3533,7 +3407,7 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-03-06
+      date: 2025-03-07
       version: 1.9.1
       ```
     width: 3
@@ -3556,8 +3430,9 @@ widgets:
       // Ensure the RemoteIP exists.
       | RemoteIP!=0.0.0.0
 
-      // Identify anything where the remote IP is not a known Agent ID for this CID.
-      | !match(file="aid_master_main.csv", field=LocalIP, column=LocalAddressIP4, strict=true)
+      // Identify anything where the IP is not a known Agent ID for this CID.
+      | !match(file="aid_master_main.csv", field=RemoteIP, column=LocalAddressIP4, strict=true)
+      | match(file="aid_master_main.csv", field=LocalIP, column=LocalAddressIP4, strict=true)
 
       // Enrich the data.
       | ipLocation(field=RemoteIP)
@@ -3572,8 +3447,8 @@ widgets:
       // Include links to search.
       | aid:=format("[%s](/search/host?term=_all:~'%s')", field=[aid, aid])
       | ComputerName:=format("[%s](/search/host?term=_all:~'%s')", field=[ComputerName, ComputerName])
-      | LocalIP:=format("[%s](/search/ipv4?term=_all:~'%s')", field=[LocalIP, LocalIP])
-      | RemoteIP:=format("[%s](/search/ipv4?term=_all:~'%s')", field=[RemoteIP, RemoteIP])
+      | format("[%s](/intelligence/graph?indicators=ip:'%s'&selectedIndicator=%s)", field=[LocalIP, LocalIP, LocalIP], as=LocalIP)
+      | format("[%s](/intelligence/graph?indicators=ip:'%s'&selectedIndicator=%s)", field=[RemoteIP, RemoteIP, RemoteIP], as=RemoteIP)
       | regex("^(?<UserName.stripped>[^@+]+)(?=\+|@|$)", field=UserName, strict=false, flags=F)
       | UserName:=format("[%s](/search/user?term=_all:~'%s')", field=[UserName, UserName.stripped])
 
@@ -3582,11 +3457,19 @@ widgets:
 
       // Format the field order.
       | groupBy([aid, ComputerName, UserName, LocalIP, RemoteIP, RemoteIP.city, RemoteIP.state, RemoteIP.country, RemoteIP.org],
-          function=[collect(UserName, limit=10), count(as=count)],
+          function=[
+              collect(UserName, limit=10), count(as=count),
+              selectLast(@timestamp),
+              count(as=count)
+          ],
           limit=max
       )
-      // Sort the results.
-      | sort(field=count, limit=1000)
+
+      // Format the results
+      | rename([[@timestamp, lastSeen]])
+      | table([lastSeen, aid, ComputerName, UserName, LocalIP, RemoteIP, RemoteIP.country, RemoteIP.org, count], sortby=lastSeen, order=des, limit=1000)
+      | formatTime(format="%F %T %Z", field=lastSeen, as=lastSeen)
+      | default(field=[RemoteIP.country, RemoteIP.org], value="-")
     end: now
     start: 1d
     width: 12
@@ -3643,11 +3526,11 @@ widgets:
         destination.ip:
           color: '#126cc6'
         LocalIP:
-          color: '#126cc6'
+          color: '#AFDDF4'
         UserName:
           color: '#91BD0F'
         RemoteIP:
-          color: '#126cc6'
+          color: '#AFDDF4'
         ComputerName:
           color: '#126cc6'
       row-numbers-enabled: false
@@ -3753,7 +3636,7 @@ parameters:
     type: list
     width: 1
   entropyValue:
-    label: Minimum Entropy Value
+    label: Minimum Entropy
     order: 1
     values:
     - '1'
@@ -3762,7 +3645,7 @@ parameters:
     - '4'
     - '5'
     type: list
-    width: 4
+    width: 2
   ioc_actor_present:
     label: Threat Actor Detection
     order: 1
