@@ -49,4 +49,7 @@ event_platform=Win #event_simpleName=/^(UserAccountAddedToGroup|ProcessRollup2)$
 
 // Drop UserSid
 | drop([UserSid])
+
+// Make sure there are not FPs from selfJoinFilter()
+| UserAddedToGroup=* UserDoingAdding=*
 ```
