@@ -20,7 +20,7 @@ Another Option:
 
 ```
 // Get two events of interest
-event_platform=Win #event_simpleName=/^(UserAccountAddedToGroup|ProcessRollup2)$/ event_platform=Win
+event_platform=Win #event_simpleName=/^(UserAccountAddedToGroup|ProcessRollup2)$/ 
 
 // Begin data normalization
 | case{
