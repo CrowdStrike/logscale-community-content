@@ -42,7 +42,7 @@ event_platform=Win #event_simpleName=/^(UserAccountAddedToGroup|ProcessRollup2)$
 | selfJoinFilter(field=[aid, TargetProcessId], where=[{#event_simpleName=ProcessRollup2},{#event_simpleName=UserAccountAddedToGroup}])
 
 // Aggregate results
-| groupBy([aid, ComputerName], function=([{#event_simpleName="UserAccountAddedToGroup" | collect([UserSid])}, collect([UserDoingAdding, UserAddedToGroup, FileDoingAdding, AssociatedCommandLine]), collect([GroupRid], separator=", ")]))
+| groupBy([aid, TargetProcessId, ComputerName], function=([{#event_simpleName="UserAccountAddedToGroup" | collect([UserSid])}, collect([UserDoingAdding, UserAddedToGroup, FileDoingAdding, AssociatedCommandLine]), collect([GroupRid], separator=", ")]))
 
 // Match the UserSid of the account that was added to a group with its corresponding UserName
 | join(query={$falcon/investigate:usersid_username_win() | rename(field="UserName", as="UserAddedToGroup")}, field=[UserSid], include=UserAddedToGroup, mode=left, start=7d)
