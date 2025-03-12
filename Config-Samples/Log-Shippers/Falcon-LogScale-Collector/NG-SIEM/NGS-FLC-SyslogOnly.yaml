@@ -27,5 +27,5 @@ sinks:
     workers: 4
     ## This sets the maximum single event size to. You can change as needed. the maximum value is 950000.
     maxEventSize: 910000
-    ## This sets the maximum payload size for a single batch of events. The max value is maxBatchSize: 16777216.
-    maxBatchSize: 5242880
+    ## This sets the maximum payload size for a single batch of events. The max value is maxBatchSize: 12000000.
+    maxBatchSize: 12000000
