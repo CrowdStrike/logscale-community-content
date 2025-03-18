@@ -114,7 +114,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Search for Windows Interactive and RDP events.
       | #event_simpleName=UserLogonFailed OR event_simpleName=UserLogonFailed2
@@ -162,7 +162,7 @@ widgets:
       titleTemplate: 'Event Details: {{ fields.UserName }}'
       queryString: |-
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Search for Windows Interactive and RDP events.
         | #event_simpleName=UserLogonFailed OR event_simpleName=UserLogonFailed2
@@ -197,7 +197,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -223,8 +223,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.#Vendor }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
         \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
         \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
@@ -274,7 +274,7 @@ widgets:
     height: 4
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -356,7 +356,7 @@ widgets:
       titleTemplate: 'Search Events: {{ fields.#Vendor }}'
       queryString: |
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -462,7 +462,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Get UserLogon events for Windows RDP sessions
       | #event_simpleName=UserLogon
@@ -539,8 +539,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: Agent ID and UserName'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Get UserLogon\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Get UserLogon\
         \ events for Windows RDP sessions\n| #event_simpleName=UserLogon \n| #repo=base_sensor\n\
         | event_platform=Win \n| LogonType=10 \n| RemoteIP=*\n\n| input.aid:=?aid\n\
         | input.aid=/\\[(?<input.aid>.+?)\\]/F\n| test(aid==input.aid)\n\n| input.UserName:=?UserName\n\
@@ -600,7 +600,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -634,8 +634,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }}, {{ fields.target }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
         \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
         \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
@@ -706,7 +706,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -772,7 +772,7 @@ widgets:
       titleTemplate: 'Search Events: FQDN'
       queryString: |-
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -848,7 +848,7 @@ widgets:
     height: 2
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -903,7 +903,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -978,7 +978,7 @@ widgets:
         )
 
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -1064,7 +1064,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter to events with required fields, and rename fields to match CPS.
       | case {
@@ -1159,7 +1159,7 @@ widgets:
         )
 
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Filter to events with required fields, and rename fields to match CPS.
         | case {
@@ -1266,7 +1266,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -1345,7 +1345,7 @@ widgets:
         )
 
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -1426,7 +1426,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -1528,7 +1528,7 @@ widgets:
       titleTemplate: 'Search Events: IOC IP'
       queryString: |-
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -1644,7 +1644,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -1678,8 +1678,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }}, {{ fields.target }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
         \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
         \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
@@ -1707,7 +1707,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Search for Windows RDP events.
       | #event_simpleName=UserLogon
@@ -1740,8 +1740,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }} -> {{ fields.target }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Search for\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Search for\
         \ Windows RDP events.\n| #event_simpleName=UserLogon\n| #repo=base_sensor\n\
         | #type=falcon-raw-data\n| event_platform=\"Win\"\n| LogonType=10\n\n// Ensure\
         \ the destination.ip exists.\n| RemoteIP!=0.0.0.0\n\n// Identify anything\
@@ -1766,7 +1766,7 @@ widgets:
     height: 4
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -1792,8 +1792,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.#Vendor }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
         \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
         \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
@@ -1838,7 +1838,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Search for Windows RDP events.
       | #event_simpleName=UserLogon
@@ -1882,8 +1882,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Event Details: Username'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Search for\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Search for\
         \ Windows RDP events.\n| #event_simpleName=UserLogon\n| #repo=base_sensor\n\
         | #type=falcon-raw-data\n| event_platform=\"Win\"\n| LogonType=2 OR LogonType=10\
         \ \n| ComputerName=*\n\n| input.UserName:=?user_name\n| input.UserName=/\\\
@@ -1912,7 +1912,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Search for Windows RDP events.
       | #event_simpleName=UserLogon
@@ -1942,7 +1942,7 @@ widgets:
       titleTemplate: 'Search Events: {{ fields.UserName }}'
       queryString: |-
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Search for Windows RDP events.
         | #event_simpleName=UserLogon
@@ -1999,7 +1999,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -2030,8 +2030,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.event.category }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
         \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
         \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
@@ -2077,7 +2077,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -2177,7 +2177,7 @@ widgets:
       titleTemplate: 'Search Events: IOC DNS'
       queryString: |-
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -2355,7 +2355,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter to events with required fields, and rename fields to match CPS.
       | case {
@@ -2450,7 +2450,7 @@ widgets:
         )
 
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Filter to events with required fields, and rename fields to match CPS.
         | case {
@@ -2554,7 +2554,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -2615,7 +2615,7 @@ widgets:
       titleTemplate: 'Search Events: {{ fields.dns.tld }}'
       queryString: |-
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -2692,7 +2692,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -2720,8 +2720,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.Ngsiem.event.data_domain }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
         \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
         \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
@@ -2752,7 +2752,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -2840,7 +2840,7 @@ widgets:
       )
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Exclude XDR repos.
       | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -2899,7 +2899,7 @@ widgets:
         )
 
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Exclude XDR repos.
         | #repo!=xdr_indicatorsrepo #repo!=xdr_eventsarchive
@@ -3001,7 +3001,7 @@ widgets:
               | (agent.id!=* OR aid!=*) AND (user.name=* OR user.target.name=* OR source.user.name=* OR user.email=* OR email.to.address[0]=*)
 
               // Add value selection filters.
-              | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+              | in(field=#repo.cid, values=[?cid_input])
               | in(field=#Vendor, values=[?Vendor])
 
               // Remove aggregated events.
@@ -3063,7 +3063,7 @@ widgets:
       | !match(file="detection_status_table", field=[Ngsiem.alert.id], column=Attributes.composite_id)
 
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
       | in(field=#Vendor, values=[?Vendor])
 
       // Add a severity filter.
@@ -3208,8 +3208,8 @@ widgets:
         \            function=selectLast(Attributes.update_status),\n            limit=max\n\
         \        )\n        | Attributes.update_status=closed\n    }, \n    include=[Attributes.composite_id,\
         \ Attributes.update_status], \n    name=\"detection_status_table\"\n)\n\n\
-        // Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n| in(field=#Vendor,\
+        // Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n| in(field=#Vendor,\
         \ values=[?Vendor])\n\n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n\
         | #type=none\n| #event.kind=alert\n| Ngsiem.detection.id=*\n| Vendor.EventType!=CRAggregateResultEvent\n\
         | !match(file=\"detection_status_table\", field=[Ngsiem.alert.id], column=Attributes.composite_id)\n\
@@ -3285,8 +3285,8 @@ widgets:
         \            function=selectLast(Attributes.update_status),\n            limit=max\n\
         \        )\n        | Attributes.update_status=closed\n    }, \n    include=[Attributes.composite_id,\
         \ Attributes.update_status], \n    name=\"detection_status_table\"\n)\n\n\
-        // Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n| in(field=#Vendor,\
+        // Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n| in(field=#Vendor,\
         \ values=[?Vendor])\n\n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n\
         | #type=none\n| #event.kind=alert\n| Ngsiem.detection.id=*\n| Vendor.EventType!=CRAggregateResultEvent\n\
         | !match(file=\"detection_status_table\", field=[Ngsiem.alert.id], column=Attributes.composite_id)\n\
@@ -3338,7 +3338,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Filter down to detections.
       | (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR
@@ -3369,8 +3369,8 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.Tactic }}, {{ fields.Technique }}'
-      queryString: "// Add a multipick array for value selection.\n| default(field=#repo.cid,\
-        \ value=\"-\") | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
+      queryString: "// Add a multipick array for value selection.\n\
+        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
         \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
         \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
@@ -3418,7 +3418,7 @@ widgets:
     height: 5
     queryString: |-
       // Add a multipick array for value selection.
-      | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+      | in(field=#repo.cid, values=[?cid_input])
 
       // Search for Windows RDP events.
       | #event_simpleName=UserLogon
@@ -3479,7 +3479,7 @@ widgets:
       titleTemplate: 'Search Events: Agent ID and UserName'
       queryString: |-
         // Add a multipick array for value selection.
-        | default(field=#repo.cid, value="-") | in(field=#repo.cid, values=[?cid_input])
+        | in(field=#repo.cid, values=[?cid_input])
 
         // Search for Windows RDP events.
         | #event_simpleName=UserLogon
