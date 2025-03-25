@@ -52,7 +52,7 @@ sections:
   section-1740676837160-0:
     collapsed: true
     order: 5
-    title: 'Falcon: Authentication Anomalies'
+    title: Authentication Anomalies
     widgetIds:
     - note-1740678456112-1
     - 351ed275-203b-4242-8f16-0be3e0269688
@@ -90,7 +90,7 @@ sections:
     - 1648bf3c-b982-4b6c-a381-4e4b8b2f92ac
     order: 3
     title: Possible Incidents
-name: Next-Gen SIEM Reference Dashboard - v1.9.1
+name: Next-Gen SIEM Reference Dashboard - v1.9.2
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -223,10 +223,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.#Vendor }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
-        \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
-        \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -539,12 +538,12 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: Agent ID and UserName'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Get UserLogon\
-        \ events for Windows RDP sessions\n| #event_simpleName=UserLogon \n| #repo=base_sensor\n\
-        | event_platform=Win \n| LogonType=10 \n| RemoteIP=*\n\n| input.aid:=?aid\n\
-        | input.aid=/\\[(?<input.aid>.+?)\\]/F\n| test(aid==input.aid)\n\n| input.UserName:=?UserName\n\
-        | input.UserName=/\\[(?<input.UserName>.+?)\\]/F\n| test(UserName==input.UserName)\n"
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Get UserLogon events for Windows RDP sessions\n\
+        | #event_simpleName=UserLogon \n| #repo=base_sensor\n| event_platform=Win\
+        \ \n| LogonType=10 \n| RemoteIP=*\n\n| input.aid:=?aid\n| input.aid=/\\[(?<input.aid>.+?)\\\
+        ]/F\n| test(aid==input.aid)\n\n| input.UserName:=?UserName\n| input.UserName=/\\\
+        [(?<input.UserName>.+?)\\]/F\n| test(UserName==input.UserName)\n"
       useWidgetTimeWindow: true
       arguments:
         UserName: '["{{ fields.UserName }}"]'
@@ -634,20 +633,19 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }}, {{ fields.target }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
-        \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
-        \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
         crowdstrike\" \n      | threat.tactic.name[0]:=Tactic\n      | threat.technique.name[0]:=Technique\n\
         \      | threat.technique.name[0]=/\\w+/F ;\n    #type!=falcon-raw-data\n\
-        \      | #event.kind=* ;\n}\n\n| threat.tactic.name[0]=?threat_tactic_name_0_\
-        \ \n| #Vendor=?_Vendor"
+        \      | #event.kind=* ;\n}\n\n// Add a multipick array for value selection.\n\
+        | in(field=#Vendor, values=[?Vendor])\n\n| threat.tactic.name[0]=?threat_tactic_name_0_ "
       useWidgetTimeWindow: true
       arguments:
-        _Vendor: '["{{ parameters.Vendor }}"]'
+        Vendor: '["{{ parameters.Vendor }}"]'
         cid_input: '["{{ parameters.cid_input }}"]'
         threat_tactic_name_0_: '["{{ fields.target }}"]'
       openInNewTab: true
@@ -1678,10 +1676,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }}, {{ fields.target }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
-        \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
-        \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -1740,16 +1737,15 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.source }} -> {{ fields.target }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Search for\
-        \ Windows RDP events.\n| #event_simpleName=UserLogon\n| #repo=base_sensor\n\
-        | #type=falcon-raw-data\n| event_platform=\"Win\"\n| LogonType=10\n\n// Ensure\
-        \ the destination.ip exists.\n| RemoteIP!=0.0.0.0\n\n// Identify anything\
-        \ where the remote IP is not a known Agent ID for this CID.\n| !match(file=\"\
-        aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4, strict=true)\n\
-        \n// Add the ComputerName\n| default(field=[ComputerName], value=\"-\")\n\
-        | format(\"%s  %s\", field=[LocalIP, ComputerName], as=source.details)\n\n\
-        | source.details=?source_details \n| RemoteIP=?remote_ip"
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Search for Windows RDP events.\n| #event_simpleName=UserLogon\n\
+        | #repo=base_sensor\n| #type=falcon-raw-data\n| event_platform=\"Win\"\n|\
+        \ LogonType=10\n\n// Ensure the destination.ip exists.\n| RemoteIP!=0.0.0.0\n\
+        \n// Identify anything where the remote IP is not a known Agent ID for this\
+        \ CID.\n| !match(file=\"aid_master_main.csv\", field=RemoteIP, column=LocalAddressIP4,\
+        \ strict=true)\n\n// Add the ComputerName\n| default(field=[ComputerName],\
+        \ value=\"-\")\n| format(\"%s  %s\", field=[LocalIP, ComputerName], as=source.details)\n\
+        \n| source.details=?source_details \n| RemoteIP=?remote_ip"
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
@@ -1792,10 +1788,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.#Vendor }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
-        \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
-        \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -1882,12 +1877,11 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Event Details: Username'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Search for\
-        \ Windows RDP events.\n| #event_simpleName=UserLogon\n| #repo=base_sensor\n\
-        | #type=falcon-raw-data\n| event_platform=\"Win\"\n| LogonType=2 OR LogonType=10\
-        \ \n| ComputerName=*\n\n| input.UserName:=?user_name\n| input.UserName=/\\\
-        [(?<input.UserName>.+?)\\]/F\n| test(lower(UserName)==lower(input.UserName))"
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Search for Windows RDP events.\n| #event_simpleName=UserLogon\n\
+        | #repo=base_sensor\n| #type=falcon-raw-data\n| event_platform=\"Win\"\n|\
+        \ LogonType=2 OR LogonType=10 \n| ComputerName=*\n\n| input.UserName:=?user_name\n\
+        | input.UserName=/\\[(?<input.UserName>.+?)\\]/F\n| test(lower(UserName)==lower(input.UserName))"
       useWidgetTimeWindow: true
       arguments:
         cid_input: '["{{ parameters.cid_input }}"]'
@@ -2030,10 +2024,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.event.category }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
-        \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
-        \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -2720,10 +2713,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.Ngsiem.event.data_domain }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
-        \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
-        \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -3208,9 +3200,8 @@ widgets:
         \            function=selectLast(Attributes.update_status),\n            limit=max\n\
         \        )\n        | Attributes.update_status=closed\n    }, \n    include=[Attributes.composite_id,\
         \ Attributes.update_status], \n    name=\"detection_status_table\"\n)\n\n\
-        // Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n| in(field=#Vendor,\
-        \ values=[?Vendor])\n\n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n\
+        // Add a multipick array for value selection.\n | in(field=#repo.cid, values=[?cid_input])\n\
+        | in(field=#Vendor, values=[?Vendor])\n\n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n\
         | #type=none\n| #event.kind=alert\n| Ngsiem.detection.id=*\n| Vendor.EventType!=CRAggregateResultEvent\n\
         | !match(file=\"detection_status_table\", field=[Ngsiem.alert.id], column=Attributes.composite_id)\n\
         \n// Extract the user.name from emails. \n| case { \n    email.to.address[0]=*\n\
@@ -3285,9 +3276,8 @@ widgets:
         \            function=selectLast(Attributes.update_status),\n            limit=max\n\
         \        )\n        | Attributes.update_status=closed\n    }, \n    include=[Attributes.composite_id,\
         \ Attributes.update_status], \n    name=\"detection_status_table\"\n)\n\n\
-        // Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n| in(field=#Vendor,\
-        \ values=[?Vendor])\n\n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n\
+        // Add a multipick array for value selection.\n | in(field=#repo.cid, values=[?cid_input])\n\
+        | in(field=#Vendor, values=[?Vendor])\n\n// Filter down the data.\n| #repo=xdr_indicatorsrepo\n\
         | #type=none\n| #event.kind=alert\n| Ngsiem.detection.id=*\n| Vendor.EventType!=CRAggregateResultEvent\n\
         | !match(file=\"detection_status_table\", field=[Ngsiem.alert.id], column=Attributes.composite_id)\n\
         \n// Extract the user.name from emails. \n| case { \n    email.to.address[0]=*\n\
@@ -3369,10 +3359,9 @@ widgets:
     interactions:
     - name: filterClick
       titleTemplate: 'Search Events: {{ fields.Tactic }}, {{ fields.Technique }}'
-      queryString: "// Add a multipick array for value selection.\n\
-        \ | in(field=#repo.cid, values=[?cid_input])\n\n// Filter down\
-        \ to detections. \n| (#repo=xdr_indicatorsrepo Ngsiem.alert.id=/(thirdparty|ngsiem)/F\
-        \ #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
+      queryString: "// Add a multipick array for value selection.\n | in(field=#repo.cid,\
+        \ values=[?cid_input])\n\n// Filter down to detections. \n| (#repo=xdr_indicatorsrepo\
+        \ Ngsiem.alert.id=/(thirdparty|ngsiem)/F #event.kind=alert) OR\n  ((#event_simpleName=Event_EppDetectionSummaryEvent\
         \ OR #event_simpleName=Event_IdpDetectionSummaryEvent OR #event_simpleName=Event_DataProtectionDetectionSummaryEvent)\
         \ \n    AND (#repo=detections #type=falcon-raw-data))\n\n// Add a vendor tag\
         \ to raw data. \n| case {\n    #type=falcon-raw-data\n      | #Vendor:=\"\
@@ -3407,8 +3396,8 @@ widgets:
     height: 2
     text: |
       ```
-      date: 2025-03-07
-      version: 1.9.1
+      date: 2025-03-25
+      version: 1.9.2
       ```
     width: 3
     title: ''
