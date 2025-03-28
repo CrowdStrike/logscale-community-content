@@ -39,7 +39,7 @@ sinks:
     ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     maxEventSize: 910000
-    maxBatchSize: 5242880
+    maxBatchSize: 12000000
     workers: 4
    
    ## This sink receives data from "var_log" source above 
@@ -51,5 +51,5 @@ sinks:
     ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     maxEventSize: 910000
-    maxBatchSize: 5242880
+    maxBatchSize: 12000000
     workers: 4
