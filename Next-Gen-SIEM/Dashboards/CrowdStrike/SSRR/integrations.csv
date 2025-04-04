@@ -1,0 +1,223 @@
+Application,Vendor,Category,Domains
+1Password,AgileBits Inc.,Security,1password.com
+Abnormal-Security,Abnormal Security,Security,abnormalsecurity.com
+Abstract,Abstract,Design,abstract.com
+Adobe Sign,Adobe,Collaboration & Productivity,adobe.com
+Adobe Sign,Adobe,Collaboration & Productivity,acrobat.com
+Adobe Sign,Adobe,Collaboration & Productivity,echosign.com
+Adobe User Management,Adobe,Identity & Access Management,adminconsole.adobe.com
+Aha,Aha! Labs Inc.,Collaboration & Productivity,aha.io
+Akamai,Akamai Technologies,Security,akamai.com
+Akeyless,Akeyless Security,Security,akeyless.io
+Anaplan,Anaplan Inc.,Data & Analytics,anaplan.com
+Apollo.io,Apollo,Marketing & Sales,apollo.io
+ArcGIS,Esri,Data & Analytics,arcgis.com
+ArcGIS,Esri,Data & Analytics,esri.com
+Asana,Asana Inc.,Collaboration & Productivity,asana.com
+Atlas,MongoDB,Development & DevOps,mongodb.com
+Atlas,MongoDB,Development & DevOps,cloud.mongodb.com
+Atlassian Opsgenie,Atlassian,IT Management,opsgenie.com
+Atlassian Opsgenie,Atlassian,IT Management,atlassian.com
+Auth0,Okta,Identity & Access Management,auth0.com
+Automox,Automox,IT Management,automox.com
+AWS,Amazon,Cloud Infrastructure,aws.amazon.com
+AWS,Amazon,Cloud Infrastructure,amazonaws.com
+Azure DevOps,Microsoft,Development & DevOps,dev.azure.com
+Azure DevOps,Microsoft,Development & DevOps,visualstudio.com
+BambooHR,BambooHR LLC,HR & Finance,bamboohr.com
+Bitbucket,Atlassian,Development & DevOps,bitbucket.org
+Black Kite,Black Kite,Security,blackkite.com
+Box,Box Inc.,Collaboration & Productivity,box.com
+Box,Box Inc.,Collaboration & Productivity,box.net
+Calendly,Calendly LLC,Collaboration & Productivity,calendly.com
+Canva Enterprise,Canva,Design,canva.com
+Chorus,ZoomInfo,Marketing & Sales,chorus.ai
+Chrome Extensions,Google,Development & DevOps,chrome.google.com
+Cisco Meraki,Cisco,IT Management,meraki.cisco.com
+Cisco Meraki,Cisco,IT Management,meraki.com
+Cisco Secure Endpoint,Cisco,Security,cisco.com
+Cisco Secure Endpoint,Cisco,Security,amp.cisco.com
+Cisco Umbrella,Cisco,Security,umbrella.cisco.com
+Cisco Umbrella,Cisco,Security,opendns.com
+Citrix ShareFile,Citrix,Collaboration & Productivity,sharefile.com
+Citrix ShareFile,Citrix,Collaboration & Productivity,citrix.com
+Cloudflare,Cloudflare Inc.,Security,cloudflare.com
+Cloudflare,Cloudflare Inc.,Security,cloudflare.net
+Confluence Cloud,Atlassian,Collaboration & Productivity,atlassian.net
+Confluence Cloud,Atlassian,Collaboration & Productivity,confluence.com
+Cortex XDR,Palo Alto Networks,Security,paloaltonetworks.com
+Coupa,Coupa Software,HR & Finance,coupa.com
+CyberArk EPM,CyberArk,Security,cyberark.com
+CyberArk Identity,CyberArk,Identity & Access Management,cyberark.com
+CyberArk Identity,CyberArk,Identity & Access Management,idaptive.com
+Cybereason,Cybereason,Security,cybereason.com
+CyberGRX,CyberGRX,Security,cybergrx.com
+Cybozu,Cybozu Inc.,Collaboration & Productivity,cybozu.com
+Databricks,Databricks,Data & Analytics,databricks.com
+Datadog,Datadog Inc.,IT Management,datadog.com
+dbt Cloud,dbt Labs,Data & Analytics,getdbt.com
+Deel,Deel,HR & Finance,deel.com
+Defender for Cloud Apps,Microsoft,Security,microsoft.com
+Delinea,Delinea,Security,delinea.com
+Docebo,Docebo,HR & Finance,docebo.com
+Docker HUB,Docker Inc.,Development & DevOps,docker.com
+Docker HUB,Docker Inc.,Development & DevOps,hub.docker.com
+Document360,Document360,Collaboration & Productivity,document360.com
+DocuSign,DocuSign Inc.,Collaboration & Productivity,docusign.com
+DocuSign,DocuSign Inc.,Collaboration & Productivity,docusign.net
+Dropbox,Dropbox Inc.,Collaboration & Productivity,dropbox.com
+Druva,Druva,IT Management,druva.com
+Duo,Cisco,Identity & Access Management,duo.com
+Dynatrace,Dynatrace,IT Management,dynatrace.com
+Egnyte,Egnyte Inc.,Collaboration & Productivity,egnyte.com
+Envoy,Envoy,HR & Finance,envoy.com
+Expensify,Expensify,HR & Finance,expensify.com
+Fabric,Microsoft,Development & DevOps,fabric.microsoft.com
+Fastly,Fastly Inc.,Cloud Infrastructure,fastly.com
+Figma,Figma Inc.,Design,figma.com
+Fivetran,Fivetran,Data & Analytics,fivetran.com
+FleetDM,Fleet Device Management Inc.,IT Management,fleetdm.com
+Freshservice,Freshworks,IT Management,freshservice.com
+GCP,Google,Cloud Infrastructure,cloud.google.com
+GeoFeeds,GeoFeeds,Data & Analytics,geofeeds.io
+GitHub,Microsoft,Development & DevOps,github.com
+GitHub,Microsoft,Development & DevOps,githubusercontent.com
+GitLab,GitLab Inc.,Development & DevOps,gitlab.com
+Gitpod,Gitpod,Development & DevOps,gitpod.io
+Gong,Gong.io,Marketing & Sales,gong.io
+Google Ads,Google,Marketing & Sales,ads.google.com
+Google Analytics,Google,Marketing & Sales,analytics.google.com
+Google Drive,Google,Collaboration & Productivity,drive.google.com
+Google Endpoint Management,Google,IT Management,admin.google.com
+Grafana,Grafana Labs,IT Management,grafana.com
+Greenhouse,Greenhouse Software,HR & Finance,greenhouse.io
+GWS Admin,Google,IT Management,admin.google.com
+Harness,Harness,Development & DevOps,harness.io
+HiBob,HiBob,HR & Finance,hibob.com
+HubSpot,HubSpot Inc.,Marketing & Sales,hubspot.com
+IBM Security Verify,IBM,Identity & Access Management,ibm.com
+Infinipoint,Infinipoint,Security,infinipoint.io
+Intercom,Intercom Inc.,Marketing & Sales,intercom.com
+Intune,Microsoft,IT Management,microsoft.com
+Island Enterprise Browser,Island,Security,island.io
+Jamf Cloud,Jamf,IT Management,jamf.com
+JFrog,JFrog Ltd.,Development & DevOps,jfrog.com
+Jira Cloud Platform,Atlassian,Development & DevOps,atlassian.net
+Jira Cloud Platform,Atlassian,Development & DevOps,jira.com
+JumpCloud,JumpCloud,Identity & Access Management,jumpcloud.com
+Kandji,Kandji Inc.,IT Management,kandji.io
+KnowBe4,KnowBe4,Security,knowbe4.com
+LastPass,GoTo,Security,lastpass.com
+LaunchDarkly,LaunchDarkly,Development & DevOps,launchdarkly.com
+LinkedIn,Microsoft,Marketing & Sales,linkedin.com
+Logz.io,Logz.io,IT Management,logz.io
+Looker,Google,Data & Analytics,looker.com
+Lucidchart,Lucid Software,Collaboration & Productivity,lucidchart.com
+M365,Microsoft,Collaboration & Productivity,microsoft.com
+M365,Microsoft,Collaboration & Productivity,office.com
+M365,Microsoft,Collaboration & Productivity,office365.com
+Make,Celonis,Development & DevOps,make.com
+Marketo,Adobe,Marketing & Sales,marketo.com
+Mend,Mend,Development & DevOps,mend.io
+Meta,Meta,Marketing & Sales,facebook.com
+Meta,Meta,Marketing & Sales,instagram.com
+Meta,Meta,Marketing & Sales,meta.com
+Microsoft Defender,Microsoft,Security,microsoft.com
+Microsoft Log Analytics,Microsoft,IT Management,microsoft.com
+Microsoft Power Platform,Microsoft,Development & DevOps,powerapps.microsoft.com
+Mimecast Email Security,Mimecast,Security,mimecast.com
+Miro,Miro,Collaboration & Productivity,miro.com
+Mobile Iron,Ivanti,IT Management,mobileiron.com
+Monday,monday.com,Collaboration & Productivity,monday.com
+MoreApp,MoreApp,Collaboration & Productivity,moreapp.com
+MuleSoft,Salesforce,Development & DevOps,mulesoft.com
+Mural,Mural,Collaboration & Productivity,mural.co
+Netlify,Netlify,Development & DevOps,netlify.com
+Netskope,Netskope,Security,netskope.com
+NetSuite,Oracle,HR & Finance,netsuite.com
+New Relic,New Relic,IT Management,newrelic.com
+Notion,Notion Labs Inc.,Collaboration & Productivity,notion.so
+Nulab Backlog,Nulab,Development & DevOps,backlog.com
+Nulab Backlog,Nulab,Development & DevOps,nulab.com
+Okta,Okta Inc.,Identity & Access Management,okta.com
+OneDrive,Microsoft,Collaboration & Productivity,onedrive.live.com
+OneLogin,One Identity,Identity & Access Management,onelogin.com
+OpenAI,OpenAI,Development & DevOps,openai.com
+Outreach,Outreach,Marketing & Sales,outreach.io
+PagerDuty,PagerDuty,IT Management,pagerduty.com
+PandaDoc,PandaDoc,Collaboration & Productivity,pandadoc.com
+Panorays,Panorays,Security,panorays.com
+Personio,Personio,HR & Finance,personio.com
+PingOne,Ping Identity,Identity & Access Management,pingidentity.com
+Pipedrive,Pipedrive,Marketing & Sales,pipedrive.com
+Postman,Postman,Development & DevOps,postman.com
+PowerApps,Microsoft,Development & DevOps,powerapps.microsoft.com
+PowerBI,Microsoft,Data & Analytics,powerbi.microsoft.com
+Prisma Cloud,Palo Alto Networks,Security,paloaltonetworks.com
+Proofpoint,Proofpoint,Security,proofpoint.com
+Qualys,Qualys,Security,qualys.com
+Qwiet,Qwiet AI,Security,qwiet.ai
+Rapid7 InsightVM,Rapid7,Security,rapid7.com
+Research VT,VirusTotal,Security,virustotal.com
+RunZero,RunZero,Security,runzero.com
+Sailpoint,SailPoint,Identity & Access Management,sailpoint.com
+Salesforce,Salesforce,Marketing & Sales,salesforce.com
+Salesforce,Salesforce,Marketing & Sales,force.com
+Salesforce Commerce Cloud,Salesforce,Marketing & Sales,salesforce.com
+Salesforce Commerce Cloud,Salesforce,Marketing & Sales,demandware.net
+Salesforce Marketing Cloud,Salesforce,Marketing & Sales,exacttarget.com
+SAP BTP,SAP,Cloud Infrastructure,sap.com
+SAP Concur,SAP,HR & Finance,concur.com
+SendGrid,Twilio,Marketing & Sales,sendgrid.com
+SentinelOne,SentinelOne,Security,sentinelone.com
+Sentry.io,Sentry,Development & DevOps,sentry.io
+ServiceNow,ServiceNow,IT Management,servicenow.com
+SharePoint + OneDrive,Microsoft,Collaboration & Productivity,sharepoint.com
+SharePoint + OneDrive,Microsoft,Collaboration & Productivity,onedrive.live.com
+Shopify,Shopify,Marketing & Sales,shopify.com
+Shortcut,Shortcut,Development & DevOps,shortcut.com
+SimpleMDM,SimpleMDM,IT Management,simplemdm.com
+Slack,Salesforce,Collaboration & Productivity,slack.com
+Smartsheet,Smartsheet Inc.,Collaboration & Productivity,smartsheet.com
+SmartSuite,SmartSuite,Collaboration & Productivity,smartsuite.com
+Snowflake,Snowflake Inc.,Data & Analytics,snowflake.com
+Snyk,Snyk,Development & DevOps,snyk.io
+Sophos,Sophos,Security,sophos.com
+Sprinklr,Sprinklr,Marketing & Sales,sprinklr.com
+Status Hero,Status Hero,Collaboration & Productivity,statushero.com
+Stripe,Stripe Inc.,HR & Finance,stripe.com
+SuccessFactors,SAP,HR & Finance,successfactors.com
+Sumo Logic,Sumo Logic,IT Management,sumologic.com
+Sysdig,Sysdig,Security,sysdig.com
+Tableau,Salesforce,Data & Analytics,tableau.com
+Teams,Microsoft,Collaboration & Productivity,teams.microsoft.com
+Teamwork,Teamwork.com,Collaboration & Productivity,teamwork.com
+Tenable,Tenable,Security,tenable.com
+Terraform,HashiCorp,Development & DevOps,terraform.io
+Terraform,HashiCorp,Development & DevOps,hashicorp.com
+ThousandEyes,Cisco,IT Management,thousandeyes.com
+Tines,Tines,Security,tines.com
+Trello,Atlassian,Collaboration & Productivity,trello.com
+Trend Micro,Trend Micro,Security,trendmicro.com
+UiPath,UiPath,Development & DevOps,uipath.com
+Unqork,Unqork,Development & DevOps,unqork.com
+Veeva Vault,Veeva Systems,Collaboration & Productivity,veevavault.com
+Vidyard,Vidyard,Marketing & Sales,vidyard.com
+VMware Workspace One,VMware,IT Management,vmware.com
+Webex,Cisco,Collaboration & Productivity,webex.com
+Wiz,Wiz,Security,wiz.io
+Workato,Workato,Development & DevOps,workato.com
+Workday,Workday Inc.,HR & Finance,workday.com
+Workday,Workday Inc.,HR & Finance,myworkday.com
+WPEngine,WP Engine,Cloud Infrastructure,wpengine.com
+Wrike,Wrike,Collaboration & Productivity,wrike.com
+X (Twitter),X Corp,Marketing & Sales,twitter.com
+X (Twitter),X Corp,Marketing & Sales,x.com
+Zapier,Zapier Inc.,Development & DevOps,zapier.com
+Zendesk,Zendesk Inc.,Marketing & Sales,zendesk.com
+Zoho ManageEngine Endpoint Central,Zoho,IT Management,manageengine.com
+Zoho Mobile Device Management,Zoho,IT Management,zoho.com
+Zoom,Zoom Video Communications,Collaboration & Productivity,zoom.us
+Zoom,Zoom Video Communications,Collaboration & Productivity,zoom.com
+Zscaler,Zscaler Inc.,Security,zscaler.com
+Zylo,Zylo,IT Management,zylo.com
