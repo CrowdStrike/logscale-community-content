@@ -1,0 +1,169 @@
+name: SaaS Risk Review Assessment
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 30d
+widgets:
+  a65a8f7f-f912-44e9-8175-1a3554e611c1:
+    x: 0
+    y: 4
+    height: 5
+    queryString: |-
+      #event_simpleName=DnsRequest DomainName=* cid=?cid
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | Category=?Category
+      | Vendor=?Vendor
+      | Application=?Application
+      | groupBy([Vendor, Category])
+    end: now
+    start: 7d
+    width: 6
+    options:
+      colorPalette: monoMagenta
+      legendTitle: Popularity
+    visualization: heat-map
+    title: Vendor + Cateogry Heatmap
+    isLive: false
+    type: query
+  61a6da55-e0e2-480f-970d-606c4cae2b28:
+    x: 0
+    y: 9
+    height: 4
+    queryString: |
+      #event_simpleName=DnsRequest DomainName=* cid=?cid
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | Category=?Category
+      | Vendor=?Vendor
+      | Application=?Application
+      | groupBy([Category, Vendor, Application], function=([count(), collect([DomainName], separator=", ")]))
+      | match(file="app_to_id.csv", field=[Application], column=title)
+      | sort(order=desc, _count, limit=500)
+      | format("[Configure Integration](https://saas-security.falcon.us-2.crowdstrike.com/integrations/add/%s)", field=[_id], as="Falcon Shield")
+      | drop([_count, _id])
+    end: now
+    start: 30d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: true
+    visualization: table-view
+    title: Application List
+    isLive: false
+    type: query
+  62070a95-6f8e-47c4-a7a6-37fb50646ac9:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=DnsRequest DomainName=* cid=?cid
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | Category=?Category
+      | Vendor=?Vendor
+      | Application=?Application
+      | sankey(source="Category", target="Application", weight=(count()))
+    visualization: sankey
+    end: now
+    start: 7d
+    width: 8
+    title: Category by Application
+    isLive: false
+    type: query
+  62d55974-e649-4e4d-822e-77008019ba3f:
+    x: 6
+    y: 4
+    height: 5
+    queryString: |-
+      #event_simpleName=DnsRequest DomainName=* cid=?cid
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | Category=?Category
+      | Vendor=?Vendor
+      | Application=?Application
+      | groupBy([Category])
+    end: now
+    start: 7d
+    width: 6
+    options:
+      legendPosition: right
+      series: {}
+      valueFormat: abbreviated
+      legend: false
+      enableTrellis: false
+    visualization: pie-chart
+    title: Application Categories
+    isLive: false
+    type: query
+  14c95961-da00-41d9-bdee-8cdd0995f092:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #event_simpleName=DnsRequest DomainName=* cid=?cid
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | Category=?Category
+      | Vendor=?Vendor
+      | Application=?Application
+      | groupBy([Application])
+      | count(Application)
+    end: now
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Identified Applications
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.19.0
+parameters:
+  Application:
+    label: Application
+    query: |-
+      | readFile([integrations.csv])
+      | groupBy([Application])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: Application
+  Category:
+    label: Category
+    query: |-
+      | readFile([integrations.csv])
+      | groupBy([Category])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: Category
+  Vendor:
+    label: Vendor
+    query: |-
+      | readFile([integrations.csv])
+      | groupBy([Vendor])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: Vendor
+  cid:
+    label: cid
+    query: |-
+      #data_source_name=cid_name
+      | groupBy([cid], function=selectLast(name), limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: cid
+    type: query
+    labelField: name
