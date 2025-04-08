@@ -12,7 +12,7 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
@@ -33,13 +33,14 @@ widgets:
     height: 4
     queryString: |
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
-      | groupBy([Category, Vendor, Application], function=([count(), collect([DomainName], separator=", ")]))
+      | groupBy([Category, Vendor, Application], function=([count(aid,as=DistinctHostUsage, distinct=true), collect([Domains, Tenant, DistinctHostUsage], separator=", ")]))
+      | test(DistinctHostUsage >= ?MinimumHostUsage)
       | match(file="app_to_id.csv", field=[Application], column=title)
-      | sort(order=desc, _count, limit=500)
+      | sort(order=desc, DistinctHostUsage, limit=500)
       | format("[Configure Integration](https://saas-security.falcon.us-2.crowdstrike.com/integrations/add/%s)", field=[_id], as="Falcon Shield")
       | drop([_count, _id])
     end: now
@@ -59,7 +60,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
@@ -77,7 +78,7 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
@@ -99,16 +100,16 @@ widgets:
     x: 0
     y: 0
     height: 4
-    queryString: |-
+    queryString: |
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
       | groupBy([Application])
-      | count(Application)
+      | count(Application, distinct=true, as=TotalApps)
     end: now
-    start: 7d
+    start: 30d
     width: 4
     options:
       default: {}
@@ -118,18 +119,6 @@ widgets:
     type: query
 $schema: https://schemas.humio.com/dashboard/v0.19.0
 parameters:
-  Application:
-    label: Application
-    query: |-
-      | readFile([integrations.csv])
-      | groupBy([Application])
-    timeInterval: 1d
-    useDashboardTimeIfSet: false
-    type: query
-    defaultValue: '*'
-    width: 1
-    order: 50
-    valueField: Application
   Category:
     label: Category
     query: |-
@@ -142,6 +131,17 @@ parameters:
     width: 1
     order: 50
     valueField: Category
+  MinimumHostUsage:
+    label: MinimumHostUsage
+    order: 50
+    values:
+      '10': 10 hosts
+      '20': 20 hosts
+      '1': No minimum
+      '50': 50 hosts
+    type: list
+    defaultValue: '1'
+    width: 1
   Vendor:
     label: Vendor
     query: |-
@@ -167,3 +167,15 @@ parameters:
     valueField: cid
     type: query
     labelField: name
+  Application:
+    label: Application
+    query: |-
+      | readFile([integrations.csv])
+      | groupBy([Application])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: Application
