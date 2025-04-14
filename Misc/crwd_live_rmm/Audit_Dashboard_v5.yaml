@@ -1,4 +1,4 @@
-name: Audit_Dashboard_v4
+name: Audit_Dashboard_v5
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -30,19 +30,22 @@ widgets:
     x: 0
     y: 6
     height: 6
-    queryString: |
+    queryString: |+
       #event_simpleName=ActiveDirectoryAuditUserModified
       | ActiveDirectoryAuditActionType=0
       | setField(target="ActiveDirectoryAuditActionType", value=if(ActiveDirectoryAuditActionType == 0,
       then="Active_Directory_Account_Created", else="No Data"))
       | PerformedOnAccountName=?SAM_Account_Name
       | PerformedByAccountObjectName=?Performed_by_SAM_Account_Name
-      | timeChart(ActiveDirectoryAuditActionType, span=1d)
+      | timeChart("ActiveDirectoryAuditActionType", span=24h)
+
     end: now
     start: 7d
     width: 4
     options:
       default: {}
+      first-bucket: include
+      last-bucket: include
     visualization: single-value
     title: Active Directory User Accounts Created per 24(h) Over 7 days.
     isLive: false
@@ -117,6 +120,8 @@ widgets:
     width: 4
     options:
       default: {}
+      first-bucket: include
+      last-bucket: include
     visualization: single-value
     title: Local User Accounts Created per 24(h) Over 7 days.
     isLive: false
@@ -134,6 +139,9 @@ widgets:
     width: 4
     options:
       default: {}
+      first-bucket: include
+      last-bucket: include
+      series: {}
     visualization: single-value
     title: Local User Accounts Deleted per 24(h) Over 7 days.
     isLive: false
@@ -221,6 +229,8 @@ widgets:
     width: 4
     options:
       default: {}
+      first-bucket: include
+      last-bucket: include
     visualization: single-value
     title: Active Directory User Accounts Deleted per 24(h) Over 7 days.
     isLive: false
@@ -264,4 +274,4 @@ widgets:
     title: Local User Accounts Deleted
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.18.0
+$schema: https://schemas.humio.com/dashboard/v0.19.0
