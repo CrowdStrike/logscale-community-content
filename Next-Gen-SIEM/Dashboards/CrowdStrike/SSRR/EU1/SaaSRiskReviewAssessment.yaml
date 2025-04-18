@@ -12,7 +12,7 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob, ignoreCase=true)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
@@ -33,7 +33,7 @@ widgets:
     height: 4
     queryString: |
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob, ignoreCase=true)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
@@ -60,7 +60,7 @@ widgets:
     height: 4
     queryString: |-
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob, ignoreCase=true)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
@@ -78,7 +78,7 @@ widgets:
     height: 5
     queryString: |-
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob, ignoreCase=true)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
@@ -102,7 +102,7 @@ widgets:
     height: 4
     queryString: |
       #event_simpleName=DnsRequest DomainName=* cid=?cid
-      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob)
+      | match(file="integrations.csv", field=[DomainName], column=[Domains], strict=true, mode=glob, ignoreCase=true)
       | Category=?Category
       | Vendor=?Vendor
       | Application=?Application
