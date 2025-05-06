@@ -1,0 +1,262 @@
+name: K+N MS Sharepoint
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  d12de1b5-a644-43c3-86d3-43958ef63bcc:
+    x: 6
+    y: 0
+    height: 3
+    queryString: |-
+      // Sharepoint
+      #type = "microsoft-365"
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | top([#event.dataset])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      default: {}
+    visualization: single-value
+    title: Events by Dataset
+    isLive: false
+    type: query
+  02df0bc7-22a2-45d3-8b57-ac25f5e9447d:
+    x: 7
+    y: 14
+    height: 4
+    queryString: |-
+      // Sharepoint
+      #type = "microsoft-365"
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | top([Vendor.BrowserName])
+    end: now
+    start: 1d
+    width: 5
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Access by Browser Name
+    isLive: false
+    type: query
+  5978bc3c-c855-4916-812f-4f16d9f89b30:
+    x: 0
+    y: 6
+    height: 4
+    queryString: |-
+      #type = "microsoft-365"
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | timechart(span=15m, function=[count(#type, as="EVENTS")])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Timechart Events
+    isLive: false
+    type: query
+  aeaededd-5e7e-4f7d-a7f2-c577c411c16d:
+    x: 0
+    y: 3
+    height: 3
+    queryString: |-
+      // Sharepoint
+      #type = "microsoft-365"
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | top([Vendor.AuthenticationType])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      default: {}
+    visualization: single-value
+    title: Events by Authentication
+    isLive: false
+    type: query
+  05cbebc1-c1c4-4369-a8fa-0c33ddee320c:
+    x: 0
+    y: 10
+    height: 12
+    queryString: |
+      #type = "microsoft-365" event.action=/DLP/
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | wildcard(field=file.name, pattern=?FileName, ignoreCase=true)
+      | sankey(source="user.id", target="file.name")
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 7
+    title: DLP File Access by User
+    isLive: false
+    type: query
+  2c387660-eb8c-468b-a3a4-af02bb5b12b3:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      // Sharepoint
+      #type = "microsoft-365"
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | top([Vendor.IsManagedDevice])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      default: {}
+    visualization: single-value
+    title: Events by Device Management Status
+    isLive: false
+    type: query
+  fd2b1843-142b-4c94-829b-6db9b6675ff8:
+    x: 0
+    y: 22
+    height: 5
+    queryString: |-
+      #type = "microsoft-365" event.action=/DLP/
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | wildcard(field=file.name, pattern=?FileName, ignoreCase=true)
+      | table([@timestamp, user.id, event.type[0], event.category[0], file.name, file.owner, Vendor.PolicyDetails[0].PolicyName, url.original], limit=2000)
+    end: now
+    start: 6h
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DLP Events
+    isLive: false
+    type: query
+  f7c50ade-e9d4-4887-be4b-bda32efe409e:
+    x: 7
+    y: 18
+    height: 4
+    queryString: |-
+      // Sharepoint
+      #type = "microsoft-365"
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | top([event.action], limit=200)
+    end: now
+    start: 1d
+    width: 5
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Events by Action
+    isLive: false
+    type: query
+  5c133da0-7997-45f4-875e-9ec74adafe90:
+    x: 7
+    y: 10
+    height: 4
+    queryString: "// Sharepoint\n#type = \"microsoft-365\"\n| wildcard(field=user.id,\
+      \ pattern=?UserID, ignoreCase=true)\n| wildcard(field=event.action, pattern=?Action,\
+      \ ignoreCase=true)\n| top([event.provider], limit=100)  "
+    end: now
+    start: 1d
+    width: 5
+    options:
+      legendPosition: right
+      series: {}
+      withLegendTitle: true
+    visualization: pie-chart
+    title: Events by Provider (Operation)
+    isLive: false
+    type: query
+  26bcf1f2-e383-499e-af91-e241089e0e31:
+    x: 0
+    y: 27
+    height: 6
+    queryString: |
+      // NST: Sharepoint and Onedrive Events
+      #type = "microsoft-365"  file.name!=""
+      | wildcard(field=user.id, pattern=?UserID, ignoreCase=true)
+      | wildcard(field=client.ip, pattern=?ClientIP, ignoreCase=true)
+      | wildcard(field=event.action, pattern=?Action, ignoreCase=true)
+      | wildcard(field=file.name, pattern=?FileName, ignoreCase=true)
+      | table([@timestamp, user.id, client.ip, Vendor.Platform, Vendor.IsManagedDevice, event.action, Vendor.ItemType, file.directory, file.name], limit=1000)
+    end: now
+    start: 1h
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: File Events
+    isLive: false
+    type: query
+  3eaae1d1-8144-4d60-9807-6c76dc2f4264:
+    x: 6
+    y: 3
+    height: 3
+    queryString: |-
+      // NST: CS IOC Lookup
+      #type = "microsoft-365"
+      | !cidr(client.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+      | ioc:lookup(field=client.ip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | case {
+      ioc[0].labels=Actor*
+      | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+      * | iocActor:="None Listed" ;
+      }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.IP")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | groupBy([IOC.IP, IOC.Confidence, IOC.Actor])
+      | IOC.Confidence!="unverified" OR IOC.Actor!="None Listed"
+      //| table([@timestamp, IOC.IP, IOC.Confidence, IOC.Actor, IOC.Details], limit=1000)
+      | sort(_count)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Client IP Mapping Against CS IOCs
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.17.0
+parameters:
+  Action:
+    label: Action
+    order: 2
+    type: text
+    defaultValue: '*'
+    width: 1
+  ClientIP:
+    label: ClientIP
+    order: 1
+    type: text
+    defaultValue: '*'
+    width: 1
+  FileName:
+    label: FileName
+    order: 3
+    type: text
+    defaultValue: '*'
+    width: 1
+  UserID:
+    label: UserID
+    order: 0
+    type: text
+    defaultValue: '*'
+    width: 1
