@@ -1,0 +1,197 @@
+name: MSExchange
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  a79b26f7-4e17-4d8f-b7b9-830062653ba8:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #type=microsoft-exchange
+      | timechart(span=15m, function=[count(#type, as="EVENTS")])
+    end: now
+    start: 1d
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Timechart Emails
+    isLive: false
+    type: query
+  b998d740-738a-44ba-bd23-927006212777:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      // NST: CS IOC Lookup
+      #type=microsoft-exchange
+      | !cidr(client.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+      | ioc:lookup(field=client.ip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | case {
+      ioc[0].labels=Actor*
+      | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+      * | iocActor:="None Listed" ;
+      }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.IP")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | groupBy([IOC.IP, IOC.Confidence, IOC.Actor])
+      | IOC.Confidence!="unverified" OR IOC.Actor!="None Listed"
+      //| table([@timestamp, IOC.IP, IOC.Confidence, IOC.Actor, IOC.Details], limit=1000)
+      | sort(_count)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Main IOC Matches
+    isLive: false
+    type: query
+  706f8ab6-822e-4f5f-8f90-031594bb919a:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |+
+      #type=microsoft-exchange
+      | worldMap(ip="Vendor.ClientIPAddress")
+
+    end: now
+    start: 1d
+    width: 4
+    options:
+      projection: orthographic
+    visualization: world-map
+    title: Worldmap by Source
+    isLive: false
+    type: query
+  e8feccc4-326c-4e5c-a9cd-d1924be6c7ad:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |
+      #type=microsoft-exchange
+      | top([Vendor.Item.Subject], limit=25)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top Email Subjects
+    isLive: false
+    type: query
+  507f9dd4-5d18-4ce4-8dcc-213f000c6c8f:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |-
+      #type=microsoft-exchange
+      | groupBy([Vendor.LabelName])
+      | sort(_count)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Mails by Label
+    isLive: false
+    type: query
+  a19054cb-ff60-4e82-8784-c5102ef2d26b:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #type=microsoft-exchange
+      | groupBy([#event.kind])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Events
+    isLive: false
+    type: query
+  407912e0-cb55-4acb-a541-12286964548a:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |
+      #type=microsoft-exchange
+      | top([Vendor.Sender], limit=50)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Top 50 Senders
+    isLive: false
+    type: query
+  368f45db-60d6-492a-a596-dfb7f0e9962d:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |-
+      #type=microsoft-exchange
+      | groupBy([event.action])
+      | sort(_count)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Events by Action
+    isLive: false
+    type: query
+  6863377b-5e75-4f01-acc3-1de893aca660:
+    x: 0
+    y: 12
+    height: 7
+    queryString: |+
+      #type=microsoft-exchange Vendor.LabelName=/(Secret|Confidential)/
+      | groupBy([Vendor.Sender, Vendor.LabelName])
+
+    end: now
+    start: 1d
+    width: 12
+    options:
+      xLabelLimit: 1
+    visualization: heat-map
+    title: Heatmap Sensitive Mails
+    isLive: false
+    type: query
+  386932f6-4c1e-48c7-b0e6-90f7fb23b2f7:
+    x: 0
+    y: 19
+    height: 5
+    queryString: |
+      #type=microsoft-exchange Vendor.Item.Attachments=/(\.exe|\.rar|\.EXE|\.RAR|\.ps1|\.PS1)/
+      | groupBy([user.email, Vendor.Item.Attachments])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Users with Critical Attachments
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.17.0

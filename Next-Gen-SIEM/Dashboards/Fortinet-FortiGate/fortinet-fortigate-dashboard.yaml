@@ -1,0 +1,282 @@
+name: FortiGate Summary
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  e0182145-bee4-457d-b962-aca3764168a1:
+    x: 0
+    y: 0
+    description: Top Source Country
+    height: 3
+    queryString: |-
+      #Vendor = fortinet
+      | groupBy("Vendor.srccountry")
+      | sort(_count, order=desc, limit=1)
+    end: now
+    start: 3h
+    width: 2
+    options:
+      default: {}
+      trellisMaxColumns: 3
+      trellisShowBorders: false
+    visualization: single-value
+    title: Top Source Country
+    isLive: false
+    type: query
+  c3f99e93-244f-4f3c-bb7d-ba48b8221cab:
+    x: 0
+    y: 6
+    height: 4
+    queryString: |-
+      #Vendor = fortinet
+      | !cidr(destination.ip, subnet=["192.168.0.0/16", "172.16.0.0/12", "10.0.0.0/8"])
+      | Vendor.type = "utm"
+      | worldMap(ip=destination.ip)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      magnitudeMode: size
+      rotX: 0
+      autoRotate: false
+      norm: true
+      opacityMode: size
+      zLevel: 0
+    visualization: world-map
+    title: WW Geo Destination
+    isLive: false
+    type: query
+  398a75ba-81ef-44ac-9689-e2ff04b3fc4e:
+    x: 6
+    y: 6
+    height: 4
+    queryString: |-
+      #Vendor = fortinet
+      | !cidr(source.ip, subnet=["192.168.0.0/16", "172.16.0.0/12", "10.0.0.0/8"])
+      | Vendor.type = "utm"
+      | worldMap(ip=source.ip)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      magnitudeMode: size
+      rotX: 0
+      autoRotate: false
+      norm: true
+      opacityMode: size
+      zLevel: 0
+    visualization: world-map
+    title: WW Geo Source IPs
+    isLive: false
+    type: query
+  791b363d-4d52-49a1-813d-f7e80b1eba53:
+    x: 0
+    y: 14
+    height: 4
+    queryString: |-
+      #Vendor = fortinet
+
+      | sankey(source=Vendor.appcat, target=network.application)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      stackSortType: total
+      labelPosition: inside
+      showAxes: true
+      labelLimit: 65
+      stackSortOrder: ascending
+    visualization: sankey
+    title: Applicaiton breakdown
+    isLive: false
+    type: query
+  132cc4c5-4cfb-4e0e-824f-8a5d93760995:
+    x: 2
+    y: 0
+    description: Source Country
+    height: 6
+    queryString: '#Vendor = fortinet | groupBy(Vendor.srccountry)'
+    end: now
+    start: 15m
+    width: 3
+    options:
+      innerRadius: 33
+      maxSeriesCount: 20
+    visualization: pie-chart
+    title: Source Country
+    isLive: false
+    type: query
+  46451448-b096-4f75-bd48-ef15a0babee7:
+    x: 8
+    y: 0
+    description: Source => Destination
+    height: 6
+    queryString: '#Vendor = fortinet | sankey(source="Vendor.srccountry", target="destination.geo.country_name")'
+    visualization: sankey
+    end: now
+    start: 60m
+    width: 4
+    title: Source => Destination
+    isLive: false
+    type: query
+  a91e21eb-0d10-4ac9-a2de-9e3bb47d3444:
+    x: 8
+    y: 14
+    height: 4
+    queryString: |-
+      #Vendor = fortinet
+      | in(field=Vendor.severity, values=["critical", "high"])
+      | timeChart(series=Vendor.severity, function=count())
+    end: now
+    start: 3h
+    width: 4
+    options:
+      series: {}
+      showDataPoints: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      plotType: line
+      imputation: none
+    visualization: time-chart
+    title: Critical
+    isLive: false
+    type: query
+  12c53156-ee4e-44fd-9cd9-86da4287a068:
+    x: 4
+    y: 14
+    height: 4
+    queryString: |-
+      #Vendor = fortinet
+      | groupBy([Vendor.severity])
+      | case {
+          Vendor.severity = "low"      | level := 1;
+          Vendor.severity = "medium"   | level := 2;
+          Vendor.severity = "high"     | level := 3;
+          Vendor.severity = "critical" | level := 4;
+          * | level := 0;
+      }
+      | sort(level, order=asc) | drop(level)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      valuesOnBars: true
+      xAxisTitle: Severity
+      barChartType: stacked
+      legend: false
+      yAxisTitle: Count
+      orderBy: ''
+      inputDataFormat: long
+    visualization: bar-chart
+    title: Severity summary
+    isLive: false
+    type: query
+  04ae1420-770e-4f4d-8f29-577ae07a893a:
+    x: 5
+    y: 0
+    description: Destination Country
+    height: 6
+    queryString: |-
+      #Vendor = fortinet
+      | groupBy("destination.geo.country_name")
+    end: now
+    start: 1d
+    width: 3
+    options:
+      innerRadius: 33
+      legend: true
+      maxSeriesCount: 20
+    visualization: pie-chart
+    title: Destination Country
+    isLive: false
+    type: query
+  c966065c-4afa-430d-b1e0-1a238002a041:
+    x: 0
+    y: 3
+    description: Top Destination Country
+    height: 3
+    queryString: |-
+      #Vendor = fortinet
+      | groupBy("destination.geo.country_name")
+      | sort(_count, order=desc, limit=1)
+    end: now
+    start: 3h
+    width: 2
+    options:
+      default: {}
+      trellisMaxColumns: 3
+      trellisShowBorders: false
+    visualization: single-value
+    title: Top Destination Country
+    isLive: false
+    type: query
+  2fbece17-9910-4e57-9135-759ff726d6cc:
+    x: 8
+    y: 10
+    height: 4
+    queryString: |
+      #Vendor = fortinet
+      | timeChart(Vendor.appcat, span=15m, function=count())
+    end: now
+    start: 3h
+    width: 4
+    options:
+      series: {}
+      gradient: false
+      interpolation: monotone
+      showOthers: false
+      showDataPoints: true
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      maxSeriesCount: 20
+      regression: false
+      imputation: none
+    visualization: time-chart
+    title: Application Categories
+    isLive: false
+    type: query
+  1ec72232-1705-4ef7-ab5d-7fec4d84882f:
+    x: 0
+    y: 10
+    description: Actions
+    height: 4
+    queryString: |-
+      #Vendor = fortinet
+      | groupBy(event.action)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      series: {}
+      valuesOnBars: true
+      yScaleType: linear
+      xAxisTitle: Action
+      barChartType: grouped
+      yAxisTitle: Count
+      orderBy: _count
+      labelAlign: right
+    visualization: bar-chart
+    title: Actions
+    isLive: false
+    type: query
+  ae46bd62-2938-45cf-8be2-8c3f23ee59bd:
+    x: 4
+    y: 10
+    description: Protocol Destinations
+    height: 4
+    queryString: '#Vendor = fortinet | sankey(source="network.protocol", target="destination.geo.country_name")'
+    visualization: sankey
+    end: now
+    start: 1d
+    width: 4
+    title: Protocol Destinations
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.16.0

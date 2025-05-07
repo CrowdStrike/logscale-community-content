@@ -1,0 +1,327 @@
+name: POV - Cisco Firepower
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  a8fa0c45-dce0-4bc6-9a76-3bec877dd352:
+    x: 0
+    y: 12
+    height: 7
+    queryString: |-
+      // NST: GFW Events
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | table([@timestamp, source.ip, source.port, destination.ip, destination.port, #event.outcome])
+    end: now
+    start: 1m
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Events
+    isLive: false
+    type: query
+  bb00eec3-27a5-4f48-b0a2-6955556a4fd9:
+    x: 0
+    y: 19
+    height: 4
+    queryString: |
+      //NST: Falcon Endpoint
+      #event_simpleName=NetworkConnectIP4
+      | wildcard(field=LocalAddressIP4, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=RemoteAddressIP4, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=RPort, pattern=?DestinationPort, ignoreCase=true)
+      | asn(RemoteAddressIP4)
+      | ipLocation(RemoteAddressIP4)
+      | country:=RemoteAddressIP4.country
+      | join(query={"#event_simpleName" = ProcessRollup2}, mode = inner, limit = 200000, field=[aid,ContextProcessId], key=[aid,TargetProcessId], include=[aid,TargetProcessId,FileName, ParentBaseFileName,UserName] )
+      | falconPID:= ContextProcessId
+      | format("[Graph Explorer](/graphs/process-explorer/graph?id=pid:%s:%s)", field=["aid", "falconPID"], as="Graph Explorer")
+      | table([ComputerName,UserName,ParentBaseFileName, FileName, RemoteIP, RemoteAddressIP4.org, country, "Graph Explorer"])
+    end: now
+    start: 1m
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Falcon Endpoint Correlation
+    isLive: false
+    type: query
+  5a45e8a5-abb0-48be-8b29-d42a3d012d0e:
+    x: 0
+    y: 8
+    description: Changed 20250107 interface fields in groupby
+    height: 4
+    queryString: |+
+      // NST: Heatmap Traffic between interfaces
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | groupBy([observer.ingress.interface.alias,observer.egress.interface.alias], limit=100)
+      | sort(_count)
+
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Heatmap Traffic Between Interfaces
+    isLive: false
+    type: query
+  4f55ee64-4468-4da6-b166-fda79ae6163e:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |+
+      // NST: Events by Protocol
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | top([network.transport])
+
+
+
+    end: now
+    start: 6h
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Network Protocol
+    isLive: false
+    type: query
+  cae8271f-22eb-4667-b2aa-89dae42486be:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |
+      // NST: Traffic by Ootcome
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | groupBy([#event.outcome])
+    end: now
+    start: 6h
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Traffic by Outcome
+    isLive: false
+    type: query
+  502e1723-6ca8-4d31-80a0-9cc2dccbd465:
+    x: 4
+    y: 4
+    height: 4
+    queryString: |
+      // SNST: Traffic by Destination Port
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | top([destination.port])
+    end: now
+    start: 6h
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+    visualization: pie-chart
+    title: Traffic by Destination Port
+    isLive: false
+    type: query
+  2dfa36ab-34d6-4a04-b1ab-5897775d9781:
+    x: 4
+    y: 0
+    height: 4
+    queryString: |+
+      // NST: IPS Events
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | groupBy([event.category[1]])
+
+
+    end: now
+    start: 6h
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: IPS Events
+    isLive: false
+    type: query
+  cb7f1009-12da-493c-ac87-1d01f3935242:
+    x: 6
+    y: 8
+    description: Updated 20250107 to include field names for ingress and egress interface
+    height: 4
+    queryString: |
+      // NST: Sankey Traffic between Interfaces
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | sankey(source="observer.ingress.interface.alias", target="observer.egress.interface.alias")
+    visualization: sankey
+    end: now
+    start: 6h
+    width: 6
+    title: Sankey Traffic Between Interfaces
+    isLive: false
+    type: query
+  3a021ca4-ad65-4f16-9498-e374f99cc9b2:
+    x: 9
+    y: 0
+    description: Updated 20250107 to exclude RFC1918 dest ip
+    height: 4
+    queryString: |+
+      // NST: Worldmap Outgoing Connections
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | !cidr(destination.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+      | worldMap(ip="destination.ip")
+
+
+
+    end: now
+    start: 6h
+    width: 3
+    options:
+      projection: orthographic
+    visualization: world-map
+    title: Worldmap Outgoing Connections
+    isLive: false
+    type: query
+  857330b0-2d03-4d84-9da4-1f53034e0826:
+    x: 6
+    y: 0
+    height: 4
+    queryString: |+
+      // NST: Worldmap Incoming Connections
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | !cidr(source.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+      | worldMap(ip="source.ip")
+
+
+
+    end: now
+    start: 6h
+    width: 3
+    options:
+      projection: orthographic
+    visualization: world-map
+    title: Worldmap Incoming Connections
+    isLive: false
+    type: query
+  53215134-9442-4f91-bd92-2b23b45ec15e:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |+
+      // NST: event types
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | groupBy([event.category[0]])
+
+
+    end: now
+    start: 6h
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Event Types
+    isLive: false
+    type: query
+  3eaf7652-bcaf-4376-912a-821440d9c7a3:
+    x: 8
+    y: 12
+    height: 7
+    queryString: |-
+      // NST: CS IOC Lookup
+      #type = "cisco-firepower"
+      | wildcard(field=source.ip, pattern=?SourceIP, ignoreCase=true)
+      | wildcard(field=destination.ip, pattern=?DestinationIP, ignoreCase=true)
+      | wildcard(field=destination.port, pattern=?DestinationPort, ignoreCase=true)
+      | wildcard(field=#event.outcome, pattern=?Outcome, ignoreCase=true)
+      | !cidr(destination.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"])
+      | ioc:lookup(field=destination.ip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | case {
+      ioc[0].labels=Actor*
+      | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+      * | iocActor:="None Listed" ;
+      }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.IP")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | groupBy([IOC.IP, IOC.Confidence, IOC.Actor])
+      | IOC.Confidence!="unverified" OR IOC.Actor!="None Listed"
+      | sort(_count)
+    end: now
+    start: 30d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: CS IOC Lookup
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.17.0
+parameters:
+  DestinationIP:
+    label: DestinationIP
+    order: 1
+    type: text
+    defaultValue: '*'
+    width: 1
+  DestinationPort:
+    label: DestinationPort
+    order: 2
+    type: text
+    defaultValue: '*'
+    width: 1
+  SourceIP:
+    label: SourceIP
+    order: 0
+    type: text
+    defaultValue: '*'
+    width: 1
