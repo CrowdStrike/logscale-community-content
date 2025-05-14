@@ -1,0 +1,25 @@
+{
+    "event":{
+"version": "0.1",
+"sharedSecret": "{{sharedSecret}}",
+"sentAt": "{{sentAt}}",
+"organizationId": "{{organizationId}}",
+"organizationName": "{{organizationName}}",
+"organizationUrl": "{{organizationUrl}}",
+"networkId": "{{networkId}}",
+"networkName": "{{networkName}}",
+"networkUrl": "{{networkUrl}}",
+"networkTags": {{ networkTags | jsonify }},
+"deviceSerial": "{{deviceSerial}}",
+"deviceMac": "{{deviceMac}}",
+"deviceName": "{{deviceName}}",
+"deviceUrl": "{{deviceUrl}}",
+"deviceTags": {{ deviceTags | jsonify }},
+"deviceModel": "{{deviceModel}}",
+"alertId": "{{alertId}}",
+"alertType": "{{alertType}}",
+"alertTypeId": "{{alertTypeId}}",
+"alertLevel": "{{alertLevel}}",
+"occurredAt": "{{occurredAt}}",
+"alertData": {{ alertData | jsonify }}
+}}
