@@ -1,0 +1,1083 @@
+name: Mimecast Dashboard V4.1
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 7d
+widgets:
+  0128a0e3-0338-47e3-b283-4da185a561dd:
+    x: 4
+    y: 3
+    description: Business Email Compromise
+    height: 3
+    queryString: |-
+      #Vendor=mimecast
+      | event.action = Hld
+      | Vendor.holdReason = Ctnt or Vendor.holdReason = Bec
+      | count(Vendor.holdReason)
+    end: now
+    start: 7d
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: BEC
+    isLive: false
+    type: query
+  aa25cdfe-89ea-49fd-a323-6ccdf51a8af0:
+    x: 6
+    y: 22
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      //| Vendor.blockReason = *
+      //| threat.technique.name[0]=*
+      | event.action = Rej or Hld
+      | case {
+          source.ip!=* | source.ip:=Vendor.sourceIp;
+          *;
+      }
+
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | email.from.address[0]=~wildcard(?{senderemail=*}, ignoreCase=true)
+
+      | source.ip=~wildcard(?{sourceip=*})
+
+
+      | asn(field=source.ip, as=source.ip)
+      | source.ip.org=~wildcard(?{ASN-org=*})
+      | iplocation(source.ip)
+      | source.ip.country=~wildcard(?{sourceipcountry=*})
+
+      | rename(field="email.from.address[0]", as="Sender Email")
+      //| groupBy([source.ip.org], function=collect([source.ip, recipientdomain, threat.technique.name[0]], multival=true, separator=", ", limit=5))
+      | groupBy([source.ip.org,source.ip.country], function=[collect([recipientdomain], multival=true, separator=", ", limit=100),count(source.ip,as="unique source ip")]) | sort("unique source ip", limit = 100)
+
+      | rename(field="source.ip.org", as="Source Organization")
+      | rename(field="source.ip", as="Source IPs (subset)")
+      | rename(field="recipientdomain", as="Recipient Domain")
+      | rename(field="threat.technique.name[0]", as="MITRE Technique")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top Malicious IPs
+    isLive: false
+    type: query
+  4ea4c992-8acd-4919-bb1b-e9cc9dca7268:
+    x: 4
+    y: 10
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | email.direction=*
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      //| groupBy([recipient.domain, event.action])
+
+
+      | case {
+          event.action=Acc | Accepted:=_count ;
+          event.action=Rej | Rejected:=_count;
+          event.action=Hld | Hold:=_count;
+          event.action=Block | Block:=_count;
+          event.action=Retry | Retry:=_count;
+          *;
+      }
+
+      | default(value="0", field=[Accepted, Rejected, Hold, Block, Retry])
+      | sankey(source="event.action", target="recipientdomain")
+    visualization: sankey
+    end: now
+    start: 7d
+    width: 4
+    title: Email Status
+    isLive: false
+    type: query
+  371e4859-88b4-48bb-bfa6-1ab0b7542645:
+    x: 0
+    y: 14
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | event.action = Hld
+      | case {
+        Vendor.holdReason = "Att" | HoldReason := "Attachment Policy Triggered";
+        Vendor.holdReason = "Url" | HoldReason := "URL Protection Triggered";
+        Vendor.holdReason = "Sbx" | HoldReason := "Sandbox Analysis Pending";
+        Vendor.holdReason = "Ctnt" | HoldReason := "Content Policy Triggered";
+        Vendor.holdReason = "Imp" | HoldReason := "Impersonation Attempt Detected";
+        Vendor.holdReason = "Bec" | HoldReason := "Business Email Compromise Detected";
+        Vendor.holdReason = "Dpp" | HoldReason := "Data Protection Policy Violation";
+        Vendor.holdReason = "RcptLimit" | HoldReason := "Recipient Limit Exceeded";
+        Vendor.holdReason = "Exp" | HoldReason := "Message Expired";
+        Vendor.holdReason = "Rbl" | HoldReason := "Sender IP Blacklisted";
+        Vendor.holdReason = "Spm" | HoldReason := "Spam Detected";
+        Vendor.holdReason = "Oth" | HoldReason := "Other Hold Reason";
+        * | HoldReason := Vendor.holdReason;
+      }
+
+      | groupBy([HoldReason])| sort(field=_count, type=number, reverse=true)
+    end: now
+    start: 1y
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Quarantine Reason
+    isLive: false
+    type: query
+  b699b162-4b01-4d6c-b5aa-ab78db1096e8:
+    x: 3
+    y: 30
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | email.from.address[0]=~wildcard(?{senderemail=*}, ignoreCase=true)
+
+      | rename(field="email.from.address[0]", as="Sender")
+      | rename(field="email.to.address[0]", as="Recipient")
+      | Recipient!=""
+      | email.attachments[0].file.name =*
+      | rename(field="Vendor.timestamp", as="Date")
+      | rename(field="email.subject", as="Sujet")
+      | rename(field="email.attachments[0].file.hash.sha256", as="Hash")
+      | rename(field="email.attachments[0].file.name", as="Document")
+      | rename(field="Vendor.virusFound", as="Malware")
+
+      | default(value="-", field=[Date, Sender, Recipient, Sujet, "Document","Malware", "Hash", Vendor.urlCategory,#event.dataset,"threat.indicator.name"])
+
+      | table([Date, Sender, Recipient, Sujett, "Document", "Malware","Hash", Vendor.virusFound , Vendor.urlCategory,#event.dataset,"threat.indicator.name"])
+      | sort(field=Date, type=string, order=desc)
+    end: now
+    start: 7d
+    width: 9
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Date:
+          data-type: datetime
+        Sender:
+          width: 674
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Malicious Attachment Overview
+    isLive: false
+    type: query
+  8035b9d8-1bf0-46f8-8763-ac9ac8d637ee:
+    x: 10
+    y: 0
+    height: 3
+    queryString: |
+      #repo="mimecast" #Vendor="mimecast" #event.module="emailsecurity" #event.dataset="emailsecurity.dlp" #event.kind="event"
+      | Vendor.route="outbound"
+      // Add exclusions below this line. Examples:
+      //| event.action =~! in(values=["disable_stationery", "secure_messaging"])
+      //| Vendor.policy =~! in(values=["Policy name", "Policy name"])
+      |count()
+    end: now
+    start: 7d
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: DLP Violation
+    isLive: false
+    type: query
+  21196c16-0893-4417-8198-68127484843c:
+    x: 3
+    y: 26
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      |case {
+          Vendor.urlCategory =* | regex("https?\:\/\/(?<phishurl>[^\/\:]*?)(?:\:[0-9]+)?(?:\/|$)",field=threat.indicator.url.original)  | phishcat:=Vendor.urlCategory;
+          Vendor.rejectionType = "Malicious QRCode Detection" | regex("UrlBlock\:\s+\[ORIGINAL\:https?\:\/\/(?<phishurl>[^\/]*?)(?:\/|$)",field=Vendor.rejectionInfo) | phishcat:=Vendor.rejectionType ;
+      }
+
+      | email.from.address[0]=~wildcard(?{senderemail=*}, ignoreCase=true)
+      | email.to.address[0]=~wildcard(?{recipientemail=*}, ignoreCase=true)
+
+      //| phishurl:=lower(phishurl)
+      | phishcat:=lower(phishcat)
+      //| Vendor.timestamp := formatTime("%d-%m-%Y %H:%M:%S", field=Vendor.timestamp)
+
+      // Look for IOCs in DNS. The strict option only returns matches.
+      | ioc:lookup(field=phishurl, type=url, confidenceThreshold=unverified)
+      | default(value="No CrowdStrike intelligence available for this IOC.", field=[ioc[0].labels])
+      | groupBy([Vendor.timestamp,phishurl], function=([collect([Vendor.timestamp,phishurl, phishcat, ioc[0].labels, email.from.address[0], email.to.address[0]])]))
+
+      | falcon_intel:=replace(field="ioc[0].labels", regex="\,", with="\n")
+      | falcon_intel:=replace(field="falcon_intel", regex="\/", with=": ")
+
+      | rename(field="Vendor.timestamp", as="Date")
+      //| rename(field="phishurl", as="PhishingURL")
+      | rename(field="phishcat", as="Phishing Category")
+      | rename(field="falcon_intel", as="Falcon Intelligence")
+      | rename(field="email.from.address[0]", as="SenderEmail")
+      | rename(field="email.to.address[0]", as="RecipientEmail")
+      | select(["Date","SenderEmail", "RecipientEmail", "Phishing Category", "phishurl", "Falcon Intelligence"])
+      | sort(field=Date, type=string, order=desc)
+    end: now
+    start: 7d
+    width: 9
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Date:
+          data-type: datetime
+        Falcon Intelligence:
+          color:
+            conditions:
+            - color: '#126cc6'
+              condition:
+                arg: No CrowdStrike intelligence available for this IOC.
+                type: Equal
+            defaultColor: '#C93637'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: 'Phishing : Malicious Domains'
+    isLive: false
+    type: query
+  6d5ae833-6e3e-484a-8722-bd6022702080:
+    x: 8
+    y: 10
+    height: 4
+    queryString: |
+      #Vendor=mimecast
+      | email.direction=*
+      | event.action=*
+
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | email.direction=~wildcard(?{direction=*}, ignoreCase=true)
+
+
+      | case {
+          source.ip!=* | source.ip:=Vendor.sourceIp;
+          *;
+      }
+      | source.ip=~wildcard(?{sourceip=*})
+      | ipLocation(source.ip)
+      | source.ip.country=~wildcard(?{sourceipcountry=*})
+
+
+      | case {
+          event.action=Acc | Action:="Accepted";
+          event.action=Rej | Action:="Rejected";
+          event.action=Hld | Action:="Hold";
+          event.action=Block | Action:="Block";
+          event.action=Retry | Action:="Retry";
+          *;
+      }
+
+      | groupBy(([Action]), function=count())
+      | sort([Action], type=number, order=desc)
+    end: now
+    start: 1y
+    width: 4
+    options:
+      enableTrellis: false
+      innerRadius: 51
+      series:
+        Accepted:
+          color: '#3a4bcf'
+        Hold:
+          color: '#d2ec51'
+        Rejected:
+          color: '#ee4f4f'
+          title: Rejected
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Accepted / Rejected
+    isLive: false
+    type: query
+  faf597d1-1ef9-4f9c-b363-0950105e8584:
+    x: 0
+    y: 10
+    height: 4
+    queryString: |+
+      #Vendor=mimecast
+      | email.direction=*
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | case {
+          email.direction=external | External:=1 ;
+          email.direction=internal | Internal:=1 ;
+          email.direction=inbound | Inbound:=1;
+          email.direction=outbound | Outbound:=1;
+          *;
+      }
+
+      | default(value="0", field=[External, Internal, Inbound, Outbound])
+      |sankey(source="email.direction", target="recipientdomain")
+
+    visualization: sankey
+    end: now
+    start: 7d
+    width: 4
+    title: Email Direction
+    isLive: false
+    type: query
+  30f4aa9b-49b5-417d-afe4-c18efe23022d:
+    x: 4
+    y: 0
+    description: Malicious QR Code Detection
+    height: 3
+    queryString: |-
+      #Vendor=mimecast
+      | Vendor.rejectionType = "Malicious QRCode Detection"
+      | count(Vendor.rejectionType)
+    end: now
+    start: 7d
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Quishing
+    isLive: false
+    type: query
+  1cdbf4ea-f2fb-4b09-8ad2-9ef16914d7d1:
+    x: 3
+    y: 14
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | event.action = Rej
+      | groupBy(Vendor.rejectionType) | sort(field=_count, type=number, reverse=true)
+    end: now
+    start: 7d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Threats Blocked
+    isLive: false
+    type: query
+  cae478a4-6a05-42b5-9758-420bc3aaf625:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      #Vendor=mimecast
+      |Vendor.virusFound=*
+      | regex(".*@(?<recipientdomain>\S*)$", field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | join({ $falcon/investigate:cid_name()| rename(field=name, as=?Customer)}, field=cid , mode=left , include=[?Customer])
+      | count(Vendor.virusFound)
+      //| timechart(span=1d, function=count())
+    end: now
+    start: 7d
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Malware
+    isLive: false
+    type: query
+  b1c73f7b-4e47-4295-87e8-5cc0b552d0da:
+    x: 6
+    y: 3
+    height: 3
+    queryString: |-
+      | defineTable(query= //join delivery events with process events to filter on dangerous attachment formats
+      {
+        #repo="mimecast" #Vendor="mimecast" #event.module="emailsecurity" #event.dataset="emailsecurity.process" #event.kind="event"
+        | event.action =~! in(values=["Rej", "Hld"], ignoreCase=True) // Ignore any events where the email was held or rejected
+        | case {
+            // Executable file formats
+            Vendor.attachments=/\.(?<dangerous_attachment_file_extension>(acm|app|application|ax|chm|com|cpl|dll|dmg|drv|efi|exe|hlp|msc|msi|msp|mui|ocx|scr|sys))\"/i;
+            // Script file formats
+            Vendor.attachments=/\.(?<dangerous_attachment_file_extension>(bat|cmd|csh|hta|htc|je|js|jse|ksh|ps1|ps1xml|psc1|ps2|ps2xml|psc2|py|pyc|pyo|pyz|pyzw|sh|vb|vba|vbe|vbs|ws|wsc|wsf|wsh))\"/i;
+            // Shortcut file formats
+            Vendor.attachments=/\.(?<dangerous_attachment_file_extension>(ink|lnk|pif|scf))\"/i;
+            // Macro-enabled or suspicious document formats  (legacy MS Office formats like .doc, .xsl, or .ppt not included due to false positives concern; consider including if appropriate)
+            Vendor.attachments=/\.(?<dangerous_attachment_file_extension>(docm|dot|dotm|iqy|pptm|potm|ppam|ppsm|pub|rtf|sldm|xla|xlsm|xlt|xltm|xlam))\"/i;
+            // Other risky file formats
+            Vendor.attachments=/\.(?<dangerous_attachment_file_extension>(html|inf|iso|img|jar|jnpl|reg|rdp|vhd|vhdx|tsp))\"/i;
+        }
+      },    include=[Vendor.aggregateId, "Vendor.attachments", "dangerous_attachment_file_extension"], name="processed_events")
+
+      | #repo="mimecast" #Vendor="mimecast" #event.module="emailsecurity" #event.dataset="emailsecurity.delivery" #event.kind="event"
+      | email.direction="inbound" Vendor.delivered="true"
+      | match(column=Vendor.aggregateId, field=Vendor.aggregateId, include=dangerous_attachment_file_extension, file="processed_events")
+      | groupBy([dangerous_attachment_file_extension]) 
+    end: now
+    start: 7d
+    width: 6
+    options:
+      default: {}
+    visualization: single-value
+    title: Risky Filetype Attachment
+    isLive: false
+    type: query
+  f5a46131-157c-41a2-bc0b-e9c506af0191:
+    x: 6
+    y: 14
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      //| Vendor.blockReason = *
+      //| threat.technique.name[0]=*
+      | event.action = Rej or Hld
+      | case {
+          source.ip!=* | source.ip:=Vendor.sourceIp;
+          *;
+      }
+
+
+      | source.ip=~wildcard(?{sourceip=*})
+      | ipLocation(field="source.ip", as="source.ip")
+
+      | worldMap(lat=source.ip.lat, lon=source.ip.lon)
+    end: now
+    start: 7d
+    width: 6
+    options:
+      autoRotate: true
+      projection: orthographic
+    visualization: world-map
+    title: Threats Blocked - Source IP Geolocation
+    isLive: false
+    type: query
+  1efea403-23d9-4dc3-bdc0-05ab978ede45:
+    x: 0
+    y: 18
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      //| Vendor.blockReason = *
+      //| threat.technique.name[0]=*
+      | event.action = Rej or event.action = Hld
+
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | regex(".*@(?<senderdomain>\S*)$",field=email.from.address[0])
+      | senderdomain=~wildcard(?{sdomain=*}, ignoreCase=true)
+
+      | groupBy(["senderdomain","recipientdomain",_count], limit=1000000)
+      | sort(field=_count, type=number, reverse=true, limit = 100)
+      //| select(["email.from.address[0]", recipientdomain,_count])
+      //| top(["email.from.address[0]", threat.technique.name[0], source.ip], limit=10)
+      | rename(field="email.from.address[0]", as="Sender Email")
+      | rename(field="_count", as="# Attacks")
+      | rename(field="threat.technique.name[0]", as="MITRE Technique")
+      | rename(field="recipientdomain", as="Recipient Domain")
+    end: now
+    start: 1y
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        _count:
+          color:
+            palette: Blue red diverging
+            reversePalette: false
+            thresholds:
+            - value: 10
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Blocked - Grouped by Sender Domain
+    isLive: false
+    type: query
+  b570a32b-32cc-406d-a52f-895bba98bcf8:
+    x: 0
+    y: 3
+    height: 3
+    queryString: |
+      // Live Table 1: Top 500 recipients by count of inbound emails
+      // Search time window: same as configured for rule schedule (default 2h)
+      | defineTable(
+          query={
+              #repo="mimecast" #Vendor="mimecast" #event.module="emailsecurity" #event.dataset="emailsecurity.delivery" #event.kind="event"
+              | email.direction="inbound" Vendor.delivered="true"
+              // Apply exclusions for trusted sources here
+              // IMPORTANT: Exclusion filters must be identical in both tables & main query
+              // E.g. email.from.address[0]!="sender@sender_domain.com" OR email.from.address[0]!=/sender_domain\.com$/
+              | groupBy(
+                  field=email.to.address[0],
+                  function=[
+                      count(as="_count_of_delivered_messages"),
+                      count(email.from.address[0], as=_count_of_distinct_senders, distinct=true)
+                  ],
+                  limit=max
+              )
+              | _count_of_delivered_messages > 150 // Minimum count of the inbound emails, adjust as needed
+              | _count_of_distinct_senders > 5 // Minimum count of distinct senders, adjust as needed
+              | sort(field=_count_of_delivered_messages, order="desc", limit=500)
+          },
+          include=[email.to.address[0]],
+          name="mimecast_email_security_potential_email_spam_flooding_by_threshold_1"
+      )
+      // Live Table 2: 14-day baseline statistics for top recipients
+      | defineTable(
+          query={
+              #repo="mimecast" #Vendor="mimecast" #event.module="emailsecurity" #event.dataset="emailsecurity.delivery" #event.kind="event"
+              | email.direction="inbound" Vendor.delivered="true"
+              | match(
+                  file="mimecast_email_security_potential_email_spam_flooding_by_threshold_1",
+                  field=[email.to.address[0]],
+                  strict="true"
+              )
+              // Apply exclusions for trusted sources here
+              // IMPORTANT: Exclusion filters must be identical in both tables & main query
+              // E.g. email.from.address[0]!="sender@sender_domain.com" OR email.from.address[0]!=/sender_domain\.com$/
+              | bucket(
+                  span=2h, // IMPORTANT: Span parameter should match the search time window specified in the rule schedule. Update this parameter if rule is not configured using default schedule
+                  field=email.to.address[0],
+                  function=count(as="_count_of_delivered_messages"),
+                  limit=500
+              )
+              | groupBy(
+                  field=email.to.address[0],
+                  function=[
+                      _average_count_past_14days := avg(_count_of_delivered_messages),
+                      _std_deviation_past_14days := stdDev(_count_of_delivered_messages)
+                  ],
+                  limit=max
+              )
+          },
+          start=14d,
+          end=2h, // IMPORTANT: End parameter should match the search time window specified in the rule schedule. Update this parameter if rule is not configured using default schedule
+          include=[email.to.address[0], _average_count_past_14days, _std_deviation_past_14days],
+          name="mimecast_email_security_potential_email_spam_flooding_by_threshold_2"
+      )
+      // Main query
+      | #repo="mimecast" #Vendor="mimecast" #event.module="emailsecurity" #event.dataset="emailsecurity.delivery" #event.kind="event"
+      | email.direction="inbound" Vendor.delivered="true"
+      // Apply exclusions for trusted sources here
+      // IMPORTANT: Exclusion filters must be identical in both tables & main query
+      // E.g. email.from.address[0]!="sender@sender_domain.com" OR email.from.address[0]!=/sender_domain\.com$/
+      | match(
+          file="mimecast_email_security_potential_email_spam_flooding_by_threshold_2",
+          field=[email.to.address[0]],
+          include=[_average_count_past_14days, _std_deviation_past_14days],
+          strict=true
+      )
+      | groupBy(
+          field=email.to.address[0],
+          function=[
+              count(as=_count_of_delivered_messages),
+              count(field=email.from.address[0], distinct=true, as=_count_of_distinct_senders),
+              collect([#Vendor, #event.module, event.category[0], _average_count_past_14days, _std_deviation_past_14days])
+          ],
+          limit=max
+      )
+      // The multiplier of standard deviations used in the threshold calculation can be adjusted here
+      // Lower thresholds like "average + (4 * standard deviation)" will catch more events but may increase false positives, while higher thresholds like "average + (6 * standard deviation)" will have fewer false positives but might miss some flooding events
+      | _threshold := _average_count_past_14days + 5 * _std_deviation_past_14days
+      | test(_count_of_delivered_messages > _threshold)
+      | count("email.to.address[0]")
+    end: now
+    start: 7d
+    width: 4
+    options:
+      default: {}
+    visualization: single-value
+    title: Email Bombing - Over 150 Messages in 2 Hours
+    isLive: false
+    type: query
+  f7a6efe2-3f71-454c-8975-34da9e7877bd:
+    x: 6
+    height: 3
+    queryString: |+
+      #Vendor=mimecast
+      | event.action = Hld
+      | count(event.action)
+
+    end: now
+    start: 7d
+    width: 2
+    y: 0
+    interactions:
+    - name: Details
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n@dataConnectionID=* | #Vendor=mimecast | event.action=Hld"
+      useWidgetTimeWindow: true
+      arguments: {}
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      default: {}
+    visualization: single-value
+    title: Quarantine
+    isLive: false
+    type: query
+  9ed76a46-257e-4275-b3e3-020db4d700d1:
+    x: 8
+    y: 0
+    height: 3
+    queryString: |-
+      #Vendor=mimecast
+      | Vendor.holdReason = Spm
+      | count(Vendor.holdReason)
+    end: now
+    start: 7d
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Spam
+    isLive: false
+    type: query
+  8566af8d-5b4c-4767-b1ae-05c12aaf63d0:
+    x: 6
+    y: 6
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | email.direction=*
+      | event.action=*
+
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | email.direction=~wildcard(?{direction=*}, ignoreCase=true)
+
+
+      | case {
+          source.ip!=* | source.ip:=Vendor.sourceIp;
+          *;
+      }
+      | source.ip=~wildcard(?{sourceip=*})
+      | ipLocation(source.ip)
+      | source.ip.country=~wildcard(?{sourceipcountry=*})
+      //| groupBy(recipient.domain, function=[count(email.direction, distinct=true)])
+
+      | groupBy([recipientdomain, email.direction, event.action])
+
+      /*  | case {
+          email.direction=external | External:=_count ;
+          email.direction=internal | Internal:=_count ;
+          email.direction=inbound | Inbound:=_count;
+          email.direction=outbound | Outbound:=_count;
+          *;
+      }
+      */
+        | case {
+          email.direction=internal | Internal:=_count ;
+          email.direction=inbound | Inbound:=_count;
+          *;
+      }
+
+
+
+      /* | case {
+          event.action=Acc | Accepted:=_count ;
+          event.action=Rej | Rejected:=_count;
+          event.action=Hld | Hold:=_count;
+          event.action=Block | Block:=_count;
+          event.action=Retry | Retry:=_count;
+          *;
+      }*/
+
+      | case {
+          event.action=Acc | Accepted:=_count ;
+          event.action=Rej | Rejected:=_count;
+          event.action=Hld | Hold:=_count;
+          *;
+      }
+
+      | default(value="0", field=[External, Internal, Inbound, Outbound, Accepted, Hold , Rejected, Block, Retry])
+      | groupby([recipientdomain], function=[groupBy([Internal, Inbound, Accepted, Hold, Rejected])])
+      // | select([recipientdomain, External, Internal, Inbound, Outbound, Accepted, Rejected, Hold, Block, Retry])
+      | Internal > 0 or Inbound > 0
+      | select([recipientdomain, Internal, Inbound, Accepted, Hold , Rejected])
+      // | rename(field="recipientdomain", as="Recipient Domain")
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Global Email Volume Managed
+    isLive: false
+    type: query
+  54d206e3-2778-44a5-a8ee-4b074dbf258a:
+    x: 0
+    y: 30
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | groupBy(["email.attachments[0].file.extension"])
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 3
+    title: Malicious Attachment Filetype
+    isLive: false
+    type: query
+  f6d39057-11e6-45bb-a954-187490837d6a:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      //| Vendor.blockReason = malicious
+      | event.action = Rej or Hld
+      | rename(field="email.to.address[0]", as="RecipientEmail")
+      | top(["RecipientEmail"])| sort(field=_count, type=number, reverse=true)
+    end: now
+    start: 7d
+    width: 6
+    y: 18
+    interactions:
+    - name: Detals
+      titleTemplate: Details
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n@dataConnectionID=* | #Vendor=mimecast | event.action=Rej OR Hld\
+        \ | rename(field=\"email.to.address[0]\",as=\"RecipientEmail\") | RecipientEmail=?RecipientEmail "
+      useWidgetTimeWindow: true
+      arguments:
+        RecipientEmail: '["{{fields.RecipientEmail}}"]'
+      openInNewTab: false
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        _count:
+          color:
+            palette: Blue red diverging
+            reversePalette: false
+            thresholds:
+            - value: 10
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Targeted Users
+    isLive: false
+    type: query
+  b9e58452-d88a-4ae5-8fdf-c31d3746965a:
+    x: 2
+    height: 3
+    queryString: |+
+      #Vendor=mimecast
+      | Vendor.urlCategory = "Phishing & Fraud" or Vendor.scanResults = "Blocked URL Category"
+      | count(Vendor.urlCategory)
+
+    end: now
+    start: 7d
+    width: 2
+    y: 0
+    interactions:
+    - name: See in Graph
+      urlEncodeArgs: true
+      urlTemplate: https://falcon.us-2.crowdstrike.com/xdr/events/graph?q=%7C%20setTimeInterval(start%3D7d%2C%20end%3Dnow)%20%0A%7C%20%23Vendor%3Dmimecast%0A%7C%20Vendor.urlCategory%20%3D%20%22Phishing%20%26%20Fraud%22%20or%20Vendor.scanResults%20%3D%20%22Blocked%20URL%20Category%22%0A%0A%0A&start=7d&end=&searchTimestamp=2025-03-05T14:55:17.610Z
+      openInNewTab: true
+      type: customlink
+    - name: Details
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n@dataConnectionID=* | #Vendor=mimecast | Vendor.urlCategory=\"\
+        Phishing & Fraud\""
+      useWidgetTimeWindow: true
+      arguments: {}
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      default: {}
+    visualization: single-value
+    title: Phishing
+    isLive: false
+    type: query
+  39de61e9-1d87-4b95-ac68-04bbf0e246b2:
+    x: 0
+    y: 6
+    height: 4
+    queryString: |-
+      | setTimeInterval(start=7d, end=now)
+      | #Vendor=mimecast
+      | email.direction=*
+      | event.action=*
+
+      | timeChart(email.direction)
+    end: now
+    start: 7d
+    width: 6
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Email Direction - Last 7 Days
+    isLive: false
+    type: query
+  06040544-bc71-4367-84f5-c312e534bcb4:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | Vendor.spamProcessingDetail=*
+      | parseJson(Vendor.spamProcessingDetail)
+
+      | spf.info!="ALLOW" OR dkim.info!="ALLOW" OR dmarc.info!="ALLOW"
+
+      | regex(".*@(?<senderdomain>\S*)$", field=email.sender.address)
+      | regex(".*@(?<recipientdomain>\S*)$",field=email.to.address[0])
+      | recipientdomain=~wildcard(?{rdomain=*}, ignoreCase=true)
+      | senderdomain=~wildcard(?{senderdomain=*}, ignoreCase=true)
+      | email.direction=~wildcard(?{direction=*}, ignoreCase=true)
+
+      | case {
+          source.ip!=* | source.ip:=Vendor.sourceIp;
+          *;
+      }
+      | source.ip=~wildcard(?{sourceip=*})
+      | ipLocation(source.ip)
+      | source.ip.country=~wildcard(?{sourceipcountry=*})
+      | email.direction = "inbound"
+
+      | groupby(senderdomain, function=[count(senderdomain), collect([source.ip.country,spf.info, dkim.info, dmarc.info, Vendor.tlsVersion], multival=true, separator=", ", limit=10000)])
+      | sort(field=_count, type=number, reverse=true, limit=10000)
+      | rename(field="_count", as="Occurences")
+      | rename(field="senderdomain", as="senderdomain")
+      | rename(field="Vendor.tlsVersion", as="TLS Version")
+      | rename(field="spf.info", as="SPF")
+      | rename(field="dkim.info", as="DKIM")
+      | rename(field="dmarc.info", as="DMARC")
+      | rename(field="email.direction", as="Email Direction")
+      | rename(field="source.ip.country", as="Source Country")
+      //| groupBy([Vendor.spamProcessingDetail])
+    end: now
+    start: 7d
+    width: 6
+    y: 22
+    interactions:
+    - name: See in Graph
+      urlEncodeArgs: true
+      urlTemplate: https://falcon.us-2.crowdstrike.com/xdr/events/graph?q=%23Vendor%3Dmimecast%0A%7C%20Vendor.spamProcessingDetail%3D*%0A%7C%20parseJson(Vendor.spamProcessingDetail)%0A%0A%7C%20spf.info!%3D%22ALLOW%22%20OR%20dkim.info!%3D%22ALLOW%22%20OR%20dmarc.info!%3D%22ALLOW%22%0A%0A%7C%20regex(%22.*%40(%3F%3Csenderdomain%3E%5CS*)%24%22%2C%20field%3Demail.sender.address)%0A%7C%20regex(%22.*%40(%3F%3Crecipientdomain%3E%5CS*)%24%22%2Cfield%3Demail.to.address%5B0%5D)%0A%7C%20recipientdomain%3D~wildcard(%3F%7Brdomain%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20senderdomain%3D~wildcard(%3F%7Bsenderdomain%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20email.direction%3D~wildcard(%3F%7Bdirection%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%0A%7C%20case%20%7B%0A%20%20%20%20source.ip!%3D*%20%7C%20source.ip%3A%3DVendor.sourceIp%3B%0A%20%20%20%20*%3B%0A%7D%0A%7C%20source.ip%3D~wildcard(%3F%7Bsourceip%3D*%7D)%0A%7C%20ipLocation(source.ip)%0A%7C%20source.ip.country%3D~wildcard(%3F%7Bsourceipcountry%3D*%7D)%0A%7C%20email.direction%20%3D%20%22inbound%22%0A%7C%20senderdomain%3D{{fields.senderdomain}}
+      openInNewTab: false
+      type: customlink
+    - name: Details
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n@dataConnectionID=* | #Vendor=mimecast | Vendor.spamProcessingDetail=*\
+        \ | parseJson(Vendor.spamProcessingDetail) | spf.info!=\"ALLOW\" OR dkim.info!=\"\
+        ALLOW\" OR dmarc.info!=\"ALLOW\" | regex(\".*@(?<senderdomain>\\\\S*)$\",field=email.sender.address)\
+        \ | regex(\".*@(?<recipientdomain>\\\\S*)$\",field=email.to.address[0]) |\
+        \ wildcard(\"*\",ignoreCase=true,field=recipientdomain) | wildcard(\"*\",ignoreCase=true,field=senderdomain)\
+        \ | wildcard(\"*\",ignoreCase=true,field=email.direction) | case { source.ip!=*\
+        \ | source.ip := Vendor.sourceIp;*} | wildcard(\"*\",field=source.ip) | ipLocation(source.ip)\
+        \ | wildcard(\"*\",field=source.ip.country) | email.direction=\"inbound\"\
+        \ | senderdomain =?SenderDomain "
+      useWidgetTimeWindow: true
+      arguments:
+        SenderDomain: '["{{ fields[\"Sender Domain\"] }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        spf.allow:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: 'true'
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: 'false'
+                type: Equal
+        TLS Version:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: TLSv1.3
+                type: Equal
+            defaultColor: '#C93637'
+        spf.info:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: ALLOW
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: FAIL
+                type: Contains
+        DKIM:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: ALLOW
+                type: Equal
+            - color: '#906B55'
+              condition:
+                arg: ''
+                type: NotPresent
+            defaultColor: '#F5B800'
+        SPF:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: ALLOW
+                type: Equal
+            - color: '#906B55'
+              condition:
+                arg: ''
+                type: NotPresent
+            defaultColor: '#F5B800'
+        dkim.allow:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: 'true'
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: 'false'
+                type: Equal
+        dmarc.allow:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: 'true'
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: 'false'
+                type: Equal
+        dmarc.info:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: ALLOW
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: FAIL
+                type: Contains
+        dkim.info:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: ALLOW
+                type: Equal
+            - color: '#F49125'
+              condition:
+                arg: UNKNOWN
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: FAIL
+                type: Contains
+        DMARC:
+          color:
+            conditions:
+            - color: '#34B248'
+              condition:
+                arg: ALLOW
+                type: Equal
+            - color: '#906B55'
+              condition:
+                arg: ''
+                type: NotPresent
+            defaultColor: '#F5B800'
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DMARC|DKIM|TLS Status
+    isLive: false
+    type: query
+  5ebb3c08-1709-4723-98ee-b3a6abb6ee38:
+    x: 0
+    y: 26
+    height: 4
+    queryString: |-
+      #Vendor=mimecast
+      | Vendor.urlCategory = *
+      | groupBy([Vendor.urlCategory])
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 3
+    title: Phishing per Category
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  rdomain:
+    defaultValue: '*'
+    order: 2
+    type: text
+    width: 1
+  sourceipcountry:
+    label: sourceipcountry
+    order: 9
+    type: text
+    defaultValue: '*'
+    width: 1
+  sdomain:
+    label: sdomain
+    order: 5
+    type: text
+    defaultValue: '*'
+    width: 1
+  sourceip:
+    label: sourceip
+    order: 8
+    type: text
+    defaultValue: '*'
+    width: 1
+  senderemail:
+    label: senderemail
+    order: 7
+    type: text
+    defaultValue: '*'
+    width: 1
+  Customer:
+    label: Customer
+    query: |-
+      | join({ $falcon/investigate:cid_name()| rename(field=name, as=Tenant)}, field=cid , mode=left , include=[Tenant])
+      |table([Tenant])
+    timeInterval: 7d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 0
+    valueField: Tenant
+  ASN-org:
+    label: ASN-org
+    order: 3
+    type: text
+    defaultValue: '*'
+    width: 1
+  recipientemail:
+    label: Recipient Email
+    order: 1
+    type: text
+    defaultValue: '*'
+    width: 1
+  senderdomain:
+    label: senderdomain
+    order: 6
+    type: text
+    defaultValue: '*'
+    width: 1
+  direction:
+    label: direction
+    order: 4
+    type: text
+    defaultValue: '*'
+    width: 1
