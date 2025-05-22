@@ -17,5 +17,5 @@ Note that in LogScale, regex is available nearly anywhere and can also be used:
 #event_simpleName=ProcessRollup2 FileName=/^(powershell|cmd)\.exe$/i
 ```
 
-[[CrowdStrike-Query-Language-Map/CrowdStrike-Query-Language/in|in]] | [[CrowdStrike-Query-Language-Map/CrowdStrike-Query-Language/regex|regex]]
+[[CrowdStrike-Query-Language-Map/CrowdStrike-Query-Language/in|in]] 
 
