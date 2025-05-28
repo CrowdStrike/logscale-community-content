@@ -1,0 +1,77 @@
+name: POV - MFA Activity
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  2885c43a-b067-4658-b4f1-f7788deb9429:
+    x: 0
+    y: 7
+    description: Failed logins from around the world; excluding US + CA
+    height: 6
+    queryString: |-
+      #Vendor = microsoft AND @sourcetype = "microsoft-entra-id" AND #event.outcome != success
+      | Vendor.properties.status.additionalDetails = "*"
+      | "source.geo.country_name" != CA AND "source.geo.country_name" != US
+      | worldMap(ip=source.ip)
+    visualization: world-map
+    end: now
+    start: 2d
+    width: 6
+    title: Map of Entra ID Failures
+    isLive: false
+    type: query
+  7de88c12-1d27-4258-8d23-abad6792c832:
+    x: 0
+    description: Denied MFA activity over time by user
+    height: 7
+    queryString: |-
+      #Vendor = microsoft AND @sourcetype = "microsoft-entra-id" AND #event.outcome != success
+      | Vendor.properties.status.additionalDetails = "MFA denied; user declined the authentication"
+      | timeChart(span=8h, function=count(), series=user.email)
+    end: now
+    start: 7d
+    width: 12
+    y: 0
+    interactions:
+    - name: 'Interaction #1'
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n#Vendor=microsoft @sourcetype=\"microsoft-entra-id\" #event.outcome!=success|Vendor.properties.status.additionalDetails=\"\
+        MFA denied; user declined the authentication\" | user.email=?user_email"
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments:
+        user_email: '["{{fields.user.email}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: MFA Denies by User
+    isLive: false
+    type: query
+  d8cd727b-59a9-4d11-811a-ebf06f8498be:
+    x: 6
+    y: 7
+    description: Details on user, source, geo city and country those MFA denies occurred
+      from
+    height: 6
+    queryString: |-
+      #Vendor = microsoft AND @sourcetype = "microsoft-entra-id" AND #event.outcome != success
+      | Vendor.properties.status.additionalDetails = "MFA denied; user declined the authentication"
+      | table(fields=[user.email, source.ip, source.geo.city_name, source.geo.country_name])
+    end: now
+    start: 7d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: MFA Deny Detail
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.17.0
