@@ -89,8 +89,8 @@ sinks:
     proxy: none  
     ## This sets the maximum single event size to 900KB. You can change as needed.
     maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 16777216.
-    maxBatchSize: 5242880
+    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 12000000.
+    maxBatchSize: 12000000
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
     #compression: gzip
     #compressionLevel: 9
@@ -116,8 +116,8 @@ sinks:
     proxy: none  
     ## This sets the maximum single event size to 900KB. You can change as needed.
     maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 16777216.
-    maxBatchSize: 5242880
+    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 12000000.
+    maxBatchSize: 12000000
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
     #compression: gzip
     #compressionLevel: 9
@@ -141,8 +141,8 @@ sinks:
     proxy: none
     ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
     maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 16777216.
-    maxBatchSize: 5242880
+    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 12000000.
+    maxBatchSize: 12000000
     ## Uncomment if you would like to force a specific level of type and level compression. 9 is the highest.
     ## Default is "auto", which attempts "gzip" and its default compression but falls back to "none" if unsupported.
     #compression: gzip
@@ -171,8 +171,8 @@ sinks:
     proxy: none
     ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
     maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a batch of events being uploaded together. The max value is maxBatchSize: 16777216.
-    maxBatchSize: 5242880
+    ## This sets the maximum payload size (bytes) for a batch of events being uploaded together. The max value is maxBatchSize: 12000000.
+    maxBatchSize: 12000000
     ## Uncomment if you would like to force a specific level of type and level compression. 9 is the highest.
     ## Default is "auto", which attempts "gzip" and its default compression but falls back to "none" if unsupported.
     #compression: gzip
