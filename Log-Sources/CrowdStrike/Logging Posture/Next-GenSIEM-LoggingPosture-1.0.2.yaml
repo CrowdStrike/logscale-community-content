@@ -1,0 +1,1173 @@
+sections:
+  section-1726510595265-5:
+    collapsed: true
+    order: 3
+    title: Event Parsing
+    widgetIds:
+    - 0bc0db47-1e9a-4409-8771-ac0c8dc0dada
+    - a5ddc5b6-e8d4-42ae-b271-9f912de7e610
+    - 668b9df7-9862-41a2-b5c9-2989f0b9480f
+    - 012c7256-b0e7-4fe3-b701-c37e3a4e8113
+    - c2ed5e24-cf7c-4cc4-aa95-feb7a2a7abdf
+    - note-1724211273327-1
+  section-1739540832087-0:
+    collapsed: false
+    order: 0
+    title: Key Findings
+    widgetIds:
+    - 962266c1-dcd8-4e9e-badf-50a4f8df312c
+    - f69b9484-a30f-4085-93e2-d16b04b22b20
+    - 5195f9d8-ccec-4583-9ce3-b84d06c9ff1e
+    - b8389c06-e6db-497b-b538-9260ce79839e
+    - 5a9cefbc-73d6-4ab5-8724-47a4d5c17415
+  section-1727833947606-0:
+    description: |-
+      The delta between the time an event is ingested into the next gen siem platform and the assigned event time.
+
+      event latency is source-specific and dictated by external factors such as the transport methodology, network topology/latency, ingest architecture, time synchronization/offset, etc.
+    collapsed: true
+    widgetIds:
+    - 5d3a2fd1-49e6-4410-a567-27523ffd6d0a
+    order: 2
+    title: Ingestion Latency
+  section-1745464777660-1:
+    collapsed: true
+    order: 5
+    title: Event Duplication
+    widgetIds:
+    - 1c81f164-e991-4dc0-80e4-97c09cd3fb8b
+  section-1726510270266-3:
+    collapsed: true
+    order: 6
+    title: Event Normalization
+    widgetIds:
+    - note-1726510155283-2
+    - adecfde1-8cbe-415a-b15e-6cbb7013b2c2
+    - note-1731425128790-0
+    - note-1724211183326-0
+    - note-1724212645446-0
+    - 841ba1b3-e042-456b-a22e-0e64e6387495
+    - ad50d434-ab70-4c43-b155-9cfc70a4eefc
+    - 0a140e3f-6b4a-4b78-8666-c2e98dc69e32
+    - note-1724764960118-0
+  section-1727052347996-0:
+    collapsed: true
+    order: 1
+    title: Ingestion Overview
+    widgetIds:
+    - note-1732734196859-0
+    - afb8131d-3eaa-4faf-bf51-b782bd604cb1
+    - 7b40dc67-e38f-4dbf-86a4-87c8102924fc
+  section-1745464739644-0:
+    collapsed: true
+    order: 4
+    title: Event Truncation
+    widgetIds:
+    - 21e5fa5a-e0c1-4e23-bdaa-35c80541f53a
+    - 2ad5048d-8f31-41bd-af3d-1ac19da978bd
+name: Next-Gen SIEM - Logging Posture - 1.0.2
+updateFrequency: never
+description: |-
+  Indicators of possible event duplication by taking a count of the raw event.
+
+  Will contain false positives as event may omit timestamp or timestamp accuracy is second-specific for common events.
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+labels:
+- 1.0.0
+widgets:
+  5d3a2fd1-49e6-4410-a567-27523ffd6d0a:
+    x: 0
+    y: 0
+    height: 7
+    queryString: |
+      | !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | diff := (@ingesttimestamp - @timestamp) / 1000
+      | groupBy([#type], function=[count(as=events), avg("diff")])
+      | seconds := round("_avg")
+      | drop([_avg])
+      | minutes := seconds/60
+      | hours := seconds/60/60
+      | avg_hour_offset := rename(field="hours")
+      | avg_minute_offset := rename(field="minutes")
+      | avg_second_offset := rename(field="seconds")
+      | avg_hour_offset := format("%.2f", field=avg_hour_offset)
+      | avg_minute_offset := format("%.2f", field=avg_minute_offset)
+      | sort(avg_hour_offset)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        avg_hour_offset:
+          color:
+            palette: Green yellow red
+            reversePalette: false
+            thresholds:
+            - value: 0.9
+            - value: 1
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Ingestion latency by parser
+    isLive: false
+    type: query
+  a5ddc5b6-e8d4-42ae-b271-9f912de7e610:
+    x: 0
+    y: 17
+    height: 7
+    queryString: |-
+      #repo=3pi_connection_errors @dataConnectionID=?connection
+      | select([@timestamp, @dataConnectionID,  error_count, status_code, @error_msg, @rawstring])
+      | json:prettyPrint(@rawstring)
+    end: now
+    start: 1h
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Data Connection Errors
+    isLive: false
+    type: query
+  7b40dc67-e38f-4dbf-86a4-87c8102924fc:
+    x: 0
+    height: 8
+    queryString: |-
+      | !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | groupBy([#type], function=[
+      count(as="events"),         {#error=true | count(as=errors)}])
+      | error_rate:=(errors/events)*100
+      | sort(field=events, limit=1000)
+      | drop([errors])
+    end: now
+    start: 1h
+    width: 3
+    y: 0
+    interactions:
+    - name: search
+      queryString: "!in(field=\"#repo\", values=[\"falcon_for_it\", \"sensor_*\",\
+        \ \"base_sensor\", \"detections\", \"xdr_*\", \"fusion\", \"fcs_csp_events\"\
+        , \"foundry_*\", \"3pi_connection_errors\", \"risks\"])\n| #type=?_type "
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments:
+        _type: '["{{fields.#type}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        '#type':
+          color:
+            conditions:
+            - color: '#C93637'
+              condition:
+                arg: kv
+                type: Equal
+            - color: '#C93637'
+              condition:
+                arg: json
+                type: Equal
+        error_rate:
+          color:
+            palette: Green yellow red
+            reversePalette: false
+            thresholds:
+            - value: 5
+          data-type: number
+          precision: 2
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Data Sources
+    isLive: false
+    type: query
+  c2ed5e24-cf7c-4cc4-aa95-feb7a2a7abdf:
+    x: 0
+    y: 1
+    height: 4
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #error=true #type=?type @dataConnectionID=?connection
+      | groupBy([#type], function=count(as=events))
+      | sort(field=events)
+    end: now
+    start: 1h
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: By parser
+    isLive: false
+    type: query
+  ad50d434-ab70-4c43-b155-9cfc70a4eefc:
+    x: 0
+    height: 10
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | groupBy([#type],
+          function=[
+              {#event.kind=* | count(as=event.kind.pass_count)},
+              {event.category[0]=* OR event.category[1]=* OR event.category[3]=* OR event.category[4]=*| count(as=event.category.pass_count)},
+              {event.type[0]=* OR event.type[1]=* OR event.type[2]=* OR event.type[3]=* OR event.type[4]=* | count(as=event.type.pass_count)},
+              {#event.outcome=* | count(as=event.outcome.pass_count)},
+              count(as=events),
+              collect([#event.kind, event.category[0], event.type[0], #event.outcome])
+          ]
+      )
+      | event.category.pass_percent:=event.category.pass_count/events*100
+      | event.category:=round("event.category.pass_percent")
+      | event.kind.pass_percent:=event.kind.pass_count/events*100
+      | event.kind:=round("event.kind.pass_percent")
+      | event.type:=event.type.pass_count/events*100
+      | event.type:=round("event.type")
+      | event.outcome.pass_percent:=event.outcome.pass_count/events*100
+      | event.outcome:=round("event.outcome.pass_percent")
+      | select([#type, events, event.kind, event.category, event.type, event.outcome, #event.kind, event.category[0], event.type[0], #event.outcome])
+      | sort(events)
+    end: now
+    start: 1h
+    width: 12
+    y: 11
+    interactions:
+    - name: See events
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n!in(field=\"#repo\", values=[\"falcon_for_it\", \"sensor_*\",\
+        \ \"base_sensor\", \"detections\", \"xdr_*\", \"fusion\", \"fcs_csp_events\"\
+        , \"foundry_*\", \"3pi_connection_errors\", \"risks\"])\n| #type=\"*\" #type=?_type\
+        \ \n| select([#repo, #type, @rawstring])"
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments:
+        _type: '["{{fields.#type}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        event.kind:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.dataset:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.dataset.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.outcome.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.outcome:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Cps.version:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        ecs.version:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Vendor.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.category:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.kind.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        ecs.version.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.module.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Vendor:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        observer.type.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Cps.version.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.category.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Parser.version:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        observer.type:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.module:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.type:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.action:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+      row-numbers-enabled: true
+    visualization: table-view
+    title: Percent Coverage
+    isLive: false
+    type: query
+  012c7256-b0e7-4fe3-b701-c37e3a4e8113:
+    x: 3
+    y: 1
+    height: 4
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #error=true #type=?type @dataConnectionID=?connection
+      | timeChart(series=#type, limit=100)
+    end: now
+    start: 1h
+    width: 9
+    options:
+      legendPosition: right
+      series: {}
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      imputation: none
+    visualization: time-chart
+    title: By parser over time
+    isLive: false
+    type: query
+  adecfde1-8cbe-415a-b15e-6cbb7013b2c2:
+    x: 2
+    y: 34
+    height: 5
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | case {
+          (user.name=* OR source.ip=* OR source.address=* OR destination.ip=* OR destination.address=* OR event.action=* OR url.domain=* OR host.hostname=* OR event.reason=* OR host.name=* OR host.ip=* OR network.direction=* OR threat.framework=* OR email.subject=* OR email.sender.address=* OR #event.outcome=* OR cloud.account.id=* OR cloud.region=*)
+          | normalized := "yes";
+
+          *
+          | normalized := "no"
+      }
+      | groupBy([#type], function=[count(as=events), {normalized=yes | count(as=normalized)}, {normalized=no | count(as=not_normalized)}])
+      | normalization_rate:=(normalized/events)*100
+      | round("normalization_rate")
+      | sort(normalization_rate, order=asc)
+    end: now
+    start: 1h
+    width: 10
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        normalization_rate:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Normalization Rate
+    isLive: false
+    type: query
+  note-1726510155283-2:
+    x: 0
+    y: 34
+    height: 5
+    text: |-
+      cloud.account.id
+
+      cloud.region
+
+      destination.ip
+
+      destination.address
+
+      email.subject
+
+      email.sender.address
+
+      event.action
+
+      event.reason
+
+      event.outcome
+
+      host.hostname
+
+      host.name
+
+      host.ip
+
+      network.direction
+
+      source.ip
+
+      source.address
+
+      threat.framework
+
+      user.name
+
+      url.domain
+    width: 2
+    title: Required Fields
+    type: note
+  note-1731425128790-0:
+    x: 0
+    y: 33
+    description: |-
+      Falcon Complete evaluates event data and considers an event "normalized" if one of the listed fields has been defined for a given event.
+
+      If the event in question does not have one of the fields defined, then one can presume that the event is not "normalized" per falcon complete standards.
+    height: 1
+    text: ''
+    width: 12
+    title: Falcon Complete - Required Fields
+    type: note
+  afb8131d-3eaa-4faf-bf51-b782bd604cb1:
+    x: 3
+    y: 0
+    height: 8
+    queryString: |-
+      | !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | timeChart(series=#type, limit=500)
+    end: now
+    start: 1h
+    width: 7
+    options:
+      legendPosition: right
+      series: {}
+      connect-points: false
+      stacking: none
+      yAxisScale: logarithmic
+      imputation: none
+    visualization: time-chart
+    title: Over time
+    isLive: false
+    type: query
+  5195f9d8-ccec-4583-9ce3-b84d06c9ff1e:
+    x: 6
+    y: 0
+    description: 'findings indicate any one of the following CPS fields is missing
+      from the event data for a given parser: #Cps.version, #ecs.version, #Vendor,
+      #event.module, #event.dataset, Parser.version'
+    height: 4
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type
+      | groupBy([#type],
+          function=[
+              {#Cps.version=* | count(as=Cps.version.pass_count)},
+              {#ecs.version=* | count(as=ecs.version.pass_count)},
+              {#Vendor=* | count(as=Vendor.pass_count)},
+              {#event.module=* | count(as=event.module.pass_count)},
+              {#event.dataset=* | count(as=event.dataset.pass_count)},
+              {#observer.type=* | count(as=observer.type.pass_count)},
+              {Parser.version=* | count(as=Parser.version.pass_count)},
+              {event.action=* | count(as=event.action.pass_count)},
+              count(as=events)
+          ]
+      )
+      | Cps.version.pass_percent:=Cps.version.pass_count/events*100
+      | Cps.version:=round("Cps.version.pass_percent")
+      | ecs.version.pass_percent:=ecs.version.pass_count/events*100
+      | ecs.version:=round("ecs.version.pass_percent")
+      | Vendor.pass_percent:=Vendor.pass_count/events*100
+      | Vendor:=round("Vendor.pass_percent")
+      | event.module.pass_percent:=event.module.pass_count/events*100
+      | event.module:=round("event.module.pass_percent")
+      | event.dataset.pass_percent:=event.dataset.pass_count/events*100
+      | event.dataset:=round("event.dataset.pass_percent")
+      | observer.type.pass_percent:=observer.type.pass_count/events*100
+      | observer.type:=round("observer.type.pass_percent")
+      | _event.action:=event.action.pass_count/events*100
+      | _event.action:=round("_event.action")
+      | _Parser.version:=Parser.version.pass_count/events*100
+      | _Parser.version:=round("_Parser.version")
+      | round("error_rate")
+      | select([#type, events, error_rate, Cps.version, ecs.version, _Parser.version, Vendor, event.module, event.dataset])
+      | case {
+          Cps.version=100 ecs.version=100 _Parser.version=100 Vendor=100 event.module=100 event.dataset=100
+          | finding:="false";
+
+          *
+          | finding:="true"
+      }
+      | [{finding="true" | count()}]
+    end: now
+    start: 1h
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Sources with CPS-normalization gaps
+    isLive: false
+    type: query
+  668b9df7-9862-41a2-b5c9-2989f0b9480f:
+    x: 0
+    height: 6
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #error=true #type=?type @dataConnectionID=?connection
+      | groupBy([#type, @error_msg], function=[count(), selectLast([@rawstring])], limit=max)
+      | sort(limit=20000)
+      | json:prettyPrint()
+    end: now
+    start: 1h
+    width: 12
+    y: 5
+    interactions:
+    - name: See event
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n!in(field=\"#repo\", values=[\"falcon_for_it\", \"sensor_*\",\
+        \ \"base_sensor\", \"detections\", \"xdr_*\", \"fusion\", \"fcs_csp_events\"\
+        , \"foundry_*\", \"3pi_connection_errors\", \"risks\"])\n| #error=true #type=\"\
+        *\" @error_msg=?_error_msg #type=?_type \n| select([@rawstring])"
+      useWidgetTimeWindow: true
+      repoOrViewName: search-all
+      arguments:
+        _error_msg: '["{{fields.@error_msg}}"]'
+        _type: '["{{fields.#type}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        '@error_msg':
+          width: 1233
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Details
+    isLive: false
+    type: query
+  5a9cefbc-73d6-4ab5-8724-47a4d5c17415:
+    x: 0
+    y: 0
+    description: a count of parsers where the error rate is greater than 3% and warrants
+      further investigation
+    height: 4
+    queryString: |-
+      | !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | groupBy([#type], function=[
+          count(as="events"),
+          {#error=true | count(as=errors)}])
+      | error_rate:=(errors/events)*100
+      | sort(field=events, limit=1000)
+      | drop([errors])
+      | error_rate>=3
+      | count()
+    end: now
+    start: 1h
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Sources with parser errors
+    isLive: false
+    type: query
+  1c81f164-e991-4dc0-80e4-97c09cd3fb8b:
+    x: 0
+    y: 0
+    height: 10
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | top([#type, @rawstring], limit=100)
+    end: now
+    start: 5m
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Event Duplication Indicators
+    isLive: false
+    type: query
+  note-1724212645446-0:
+    x: 0
+    y: 10
+    height: 1
+    text: ''
+    width: 12
+    title: Phase 2 - Event Categorization Fields
+    type: note
+  b8389c06-e6db-497b-b538-9260ce79839e:
+    x: 3
+    y: 0
+    description: |-
+      a count of parsers where the average ingestion latency for the time window is greater than 5 seconds.
+
+      Findings warrant further investigation and assessment, acceptance criteria is dependent on ingest architecture of data source in question. ie. push vs pull
+    height: 4
+    queryString: |-
+      | #type=?type
+      | !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | diff := (@ingesttimestamp - @timestamp) / 1000
+      | groupBy([#type], function=[count(as=events), avg("diff")])
+      | seconds := round("_avg")
+      | avg_second_offset := rename(field="seconds")
+      | avg_second_offset>300
+      | count()
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+    visualization: single-value
+    title: Sources with ingestion latency
+    isLive: false
+    type: query
+  f69b9484-a30f-4085-93e2-d16b04b22b20:
+    x: 9
+    y: 0
+    height: 4
+    queryString: |-
+      defineTable(query={
+          createEvents(["parser_name=\"Parser name\" parser_description=\"Data source\"", "parser_name=\"abnormal_security_ecs\" parser_description=\"DEPRECATED - Abnormal Email Security\"", "parser_name=\"apache-httpserver\" parser_description=\"Apache HTTP Server\"", "parser_name=\"asec-json\" parser_description=\"DEPRECATED - Akamai Security Events\"", "parser_name=\"aws-cloudtrail\" parser_description=\"AWS CloudTrail\"", "parser_name=\"aws-cloudwatch\" parser_description=\"AWS Cloudwatch\"", "parser_name=\"aws-config\" parser_description=\"AWS Config\"", "parser_name=\"azuread-ecs\" parser_description=\"DEPRECATED - Microsoft Azure AD\"", "parser_name=\"google-cloud-audit\" parser_description=\"Google Cloud Audit\"", "parser_name=\"google-workspace\" parser_description=\"Google Workspace\"", "parser_name=\"json\" parser_description=\"Generic Source\"", "parser_name=\"kv\" parser_description=\"Generic Source\"", "parser_name=\"kv-generic\" parser_description=\"Generic Source\"", "parser_name=\"linux-audit\" parser_description=\"Linux Audit\"", "parser_name=\"linux-syslog\" parser_description=\"Linux Syslog\"", "parser_name=\"microsoft-windows\" parser_description=\"Microsoft Windows\"", "parser_name=\"ms-defender-stream-ecs\" parser_description=\"DEPRECATED - Microsoft Defender Stream\"", "parser_name=\"okta-ecs\" parser_description=\"DEPRECATED - Okta\"", "parser_name=\"paloalto-ecs\" parser_description=\"DEPRECATED - Palo Alto\"", "parser_name=\"ping-ecs\" parser_description=\"DEPRECATED - PingIdentity\"", "parser_name=\"proofpoint-tap\" parser_description=\"Proofpoint TAP\"", "parser_name=\"s3access-space-delimited\" parser_description=\"DEPRECATED - AWS S3 Server Access\"", "parser_name=\"syslog\" parser_description=\"Generic Source\"", "parser_name=\"syslog-utc\" parser_description=\"DEPRECATED - Broadcom Symantec ProxySG\"", "parser_name=\"zscaler-internetaccess\" parser_description=\"ZIA Nanolog Streaming Service\"", "parser_name=\"1password\" parser_description=\"DEPRECATED - 1password\"", "parser_name=\"1password-devicetrust\" parser_description=\"1Password Device Trust\"", "parser_name=\"1password-enterprise\" parser_description=\"1Password Enterprise\"", "parser_name=\"a10-thunder\" parser_description=\"A10 Thunder ADC\"", "parser_name=\"abnormal-emailsecurity\" parser_description=\"Abnormal Email Security\"", "parser_name=\"accesslog\" parser_description=\"Generic Source\"", "parser_name=\"ai_analyst_alert-syslog\" parser_description=\"DEPRECATED - Darktrace Detect\"", "parser_name=\"airlockdigital-airlock\" parser_description=\"Airlock Digital\"", "parser_name=\"akamai-api\" parser_description=\"Akamai API & App Protector\"", "parser_name=\"akamai-asec\" parser_description=\"Akamai Security Events\"", "parser_name=\"akamai-eaa\" parser_description=\"Akamai EAA\"", "parser_name=\"akamai-guardicore\" parser_description=\"Akamai Guardicore\"", "parser_name=\"akamai-zerotrust\" parser_description=\"Akamai ZeroTrust\"", "parser_name=\"alteon-syslog\" parser_description=\"DEPRECATED - Radware Alteon\"", "parser_name=\"apache-tomcat\" parser_description=\"Apache Tomcat\"", "parser_name=\"apm-syslog\" parser_description=\"DEPRECATED - F5 BIG-IP Access Policy Manager\"", "parser_name=\"appomni-threatdetection\" parser_description=\"Appomni Threat Detection\"", "parser_name=\"arista-ndr\" parser_description=\"Arista NDR\"", "parser_name=\"armis-centrixiot\" parser_description=\"DEPRECATED - Armis Centrix IoT\"", "parser_name=\"armis-centrixiot\" parser_description=\"Armis Centrix IoT\"", "parser_name=\"aruba-clearpass\" parser_description=\"Aruba ClearPass\"", "parser_name=\"aruba-orchestrator\" parser_description=\"Aruba Orchestrator\"", "parser_name=\"asimily-iomt\" parser_description=\"Asimily Insight Holistic IoMT\"", "parser_name=\"asimily-iomt-json\" parser_description=\"DEPRECATED - Asimily Insight Holistic IoMT\"", "parser_name=\"audit-log\" parser_description=\"Generic Source\"", "parser_name=\"aws-fsx\" parser_description=\"Amazon FSx for Windows File Server\"", "parser_name=\"aws-guardduty\" parser_description=\"AWS GuardDuty\"", "parser_name=\"aws-network-firewall\" parser_description=\"AWS Network Firewall\"", "parser_name=\"aws-rds-mysql\" parser_description=\"AWS RDS for MySQL\"", "parser_name=\"aws-s3serveraccess\" parser_description=\"AWS S3 Server Access\"", "parser_name=\"aws-security-hub\" parser_description=\"AWS Security Hub\"", "parser_name=\"aws-securitylake\" parser_description=\"AWS Security Lake\"", "parser_name=\"aws-vpcflow\" parser_description=\"AWS VPC Flow\"", "parser_name=\"aws-waf\" parser_description=\"Amazon WAF\"", "parser_name=\"barracuda-emailgatewaydefense\" parser_description=\"Barracuda Email Gateway Defense\"", "parser_name=\"beyondtrust-beyondinsight\" parser_description=\"Beyondtrust Beyond Insight\"", "parser_name=\"bluecoat-proxy-cloud\" parser_description=\"Bluecoat Proxy Cloud\"", "parser_name=\"bluecoat-proxy-onprem\" parser_description=\"Bluecoat Proxy On Prem\"", "parser_name=\"broadcom-proxysg\" parser_description=\"Broadcom Symantec ProxySG\"", "parser_name=\"broadcom-symantec-endpointprotection\" parser_description=\"Broadcom Symantec Endpoint Protection\"", "parser_name=\"cef-latest\" parser_description=\"DEPRECATED - Claroty CTD\"", "parser_name=\"cetu-pipelines\" parser_description=\"CeTu Pipelines\"", "parser_name=\"checkpoint-ngfw\" parser_description=\"Check Point firewall\"", "parser_name=\"checkpoint-ngfw\" parser_description=\"DEPRECATED - Check Point firewall\"", "parser_name=\"cisco-asa\" parser_description=\"Cisco ASA\"", "parser_name=\"cisco-duo\" parser_description=\"Cisco Duo MFA\"", "parser_name=\"cisco-firepower\" parser_description=\"Cisco Firepower\"", "parser_name=\"cisco-ios\" parser_description=\"Cisco IOS\"", "parser_name=\"cisco-ise\" parser_description=\"Cisco ISE\"", "parser_name=\"cisco-ise-syslog\" parser_description=\"DEPRECATED - Cisco ISE\"", "parser_name=\"cisco-meraki\" parser_description=\"Cisco Meraki\"", "parser_name=\"cisco-meraki\" parser_description=\"DEPRECATED - Cisco Meraki\"", "parser_name=\"cisco-prime\" parser_description=\"Cisco Prime\"", "parser_name=\"cisco-securenetworkanalytics\" parser_description=\"Cisco Secure Network Analytics\"", "parser_name=\"cisco-seg\" parser_description=\"Cisco SEG\"", "parser_name=\"cisco-threatgrid\" parser_description=\"Cisco Threatgrid\"", "parser_name=\"cisco-umbrella\" parser_description=\"Cisco Umbrella\"", "parser_name=\"cisco_seg_ecs\" parser_description=\"DEPRECATED - Cisco SEG\"", "parser_name=\"ciscoasa-ecs\" parser_description=\"DEPRECATED - Cisco ASA\"", "parser_name=\"ciscoumbrella\" parser_description=\"DEPRECATED - Cisco Umbrella\"", "parser_name=\"citrix-netscaler-adc\" parser_description=\"Citrix Netscaler ADC\"", "parser_name=\"citrix-netscaler-syslog\" parser_description=\"DEPRECATED - Citrix Netscaler Application Delivery Controller\"", "parser_name=\"citrix-netscaler-waf-cef\" parser_description=\"DEPRECATED - Citrix Netscaler Application Delivery Controller\"", "parser_name=\"claroty-ctd\" parser_description=\"Claroty CTD\"", "parser_name=\"clearpass-syslog\" parser_description=\"DEPRECATED - Aruba ClearPass\"", "parser_name=\"cloudflare-one\" parser_description=\"Cloudflare Zero Trust\"", "parser_name=\"cloudflare-waf\" parser_description=\"Cloudflare WAF\"", "parser_name=\"cloudflareone-ecs\" parser_description=\"DEPRECATED - Cloudflare\"", "parser_name=\"cloudtrail\" parser_description=\"DEPRECATED - AWS CloudTrail\"", "parser_name=\"corelight-ecs\" parser_description=\"DEPRECATED - Corelight\"", "parser_name=\"corelight-es\" parser_description=\"Generic Source\"", "parser_name=\"corelight-ids\" parser_description=\"Corelight IDS\"", "parser_name=\"corelight-json\" parser_description=\"Generic Source\"", "parser_name=\"crowdstrike-falcon\" parser_description=\"Crowdstrike Falcon\"", "parser_name=\"crowdstrike-saas-security\" parser_description=\"Crowdstrike Falcon Shield\"", "parser_name=\"cwaf-cef\" parser_description=\"DEPRECATED - Imperva CWAF\"", "parser_name=\"cyberark-vault\" parser_description=\"Cyberark Vault\"", "parser_name=\"cynerio-healthcarendr\" parser_description=\"Cynerio Healthcare NDR\"", "parser_name=\"darktrace-detect\" parser_description=\"DEPRECATED - Darktrace Detect\"", "parser_name=\"darktrace-detect\" parser_description=\"Darktrace Detect\"", "parser_name=\"deception\" parser_description=\"DEPRECATED - ZScaler Deception\"", "parser_name=\"dell-isilon\" parser_description=\"Dell Isilon\"", "parser_name=\"dell-powerprotect-datadomain\" parser_description=\"Dell Powerprotect Datadomain\"", "parser_name=\"dell-powerprotect-datamanager\" parser_description=\"Dell Powerprotect Datamanager\"", "parser_name=\"dlp-cef\" parser_description=\"DEPRECATED - Forcepoint DLP\"", "parser_name=\"dragos-notifications\" parser_description=\"Dragos Syslog Notifications\"", "parser_name=\"duo-activity-json\" parser_description=\"DEPRECATED - Cisco Duo MFA\"", "parser_name=\"duo-admin-json\" parser_description=\"DEPRECATED - Cisco Duo MFA\"", "parser_name=\"duo-authentication-json\" parser_description=\"DEPRECATED - Cisco Duo MFA\"", "parser_name=\"duo-telephony-json\" parser_description=\"DEPRECATED - Cisco Duo MFA\"", "parser_name=\"duo-trustmonitor-json\" parser_description=\"DEPRECATED - Cisco Duo MFA\"", "parser_name=\"epic-ehr\" parser_description=\"Epic EHR\"", "parser_name=\"extrahop-ecs\" parser_description=\"DEPRECATED - Extrahop\"", "parser_name=\"extrahop-revealx360\" parser_description=\"Extrahop Revealx360\"", "parser_name=\"f5networks-bigip\" parser_description=\"F5 BIG-IP\"", "parser_name=\"f5networks-nginx\" parser_description=\"NGINX\"", "parser_name=\"fidelis-audit\" parser_description=\"Fidelis Audit\"", "parser_name=\"fidelis-ids\" parser_description=\"Fidelis IDS\"", "parser_name=\"fireeye-nx\" parser_description=\"DEPRECATED - FireEye Network Security (NX)\"", "parser_name=\"firepower-syslog\" parser_description=\"DEPRECATED - Cisco Firepower\"", "parser_name=\"forcepoint-dlp\" parser_description=\"Forcepoint DLP\"", "parser_name=\"forcepoint-ngfw\" parser_description=\"Forcepoint NGFW\"", "parser_name=\"forgerock-ecs\" parser_description=\"DEPRECATED - Forgerock\"", "parser_name=\"forgerock-identity\" parser_description=\"Forgerock Identity\"", "parser_name=\"fortimail\" parser_description=\"DEPRECATED - Fortinet Fortimail\"", "parser_name=\"fortinet-ecs\" parser_description=\"DEPRECATED - Fortinet\"", "parser_name=\"fortinet-fortigate\" parser_description=\"DEPRECATED - Fortinet Fortigate\"", "parser_name=\"fortinet-fortigate\" parser_description=\"Fortinet Fortigate\"", "parser_name=\"fortinet-fortimail\" parser_description=\"Fortinet Fortimail\"", "parser_name=\"fsx-xml\" parser_description=\"DEPRECATED - Amazon FSx for Windows File Server\"", "parser_name=\"gigamon-ami\" parser_description=\"Gigamon AMI\"", "parser_name=\"google-chrome-enterprise\" parser_description=\"Google Chrome Enterprise Logs\"", "parser_name=\"google-cloud-pubsub\" parser_description=\"Google Cloud Pub/Sub\"", "parser_name=\"Google_Chrome_Enterprise\" parser_description=\"DEPRECATED - Google Chrome Enterprise Logs\"", "parser_name=\"guardduty-json\" parser_description=\"DEPRECATED - AWS GuardDuty\"", "parser_name=\"gytpol-misconfigurations\" parser_description=\"GYTPOL\"", "parser_name=\"haproxy\" parser_description=\"HAproxy\"", "parser_name=\"haproxy-syslog\" parser_description=\"DEPRECATED - HAproxy\"", "parser_name=\"imperva-cloudwaf\" parser_description=\"Imperva CWAF\"", "parser_name=\"infoblox-nios\" parser_description=\"Infoblox NIOS DDI\"", "parser_name=\"ironscales-esp\" parser_description=\"Ironscales ESP\"", "parser_name=\"isilon-syslog\" parser_description=\"DEPRECATED - Dell Isilon\"", "parser_name=\"island\" parser_description=\"DEPRECATED - Island\"", "parser_name=\"island-enterprisebrowser\" parser_description=\"Island\"", "parser_name=\"json-for-action\" parser_description=\"Generic Source\"", "parser_name=\"juniper-srx\" parser_description=\"Juniper SRX\"", "parser_name=\"kv-millis\" parser_description=\"Generic Source\"", "parser_name=\"linux-journald\" parser_description=\"Linux Journald\"", "parser_name=\"logbinder-sharepoint\" parser_description=\"Logbinder Sharepoint\"", "parser_name=\"menlo-ecs\" parser_description=\"DEPRECATED - Menlo\"", "parser_name=\"menlo-msip\" parser_description=\"Menlo MSIP\"", "parser_name=\"microsoft-365\" parser_description=\"Microsoft 365\"", "parser_name=\"microsoft-azure-activity\" parser_description=\"Microsoft Azure Activity\"", "parser_name=\"microsoft-azure-ad\" parser_description=\"Microsoft Azure AD\"", "parser_name=\"microsoft-azure-firewall\" parser_description=\"Microsoft Azure Firewall\"", "parser_name=\"microsoft-azure-nsg\" parser_description=\"Microsoft Azure NSG\"", "parser_name=\"microsoft-azure-vm\" parser_description=\"Microsoft Azure VM\"", "parser_name=\"microsoft-azure-vpn\" parser_description=\"Microsoft Azure VPN\"", "parser_name=\"microsoft-azure-waf\" parser_description=\"Microsoft Azure WAF\"", "parser_name=\"microsoft-defender-cloud\" parser_description=\"Microsoft Defender Cloud\"", "parser_name=\"microsoft-defender-cloudapps\" parser_description=\"Microsoft Defender Cloudapps\"", "parser_name=\"microsoft-defender-identity\" parser_description=\"Microsoft Defender Identity\"", "parser_name=\"microsoft-defendero365-eventhubs\" parser_description=\"Microsoft Defender O365 Eventhubs\"", "parser_name=\"microsoft-defendero365-graphapi\" parser_description=\"Microsoft Defender O365 GraphAPI\"", "parser_name=\"microsoft-entra-id\" parser_description=\"Microsoft Entra ID\"", "parser_name=\"microsoft-exchange\" parser_description=\"Microsoft Exchange\"", "parser_name=\"microsoft-iis\" parser_description=\"Microsoft IIS\"", "parser_name=\"microsoft-intune\" parser_description=\"Microsoft Intune\"", "parser_name=\"microsoft-o365-messagetrace\" parser_description=\"Microsoft MessageTrace\"", "parser_name=\"microsoft-sentinel\" parser_description=\"Microsoft Sentinel\"", "parser_name=\"microsoft-sql-audit\" parser_description=\"Microsoft SQL Audit\"", "parser_name=\"microsoft-sql-errorlog\" parser_description=\"Microsoft SQL Errorlog\"", "parser_name=\"microsoft-sysmon\" parser_description=\"Microsoft Sysmon\"", "parser_name=\"microsoft-windows-dhcp-client\" parser_description=\"Microsoft Windows DHCP Client\"", "parser_name=\"microsoft-windows-dhcp-server\" parser_description=\"Microsoft Windows Server DHCP\"", "parser_name=\"microsoft-windows-dhcpserver\" parser_description=\"DEPRECATED - Microsoft Windows DHCP Server\"", "parser_name=\"microsoft-windows-dns\" parser_description=\"Microsoft Windows DNS\"", "parser_name=\"microsoft_defender\" parser_description=\"DEPRECATED - Microsoft Defender\"", "parser_name=\"mimecast-ecs\" parser_description=\"DEPRECATED - Mimecast\"", "parser_name=\"mimecast-emailsecurity\" parser_description=\"Mimecast Emailsecurity\"", "parser_name=\"model_breach_alert-syslog\" parser_description=\"DEPRECATED - Darktrace Detect\"", "parser_name=\"ms-defender-graph-ecs\" parser_description=\"DEPRECATED - Microsoft Defender Graph\"", "parser_name=\"nasuni-edge\" parser_description=\"Nasuni Management Console (NMC) and Nasuni Edge Appliances (NEA)\"", "parser_name=\"nasuni-fileserver\" parser_description=\"Nasuni Edge File Server\"", "parser_name=\"netgate-pfsense\" parser_description=\"PFSense Firewall\"", "parser_name=\"netskope-ecs\" parser_description=\"DEPRECATED - Netskope\"", "parser_name=\"netskope-sse\" parser_description=\"Netskope SSE\"", "parser_name=\"netskope-transaction\" parser_description=\"Netskope Transaction\"", "parser_name=\"nozomi-ids\" parser_description=\"Nozomi IDS\"", "parser_name=\"nozomi-networks\" parser_description=\"Nozomi Networks\"", "parser_name=\"nozomi-syslog\" parser_description=\"DEPRECATED - Nozomi IDS\"", "parser_name=\"obsidian-json\" parser_description=\"DEPRECATED - Obsidian Security\"", "parser_name=\"obsidian-securitydata\" parser_description=\"Obsidian Security\"", "parser_name=\"okta-sso\" parser_description=\"DEPRECATED - Okta SSO\"", "parser_name=\"okta-sso\" parser_description=\"Okta SSO\"", "parser_name=\"oneidentity-onelogin\" parser_description=\"OneLogin SSO\"", "parser_name=\"onelogin-json\" parser_description=\"DEPRECATED - OneLogin SSO\"", "parser_name=\"ordr-ordrai\" parser_description=\"OrdrAI Asset Intelligence Platform\"", "parser_name=\"paloalto-firewall-syslog\" parser_description=\"DEPRECATED - Palo Alto Networks\"", "parser_name=\"paloalto-ngfw\" parser_description=\"Palo Alto Networks\"", "parser_name=\"paloalto-prisma-access\" parser_description=\"Palo Alto Prisma Access\"", "parser_name=\"paloalto-prisma-sdwan\" parser_description=\"Palo Alto Prisma SD-WAN\"", "parser_name=\"pfsense-syslog\" parser_description=\"DEPRECATED - PFSense Firewall\"", "parser_name=\"pingidentity-pingone\" parser_description=\"PingIdentity PingOne\"", "parser_name=\"proofpoint-casb\" parser_description=\"Proofpoint CASB\"", "parser_name=\"proofpoint-emailprotection\" parser_description=\"Proofpoint Email Protection\"", "parser_name=\"proofpoint-seg\" parser_description=\"Proofpoint SEG\"", "parser_name=\"proofpoint-tap-ecs\" parser_description=\"DEPRECATED - Proofpoint TAP\"", "parser_name=\"pulse-secure-vpn\" parser_description=\"Pulse Secure VPN\"", "parser_name=\"qualys-vm\" parser_description=\"Qualys Vulnerability Management\"", "parser_name=\"radware-alteon\" parser_description=\"Radware Cloud WAF\"", "parser_name=\"radware-cloud-waf\" parser_description=\"Radware Cloud WAF\"", "parser_name=\"raynet-raynetone\" parser_description=\"Raynet One\"", "parser_name=\"redhat-jboss\" parser_description=\"RedHat Jboss\"", "parser_name=\"rubrik-securitycloud\" parser_description=\"Rubrik Security Cloud\"", "parser_name=\"sailpoint-identitynow\" parser_description=\"Sailpoint Identitynow\"", "parser_name=\"saltsecurity-apisecurity\" parser_description=\"Salt Security\"", "parser_name=\"seraphic-seraphicsecurity\" parser_description=\"Seraphic Security\"", "parser_name=\"serilog-jsonformatter\" parser_description=\"Generic Source\"", "parser_name=\"skyhigh-ecs\" parser_description=\"DEPRECATED - Skyhigh\"", "parser_name=\"skyhigh-sse\" parser_description=\"Skyhigh SSE\"", "parser_name=\"softerra-adaxes\" parser_description=\"Softerra Adaxes\"", "parser_name=\"sonicwall-sonicos\" parser_description=\"Sonicwall SonicOS\"", "parser_name=\"sophos-firewall\" parser_description=\"Sophos Firewall\"", "parser_name=\"squid-proxy\" parser_description=\"Squid Proxy\"", "parser_name=\"srx-syslog\" parser_description=\"DEPRECATED - Juniper SRX\"", "parser_name=\"superna-datasecurityedition\" parser_description=\"Superna Security Edition Integration\"", "parser_name=\"syslog-utc\" parser_description=\"DEPRECATED - Cisco IOS\"", "parser_name=\"syslog-utc\" parser_description=\"DEPRECATED - Infoblox NIOS DDI\"", "parser_name=\"syslog-utc\" parser_description=\"Generic Source\"", "parser_name=\"sysmon\" parser_description=\"DEPRECATED - Microsoft Windows Sysmon\"", "parser_name=\"system_status_alert-syslog\" parser_description=\"DEPRECATED - Darktrace Detect\"", "parser_name=\"tausight-ephi\" parser_description=\"Tausight ePHI\"", "parser_name=\"tausight-json\" parser_description=\"DEPRECATED - Tausight ePHI\"", "parser_name=\"trellix-fireeyenx\" parser_description=\"FireEye Network Security (NX)\"", "parser_name=\"umbrella\" parser_description=\"DEPRECATED - Cisco Umbrella\"", "parser_name=\"varonis-datadvantage\" parser_description=\"Varonis Datadvantage\"", "parser_name=\"vectra-brain\" parser_description=\"Vectra Brain\"", "parser_name=\"vectra-ecs\" parser_description=\"DEPRECATED - Vectra\"", "parser_name=\"vectra-respondux\" parser_description=\"Vectra Respond UX\"", "parser_name=\"veeam-veeamdataplatform\" parser_description=\"Veeam Data Platform\"", "parser_name=\"veriti-insight\" parser_description=\"Veriti Insight\"", "parser_name=\"vmware-esxi\" parser_description=\"VMWare ESXI\"", "parser_name=\"vmware-esxi-ecs\" parser_description=\"DEPRECATED - VMWare ESXI\"", "parser_name=\"vmware-uem\" parser_description=\"VMWare Workspace One UEM\"", "parser_name=\"vmware-vcenter\" parser_description=\"VMWare vCenter\"", "parser_name=\"vpcflow_default\" parser_description=\"DEPRECATED - AWS VPC Flow\"", "parser_name=\"waf-json\" parser_description=\"DEPRECATED - Amazon WAF\"", "parser_name=\"watchguard-firebox\" parser_description=\"Watchguard Firebox\"", "parser_name=\"windows-dhcp-client\" parser_description=\"DEPRECATED - Microsoft Windows DHCP Client\"", "parser_name=\"windows-dhcp-server-csv\" parser_description=\"DEPRECATED - Microsoft Windows Server DHCP\"", "parser_name=\"windows-dns\" parser_description=\"DEPRECATED - Microsoft Windows DNS\"", "parser_name=\"workday\" parser_description=\"workday\"", "parser_name=\"zeek-json\" parser_description=\"Generic Source\"", "parser_name=\"zerotrust-json\" parser_description=\"DEPRECATED - CloudFlare ZeroTrust\"", "parser_name=\"zimperium-mtd-threatlog\" parser_description=\"Zimperiun Mobile Threat Defense (MTD)\"", "parser_name=\"zoom\" parser_description=\"Zoom\"", "parser_name=\"zoom-qss\" parser_description=\"DEPRECATED - Zoom QSS\"", "parser_name=\"zoom-qss\" parser_description=\"Zoom QSS\"", "parser_name=\"zscaler-deception\" parser_description=\"ZScaler Deception\"", "parser_name=\"zscaler-ecs\" parser_description=\"DEPRECATED - Zscaler\"", "parser_name=\"zscaler-privateaccess\" parser_description=\"Zscaler Private Access\"", "parser_name=\"zscaler-zpa-app-connector-status-json\" parser_description=\"DEPRECATED - Zscaler Private Access\"", "parser_name=\"zscaler-zpa-app-protection-json\" parser_description=\"DEPRECATED - Zscaler Private Access\"", "parser_name=\"zscaler-zpa-audit-json\" parser_description=\"DEPRECATED - Zscaler Private Access\"", "parser_name=\"zscaler-zpa-browser-access-json\" parser_description=\"DEPRECATED - Zscaler Private Access\"", "parser_name=\"zscaler-zpa-user-activity-json\" parser_description=\"DEPRECATED - Zscaler Private Access\"", "parser_name=\"zscaler-zpa-user-status-json\" parser_description=\"DEPRECATED - Zscaler Private Access\"", "parser_name=\"zscalernss-dns\" parser_description=\"DEPRECATED - ZIA Nanolog Streaming Service\"", "parser_name=\"zscalernss-fw\" parser_description=\"DEPRECATED - ZIA Nanolog Streaming Service\"", "parser_name=\"zscalernss-tunnel\" parser_description=\"DEPRECATED - ZIA Nanolog Streaming Service\"", "parser_name=\"zscalernss-web\" parser_description=\"DEPRECATED - ZIA Nanolog Streaming Service"])
+          | kvParse()
+          | case {
+              parser_description=/deprecated/i
+              | parser_type := "deprecated";
+
+              *
+              | parser_type := "default"
+          }
+      }, include=[parser_name, parser_description, parser_type], name="default_parsers")
+      | !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | groupBy([#type],function=[])
+      | match(file="default_parsers", field=[#type], column=["parser_name"], include="parser_type", strict=false)
+      | default(value="custom", field=[parser_type])
+      | groupBy([parser_type])
+      | parser_type!="default"
+    end: now
+    start: 1h
+    width: 3
+    options:
+      default: {}
+      text-color: '#ff0000'
+      trellisShowBorders: false
+    visualization: single-value
+    title: Parsers
+    isLive: false
+    type: query
+  2ad5048d-8f31-41bd-af3d-1ac19da978bd:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | length("@rawstring")
+      | groupBy([#type], limit=max, function=[max("_length", as="Largest Event Size"), percentile("_length", percentiles=[95, 99])])
+      | case {
+          in(field="Largest Event Size", values=["1000", "1024", "2000", "2048", "4000", "4096", "8000", "8192"])
+          | indicator:="true";
+
+          "Largest Event Size">64000 AND "Largest Event Size"<66000
+          | indicator:="true";
+
+          *
+      }
+      | _95:=format(format="%.f", field=[_95])
+      | _99:=format(format="%.f", field=[_99])
+      | rename(field="Largest Event Size", as="Largest Event Size in bytes")
+      | rename(field="_95", as="95th Percentile in bytes")
+      | rename(field="_99", as="99th Percentile in bytes")
+      | default(value="N/A", field=[indicator])
+      | sort(indicator)
+    end: now
+    start: 1h
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Largest Event Size:
+          color:
+            conditions: []
+        indicator:
+          color:
+            conditions:
+            - color: '#C93637'
+              condition:
+                arg: 'true'
+                type: Equal
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Largest event size
+    isLive: false
+    type: query
+  0bc0db47-1e9a-4409-8771-ac0c8dc0dada:
+    x: 0
+    y: 11
+    height: 6
+    queryString: |-
+      #repo=3pi_connection_errors @dataConnectionID=?connection
+      | timeChart(@dataConnectionID)
+    end: now
+    start: 1h
+    width: 12
+    options:
+      legendPosition: right
+      series: {}
+      valueFormat: raw
+      legendLabelOverflow: full
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: Data connection errors over time
+    isLive: false
+    type: query
+  841ba1b3-e042-456b-a22e-0e64e6387495:
+    x: 0
+    height: 9
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | groupBy([#type],
+          function=[
+              {#Cps.version=* | count(as=Cps.version.pass_count)},
+              {#ecs.version=* | count(as=ecs.version.pass_count)},
+              {#Vendor=* | count(as=Vendor.pass_count)},
+              {#event.module=* | count(as=event.module.pass_count)},
+              {#event.dataset=* | count(as=event.dataset.pass_count)},
+              {#observer.type=* | count(as=observer.type.pass_count)},
+              {Parser.version=* | count(as=Parser.version.pass_count)},
+              {event.action=* | count(as=event.action.pass_count)},
+              count(as=events),
+              //{#error=true | count(as=errors)},
+              collect([#Cps.version, #ecs.version, Parser.version, #Vendor, #event.module, #event.dataset, event.action], limit=100)
+          ]
+      )
+      | Cps.version.pass_percent:=Cps.version.pass_count/events*100
+      | Cps.version:=round("Cps.version.pass_percent")
+      | ecs.version.pass_percent:=ecs.version.pass_count/events*100
+      | ecs.version:=round("ecs.version.pass_percent")
+      | Vendor.pass_percent:=Vendor.pass_count/events*100
+      | Vendor:=round("Vendor.pass_percent")
+      | event.module.pass_percent:=event.module.pass_count/events*100
+      | event.module:=round("event.module.pass_percent")
+      | event.dataset.pass_percent:=event.dataset.pass_count/events*100
+      | event.dataset:=round("event.dataset.pass_percent")
+      | observer.type.pass_percent:=observer.type.pass_count/events*100
+      | observer.type:=round("observer.type.pass_percent")
+      | _event.action:=event.action.pass_count/events*100
+      | _event.action:=round("_event.action")
+      | _Parser.version:=Parser.version.pass_count/events*100
+      | _Parser.version:=round("_Parser.version")
+      //| error_rate:=(errors/total)*100
+      | round("error_rate")
+      | select([#type, events, error_rate, Cps.version, ecs.version, _Parser.version, Vendor, event.module, event.dataset, _event.action, observer.type, #Cps.version, #ecs.version, Parser.version, #Vendor, #event.module, #event.dataset, event.action])
+      | sort(events)
+    end: now
+    start: 1h
+    width: 12
+    y: 1
+    interactions:
+    - name: See events
+      queryString: "// Suggested go to events query - may be incorrect for complex\
+        \ queries \n!in(field=\"#repo\", values=[\"falcon_for_it\", \"sensor_*\",\
+        \ \"base_sensor\", \"detections\", \"xdr_*\", \"fusion\", \"fcs_csp_events\"\
+        , \"foundry_*\", \"3pi_connection_errors\", \"risks\"])\n| #type=\"*\" #type=?_type\
+        \ \n| select([#repo, #type, @rawstring])"
+      useWidgetTimeWindow: true
+      arguments:
+        _type: '["{{fields.#type}}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        event.kind:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.dataset:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.dataset.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.outcome.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        _Parser.version:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Cps.version:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        ecs.version:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Vendor.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.category:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+          hidden: true
+        event.kind.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        ecs.version.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.module:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.module.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.outcome:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        error_rate:
+          color:
+            palette: Green yellow red
+            reversePalette: false
+            thresholds:
+            - value: 5
+        Vendor:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        observer.type.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        Cps.version.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+        event.category.pass_percent:
+          color:
+            palette: Green yellow red
+            reversePalette: true
+            thresholds:
+            - value: 90
+            - value: 95
+      row-numbers-enabled: true
+    visualization: table-view
+    title: Percent Coverage
+    isLive: false
+    type: query
+  21e5fa5a-e0c1-4e23-bdaa-35c80541f53a:
+    x: 0
+    y: 4
+    height: 7
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | length("@rawstring")
+      | mod := _length % 128
+      | _length := _length-mod
+      | groupBy([#type, _length], limit=max, function=[count()])
+      | _count>500
+      | table([#type, _count, _length], limit=max)
+    end: now
+    start: 1h
+    width: 12
+    options:
+      valueFormatY: raw
+      series: {}
+      xZero: false
+      valueFormatX: raw
+      yScaleType: linear
+      xAxisTitle: Event Count
+      legend: true
+      yAxisTitle: Event Size in bytes
+      symbolOpacity: 0.7
+      xScaleType: linear
+      symbolSize: 920
+      inputDataFormat: ''
+    visualization: scatter-chart
+    title: Distribution by event size and count
+    isLive: false
+    type: query
+  0a140e3f-6b4a-4b78-8666-c2e98dc69e32:
+    x: 0
+    y: 23
+    height: 10
+    queryString: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | #type=?type @dataConnectionID=?connection
+      | groupBy([#type], function=[fieldstats()])
+      | replace("#", with="", field=field)
+      | field!=/^(#|@|Vendor|Parser\.version|Cps\.version|ecs\.version|repo\.)/
+      | field=/(?<domain>[^\.]+)\./
+      | groupBy([#type, domain], function=[{sort(field, limit=20000) | collect([field], limit=20000)}], limit=max)
+      | format(format="%s=\"%s\"", field=[domain, field])
+      | groupBy([#type], function=collect([_format]), limit=max)
+      | kvParse(_format)
+      | drop([_format])
+    end: now
+    start: 1h
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Field Namesets
+    isLive: false
+    type: query
+  note-1732734196859-0:
+    x: 10
+    y: 0
+    height: 8
+    text: "# Data Sources\nreview data sources ingested including the error rate.\n\
+      \nerror rates greater than 5% warrant further investigation.\n\nRecommended\
+      \ next steps:\n* identify parsing error(s)\n* remediate/address root cause\n\
+      \      \n# Over time\nverify data sources are timestamped near-real time.\n\n\
+      consider expanding the widget time range to a 6-24 hour period for a holistic\
+      \ overview.\n\ndata sources reflecting a substantial lag, +1h, could be indicative\
+      \ of improper timestamp timezone parsing."
+    width: 2
+    title: Guidance
+    type: note
+  962266c1-dcd8-4e9e-badf-50a4f8df312c:
+    x: 0
+    y: 4
+    height: 5
+    queryString: |-
+      #repo=3pi_connection_errors
+      | groupBy([@dataConnectionID, @error_msg], function=[sum("error_count", as=error_count) ,collect([status_code])])
+      | sort(error_count)
+      | cloud:=?falcon_cloud
+      | link:=format(format="https://falcon.%s.crowdstrike.com/data-connectors/connectors/%s/details", field=[cloud, @dataConnectionID])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        link:
+          open-links-in-new-tab: true
+          render-as: link
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Data Connection Errors
+    isLive: false
+    type: query
+  note-1724211273327-1:
+    x: 0
+    y: 0
+    height: 1
+    text: ''
+    width: 12
+    title: Errors
+    type: note
+  note-1724211183326-0:
+    x: 0
+    y: 0
+    height: 1
+    text: ''
+    width: 12
+    title: Phase 1 - CPS Fields
+    type: note
+  note-1724764960118-0:
+    x: 0
+    y: 21
+    height: 2
+    text: '[Documentation](https://www.elastic.co/guide/en/ecs/current/ecs-field-reference.html)'
+    width: 12
+    title: Phase 3 - Domain Fields
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  connection:
+    label: Data Connection
+    query: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | groupBy([@dataConnectionID], function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: false
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 0
+    valueField: '@dataConnectionID'
+  falcon_cloud:
+    label: Falcon Cloud Environment
+    order: 2
+    values:
+      us-2: US-2
+      us-1: US-1
+    type: list
+    width: 1
+  type:
+    label: Parser
+    query: |-
+      !in(field="#repo", values=["falcon_for_it", "sensor_*", "base_sensor", "detections", "xdr_*", "fusion", "fcs_csp_events", "foundry_*", "3pi_connection_errors", "risks"])
+      | groupBy([#type], function=[])
+    timeInterval: 1h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: '#type'
