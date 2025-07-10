@@ -1,0 +1,690 @@
+sections:
+  section-1730869044095-0:
+    collapsed: false
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - a1c050eb-599b-4370-b090-a43f77a2cda7
+    - 3d97af66-ec2d-4c74-9cc9-9c7dc03c2722
+    order: 4
+    title: Traffic 及び Utm ログ
+  section-1730853820959-0:
+    collapsed: false
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - 19ed1d92-3aae-49bb-a736-3bf2e94302ae
+    - bc0f49e0-2545-40ee-85dc-ac11cb866a26
+    - c2521a9d-9736-470a-a726-1596a81cc39d
+    - ed2df1f3-9b48-4911-95e7-52521a5b2fb3
+    order: 2
+    title: 認証関連
+  section-1730871081719-2:
+    collapsed: false
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - f5c65e43-f731-4103-8232-c083e953cd9e
+    - 809138b8-2226-4dcd-b177-f7b6b9f801c6
+    - cc1270f8-175a-4ee4-885d-c6e4b1c12c6b
+    order: 0
+    title: 脅威インテリジェンス(IOC)上に存在するIP/ドメインとの通信有無
+  section-1730871072719-1:
+    collapsed: false
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - 2fc34849-bbde-433c-a724-f8abc912a93d
+    - c6620cb1-89e4-4d05-abe8-9f1004b2e8ba
+    - b627e5ba-574b-4a64-83fd-06e165402def
+    - 8da79cd4-3333-4235-bd95-b0987f74861a
+    order: 1
+    title: 通信を行っている国の傾向
+  section-1730871054718-0:
+    collapsed: false
+    timeSelector:
+      end: now
+      start: 1d
+    widgetIds:
+    - 0ee702b2-3c2e-4050-bf92-fb1145513f4d
+    - 497b51d3-72af-40e5-9b81-1622ee9b7d47
+    order: 3
+    title: コンピューター関連
+name: Prisma_Access_Dashboard
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: false
+  isLive: false
+  start: 1d
+widgets:
+  19859502-8526-488b-902a-ca38c1e7b0e3:
+    x: 8
+    y: 4
+    height: 4
+    queryString: |-
+      #Vendor=paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | groupBy([Vendor.type], function=count())
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 4
+    title: ログ種別毎の割合
+    isLive: false
+    type: query
+  b627e5ba-574b-4a64-83fd-06e165402def:
+    x: 6
+    y: 0
+    height: 5
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | worldMap(ip="source.ip")
+    end: now
+    start: 1y
+    width: 6
+    options:
+      autoRotate: false
+      projection: mercator
+      rotX: 3
+      zLevel: 1
+    visualization: world-map
+    title: 世界地図 -送信元IP-
+    isLive: false
+    type: query
+  2eb26fd0-1105-45c7-bb95-d7fec9f7301e:
+    x: 4
+    y: 4
+    description: アプリケーション利用状況
+    height: 4
+    queryString: |
+      #Vendor=paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | groupBy([Vendor.Application], function=count()) | sort(_count)
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 4
+    title: Application
+    isLive: false
+    type: query
+  19ed1d92-3aae-49bb-a736-3bf2e94302ae:
+    x: 4
+    y: 0
+    height: 4
+    queryString: '#Vendor="paloalto"|Vendor.LogType="GLOBALPROTECT"|Vendor.Stage="login"|Vendor.EventStatus="failure"|table(fields=[@timestamp,Vendor.SourceUserName,Vendor.SourceRegion,Vendor.PublicIPv4],limit=20000)'
+    end: now
+    start: 1d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: GlobalProtectログイン失敗イベント
+    isLive: false
+    type: query
+  ed2df1f3-9b48-4911-95e7-52521a5b2fb3:
+    x: 0
+    y: 4
+    height: 4
+    queryString: '#Vendor="paloalto"|Vendor.LogType="GLOBALPROTECT"|groupBy(field=Vendor.AuthMethod)'
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+      legendLabelOverflow: truncate
+      legend: true
+      enableTrellis: false
+      withLegendTitle: false
+    visualization: pie-chart
+    title: 認証方式
+    isLive: false
+    type: query
+  d220b9ae-389d-430e-ad73-919683ddf2ea:
+    x: 0
+    y: 4
+    description: Palo Altoのログに基づくURLカテゴリー
+    height: 4
+    queryString: |-
+      #Vendor=paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)| groupBy([Vendor.URLCategory], function=count())
+    visualization: pie-chart
+    end: now
+    start: 7d
+    width: 4
+    title: URLカテゴリー
+    isLive: false
+    type: query
+  bc0f49e0-2545-40ee-85dc-ac11cb866a26:
+    x: 0
+    y: 0
+    height: 4
+    queryString: '#Vendor="paloalto"|Vendor.LogType="GLOBALPROTECT"|groupBy(field=Vendor.EventStatus)'
+    end: now
+    start: 1d
+    width: 4
+    options:
+      legendPosition: right
+      series: {}
+      legendLabelOverflow: truncate
+      legend: true
+      enableTrellis: false
+      withLegendTitle: false
+    visualization: pie-chart
+    title: ログイン成功失敗の割合
+    isLive: false
+    type: query
+  8da79cd4-3333-4235-bd95-b0987f74861a:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | worldMap(ip="destination.ip")
+    end: now
+    start: 1y
+    width: 6
+    options:
+      autoRotate: false
+      projection: mercator
+      rotX: 3
+      zLevel: 1
+    visualization: world-map
+    title: 世界地図 -宛先IP-
+    isLive: false
+    type: query
+  f3bd6c44-49fa-4c8c-8838-fae194ed442e:
+    x: 8
+    y: 0
+    height: 4
+    queryString: |-
+      #Vendor=paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | timeChart(span=1d, series="event.action",function=count())
+    end: now
+    start: 7d
+    width: 4
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: ログAction毎のトレンド
+    isLive: false
+    type: query
+  3d97af66-ec2d-4c74-9cc9-9c7dc03c2722:
+    x: 0
+    y: 0
+    height: 7
+    queryString: |-
+      #Vendor = paloalto
+      | Vendor.LogType="TRAFFIC"
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | select([@timestamp,observer.name,Vendor.type,Vendor.subtype,ComputerName,Vendor.action,log.level,source.ip,source.port,url.domain,destination.ip,destination.port,network.protocol,destination.geo.country_name, network.application,url.path])
+      | default(value="Not Match", field=[ComputerName])
+      | join({#type=/falcon/i AND #event_simpleName=NetworkConnectIP4},field=source.ip, key=LocalAddressIP4,limit=200000,mode=left, include=[ComputerName])
+    end: now
+    start: 1h
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        destination.bytes:
+          data-type: bytes
+        source.bytes:
+          data-type: bytes
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Traffic ログ
+    isLive: false
+    type: query
+  0ee702b2-3c2e-4050-bf92-fb1145513f4d:
+    x: 5
+    height: 5
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | default(value="Not Match", field=[ComputerName])
+      | join({#type=/falcon/i AND #event_simpleName=NetworkConnectIP4}, field=source.ip, key=LocalAddressIP4,limit=200000, mode=left, include=[ComputerName])
+      | ComputerName="Not Match"
+      | groupBy([source.ip], function={[collect([source.mac]),count()]})
+      | sort(_count, order=desc)
+    end: now
+    start: 1d
+    width: 7
+    y: 0
+    interactions:
+    - name: Falconイベント検索 -管理対象外アセット(要Discoverライセンス)-
+      urlEncodeArgs: true
+      urlTemplate: /discover/assets/unmanaged?filter=network_interfaces.local_ip%3A%27{{
+        fields.source.ip }}%27
+      openInNewTab: true
+      type: customlink
+    - name: Falconイベント検索 -サポート対象外アセット(要Discoverライセンス)-
+      urlEncodeArgs: true
+      urlTemplate: /discover/assets/unsupported?filter=network_interfaces.local_ip%3A%27{{
+        fields.source.ip }}%27
+      openInNewTab: true
+      type: customlink
+    - name: Falconイベント検索 -送信元IP-
+      urlEncodeArgs: true
+      urlTemplate: /investigate/dashboards/ip-search?isLive=false&sharedTime=true&sourceip={{
+        fields.source.ip }}&start=7d
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: FalconセンサーイベントとマッチしなかったIPアドレス
+    isLive: false
+    type: query
+  809138b8-2226-4dcd-b177-f7b6b9f801c6:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | ioc:lookup(field=url.domain, type=domain, confidenceThreshold=Unverified, strict=true)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.Domain")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | table([ IOC.Actor,IOC.Confidence, IOC.Domain, @timestamp, ComputerName, source.ip, destination.ip, ioc[0].labels], limit=1000)
+      | join({#type=/falcon/i AND #event_simpleName=DnsRequest}, field=source.ip, key=LocalAddressIP4,limit=200000,mode=left, include=[ComputerName])
+    end: now
+    start: 1d
+    width: 12
+    y: 4
+    interactions:
+    - name: Falconイベント検索 -宛先IP-
+      urlEncodeArgs: true
+      urlTemplate: /investigate/dashboards/search-by-ip-address?destip={{ fields.destination.ip
+        }}&isLive=false&sharedTime=true&start=7d
+      openInNewTab: true
+      type: customlink
+    - name: Falconイベント検索 -送信元IP-
+      urlEncodeArgs: true
+      urlTemplate: /investigate/dashboards/ip-search?isLive=false&sharedTime=true&sourceip={{
+        fields.source.ip }}&start=7d
+      openInNewTab: true
+      type: customlink
+    - name: Falconイベント検索 -宛先ドメイン-
+      urlEncodeArgs: true
+      urlTemplate: /investigate/dashboards/domain-search?domain={{ fields.IOC.Domain
+        }}&isLive=false&sharedTime=true&start=7d
+      openInNewTab: true
+      type: customlink
+    - arguments:
+        Destination: '["{{ fields.destination.ip }}"]'
+      name: 宛先IPでフィルタ
+      type: updateparameters
+      useWidgetTimeWindow: true
+    - arguments:
+        Source: '["{{ fields.source.ip }}"]'
+      name: 送信元IPでフィルタ
+      type: updateparameters
+      useWidgetTimeWindow: true
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        IOC.Actor:
+          color:
+            conditions:
+            - color: '#C93637'
+              condition:
+                arg: None Listed
+                type: NotEqual
+        IOC.Confidence:
+          color:
+            conditions:
+            - color: '#126cc6'
+              condition:
+                arg: ''
+                type: Equal
+      row-numbers-enabled: false
+    visualization: table-view
+    title: 宛先ドメインと脅威インテリジェンス(IOC)のマッチング
+    isLive: false
+    type: query
+  2fc34849-bbde-433c-a724-f8abc912a93d:
+    x: 6
+    y: 5
+    height: 5
+    queryString: |
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(source.ip)
+      | top(source.ip.country)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 6
+    title: 割合 -送信元IP-
+    isLive: false
+    type: query
+  cc1270f8-175a-4ee4-885d-c6e4b1c12c6b:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ioc:lookup(field=destination.ip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ipLocation(ioc[0].indicator)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.IP")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | rename(ioc[0].indicator.country, as="IOC.Country")
+      | ioc[0].labels=/actor/i
+    end: now
+    start: 1d
+    width: 12
+    y: 0
+    interactions:
+    - name: Falconイベント検索 -宛先IP-
+      urlEncodeArgs: true
+      urlTemplate: /investigate/dashboards/search-by-ip-address?destip={{ fields.destination.ip
+        }}&isLive=false&sharedTime=true&start=7d
+      openInNewTab: true
+      type: customlink
+    - name: Falconイベント検索 -送信元IP-
+      urlEncodeArgs: true
+      urlTemplate: /investigate/dashboards/ip-search?isLive=false&sharedTime=true&sourceip={{
+        fields.source.ip }}&start=7d
+      openInNewTab: true
+      type: customlink
+    - arguments:
+        Destination: '["{{ fields.destination.ip }}"]'
+      name: 宛先IPでフィルタ
+      type: updateparameters
+      useWidgetTimeWindow: true
+    - arguments:
+        Source: '["{{ fields.source.ip }}"]'
+      name: 送信元IPでフィルタ
+      type: updateparameters
+      useWidgetTimeWindow: true
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        IOC.Actor:
+          color:
+            conditions:
+            - color: '#C93637'
+              condition:
+                arg: None Listed
+                type: NotEqual
+      row-numbers-enabled: false
+    visualization: table-view
+    title: 宛先IPと脅威インテリジェンス(IOC)のマッチング
+    isLive: false
+    type: query
+  497b51d3-72af-40e5-9b81-1622ee9b7d47:
+    x: 0
+    y: 0
+    height: 5
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | default(value="Not Match", field=[ComputerName])
+      | join({#type=/falcon/i AND #event_simpleName=NetworkConnectIP4}, field=source.ip, key=LocalAddressIP4,limit=200000, mode=left, include=[ComputerName])
+      |groupBy(ComputerName)
+    end: now
+    start: 1d
+    width: 5
+    options:
+      legendPosition: right
+      series: {}
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Falconセンサーイベントと相関したホスト名
+    isLive: false
+    type: query
+  ec92bd09-ab7c-4205-a9ce-6e80939c7617:
+    x: 8
+    y: 8
+    height: 4
+    queryString: |
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?VendorAction, ignoreCase=true)
+      | cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | default(value="Not Match", field=[ComputerName])
+      | join({#type=/falcon/i AND #event_simpleName=NetworkConnectIP4}, field=source.ip, key=LocalAddressIP4,limit=200000, mode=left, include=[ComputerName])
+      |groupBy([ComputerName],function={[sum(source.bytes)]})
+    end: now
+    start: 30d
+    width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: 各コンピュータの通信量
+    isLive: false
+    type: query
+  e2a6ec05-2ddc-49a6-bc65-cb21a45f41dc:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #Vendor = paloalto
+      | Vendor.Application = *
+      | timeChart(span=60min, limit=20, series=Vendor.Application)
+    end: now
+    start: 15m
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: アプリケーション利用状況
+    isLive: false
+    type: query
+  f5c65e43-f731-4103-8232-c083e953cd9e:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | !cidr(source.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ioc:lookup(field=source.ip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ipLocation(ioc[0].indicator)
+      | case {
+          ioc[0].labels=Actor*
+            | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
+          * | iocActor:="None Listed" ;
+        }
+      | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
+      | rename(ioc[0].indicator, as="IOC.IP")
+      | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
+      | rename(iocActor, as="IOC.Actor")
+      | rename(ioc[0].indicator.country, as="IOC.Country")
+      | ioc[0].labels=/actor/i
+      | table([IOC.Actor, IOC.Confidence, IOC.IP, @timestamp, source.ip, destination.ip, ioc[0].labels], limit=1000)
+    end: now
+    start: 1d
+    width: 12
+    y: 8
+    interactions:
+    - conditions:
+      - argument: ''
+        fieldName: destination.ip
+        operator: present
+      name: Falconホスト検索 -通信先IP-
+      urlEncodeArgs: true
+      urlTemplate: /investigate/dashboards/ip-search?isLive=false&sharedTime=true&sourceip={{
+        fields.destination.ip }}&start=7d
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        IOC.Actor:
+          color:
+            conditions:
+            - color: '#C93637'
+              condition:
+                arg: None Listed
+                type: NotEqual
+      row-numbers-enabled: false
+    visualization: table-view
+    title: 送信元IPと脅威インテリジェンス(IOC)のマッチング
+    isLive: false
+    type: query
+  c6620cb1-89e4-4d05-abe8-9f1004b2e8ba:
+    x: 0
+    y: 5
+    height: 5
+    queryString: |
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | !cidr(destination.ip, subnet=["224.0.0.0/4", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8", "169.254.0.0/16", "0.0.0.0/32"])
+      | ipLocation(destination.ip)
+      | top(destination.ip.country)
+    visualization: pie-chart
+    end: now
+    start: 1d
+    width: 6
+    title: 割合 -宛先IP-
+    isLive: false
+    type: query
+  a1c050eb-599b-4370-b090-a43f77a2cda7:
+    x: 0
+    y: 7
+    height: 7
+    queryString: |-
+      #Vendor = paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | select([@timestamp,observer.name,Vendor.type,Vendor.subtype,ComputerName,event.action,Vendor.action,log.level,source.ip,source.port,url.domain,destination.ip,destination.port,network.protocol,destination.geo.country_name, network.application,url.path])
+      | default(value="Not Match", field=[ComputerName])
+      | join({#type=/falcon/i AND #event_simpleName=NetworkConnectIP4},field=source.ip, key=LocalAddressIP4,limit=200000,mode=left, include=[ComputerName])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        destination.bytes:
+          data-type: bytes
+        source.bytes:
+          data-type: bytes
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Utmログ
+    isLive: false
+    type: query
+  8afd19f9-1163-4bb9-97e0-1b3b8d5c233f:
+    x: 0
+    y: 0
+    height: 4
+    queryString: |-
+      #Vendor=paloalto
+      | source.ip=~wildcard(?Source, ignoreCase=true)
+      | destination.ip=~wildcard(?Destination, ignoreCase=true)
+      | event.action=~wildcard(?EventAction, ignoreCase=true)
+      | timeChart(span=1d)
+    end: now
+    start: 15m
+    width: 8
+    options:
+      connect-points: false
+      imputation: none
+    visualization: time-chart
+    title: ログ量推移
+    isLive: false
+    type: query
+  c2521a9d-9736-470a-a726-1596a81cc39d:
+    x: 4
+    y: 4
+    height: 4
+    queryString: '#Vendor="paloalto"|Vendor.LogType="GLOBALPROTECT"|Vendor.Stage="login"|Vendor.EventStatus="success"|table(fields=[@timestamp,Vendor.SourceUserName,Vendor.SourceRegion,Vendor.PublicIPv4],limit=20000)'
+    end: now
+    start: 1d
+    width: 8
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: GlobalProtectログイン成功ユーザ
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  Destination:
+    label: DestinationIP
+    query: groupby(destination.ip)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 3
+    valueField: destination.ip
+  Source:
+    label: SourceIP
+    query: groupby(source.ip)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 2
+    valueField: source.ip
