@@ -72,7 +72,7 @@ sources:
     ## Increase this value if you expect larger syslog messages. 
     ## Be cautious when increasing this value, as it affects memory usage and network bandwidth.
     ## The max value is 950000 bytes.
-    maxEventSize: 900000 
+    maxEventSize: 2048
      
 ## Each sink will have a unique token and url that correspond to Data Connector you wish to send data to.     
 sinks:
@@ -87,10 +87,9 @@ sinks:
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none  
-    ## This sets the maximum single event size to 900KB. You can change as needed.
-    maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 12000000.
-    maxBatchSize: 12000000
+    ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
+    ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
+    #maxBatchSize: 28000000
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
     #compression: gzip
     #compressionLevel: 9
@@ -114,10 +113,9 @@ sinks:
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none  
-    ## This sets the maximum single event size to 900KB. You can change as needed.
-    maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 12000000.
-    maxBatchSize: 12000000
+    ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
+    ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
+    #maxBatchSize: 28000000
     ## Uncomment if you would like to force a specific level of gzip compression. 9 is the highest.
     #compression: gzip
     #compressionLevel: 9
@@ -139,10 +137,9 @@ sinks:
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
-    ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
-    maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a single batch of events. The max value is maxBatchSize: 12000000.
-    maxBatchSize: 12000000
+    ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
+    ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
+    #maxBatchSize: 28000000
     ## Uncomment if you would like to force a specific level of type and level compression. 9 is the highest.
     ## Default is "auto", which attempts "gzip" and its default compression but falls back to "none" if unsupported.
     #compression: gzip
@@ -169,10 +166,9 @@ sinks:
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Keep this option as "none" unless you actually need a proxy.
     proxy: none
-    ## This sets the maximum single event size (bytes). The max value is maxEventSize: 950000.
-    maxEventSize: 910000
-    ## This sets the maximum payload size (bytes) for a batch of events being uploaded together. The max value is maxBatchSize: 12000000.
-    maxBatchSize: 12000000
+    ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
+    ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
+    #maxBatchSize: 28000000
     ## Uncomment if you would like to force a specific level of type and level compression. 9 is the highest.
     ## Default is "auto", which attempts "gzip" and its default compression but falls back to "none" if unsupported.
     #compression: gzip
