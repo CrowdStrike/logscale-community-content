@@ -26,6 +26,10 @@ sources:
     type: syslog
     mode: udp
     port: 1514
+    ## Optional: Max allowed event size (default = 2048 bytes), messages larger than this will be truncated
+    ## Increase this value if you expect larger syslog messages. 
+    ## Be cautious when increasing this value, as it affects memory usage and network bandwidth.
+    ## The max value is 950000 bytes.
     maxEventSize: 2048
     sink: next-gen-siem-syslog-udp
 
@@ -40,8 +44,9 @@ sinks:
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
-    maxEventSize: 910000
-    maxBatchSize: 12000000
+    ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
+    ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
+    #maxBatchSize: 28000000
     workers: 4
   
   ## This sink receives data from "syslog_udp_1514" source above  
@@ -52,6 +57,7 @@ sinks:
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
     ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
-    maxEventSize: 910000
-    maxBatchSize: 12000000
+    ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
+    ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
+    #maxBatchSize: 28000000
     workers: 4
