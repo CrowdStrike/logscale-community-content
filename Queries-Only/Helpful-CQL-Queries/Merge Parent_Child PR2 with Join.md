@@ -13,22 +13,21 @@ aid=?aid #event_simpleName=ProcessRollup2 ImageFileName=/\\outlook.exe/i
 | groupBy([aid, FileName, CommandLine, ChildFileName, ChildCLI, MD5], limit=max)
 ```
 
-#### Version with user parameters (caution: you will need to include .* instead of * for a broader search to work, or simply leave the parameters empty):
+#### Version with wildcard parameters
 ```
 #event_simpleName=ProcessRollup2
-| aid=?aid
-| regex(regex=?{ParentFile=".*"}, field=ImageFileName, flags="mi")
+| aid=?{aid=*}
+| ImageFileName =~ wildcard(?{ImageFileName="*"}, ignoreCase=true, includeEverythingOnAsterisk=true)
 | ImageFileName=/(\/|\\)(?<FileName>\w*\.?\w*)$/
 | join({
     #event_simpleName=ProcessRollup2
-    | aid=?aid
-    | regex(regex=?{ParentFile=".*"}, field=ParentBaseFileName, flags="mi")
-    | regex(regex=?{ChildFile=".*"}, field=ImageFileName, flags="mi")
+    | aid=?{aid=*}
+    | ParentBaseFileName =~ wildcard(?{ParentBaseFileName="*"}, ignoreCase=true)
+    | ImageFileName =~ wildcard(?{ImageFileName="*"}, ignoreCase=true)
     | MD5 := MD5HashData
     | ImageFileName=/(\/|\\)(?<ChildFileName>\w*\.?\w*)$/
     | ChildCLI := CommandLine
     | ChildUser := UserName
   }, key=ParentProcessId, field=TargetProcessId, include=[MD5, ChildFileName, ChildCLI, ChildUser], limit=200000)
 | groupBy([aid, ComputerName, UserName, ChildUser, FileName, CommandLine, ChildFileName, ChildCLI, MD5], limit=max)
-
 ```
