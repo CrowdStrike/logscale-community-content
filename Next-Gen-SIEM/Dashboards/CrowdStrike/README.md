@@ -16,4 +16,4 @@
 ![Screenshot 2](screenshots/data-protection-hunt-dashboard.png)
 
 ## [next-gen-siem-third-party-data-explorer](next-gen-siem-third-party-data-explorer.yaml)
-![Screenshot 3](screenshots/next-gen-siem-third-party-data-explorer.jpg) <!-- TODO Update screenshot with v0.2 -->
+![Screenshot 3](screenshots/next-gen-siem-third-party-data-explorer.jpg)
