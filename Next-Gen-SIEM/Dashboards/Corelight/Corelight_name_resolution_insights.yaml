@@ -1,0 +1,437 @@
+sections:
+  section-1735032561820-2:
+    collapsed: false
+    order: 0
+    title: DNS hygiene
+    widgetIds:
+    - note-1713975466454-1
+    - 48587ede-bbef-4440-afba-df5380e45dd4
+    - note-1713975442454-0
+    - ac46e2db-5c10-4ca5-aeda-c07f40c0854a
+    - 291b7435-4c52-4e70-bc2e-6867726c0cc9
+    - f09288f6-8ee8-44cd-93ff-3f6f5371a783
+    - note-1713975490455-3
+    - c3bd01a2-92e4-49f5-aa0d-fc1fa5bc753c
+    - note-1713975483455-2
+    - 2086cbfc-b1e7-4d03-b9a2-e5ee44a71cdd
+    - 85fbdee9-9657-4e20-87c7-498e18907a2a
+    - 3c3c991b-e51e-4b9e-809c-42ac8144cb1d
+    - note-1713975505455-5
+    - 2788821b-82ee-4448-9aca-e22544f97895
+    - note-1713975505455-4
+    - 5e9b3981-e506-4ac4-b3a2-6ef0fda47d1d
+    - 685aa4fc-eb75-49e7-8cdb-5ccb8b04cdc9
+    - 6a2c4ab4-4cfc-49e9-a96d-d09c6021df26
+name: Corelight name resolution insights
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- SIEM
+- Workflow
+widgets:
+  ac46e2db-5c10-4ca5-aeda-c07f40c0854a:
+    x: 0
+    y: 0
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | destination.ip=*
+      | count(field=destination.ip, distinct=true, as="Count")
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      yAxisTitle: ''
+      value-format: abbreviated
+    visualization: single-value
+    title: Responding DNS servers
+    isLive: false
+    type: query
+  note-1735032411820-0:
+    x: 0
+    y: 0
+    description: Insights on Name Resolution (DNS)
+    height: 1
+    text: ''
+    width: 12
+    title: Name Resolution Insights
+    type: note
+  note-1713975466454-1:
+    x: 8
+    y: 0
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Unusual DNS query types can indicate\
+      \ misconfigurations, experimental features, or potential security threats like\
+      \ data exfiltration or tunneling. Analysts should scrutinize such queries for\
+      \ anomalies and address identified risks to safeguard network security.</div>"
+    width: 4
+    title: ''
+    type: note
+  note-1713975442454-0:
+    x: 2
+    y: 0
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">DNS servers actively responding in\
+      \ the network are key to secure operations, translating domain names to IP addresses\
+      \ and directing traffic. It also logs the number of queries and unique clients\
+      \ interacting with the DNS servers, offering insights into possible rogue DNS\
+      \ servers and detecting patterns that may suggest data exfiltration attempts.</div>"
+    width: 4
+    title: ''
+    type: note
+  48587ede-bbef-4440-afba-df5380e45dd4:
+    x: 6
+    y: 0
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | in(field=dns.question.type, values=["AXFR", "IXFR", "ANY", "TXT"])
+      | groupBy([dns.question.type, destination.ip], limit=max)
+      | sum("_count", as="Sum of Counts")
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Unusual Qtypes
+    isLive: false
+    type: query
+  note-1713975505455-5:
+    x: 8
+    y: 12
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Monitor total DNS-related network\
+      \ traffic. Sudden spikes or unusual patterns could signal configuration errors,\
+      \ compromised devices making excessive queries, or potential data exfiltration\
+      \ attempts.</div>"
+    width: 4
+    title: ''
+    type: note
+  685aa4fc-eb75-49e7-8cdb-5ccb8b04cdc9:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(limit=10,function=count(as=Count))
+    end: now
+    start: 1d
+    width: 6
+    y: 14
+    interactions:
+    - name: Details of Monitoring Queries Over Time
+      titleTemplate: Details of {{ fields.event.id }}
+      queryString: |-
+        #Vendor=corelight and #event.module=ndr
+        | in(field=#event.dataset,values=["ndr.dns", "ndr.dns_red"])
+        | in(field=observer.hostname,values=[?system_name])
+        | event.id=?event_id
+      useWidgetTimeWindow: true
+      arguments:
+        event_id: '["{{fields.event.id}}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      gradient: false
+      lastBucketBehavior: include
+      xAxisTitle: ''
+      legendLabelOverflow: truncate
+      legend: false
+      showDataPoints: true
+      connect-points: false
+      yAxisTitle: ''
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+      regression: false
+      regressionType: linear
+    visualization: time-chart
+    title: Monitoring query types by AVG time
+    isLive: false
+    type: query
+  note-1713975490455-3:
+    x: 8
+    y: 6
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Long DNS query response times may\
+      \ indicate network congestion, server performance issues, or potential security\
+      \ threats. Timely analysis is crucial for maintaining optimal network performance\
+      \ and security. Investigate extended response times by examining server configurations,\
+      \ network traffic, and potential external attacks.</div>"
+    width: 4
+    title: ''
+    type: note
+  2788821b-82ee-4448-9aca-e22544f97895:
+    x: 6
+    y: 12
+    description: 'For a clearer understanding of the displayed unit, please refer
+      to this document: https://library.humio.com/data-analysis/functions-unit-convert.html.'
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.conn", "ndr.conn_red", "ndr.conn_long"])
+      | in(field=observer.hostname, values=[?system_name])
+      | service.name="dns"
+      | sum("Vendor.orig_bytes", as=TotalTraffic)
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      yAxisTitle: ''
+      value-format: abbreviated
+    visualization: single-value
+    title: DNS query volume over time
+    isLive: false
+    type: query
+  f09288f6-8ee8-44cd-93ff-3f6f5371a783:
+    x: 0
+    y: 2
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | join(query={
+        #Vendor = corelight and #event.module = ndr
+        | in(field=#event.dataset, values=["ndr.conn", "ndr.conn_red", "ndr.conn_long"])
+      }, field=event.id, include=[Vendor.local_resp], limit=200000)
+      | if(Vendor.local_resp==true, then="Yes", else="No", as=Internal)
+      | ipLocation(destination.ip, as=IpInfo)
+      | groupBy([destination.ip], function=[count(as="# of Queries"), count(field=source.ip, distinct=true, as="# of Unique Clients"), collect([Internal, IPInfo.country], separator=",")], limit=max)
+      | rename([[destination.ip, "Destination IP"], [IpInfo.country, Country]])
+      | default(value="Unknown", field=[Country])
+      | table(["Destination IP", "# of Queries", "# of Unique Clients", Country, Internal], sortby=["# of Queries", "# of Unique Clients"], limit=max)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: DNS servers actively responding to queries
+    isLive: false
+    type: query
+  291b7435-4c52-4e70-bc2e-6867726c0cc9:
+    x: 6
+    y: 2
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | in(field=dns.question.type, values=["AXFR", "IXFR", "ANY", "TXT"])
+      | groupBy([dns.question.type, destination.ip], function=[selectLast([source.ip, dns.question.name]), count(as="Count")], limit=max)
+      | sort(Count, order=desc, limit=max)
+      | rename([[dns.question.type, Qtype], [destination.ip, "Destination IP"], [source.ip, "Source IP"], [dns.question.name, Query]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Unusual query types found
+    isLive: false
+    type: query
+  3c3c991b-e51e-4b9e-809c-42ac8144cb1d:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | lower("dns.response_code", as=rcode_name)
+      | in(field=rcode_name, values=["nxdomain", "noerror"], ignoreCase=true)
+      | if(Vendor.rejected==true, then="Yes", else="No", as=query_rejected)
+      | groupBy([source.ip, destination.ip, dns.question.name, query_rejected], limit=max)
+      | sort(Count, order=desc, limit=max)
+      | rename([[source.ip, "Source IP"], [destination.ip, "Destination IP"], [dns.question.name, Query], [query_rejected, "Rejected?"], [_count, Count]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network evidence for NXDOMAIN responses
+    isLive: false
+    type: query
+  2086cbfc-b1e7-4d03-b9a2-e5ee44a71cdd:
+    x: 0
+    y: 6
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | lower("dns.response_code", as=rcode_name)
+      | in(field=rcode_name, values=["nxdomain", "noerror"], ignoreCase=true)
+      | if(Vendor.rejected==true, then="Yes", else="No", as=query_rejected)
+      | groupBy([source.ip, destination.ip, dns.question.name, query_rejected], limit=max)
+      | sum("_count", as="Sum")
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      yAxisTitle: ''
+      value-format: abbreviated
+    visualization: single-value
+    title: NXDOMAIN responses
+    isLive: false
+    type: query
+  note-1713975505455-4:
+    x: 2
+    y: 12
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Failed DNS queries may point to misconfigurations,\
+      \ outdated systems, or security threats such as network infiltration or DNS\
+      \ poisoning. Analysts should investigate the sources and patterns of these failures\
+      \ to identify and remediate underlying causes, thereby ensuring network integrity\
+      \ and security.</div>"
+    width: 4
+    title: ''
+    type: note
+  6a2c4ab4-4cfc-49e9-a96d-d09c6021df26:
+    x: 0
+    y: 14
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | lower("dns.response_code", as=rcode_name)
+      | in(field=rcode_name, values=["servfail", "refused", "formerr", "notimp", "notauth"])
+      | groupBy([rcode_name], function=[count(as=Count), selectLast([source.ip, destination.ip, dns.question.name])], limit=max)
+      | rename([[source.ip, "Source IP"], [destination.ip, "Destination IP"], [dns.question.name, Query], [rcode_name, "Response Code"]])
+      | table(["Response Code", "Source IP", "Destination IP", Query, Count], sortby=Count, limit=max)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network evidence for failed DNS queries
+    isLive: false
+    type: query
+  note-1713975483455-2:
+    x: 2
+    y: 6
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">High rates of DNS NXDOMAIN responses\
+      \ might suggest misconfigured domains, typographical errors in network requests,\
+      \ or malicious activities such as DNS reconnaissance. Close examination is advised\
+      \ to correct configurations or identify security incidents. Review DNS logs\
+      \ for patterns, validate domain configurations, and check endpoint security\
+      \ for signs of malware.</div>"
+    width: 4
+    title: ''
+    type: note
+  85fbdee9-9657-4e20-87c7-498e18907a2a:
+    x: 6
+    y: 8
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | groupBy([dns.question.name, destination.ip], function=avg("Vendor.rtt", as=avg_rtt), limit=max)
+      | avg_rtt > 0.015
+      | format(format="%.2f", field=[avg_rtt], as=avg_rtt)
+      | eval(avg_rtt=avg_rtt*1000)
+      | rename([[dns.question.name, Query], [destination.ip, "Destination IP"], [avg_rtt, "Avg. Response Time (ms)"]])
+      | select([Query, "Destination IP", "Avg. Response Time (ms)"])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Avg. Response Time (ms):
+          data-type: number
+          precision: 2
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Monitoring DNS query types by AVG time
+    isLive: false
+    type: query
+  c3bd01a2-92e4-49f5-aa0d-fc1fa5bc753c:
+    x: 6
+    y: 6
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | groupBy([dns.question.name, destination.ip], function=avg("Vendor.rtt", as=avg_rtt), limit=max)
+      | avg_rtt > 0.015
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Monitoring DNS query response times > 15ms
+    isLive: false
+    type: query
+  5e9b3981-e506-4ac4-b3a2-6ef0fda47d1d:
+    x: 0
+    y: 12
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=["ndr.dns", "ndr.dns_red"])
+      | in(field=observer.hostname, values=[?system_name])
+      | lower("dns.response_code", as=rcode_name)
+      | in(field=rcode_name, values=["servfail", "refused", "formerr", "notimp", "notauth"])
+      | groupBy([rcode_name], limit=max)
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      yAxisTitle: ''
+      value-format: abbreviated
+    visualization: single-value
+    title: Failed DNS queries
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  system_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and #event.module=ndr
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: observer.hostname
