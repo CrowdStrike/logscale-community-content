@@ -1,0 +1,1069 @@
+sections:
+  section-1734526089021-1:
+    collapsed: false
+    order: 0
+    title: Rates
+    widgetIds:
+    - a7e099ab-2ebe-41f3-a3e7-7f873c939a22
+    - 5a30af44-7e42-4be2-b646-91d871e75715
+    - ae4af681-9db1-4608-b0d9-5da396df4d1b
+    - d48635cb-5fe7-4d5e-b626-b265b521952b
+    - fa60bdea-94f1-4329-99ab-17bffe779254
+    - 9074c22c-bcae-480c-805a-014d7d99ef94
+    - 3604d776-29c3-4523-b321-1e8aca565ebf
+  section-1734526178020-2:
+    collapsed: true
+    order: 1
+    title: System
+    widgetIds:
+    - c6a28ff8-cec3-4671-ac6e-864f7b20a691
+    - 8935816b-3e8b-4223-bcfd-bf13510ea226
+    - 724b2a04-1429-47bc-8d44-c94a0c1805d6
+    - 65b9f1f0-a473-4221-8063-e0b2db2c476d
+  section-1734526209018-3:
+    collapsed: true
+    order: 2
+    title: Data Hygiene
+    widgetIds:
+    - cc6a6790-b6e6-4710-bff4-76ae0b1466ed
+    - b8340176-9711-4c95-8052-6afa843d456d
+    - 6c4e4d91-3f8d-4596-88f1-08bdd38a77d8
+    - f7888e86-a939-47a6-aef6-504e270183d2
+    - da04c077-0131-43c4-9e75-66b9198d7736
+    - 996349b1-7e35-4475-85ef-b77d5558b860
+    - ce8f8240-ec3a-4516-8561-5173b6495928
+    - fe46dc9d-7462-4727-98ce-bf1d4880f03b
+    - 492d6cbf-2774-439f-85a6-20d539bf34ff
+    - 48de63f0-3bf1-4beb-9d39-e89d29fc9b8f
+    - ee75d7da-fda1-4b05-9e5b-19f90224da67
+    - 8555eb96-9596-4f62-b4b0-1c1f334cd525
+    - 1a66fc6a-e3d3-4101-a986-63196c3aaad9
+name: Corelight sensor overview
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- SIEM
+- Workflow
+widgets:
+  a7e099ab-2ebe-41f3-a3e7-7f873c939a22:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | #event.dataset=ndr.corelight_metrics_iface
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(function=[avg("Vendor.mgmt.in.bytes.mbps", as="Inbound Traffic Rate"), avg("Vendor.mgmt.out.bytes.mbps", as="Outbound Traffic Rate")])
+      | format(format="%.2f", field=["Inbound Traffic Rate"], as="Inbound Traffic Rate")
+      | format(format="%.2f", field=["Outbound Traffic Rate"], as="Outbound Traffic Rate")
+    end: now
+    start: 1d
+    width: 6
+    y: 9
+    interactions:
+    - name: Details of traffic volume - management interface
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | #event.dataset=ndr.corelight_metrics_iface
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      connect-points: false
+      yAxisTitle: Mb per Second
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+    visualization: time-chart
+    title: Traffic volume - management interface
+    isLive: false
+    type: query
+  8555eb96-9596-4f62-b4b0-1c1f334cd525:
+    x: 0
+    y: 9
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_no_three_way_handshake.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg TCP no three way handshake
+    isLive: false
+    type: query
+  5a30af44-7e42-4be2-b646-91d871e75715:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | #event.dataset=ndr.corelight_metrics_iface
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(function=[avg("Vendor.monitor.total.kpps", as="Monitor Traffic Packet Rate"), avg("Vendor.monitor.total.drops.kpps", as="Monitor Traffic Drop Rate")])
+      | format(format="%.1f", field=["Monitor Traffic Packet Rate"], as="Monitor Traffic Packet Rate")
+    end: now
+    start: 1d
+    width: 6
+    y: 5
+    interactions:
+    - name: Details of traffic volume - monitor interfaces - packets
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | #event.dataset=ndr.corelight_metrics_iface
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      connect-points: false
+      yAxisTitle: KPackets per Second
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+    visualization: time-chart
+    title: Combined traffic volume - monitor interfaces - packets
+    isLive: false
+    type: query
+  d48635cb-5fe7-4d5e-b626-b265b521952b:
+    x: 0
+    height: 5
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | #event.dataset=ndr.corelight_metrics_bro
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(function=[avg("Vendor.logs.conn.entries.per-second",as="Conn"),
+              avg("Vendor.logs.dce_rpc.entries.per-second",as="DCE/RPC"),
+              avg("Vendor.logs.dhcp.entries.per-second",as="DHCP"),
+              avg("Vendor.logs.dnp3.entries.per-second",as="DNP3"),
+              avg("Vendor.logs.dns.entries.per-second",as="DNS"),
+              avg("Vendor.logs.dpd.entries.per-second",as="DPD"),
+              avg("Vendor.logs.files.entries.per-second",as="Files"),
+              avg("Vendor.logs.ftp.entries.per-second",as="FTP"),
+              avg("Vendor.logs.http.entries.per-second",as="HTTP"),
+              avg("Vendor.logs.irc.entries.per-second",as="IRC"),
+              avg("Vendor.logs.kerberos.entries.per-second",as="Kerberos"),
+              avg("Vendor.logs.modbus.entries.per-second",as="Modbus"),
+              avg("Vendor.logs.mysql.entries.per-second",as="MYSQL"),
+              avg("Vendor.logs.ntlm.entries.per-second",as="NTLM"),
+              avg("Vendor.logs.pe.entries.per-second",as="PE"),
+              avg("Vendor.logs.radius.entries.per-second",as="Radius"),
+              avg("Vendor.logs.rdp.entries.per-second",as="RDP"),
+              avg("Vendor.logs.rfb.entries.per-second",as="RFB"),
+              avg("Vendor.logs.sip.entries.per-second",as="SIP"),
+              avg("Vendor.logs.smb_files.entries.per-second",as="SMB Files"),
+              avg("Vendor.logs.smb_mapping.entries.per-second",as="SMB Mapping"),
+              avg("Vendor.logs.smtp.entries.per-second",as="SMTP"),
+              avg("Vendor.logs.snmp.entries.per-second",as="SNMP"),
+              avg("Vendor.logs.socks.entries.per-second",as="SOCKS"),
+              avg("Vendor.logs.software.entries.per-second",as="Software"),
+              avg("Vendor.logs.ssh.entries.per-second",as="SSH"),
+              avg("Vendor.logs.ssl.entries.per-second",as="SSL"),
+              avg("Vendor.logs.syslog.entries.per-second",as="Syslog"),
+              avg("Vendor.logs.traceroute.entries.per-second",as="Traceroute"),
+              avg("Vendor.logs.tunnel.entries.per-second",as="Tunnel"),
+              avg("Vendor.logs.weird.entries.per-second",as="Weird"),
+              avg("Vendor.logs.x509.entries.per-second",as="X509")])
+      | default(value=0, field=["Conn","DCE/RPC","DHCP","DNP3","DNS","DPD","Files","FTP","HTTP","IRC","Kerberos","Modbus","MYSQL","NTLM","PE","Radius","RDP","RFB","SIP","SMB Files","SMB Mapping","SMTP","SNMP","SOCKS","Software","SSH","SSL","Syslog","Traceroute","Tunnel","Weird","X509"])
+      | format(format="%.3f", field=["Conn"], as="Conn")
+      | format(format="%.3f", field=["DCE/RPC"], as="DCE/RPC")
+      | format(format="%.3f", field=["DHCP"], as="DHCP")
+      | format(format="%.3f", field=["DNP3"], as="DNP3")
+      | format(format="%.3f", field=["DNS"], as="DNS")
+      | format(format="%.3f", field=["DPD"], as="DPD")
+      | format(format="%.3f", field=["Files"], as="Files")
+      | format(format="%.3f", field=["FTP"], as="FTP")
+      | format(format="%.3f", field=["HTTP"], as="HTTP")
+      | format(format="%.3f", field=["IRC"], as="IRC")
+      | format(format="%.3f", field=["Kerberos"], as="Kerberos")
+      | format(format="%.3f", field=["Modbus"], as="Modbus")
+      | format(format="%.3f", field=["MYSQL"], as="MYSQL")
+      | format(format="%.3f", field=["NTLM"], as="NTLM")
+      | format(format="%.3f", field=["PE"], as="PE")
+      | format(format="%.3f", field=["Radius"], as="Radius")
+      | format(format="%.3f", field=["RDP"], as="RDP")
+      | format(format="%.3f", field=["RFB"], as="RFB")
+      | format(format="%.3f", field=["SIP"], as="SIP")
+      | format(format="%.3f", field=["SMB Files"], as="SMB Files")
+      | format(format="%.3f", field=["SMB Mapping"], as="SMB Mapping")
+      | format(format="%.3f", field=["SMTP"], as="SMTP")
+      | format(format="%.3f", field=["SNMP"], as="SNMP")
+      | format(format="%.3f", field=["SOCKS"], as="SOCKS")
+      | format(format="%.3f", field=["Software"], as="Software")
+      | format(format="%.3f", field=["SSH"], as="SSH")
+      | format(format="%.3f", field=["SSL"], as="SSL")
+      | format(format="%.3f", field=["Syslog"], as="Syslog")
+      | format(format="%.3f", field=["Traceroute"], as="Traceroute")
+      | format(format="%.3f", field=["Tunnel"], as="Tunnel")
+      | format(format="%.3f", field=["Weird"], as="Weird")
+      | format(format="%.3f", field=["X509"], as="X509")
+    end: now
+    start: 1d
+    width: 12
+    y: 0
+    interactions:
+    - name: Details of log rates
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | #event.dataset=ndr.corelight_metrics_bro
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      connect-points: false
+      imputation: none
+      yAxisTitle: Entries per Second
+      maxSeriesCount: 50
+    visualization: time-chart
+    title: Log rates
+    isLive: false
+    type: query
+  ae4af681-9db1-4608-b0d9-5da396df4d1b:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | #event.dataset=ndr.corelight_metrics_iface
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(function=avg("Vendor.monitor.total.mbps", as="Monitor Traffic Rate"))
+      | format(format="%.1f", field=["Monitor Traffic Rate"], as="Monitor Traffic Rate")
+    end: now
+    start: 1d
+    width: 6
+    y: 5
+    interactions:
+    - name: Details of traffic volume - monitor interfaces
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | #event.dataset=ndr.corelight_metrics_iface
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      xAxisTitle: ''
+      connect-points: false
+      yAxisTitle: Mb per Second
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+    visualization: time-chart
+    title: Combined traffic volume - monitor interfaces
+    isLive: false
+    type: query
+  9074c22c-bcae-480c-805a-014d7d99ef94:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | #event.dataset=ndr.corelight_metrics_bro
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(function=[avg("Vendor.logs.splunk_export.lag", as="Splunk"), avg("Vendor.logs.syslog_export.lag", as="Syslog"), avg("Vendor.logs.json_export.lag", as="JSON"), avg("Vendor.logs.kafka_export.lag", as="Kafka")])
+      | format(format="%.2f", field=[Splunk], as=Splunk)
+      | format(format="%.2f", field=[JSON], as=JSON)
+      | format(format="%.2f", field=[Syslog], as=Syslog)
+      | format(format="%.2f", field=[Kafka], as=Kafka)
+    end: now
+    start: 1d
+    width: 6
+    y: 13
+    interactions:
+    - name: Details of log entries export queue
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | #event.dataset=ndr.corelight_metrics_iface
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      connect-points: false
+      yAxisTitle: 'Avg # of Entries in Queue'
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+    visualization: time-chart
+    title: Log entries export queue
+    isLive: false
+    type: query
+  ee75d7da-fda1-4b05-9e5b-19f90224da67:
+    x: 8
+    y: 6
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_half_duplex.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg TCP half duplex
+    isLive: false
+    type: query
+  fe46dc9d-7462-4727-98ce-bf1d4880f03b:
+    x: 9
+    y: 3
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.bursty.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg bursty
+    isLive: false
+    type: query
+  da04c077-0131-43c4-9e75-66b9198d7736:
+    x: 0
+    y: 3
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_scan.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg TCP scan
+    isLive: false
+    type: query
+  8935816b-3e8b-4223-bcfd-bf13510ea226:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_bro])
+      | in(field=observer.hostname, values=[?system_name])
+      | default(value="0", field=[Vendor.cpu])
+      | timeChart(function=[avg("Vendor.cpu",as="Bro CPU Usage")])
+      | format(format="%.1f", field=["Bro CPU Usage"], as="Bro CPU Usage")
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - name: Details of Bro CPU Usage
+      titleTemplate: Details of Bro CPU usage
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | in(field=#event.dataset, values= [ndr.corelight_metrics_bro])
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      gradient: false
+      interpolation: linear
+      showOthers: false
+      xAxisTitle: Bro CPU Usage
+      legend: false
+      showDataPoints: false
+      connect-points: false
+      yAxisTitle: Percent (%)
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+    visualization: time-chart
+    title: Bro CPU usage
+    isLive: false
+    type: query
+  48de63f0-3bf1-4beb-9d39-e89d29fc9b8f:
+    x: 4
+    y: 6
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.dns_half_duplex_resp.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg DNS half duplex resp
+    isLive: false
+    type: query
+  c6a28ff8-cec3-4671-ac6e-864f7b20a691:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_memory])
+      | in(field=observer.hostname, values=[?system_name])
+      | default(value="0", field=[Vendor.usage])
+      | timeChart(function=avg("Vendor.usage", as="Memory Usage"))
+      | format(format="%.1f", field=["Memory Usage"], as="Memory Usage")
+    end: now
+    start: 1d
+    width: 6
+    y: 0
+    interactions:
+    - name: Details of Memory Usage
+      titleTemplate: Details of memory usage
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | in(field=#event.dataset, values= [ndr.corelight_metrics_memory])
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      showOthers: false
+      xAxisTitle: Memory Usage
+      legend: false
+      horizontalPlotLineLabel: ''
+      connect-points: false
+      yAxisTitle: Percent (%)
+      plotType: line
+      maxSeriesCount: 10
+      regression: false
+      show-utc: false
+      imputation: none
+    visualization: time-chart
+    title: Memory usage
+    isLive: false
+    type: query
+  1a66fc6a-e3d3-4101-a986-63196c3aaad9:
+    x: 6
+    y: 9
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_byte_counts_wrong.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg TCP byte counts wrong
+    isLive: false
+    type: query
+  6c4e4d91-3f8d-4596-88f1-08bdd38a77d8:
+    x: 6
+    y: 0
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.local_to_local.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg local to local
+    isLive: false
+    type: query
+  b8340176-9711-4c95-8052-6afa843d456d:
+    x: 3
+    y: 0
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.remote_to_remote.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg remote to remote
+    isLive: false
+    type: query
+  fa60bdea-94f1-4329-99ab-17bffe779254:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | #event.dataset=ndr.corelight_metrics_iface
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(function=[avg("Vendor.mgmt.in.packets.kpps", as="Inbound Traffic Packet Rate"), avg("Vendor.mgmt.out.packets.kpps", as="Outbound Traffic Packet Rate")])
+      | format(format="%.2f", field=["Inbound Traffic Packet Rate"], as="Inbound Traffic Packet Rate")
+      | format(format="%.2f", field=["Outbound Traffic Packet Rate"], as="Outbound Traffic Packet Rate")
+    end: now
+    start: 1d
+    width: 6
+    y: 9
+    interactions:
+    - name: Details of traffic volume - management interface - packets
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | #event.dataset=ndr.corelight_metrics_iface
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      connect-points: false
+      yAxisTitle: KPackets per Second
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+    visualization: time-chart
+    title: Traffic volume - management interface - packets
+    isLive: false
+    type: query
+  724b2a04-1429-47bc-8d44-c94a0c1805d6:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_system])
+      | in(field=observer.hostname, values=[?system_name])
+      | default(value="0", field=[Vendor.cpu.1.temperature])
+      | timeChart(function=[avg("Vendor.cpu.1.temperature", as="CPU1 Temperature")])
+      | format(format="%.1f", field=["CPU1 Temperature"], as="CPU1 Temperature")
+    end: now
+    start: 1d
+    width: 6
+    y: 4
+    interactions:
+    - name: Details of System Temperature
+      titleTemplate: Details of system temperature
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | in(field=#event.dataset, values= [ndr.corelight_metrics_system])
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      showOthers: false
+      legend: true
+      horizontalPlotLineLabel: ''
+      connect-points: false
+      yAxisTitle: Degrees Celsius
+      plotType: line
+      maxSeriesCount: 10
+      regression: false
+      show-utc: false
+      imputation: none
+    visualization: time-chart
+    title: System temperature
+    isLive: false
+    type: query
+  492d6cbf-2774-439f-85a6-20d539bf34ff:
+    x: 0
+    y: 6
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.dns_half_duplex_orig.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 4
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg DNS half duplex orig
+    isLive: false
+    type: query
+  3604d776-29c3-4523-b321-1e8aca565ebf:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | #event.dataset=ndr.corelight_metrics_bro
+      | in(field=observer.hostname, values=[?system_name])
+      | timeChart(function=[avg("Vendor.files.total", as="Extracted Files"), avg("Vendor.files.queued.sftp", as="Queued Files for SFTP"), avg("Vendor.files.queued.s3", as="Queued Files for Amazon S3")])
+      | format(format="%.2f", field=["Extracted Files"], as="Extracted Files")
+      | format(format="%.2f", field=["Queued Files for SFTP"], as="Queued Files for SFTP")
+      | format(format="%.2f", field=["Queued Files for Amazon S3"], as="Queued Files for Amazon S3")
+    end: now
+    start: 1d
+    width: 6
+    y: 13
+    interactions:
+    - name: Details of file extraction
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | #event.dataset=ndr.corelight_metrics_iface
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      connect-points: false
+      yAxisTitle: '# of Files'
+      plotType: line
+      maxSeriesCount: 10
+      imputation: none
+    visualization: time-chart
+    title: File extraction
+    isLive: false
+    type: query
+  ce8f8240-ec3a-4516-8561-5173b6495928:
+    x: 6
+    y: 3
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_no_ssl_on_443.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg no SSL on 443
+    isLive: false
+    type: query
+  cc6a6790-b6e6-4710-bff4-76ae0b1466ed:
+    x: 0
+    y: 0
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_retransmissions.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg TCP retransmissions
+    isLive: false
+    type: query
+  65b9f1f0-a473-4221-8063-e0b2db2c476d:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_disk])
+      | in(field=observer.hostname, values=[?system_name])
+      | default(value="0", field=[Vendor.usage.data,Vendor.usage.os])
+      | timeChart(function=[avg("Vendor.usage.data", as="Data Disk Usage"), avg("Vendor.usage.os",as="OS Disk Usage")])
+      | format(format="%.1f", field=["Data Disk Usage"], as="Data Disk Usage")
+      | format(format="%.1f", field=["OS Disk Usage"], as="OS Disk Usage")
+    end: now
+    start: 7d
+    width: 6
+    y: 4
+    interactions:
+    - name: Details of Disk Usage
+      titleTemplate: Details of disk usage
+      queryString: |-
+        #Vendor = corelight and #event.module="ndr"
+        | in(field=#event.dataset, values= [ndr.corelight_metrics_disk])
+        | in(field=observer.hostname, values=[?system_name])
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      showOthers: false
+      legend: true
+      horizontalPlotLineLabel: ''
+      connect-points: false
+      yAxisScale: linear
+      plotType: line
+      maxSeriesCount: 10
+      regression: false
+      show-utc: false
+      imputation: none
+      yAxisTitle: Percent (%)
+      stacking: none
+    visualization: time-chart
+    title: Disk usage
+    isLive: false
+    type: query
+  996349b1-7e35-4475-85ef-b77d5558b860:
+    x: 3
+    y: 3
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_backscatter.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg TCP backscatter
+    isLive: false
+    type: query
+  note-1734525872042-0:
+    x: 0
+    y: 0
+    height: 2
+    text: 'If the overview dashboard and its panels are not showing data, please make
+      sure you have configured your Corelight Sensors to export statistics to Crowdstrike.
+      More Information can be found here: [Corelight Support](https://www.corelight.com/support)
+      .'
+    width: 12
+    title: Note
+    type: note
+  f7888e86-a939-47a6-aef6-504e270183d2:
+    x: 9
+    y: 0
+    height: 3
+    queryString: |-
+      #Vendor = corelight and #event.module="ndr"
+      | in(field=#event.dataset, values= [ndr.corelight_metrics_zeek_doctor])
+      | in(field=observer.hostname, values=[?system_name])
+      | avg(Vendor.check.tcp_missed_bytes.percent)
+      | default(value="0", field=[_avg])
+    end: now
+    start: 1d
+    width: 3
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+        v: 2
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+        v: 1
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      trellisShowBorders: true
+      color-method: threshold
+      suffix: '%'
+      text-color: ''
+      use-colorised-thresholds: true
+      value-format: abbreviated
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Avg TCP missed bytes
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  system_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and @event_parsed!="false"
+      | in(field=#event.dataset, values=["ndr.corelight_metrics_system", "ndr.corelight_metrics_memory", "ndr.corelight_metrics_disk"])
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: observer.hostname

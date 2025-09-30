@@ -1,0 +1,361 @@
+name: Corelight SSH inferences overview
+description: ''
+timeSelector:
+  defaultTimeJumpInMs: 30000
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- Security Workflow
+widgets:
+  3448e4ea-0137-4e87-93b1-250010a30289:
+    x: 0
+    height: 5
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+      | in(field=observer.hostname, values=[?system_name])
+      | default(field=[source.ip,destination.ip],value=unknown)
+      | ?{additional_filter=*}
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inferences, function=tail(limit=max), limit=max)], var="inferences")
+      | inferences=?{inferences=*}
+      | match(file="corelight_ssh_inference_lookup.csv", include=[InferenceName], column=inferences, field=inferences)
+      | format("%s:%s",field=[inferences,InferenceName],as=Inferences)
+      | groupBy([source.ip,destination.ip],function=[collect([Inferences], separator="\n"),collect([Vendor.host_key], separator="\n"), count(@timestamp, distinct=true)])
+      | default(value="unknown", field=[Vendor.host_key])
+      | sort(_count,limit=max)
+      | default(value="unknown", field=[Inferences])
+      | rename([[source.ip, "Source IP"],[destination.ip,"Destination IP"],[_count,Count],[Vendor.host_key,"Host Key"]])
+      | select(["Source IP","Destination IP","Host Key",Inferences,Count])
+    end: now
+    start: 1d
+    width: 12
+    y: 10
+    interactions:
+    - name: Details of Inferences for Hosts with Host Key
+      titleTemplate: 'Details of source IP : {{ fields["Source IP"] }} and destination
+        IP : {{ fields["Destination IP"] }}'
+      queryString: |-
+        #Vendor = corelight and #event.module = ndr
+        | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | inference_filter := ?inferences
+        | case {
+            !text:contains(string=inference_filter, substring="*") |
+            array:contains(array="Vendor.inferences[]", value=?inferences);
+            text:contains(string=inference_filter, substring="*") | *
+        }
+        | default(field=[source.ip,destination.ip],value="unknown")
+        | source.ip = ?source_ip and destination.ip=?destination_ip
+      useWidgetTimeWindow: true
+      arguments:
+        destination_ip: '["{{ fields[\"Destination IP\"] }}"]'
+        inferences: '["{{ parameters.inferences }}"]'
+        source_ip: '["{{ fields[\"Source IP\"] }}"]'
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Inferences for hosts with host key
+    isLive: false
+    type: query
+  5843cb6c-a01e-45a1-800f-46016a22432f:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | array:filter(array="Vendor.inferences[]", function={in(field=x,values=?{inferences=*})}, var="x")
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(x, function=tail(limit=max), limit=max)], var="x")
+      | match(file="corelight_ssh_inference_lookup.csv", include=[InferenceName], column=inferences, field=x)
+      | timechart( InferenceName,limit=10)
+    end: now
+    start: 1d
+    width: 6
+    y: 1
+    interactions:
+    - name: Details of SSH Inferences Over Time
+      titleTemplate: Details of {{ fields.InferenceName }}
+      queryString: "#Vendor = corelight and #event.module = ndr\n| in(field=#event.dataset,\
+        \ values=[ndr.ssh,ndr.ssh_red])\n| in(field=observer.hostname, values=[?system_name])\n| ?additional_filter\n\
+        | array:reduceAll(array=\"Vendor.inferences[]\", function=[groupBy(inferences,\
+        \ function=tail(limit=max), limit=max)], var=\"inferences\")\n| match(file=\"\
+        corelight_ssh_inference_lookup.csv\", include=[InferenceName], column=inferences, field=inferences)\
+        \ \n| InferenceName = ?InferenceName"
+      useWidgetTimeWindow: true
+      arguments:
+        InferenceName: '["{{ fields.InferenceName }}"]'
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: bottom
+      interpolation: ''
+      xAxisTitle: ''
+      legendLabelOverflow: truncate
+      legend: true
+      horizontalPlotLineLabel: ''
+      connect-points: false
+      yAxisScale: linear
+      plotType: area
+      maxSeriesCount: 10
+      regression: false
+      imputation: none
+      yAxisUnit: ''
+      series: {}
+      yAxisTitle: ''
+      stacking: normal
+    visualization: time-chart
+    title: SSH inferences over time
+    isLive: false
+    type: query
+  note-1734436525420-0:
+    x: 0
+    y: 0
+    height: 1
+    text: ''
+    width: 12
+    title: SSH inferences overview
+    type: note
+  a4ee2caf-d07f-47e2-94d8-d2f98cd7dd2b:
+    x: 0
+    y: 15
+    height: 6
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | inference_filter := ?inferences
+      | case {
+          !text:contains(string=inference_filter, substring="*") |
+          array:contains(array="Vendor.inferences[]", value=?inferences);
+          text:contains(string=inference_filter, substring="*") | *
+      }
+      | concatArray("Vendor.inferences",separator="\n", as=Inferences)
+      | default(field=[source.ip,destination.ip,Inferences],value="unknown")
+      | rename([[source.ip,"Source IP"],[destination.ip,"Destination IP"],[@rawstring,"Raw Logs"]])
+      | formatTime(format="%F %r", as="Time")
+      | select([Time,"Source IP","Destination IP",Inferences,"Raw Logs"])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: SSH inference log data
+    isLive: false
+    type: query
+  c0e2293d-84de-48d4-89ee-98cf95a3085f:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | array:filter(array="Vendor.inferences[]", function={in(field=x,values=?{inferences=*})}, var="x")
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(x, function=tail(limit=max), limit=max)], var="x")
+      | match(file="corelight_ssh_inference_lookup.csv", include=[InferenceName,inferences], column=inferences, field=x)
+      | top([inferences,"InferenceName"])
+    end: now
+    start: 1d
+    width: 6
+    y: 1
+    interactions:
+    - name: Details of SSH Inferences
+      titleTemplate: Details of {{ fields.InferenceName }}
+      queryString: |
+        #Vendor = corelight and #event.module = ndr
+        | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | array:contains(array="Vendor.inferences[]", value=?inferences)
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        inferences: '["{{ fields.inferences }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      legendLabelOverflow: full
+      legend: true
+      enableTrellis: false
+      innerRadius: 0
+      legendPosition: right
+      legendTitle: Inference Name
+      maxSeriesCount: 10
+      withLegendTitle: true
+    visualization: pie-chart
+    title: SSH inferences
+    isLive: false
+    type: query
+  26ccf939-ea46-4d39-a745-b43b451536e6:
+    x: 6
+    height: 5
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+      | in(field=observer.hostname, values=[?system_name])
+      | default(field=[source.ip,destination.ip],value=unknown)
+      | ?{additional_filter=*}
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inferences, function=tail(limit=max), limit=max)], var="inferences")
+      | inferences=?{inferences=*}
+      | match(file="corelight_ssh_inference_lookup.csv", include=[InferenceName], column=inferences, field=inferences)
+      | format("%s:%s",field=[inferences,InferenceName],as=Inferences)
+      | groupBy([source.ip,destination.ip],function=[collect([Inferences], separator="\n"), count(@timestamp, distinct=true)])
+      | sort(_count,limit=max)
+      | default(value="unknown", field=[Inferences])
+      | rename([[source.ip, "Source IP"],[destination.ip,"Destination IP"],[_count,Count]])
+      | select(["Source IP","Destination IP",Inferences,Count])
+    end: now
+    start: 1d
+    width: 6
+    y: 5
+    interactions:
+    - name: Details of SSH Host
+      titleTemplate: 'Details of source IP : {{ fields["Source IP"] }} and destination
+        IP : {{ fields["Destination IP"] }}'
+      queryString: |-
+        #Vendor = corelight and #event.module = ndr
+        | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | inference_filter := ?inferences
+        | case {
+            !text:contains(string=inference_filter, substring="*") |
+            array:contains(array="Vendor.inferences[]", value=?inferences);
+            text:contains(string=inference_filter, substring="*") | *
+        }
+        | default(field=[source.ip,destination.ip],value="unknown")
+        | source.ip = ?source_ip and destination.ip=?destination_ip
+      useWidgetTimeWindow: true
+      arguments:
+        destination_ip: '["{{ fields[\"Destination IP\"] }}"]'
+        inferences: '["{{ parameters.inferences }}"]'
+        source_ip: '["{{ fields[\"Source IP\"] }}"]'
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: SSH host details
+    isLive: false
+    type: query
+  d84f186f-6f5e-4259-8541-dbdefa6ae37a:
+    x: 0
+    height: 5
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | inference_filter := ?{inferences=*}
+      | case {
+          !text:contains(string=inference_filter, substring="*") |
+          array:contains(array="Vendor.inferences[]", value=?{inferences=*});
+          text:contains(string=inference_filter, substring="*") | *
+      }
+      | top([source.ip,Vendor.hassh,destination.ip,Vendor.hasshServer], limit=5)
+      | default(field=[source.ip,Vendor.hassh,destination.ip,Vendor.hasshServer],value="unknown")
+      | rename([[source.ip, "Source IP"],[Vendor.hassh, "HASSH Client"],[destination.ip,"Destination IP"],[Vendor.hasshServer,"HASSH Server"],[_count,"Count"]])
+    end: now
+    start: 1d
+    width: 6
+    y: 5
+    interactions:
+    - name: Details of HASSH Fingerprint
+      titleTemplate: 'Details of source IP : {{ fields["Source IP"] }} and destination
+        IP : {{ fields["Destination IP"] }}'
+      queryString: |-
+        #Vendor = corelight and #event.module = ndr
+        | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | inference_filter := ?inferences
+        | case {
+            !text:contains(string=inference_filter, substring="*") |
+            array:contains(array="Vendor.inferences[]", value=?inferences);
+            text:contains(string=inference_filter, substring="*") | *
+        }
+        | default(field=[source.ip,destination.ip],value="unknown")
+        | source.ip = ?source_ip and destination.ip=?destination_ip
+      useWidgetTimeWindow: true
+      arguments:
+        destination_ip: '["{{ fields[\"Destination IP\"] }}"]'
+        inferences: '["{{ parameters.inferences }}"]'
+        source_ip: '["{{ fields[\"Source IP\"] }}"]'
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: HASSH fingerprint details
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  additional_filter:
+    label: Additional filter
+    order: 3
+    type: text
+    defaultValue: '*'
+    width: 1
+  inferences:
+    label: SSH inferences
+    query: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values=[ndr.ssh,ndr.ssh_red])
+      | in(field=observer.hostname, values=[?system_name])
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inference, function=tail(limit=1), limit=1000000)], var="inference")
+      | match(file="corelight_ssh_inference_lookup.csv", include=[InferenceName,inferences], column=inferences, field=inference)
+      | select([InferenceName,inferences])
+      | sort(InferenceName, order=asc, limit=max)
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    defaultValue: '*'
+    width: 1
+    order: 2
+    valueField: inferences
+    type: query
+    labelField: InferenceName
+  system_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and #event.module = ndr
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: observer.hostname
