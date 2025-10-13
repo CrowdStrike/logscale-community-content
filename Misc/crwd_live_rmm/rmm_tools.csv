@@ -1000,7 +1000,7 @@ mRemoteNG,*\mremoteng.exe
 mRemoteNG,*\program files (x86)%\mremoteng
 mRemoteNG,*\program files (x86)\mremoteng\*
 mRemoteNG,mremoteng-installer-*.msi
-mRemoteNG,*%\mremoteng
+mRemoteNG,*\mremoteng
 mstsc,*\windows\system32\mstsc.exe
 mstsc,*windows\system32\mstsc.exe
 pcAnywhere,basuptshelper.exe
