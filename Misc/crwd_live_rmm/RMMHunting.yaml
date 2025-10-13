@@ -155,8 +155,7 @@ widgets:
       urlEncodeArgs: true
       titleTemplate: Investigate Events
       urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BDnsRequest%5D)%0A%7C%20ContextBaseFileName%3D{{
-        fields.ContextBaseFileName }}%20DomainName%3D{{ fields.DomainName }}&repo=all&start={{
-        startTime }}
+        fields.ContextBaseFileName }}%20DomainName%3D{{ fields.DomainName }}&repo=all&start={{ startTime }}
       openInNewTab: true
       type: customlink
     options:
@@ -212,8 +211,7 @@ widgets:
     - name: default
       urlEncodeArgs: true
       titleTemplate: Investigate Events
-      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BProcessRollup2%2C%20SyntheticProcessRollup2%5D)%0A%7C%20FileName%3D{{
-        fields.FileName }}%20FilePath%3D{{ fields.FilePath }}&repo=all&start={{ startTime }}
+      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BProcessRollup2%2C%20SyntheticProcessRollup2%5D)%0A%7C%20FileName%3D{{ fields.FileName }}%20FilePath%3D%22%2A{{ fields.FilePath }}%2A%22&repo=all&start={{ startTime }}
       openInNewTab: true
       type: customlink
     options:
@@ -666,11 +664,28 @@ widgets:
     width: 6
     y: 8
     interactions:
-    - name: default
+    - conditions:
+      - argument: ''
+        fieldName: ContextBaseFileName
+        operator: not-equal
+      name: default
       urlEncodeArgs: true
       titleTemplate: Investigate Events
-      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BPeFileWritten%5D)%0A%7C%20ContextBaseFileName%3D{{
-        fields.ContextBaseFileName }}%20FileName%3D{{ fields.FileName }}&repo=all&start={{ startTime }}
+      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20%23event_simpleName%3D%2FFileWritten%2Fi%0A%7C%20ContextBaseFileName%3D%22{{
+        fields.ContextBaseFileName }}%22%0A%7C%20FileName%3D%22{{ fields.FileName
+        }}%22&repo=all&start={{ startTime }}
+      openInNewTab: true
+      type: customlink
+    - conditions:
+      - argument: ''
+        fieldName: ContextBaseFileName
+        operator: equal
+      name: default2
+      urlEncodeArgs: true
+      titleTemplate: Investigate Events
+      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20%23event_simpleName%3D%2FFileWritten%2Fi%0A%7C%20ComputerName%3D{{
+        fields.ComputerName }}%0A%7C%20FileName%3D%22{{ fields.FileName }}%22&repo=all&start={{
+        startTime }}
       openInNewTab: true
       type: customlink
     options:
