@@ -417,7 +417,7 @@ ManageEngine,manageengine_servicedesk_plus.bin
 ManageEngine,*\program files (x86)\desktopcentral_agent\bin\*
 ManageEngine,*\dcagentservice.exe
 ManageEngine,manageengine_remote_access_plus.exe
-MeshCenral,meshagent*
+MeshCentral,meshagent*
 MeshCentral,/usr/local/mesh_services/meshagent/meshagent/*
 MeshCentral,/usr/local/mesh_services/meshagent/*
 MeshCentral,meshagent*.exe
