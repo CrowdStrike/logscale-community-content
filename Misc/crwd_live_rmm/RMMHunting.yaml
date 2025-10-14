@@ -90,7 +90,7 @@ widgets:
       | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -146,7 +146,7 @@ widgets:
       | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Create the output table
-      | groupBy([_count, ContextBaseFileName, DomainName, ComputerName], limit=max) | sort(_count, order=asc, limit=20000)
+      | groupBy([_count, rmm_tool, ContextBaseFileName, DomainName, ComputerName], limit=max) | sort(_count, order=asc, limit=20000)
     end: now
     start: 1d
     width: 6
@@ -188,7 +188,7 @@ widgets:
       | in(field="#event_simpleName", values=[ProcessRollup2,SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -233,7 +233,7 @@ widgets:
       | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -254,7 +254,7 @@ widgets:
       | Time := formatTime("%FT%TZ", field=@timestamp)
 
       // Create the output table
-      | groupBy([Time, aid, ComputerName, UserName, LocalIP, ParentBaseFileName, FileName, CommandLine, id]) | sort(Time, order=desc, limit=20000)
+      | groupBy([Time, aid, ComputerName, UserName, LocalIP, rmm_tool, ParentBaseFileName, FileName, CommandLine, id]) | sort(Time, order=desc, limit=20000)
     end: now
     start: 1d
     width: 12
@@ -291,7 +291,7 @@ widgets:
       | in(#event_simpleName,values=[DnsRequest])
 
       // Match DomainName from lookup file
-      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true)
+      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF      
@@ -300,6 +300,7 @@ widgets:
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | DomainName =~ wildcard(?{DomainName=*}, ignoreCase=true)
       | ContextBaseFileName =~ wildcard(?{ContextBaseFileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Visualize data as sankey
       | sankey(source="ContextBaseFileName", target="DomainName")
@@ -332,7 +333,7 @@ widgets:
       | in(#event_simpleName,values=[PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -347,7 +348,7 @@ widgets:
       | Time := formatTime("%FT%TZ", field=@timestamp)
 
       // Create the output table
-      | groupBy([Time, aid, ComputerName, UserName, LocalIP, ContextBaseFileName, FileName, FilePath, id]) | sort(Time, order=desc, limit=20000)
+      | groupBy([Time, aid, ComputerName, UserName, LocalIP, rmm_tool, ContextBaseFileName, FileName, FilePath, id]) | sort(Time, order=desc, limit=20000)
     end: now
     start: 1d
     width: 12
@@ -383,7 +384,7 @@ widgets:
       | in(#event_simpleName,values=[ProcessRollup2, SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -402,7 +403,7 @@ widgets:
       }
 
       // Create the output table
-      | groupBy([_count, ParentBaseFileName, FileName, ComputerName, UserName], limit=max) | sort(_count, order=asc, limit=20000)
+      | groupBy([_count, rmm_tool, ParentBaseFileName, FileName, ComputerName, UserName], limit=max) | sort(_count, order=asc, limit=20000)
     end: now
     start: 1d
     width: 6
@@ -434,7 +435,7 @@ widgets:
       | in(#event_simpleName,values=[DnsRequest])
 
       // Match DomainName from lookup file
-      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true)
+      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF      
@@ -457,12 +458,13 @@ widgets:
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | DomainName =~ wildcard(?{DomainName=*}, ignoreCase=true)
       | ContextBaseFileName =~ wildcard(?{ContextBaseFileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Format timestamp
       | Time := formatTime("%FT%TZ", field=@timestamp)
 
       // Create the output table
-      | groupBy([Time, aid, ComputerName, LocalIP, ContextBaseFileName, DomainName, FirstIP4Record, IP4IOCDetected, FirstIP6Record, IP6IOCDetected, id])
+      | groupBy([Time, aid, ComputerName, LocalIP, rmm_tool, ContextBaseFileName, DomainName, FirstIP4Record, IP4IOCDetected, FirstIP6Record, IP6IOCDetected, id])
       | sort(Time, order=desc, limit=20000)
     end: now
     start: 1d
@@ -499,7 +501,7 @@ widgets:
       | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -521,7 +523,7 @@ widgets:
     - name: default
       urlEncodeArgs: true
       titleTemplate: Investigate Events
-      urlTemplate: /investigate/search?end=&parameters=N4Igwg9gtgDgrgFwKYCcByBDKSQC4QBUIANCAKoDOqm2ehJIKUUA%2BghBADZ1EC%2BQA&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BProcessRollup2%2CSyntheticProcessRollup2%2CPeFileWritten%5D)%0A%7C%20match(file%3D%22rmm_tools.csv%22%2C%20field%3D%5BFileName%5D%2C%20column%3Drmm_binary%2C%20mode%3Dglob%2C%20strict%3Dtrue%2C%20ignoreCase%3Dtrue)%0A%7C%20ComputerName%20%3D~%20wildcard(%3F%7BComputerName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20UserName%20%3D~%20wildcard(%3F%7BUserName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20rmm_tool%20%3D~%20wildcard(%3F%7Brmm_tool%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20groupBy(%5Brmm_tool%2C%20ComputerName%5D%2C%20function%3Dcount(ComputerName%2C%20distinct%3Dtrue))%20%7C%20drop(_count)&repo=all&searchViewInteractions=NoXSA&start={{
+      urlTemplate: /investigate/search?end=&parameters=N4Igwg9gtgDgrgFwKYCcByBDKSQC4QBUIANCAKoDOqm2ehJIKUUA%2BghBADZ1EC%2BQA&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BProcessRollup2%2CSyntheticProcessRollup2%2CPeFileWritten%5D)%0A%7C%20match(file%3D%22rmm_tools.csv%22%2C%20field%3D%5BFileName%5D%2C%20column%3Drmm_binary%2C%20mode%3Dglob%2C%20strict%3Dtrue%2C%20ignoreCase%3Dtrue%2C%20include%3D%5Brmm_tool%5D)%0A%7C%20ComputerName%20%3D~%20wildcard(%3F%7BComputerName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20UserName%20%3D~%20wildcard(%3F%7BUserName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20rmm_tool%20%3D~%20wildcard(%3F%7Brmm_tool%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20groupBy(%5Brmm_tool%2C%20ComputerName%5D%2C%20function%3Dcount(ComputerName%2C%20distinct%3Dtrue))%20%7C%20drop(_count)&repo=all&searchViewInteractions=NoXSA&start={{
         startTime }}
       openInNewTab: true
       type: customlink
@@ -542,7 +544,7 @@ widgets:
       | #event_simpleName=/^Network/iF
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[ContextBaseFileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[ContextBaseFileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       //Filter Multicast
       | LocalIP!=224.0.0.*
@@ -563,6 +565,7 @@ widgets:
       | LocalIP =~ wildcard(?{LocalIP=*}, ignoreCase=true)
       | RemoteIP =~ wildcard(?{RemoteIP=*}, ignoreCase=true)
       | RemotePort =~ wildcard(?{RemotePort=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Format timestamp
       | Time := formatTime("%FT%TZ", field=@timestamp)
@@ -575,7 +578,7 @@ widgets:
           * ;
       }
       | rename("ioc.detected", as="IOCDetected")
-      | groupBy([Time, aid, ComputerName, ContextBaseFileName, ConnectionDirection, Protocol, LocalIP, LocalPort, RemoteIP, RemotePort, IOCDetected, Country, State, id], limit=max) | sort(field=Time, order=desc, limit=20000)
+      | groupBy([Time, aid, ComputerName, rmm_tool, ContextBaseFileName, ConnectionDirection, Protocol, LocalIP, LocalPort, RemoteIP, RemotePort, IOCDetected, Country, State, id], limit=max) | sort(field=Time, order=desc, limit=20000)
     end: now
     start: 1d
     width: 12
@@ -646,7 +649,7 @@ widgets:
       | in(#event_simpleName,values=[PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF      
@@ -708,7 +711,7 @@ widgets:
       | in(field="#event_simpleName", values=[ProcessRollup2,SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
