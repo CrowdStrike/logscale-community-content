@@ -121,7 +121,7 @@ Chrome Remote Desktop,chromeremotedesktophost.msi
 Chrome Remote Desktop,chrome-remote-desktop
 Chrome Remote Desktop,chrome-remote-desktop-host
 Chrome Remote Desktop,remoteassistancehost.app
-Chrome Remote Desktop,configure-url-fowarder
+Chrome Remote Desktop,configure-url-forwarder
 Chrome Remote Desktop,crash-uploader
 Chrome Remote Desktop,remote_host.exe
 Chrome SSH Extension,*users\*\appdata\local\google\chrome\user data\default\extensions\iodihamcpbpeioajjeobimgagajmlibd*
