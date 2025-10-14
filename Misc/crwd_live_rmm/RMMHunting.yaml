@@ -731,7 +731,7 @@ widgets:
       // Graph with Gauge
       | groupBy([ComputerName], function=[collect([rmm_tool, UserName, ContextBaseFileName, FileName]), count(rmm_tool, distinct=true, as=TotalTools)], limit=max)
 
-      // Filter computers with less than 1 RMM tool to detect misuse
+      // Filter computers with more than 1 RMM tool to detect misuse
       | TotalTools > 1
       | sort(TotalTools, order=DESC, limit=max)
     end: now
