@@ -74,6 +74,7 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - note-1761313590713-0
     - note-1757277502792-1
     - note-1757277056794-0
     - note-1757016244029-0
@@ -153,25 +154,29 @@ widgets:
       - [Dive into Falcon Foundry Functions with Python](https://www.crowdstrike.com/tech-hub/ng-siem/dive-into-falcon-foundry-functions-with-python/)
       - [A Practical Guide to Building a Falcon Foundry App for the First Time](https://www.crowdstrike.com/tech-hub/ng-siem/a-practical-guide-to-building-a-falcon-foundry-app-for-the-first-time/)
       - [Enrich Detections with Falcon Foundry Extension Builder](https://www.crowdstrike.com/tech-hub/ng-siem/enrich-detections-with-falcon-foundry-extension-builder/)
-      - [CrowdStrike's OpenAPI Specifications](https://developer.crowdstrike.com/docs/openapi/) (Links to Swagger API documentation also available within the [CrowdStrike Console documentation](/documentation/category/a3a706a8/crowdstrike-apis))
+      - [CrowdStrike's OpenAPI Specifications](https://developer.crowdstrike.com/docs/openapi/) (Links to Swagger API documentation also available within the [OAuth2-Based APIs CrowdStrike Documentation](https://docs.crowdstrike.com/r/w3ded7bf))
       ⓘ *[If necessary, you can add the IP addresses listed in this Support Portal article to your network allowlist for Foundry API integration](https://supportportal.crowdstrike.com/s/article/ka1Ns00000012vpIAA)*
     width: 6
     title: Want to dive deeper into automation with CrowdStrike?
     type: note
   note-1756233800352-1:
     x: 0
-    y: 0
+    y: 3
     height: 6
     text: |-
-      ##### Console Documentation:
+      ### CrowdStrike Documentation:
 
-      - [Set up Falcon Next-Gen SIEM](/documentation/page/cffa5af8/set-up-next-gen-siem) (A high-level strategy to getting Next-Gen SIEM up and running with your data and security needs)
-      - [Data Connectors](/documentation/page/a76b8289/data-connectors) (General information on CrowdStrike's data connectors)
-      - [Third-party Data Sources](/documentation/category/je6a45b3/third-party-integrations) (Documentation for setting up ingestion for third-party solutions)
+      - [Set up Falcon Next-Gen SIEM](https://docs.crowdstrike.com/r/cffa5af8) (A high-level strategy to getting Next-Gen SIEM up and running with your data and security needs)
+      - [Data Connectors](https://docs.crowdstrike.com/r/a76b8289) (General information on CrowdStrike's data connectors)
+      - [Third-party Data Sources](https://docs.crowdstrike.com/r/je6a45b3) (Index on the left links to documentation for setting up ingestion for third-party solutions)
       - ⓘ *Pull connectors generally use an API to configure the data connector to "pull" the data into CrowdStrike. Push connectors generally use the LogScale collector to "push" the logs to the CrowdStrike cloud.*
-      - [Get Started with Fleet Management](/documentation/page/q81f4f3a/get-started-with-fleet-management)
-      - [LogScale Collector](/documentation/page/a2a653c67/log-collector) (Thorough information on installing, configuring, troubleshooting, and more)
+      - [Get Started with Fleet Management](https://docs.crowdstrike.com/r/q81f4f3a)
+      - [LogScale Collector](https://docs.crowdstrike.com/r/a2a653c67) (Thorough information on installing, configuring, troubleshooting, and more)
       - ⓘ *[Click here to watch an introduction video to Fleet Management on our Tech Hub](https://vid.crowdstrike.com/watch/cKxirC9L9pe9uHWqWLtKP4?)*
+
+      ### Support Portal
+
+      - [[Index] Next-Gen SIEM Data Connector troubleshooting articles](https://supportportal.crowdstrike.com/s/article/ka1Ns0000001mU1IAI) (Troubleshooting information for using the Falcon LogScale Collector (FLC), 3rd-party data connectors, and HTTP/HEC data connectors)
 
       ### LogScale documentation
 
@@ -179,8 +184,8 @@ widgets:
       - [Configuration file examples](https://library.humio.com/falcon-logscale-collector/log-collector-config-advanced-example.html)
       - [Install Falcon LogScale Collector](https://library.humio.com/falcon-logscale-collector/log-collector-install.html) (Information similar to what is in the CrowdStrike console for this, but there may be small nuances that can help here that may not be in the console documentation)
       - ⓘ ***Custom Install** method is the manual process of installing the log collector and managing its configuration directly on the host. **Full Install** method is the process of using Fleet Management to manage the configuration and version of the log collector from the CrowdStrike console. Please refer to the CrowdStrike console documentation if you wish to use this method.*
-    width: 6
-    title: Getting Started
+    width: 7
+    title: Documentation to help you get started using Next-Gen SIEM
     type: note
   note-1756992852414-0:
     x: 4
@@ -241,12 +246,12 @@ widgets:
       - Ask Charlotte AI questions about your environment such as adversary attributed activity, get help building queries to run in Advanced event search, and more.
       ### Promptbooks
       - These are collections of prompts for common workflows that you can customize for your organization's needs to maximize efficiency. Promptbooks are similar to Fusion SOAR playbooks in that they streamline complex workflows.
-      - ⓘ *Charlotte AI uses Llama (Copyright © Meta Platforms) and several other large language models from OpenAI, Mistral, and Anthropic. Unless listed on the [subprocessor list](/documentation/page/d1f180fb/crowdstrike-products-and-services-third-party-subprocessors-of-personal-data), models are hosted in CrowdStrike’s environment.*
+      - ⓘ *Charlotte AI uses Llama (Copyright © Meta Platforms) and several other large language models from OpenAI, Mistral, and Anthropic. Unless listed on the [subprocessor list](https://docs.crowdstrike.com/r/d1f180fb), models are hosted in CrowdStrike’s environment.*
 
       ---
 
-      ### Console documentation:
-      - [Charlotte AI Conversations](/documentation/category/v203e439/conversations)
+      ### CrowdStrike documentation:
+      - [Charlotte AI Conversation Overview](https://docs.crowdstrike.com/r/d90de7f2)
     width: 6
     title: ''
     type: note
@@ -299,7 +304,7 @@ widgets:
       ## ⓘ Did you know?
       **Scheduled searches can be ran against 1st and 3rd party data.**
       - This means you can setup alerts and notifications of findings from a query for anything within your data.
-      - This allows for better automation of monitoring within your environment. [Click here to read the documentation of how to use this feature.](/documentation/page/a4275adf/scheduled-searches-for-edr)
+      - This allows for better automation of monitoring within your environment. [Click here to read the documentation of how to use this feature.](https://docs.crowdstrike.com/r/a4275adf)
 
       Scheduled searches lets you to take a step back from security and broaden your focus to anything else you wish to monitor for.
 
@@ -393,11 +398,11 @@ widgets:
       \ to be re-usable for other workflows outside of this one. Then, click \"Next\"\
       .\n\n**Step 4d**: You can name the query anything to make it easily identifiable\
       \ for what it will be used for (Example: Bulk Detection Closing). Then, copy-paste\
-      \ the following query into the event query field, fill in the parameters with info\
-      \ from a detection so that it can build an output schema,  and click \"Run\":\n```\n#repo=xdr_indicatorsrepo\
-      \ Ngsiem.alert.id=/thirdparty|ngsiem/i #Vendor=?Vendor Vendor.severity=?Severity\
-      \ Ngsiem.indicator.display_name=?display_name\n| groupBy([#Vendor, Ngsiem.alert.id,\
-      \ Ngsiem.indicator.display_name], function=[{selectLast([Vendor.severity])},\
+      \ the following query into the event query field, fill in the parameters with\
+      \ info from a detection so that it can build an output schema,  and click \"\
+      Run\":\n```\n#repo=xdr_indicatorsrepo Ngsiem.alert.id=/thirdparty|ngsiem/i #Vendor=?Vendor\
+      \ Vendor.severity=?Severity Ngsiem.indicator.display_name=?display_name\n| groupBy([#Vendor,\
+      \ Ngsiem.alert.id, Ngsiem.indicator.display_name], function=[{selectLast([Vendor.severity])},\
       \ selectLast(event.severity)])\n| join(\n    query={\n       #repo=detections\
       \ EventType=Event_ExternalApiEvent ExternalApiType=Event_UserActivityAuditEvent\
       \ OperationName=detection_update // Attributes.product=thirdparty\n        |\
@@ -473,8 +478,8 @@ widgets:
 
       ---
 
-      ### Console documentation:
-      - [Case Investigation > Investigate with Charlotte AI](/documentation/page/jfd735d6/case-investigation#re18fe8c)
+      ### CrowdStrike documentation:
+      - [Case Investigation > Investigate with Charlotte AI](https://docs.crowdstrike.com/r/re18fe8c)
     width: 6
     title: ''
     type: note
@@ -500,9 +505,10 @@ widgets:
       \ interact with and use CrowdStrike's Next-Gen SIEM solution. \n\n### This covers\
       \ many utilities available within this module, and helps guide you to some content\
       \ to better your understanding of how to accomplish different objectives.\n\n\
-      ---\n\nⓘ **FUN FACT!** *Some of the widgets here are borrowed from other dashboards\
-      \ to highlight important information. Many of these are listed in the* \"📊\
-      \ **Dashboards**\" *section.*"
+      ### Training and other helpful resources can be found in the \"**📚 Additional\
+      \ Information**\" section.\n\n---\n\nⓘ **FUN FACT!** *Some of the widgets here\
+      \ are borrowed from other dashboards to highlight important information. Many\
+      \ of these are listed in the* \"📊 **Dashboards**\" *section.*"
     width: 8
     title: ''
     type: note
@@ -601,9 +607,10 @@ widgets:
     x: 0
     y: 2
     height: 2
-    text: |-
-      # [SOAR Dashboard](/workflow/fusion/dashboard)
-      # [Fusion SOAR Content Library](/workflow/fusion/content-library?type=apps)
+    text: |
+      ## [SOAR Dashboard](/workflow/fusion/dashboard)
+      ## [Unified Content Library](/content-library/home)
+      - ⓘ *See the index on the left for Fusion SOAR Apps, Playbooks, Actions, and Triggers*
     width: 4
     title: ''
     type: note
@@ -745,7 +752,7 @@ widgets:
     y: 0
     height: 4
     text: |-
-      - [CrowdStrike console documentation for Next-Gen SIEM](/documentation/category/f090d800/next-gen-siem)
+      - [CrowdStrike documentation site for Next-Gen SIEM](https://docs.crowdstrike.com/p/ngsiem)
       - [LogScale Documentation Site](https://library.humio.com/)
       - [Next-Gen SIEM Tech Hub](https://www.crowdstrike.com/tech-hub/ng-siem/)
       - [Next-Gen SIEM and LogScale Community content on Github](https://github.com/CrowdStrike/logscale-community-content)
@@ -809,10 +816,10 @@ widgets:
 
       ---
 
-      ### Console documentation:
-      - [Triaging Detections](/documentation/page/pcda83e8/triaging-detections-meta)
-      - [Agentic Response](/documentation/page/r8a07955/agentic-detections)
-      - [Endpoint Detection Monitoring > Investigate a detection](/documentation/page/nec99068/endpoint-detection-monitoring#t92b9c8a)
+      ### CrowdStrike documentation:
+      - [Triaging Detections](https://docs.crowdstrike.com/r/pcda83e8)
+      - [Agentic Response](https://docs.crowdstrike.com/r/r8a07955)
+      - [Endpoint Detection Monitoring > Investigate a detection](https://docs.crowdstrike.com/r/t92b9c8a)
     width: 6
     title: ''
     type: note
@@ -833,10 +840,10 @@ widgets:
 
       ---
 
-      ### Console documentation:
-      - [Correlation Rules](/documentation/page/n1eb89fd/correlation-rules-and-custom-incidents)
-      - [Correlation Rule Templates](/documentation/category/a0000000/rule-templates)
-      - [About Correlation Rule Templates](/documentation/page/ab949217/about-rule-templates)
+      ### CrowdStrike Documentation:
+      - [Correlation Rules](https://docs.crowdstrike.com/r/n1eb89fd)
+      - [About Correlation Rule Templates](https://docs.crowdstrike.com/r/ab949217)
+      - ⓘ *See the index on the left of the page to view documentation pages regarding rule templates based on their specific Vendor and/or Solution*
     width: 8
     title: Correlation Rules
     type: note
@@ -868,6 +875,7 @@ widgets:
       ### [Cases](/xdr/cases)
       You can create a case to investigate one or more detections. Events found with an event query are also able to be added to a case for investigation.
       - Cases can be created with a Case template to allow for SLA setting and notification, and also custom case fields for tracking progress and organizational metrics or information related to case investigation
+      - [**Watch this YouTube video showcasing how to streamline investigations using Case Management**](https://www.youtube.com/watch?v=18r7wJftFYA)
       - A brief overview of what is available within cases is available in [release note in the Support Portal](https://supportportal.crowdstrike.com/s/article/Release-Notes-Investigate-Suspicious-Activity-and-Orchestrate-Response-with-Next-Gen-SIEM-Cases)
 
       ## Create a test case using one or more detections from the Unified Detections page.
@@ -875,10 +883,10 @@ widgets:
 
       ---
 
-      ### Console Documentation:
-      - [Case Management](/documentation/page/ktauy14p/case-management-content)
-      - [Cases](/documentation/page/kfaf4f3d/cases-0)
-      - [Case Investigation](/documentation/page/jfd735d6/case-investigation)
+      ### CrowdStrike Documentation:
+      - [Case Management](https://docs.crowdstrike.com/r/ktauy14p)
+      - [Cases](https://docs.crowdstrike.com/r/kfaf4f3d)
+      - [Case Investigation](https://docs.crowdstrike.com/r/jfd735d6)
     width: 7
     title: ''
     type: note
@@ -894,17 +902,19 @@ widgets:
     title: ''
     type: note
   note-1756927309738-0:
-    x: 6
+    x: 0
     y: 0
-    height: 2
-    text: "#### ⓘ [Click here to view all Data Connectors in current CID that are\
-      \ **not in an active state**](/data-connectors/?filter=display_status%3A%27Disconnected%27%2Bdisplay_status%3A%27Error%27%2Bdisplay_status%3A%27Idle%27%2Bdisplay_status%3A%27Paused%27%2Bdisplay_status%3A%27Pending%27&pageSize=100).\n\
-      \nThis link displays connectors with **disconnected**, **error**, **idle**,\
+    height: 3
+    text: "## [Data Onboarding](/data-connectors/)\n- **Go to the Data Onboarding\
+      \ page to get started ingesting your logs into CrowdStrike!**\n---\nⓘ [Click\
+      \ here to view all Data Connectors in current CID that are **not in an active\
+      \ state**](/data-connectors/?filter=display_status%3A%27Disconnected%27%2Bdisplay_status%3A%27Error%27%2Bdisplay_status%3A%27Idle%27%2Bdisplay_status%3A%27Paused%27%2Bdisplay_status%3A%27Pending%27&pageSize=100).\n\
+      \n*This link displays connectors with **disconnected**, **error**, **idle**,\
       \ **paused**, or **pending** status that require attention. \nAddressing these\
       \ connector issues is critical for ensuring continuous data ingestion and maintaining\
-      \ effective detection coverage through your correlation rules."
+      \ effective detection coverage through your correlation rules.*"
     width: 6
-    title: ''
+    title: Getting started
     type: note
   note-1757946663634-4:
     x: 0
@@ -946,7 +956,7 @@ widgets:
     type: query
   note-1757277502792-1:
     x: 7
-    y: 8
+    y: 11
     height: 2
     text: |-
       ### Parsed data in Next-Gen SIEM is expected to use the CrowdStrike Parsing Standard (CPS)
@@ -977,8 +987,8 @@ widgets:
 
       ---
 
-      ### Console Documentation:
-      - [Charlotte AI Management > Managing promptbooks and Fusion SOAR workflows](/documentation/page/rac6666a/managing-promptbooks-and-fusion-soar-workflows)
+      ### CrowdStrike Documentation:
+      - [Charlotte AI Management > Managing promptbooks and Fusion SOAR workflows](https://docs.crowdstrike.com/r/rac6666a)
     width: 6
     title: ''
     type: note
@@ -1022,8 +1032,8 @@ widgets:
     text: |-
       ```
       DASHBOARD INFO
-          Version: 1.0.0
-          Last Updated: 2025-09-23
+          Version: 1.1.0
+          Last Updated: 2025-10-24
       ```
     width: 4
     title: ''
@@ -1037,6 +1047,24 @@ widgets:
     width: 2
     title: ''
     type: note
+  note-1761313590713-0:
+    x: 7
+    y: 3
+    height: 6
+    text: |-
+      ## The following videos show how to setup the connectors of some solutions commonly integrated with CrowdStrike's Next-Gen SIEM
+      ###  [Amazon Security Lake](https://www.crowdstrike.com/tech-hub/ng-siem/?id=8nxw539DthVQDK314gAFNa&cspage=1&lang=English)
+      ###  [Fortinet FortiGate](https://www.crowdstrike.com/tech-hub/ng-siem/?id=wAbXb9dP4RuHSkvudss6eQ&cspage=0&lang=English)
+      ### [Generic Log Ingestion - Push Connector](https://www.crowdstrike.com/tech-hub/ng-siem/?id=RG7BYUCZxeg1mucQrd3VH9&cspage=0&lang=English)
+      ###  [Microsoft Entra ID](https://www.crowdstrike.com/tech-hub/ng-siem/?id=6z6i2Qhb36Hfx3Q1vbntA2&cspage=0&lang=English)
+      ###  [Mimecast](https://www.crowdstrike.com/tech-hub/ng-siem/?id=i9Lz1noREoFgU1SUsrsnxD&cspage=0&lang=English)
+      ###  [Okta](https://www.crowdstrike.com/tech-hub/ng-siem/?id=YEdw9CsQuFNrcz449njjqw&cspage=0&lang=English)
+      ###  [Zscaler](https://www.crowdstrike.com/tech-hub/ng-siem/?id=pbahoSvybCFatQu2Tt1hR1&cspage=0&lang=English)
+
+      ⓘ ***See the links in the note next to this one to view documentation for setup of these and other data connectors in CrowdStrike***
+    width: 5
+    title: Tech Hub Connector Setup Videos
+    type: note
   note-1756992212365-3:
     x: 0
     y: 0
@@ -1044,8 +1072,7 @@ widgets:
     text: |-
       # Introduction
 
-      ###- [See Falcon Fusion in Action](https://vid.crowdstrike.com/watch/qz3Z3r6HCgnYDLxDUt441A)
-      ###- [CrowdStrike Falcon Fusion SOAR Content Library](https://vid.crowdstrike.com/watch/ZU1b6fgiCq7D2X9gGxtM7q)
+      ## - [See Falcon Fusion in Action](https://vid.crowdstrike.com/watch/qz3Z3r6HCgnYDLxDUt441A)
     width: 4
     title: ''
     type: note
@@ -1109,13 +1136,13 @@ widgets:
     y: 11
     height: 4
     text: |+
-      You can enrich data through the use of [Lookup Files](/documentation/page/rdb0abf5/lookup-files-0). This allows you to enhance your queries with a table of information to aid in threat hunting or general searching.
+      You can enrich data through the use of [Lookup Files](https://docs.crowdstrike.com/r/rdb0abf5). This allows you to enhance your queries with a table of information to aid in threat hunting or general searching.
 
       An excellent example of this is the *[falcon/helper/mappings.csv](/investigate/search/lookup-files/falcon%2Fhelper%2Fmappings.csv?repoOrViewName=search-all)* lookup file. This can be used to make the data from your query more easily understood.
 
       ### [Check out this Cool Query Friday post on our Reddit page to see how this can be used to enrich information in your queries!](https://www.reddit.com/r/crowdstrike/comments/18off35/20231222_cool_query_friday_new_feature_in_raptor/)
       - ⓘ *Lookup files can be viewed, created, and edited in the [Lookup Files page](/investigate/search/lookup-files).*
-      - ⓘ *You can query a lookup file using the readFile() function to see what a particular lookup file contains or to include its contents in your search. [Click here to see this function in action with the lookup file referenced above.](/investigate/search?end=&query=readFile\("falcon%2Fhelper%2Fmappings.csv"\)%0A%7C%20groupBy\(%5BEvent%5D\)&repo=all&searchViewInteractions=NoXSA&timezone=UTC)*
+      - ⓘ *You can query a lookup file using the readFile() function to see what a particular lookup file contains or to include its contents in your search. [Click here to see this function in action with the lookup file referenced above.](/investigate/search?end=&query=readFile\(%22falcon%2Fhelper%2Fmappings.csv%22\)&repo=all&searchViewInteractions=NoXSA&timezone=UTC)*
 
     width: 4
     title: Enriching queries with Lookup Files
@@ -1540,8 +1567,8 @@ widgets:
 
       ---
 
-      ### Console Documentation:
-      - [Detection Monitoring](/documentation/page/ke886083/unified-detections-monitoring)
+      ### CrowdStrike Documentation:
+      - [Detection Monitoring](https://docs.crowdstrike.com/r/ke886083)
     width: 4
     title: ''
     type: note
@@ -1553,8 +1580,8 @@ widgets:
       Being able to effectively use the CrowdStrike Query Language allows for better threat hunting, rule creation, dashboarding, and more.
 
       To help improve your understanding of the use of this, the following documentation provides excellent guidance of learning this by using the different functions available:
-      - [Learn the CrowdStrike Query Language by Example](/documentation/page/a4cc00c2/learn-the-crowdstrike-query-language-by-example)
-      - [Learn the CrowdStrike Query Language Using Falcon Data](/documentation/page/f22f03a6/get-started-with-logscale-using-falcon-data)
+      - [Learn the CrowdStrike Query Language by Example](https://docs.crowdstrike.com/r/a4cc00c2)
+      - [Learn the CrowdStrike Query Language Using Falcon Data](https://docs.crowdstrike.com/r/f22f03a6)
       ---
       ⓘ *[Click here to see examples of how to translate a query from CrowdStrike's Legacy Event Search to CrowdStrike Query Language](https://github.com/CrowdStrike/logscale-community-content/tree/main/CrowdStrike-Query-Language-Map/Legacy-Event-Search)*
     width: 8
@@ -1572,7 +1599,7 @@ widgets:
     type: note
   note-1757277056794-0:
     x: 7
-    y: 6
+    y: 9
     height: 2
     text: |-
       ### Need to add CrowdStrike data connectors to a network allowlist? See the following Support Portal articles
@@ -1583,15 +1610,15 @@ widgets:
     type: note
   note-1757016244029-0:
     x: 0
-    y: 6
+    y: 9
     height: 4
     text: |-
       ### Not seeing a data connector for your solution?
       **Logs are able to be brought into Next-Gen SIEM using one of our [Generic data connectors](/data-connectors/add-connection?filter=vendor_name%3A%27Generic%27).**
 
-      - **[Click here to watch a video showing the setup of Generic Log Ingestion using a Push Connector.](https://www.crowdstrike.com/tech-hub/ng-siem/?id=RG7BYUCZxeg1mucQrd3VH9&cspage=0&lang=English)**
+      - **ⓘ Check out the "Generic Log Ingestion - Push Connector" Tech Hub Video to see how these can be set up**
 
-      **When using a Generic data connector, a parser must be selected to normalize the logs for use within the console. You can choose from one of our [Default parsers](/data-connectors/parsers?filter=type%3A%27default%27) available, or build your own parser with the help of our [AI generated parsing](/documentation/page/n00d51ed/parsers#q83fb13b) with a sample of the logs you wish to bring in.**
+      **When using a Generic data connector, a parser must be selected to normalize the logs for use within the console. You can choose from one of our [Default parsers](/content-library/catalog/parser) available, or build your own parser with the help of our [AI generated parsing](https://docs.crowdstrike.com/r/q83fb13b) with a sample of the logs you wish to bring in.**
 
       ⓘ *There are quite a few parsers available for products that there may not be a data connector built for today. Review these to see if a Generic data connector can be used to bring that solution's logs into Next-Gen SIEM.*
     width: 7
@@ -1646,8 +1673,8 @@ widgets:
     height: 3
     text: '### This can be useful if one of your data sources is generating a large
       amount of 3rd-party (passthrough) detections within the Unified Detections page.
-      You can create an [exclusion](/documentation/page/i499c81a/third-party-detection-exclusions-0),
-      if needed, directly from one of those detections prior to executing this workflow.'
+      You can create an [exclusion](https://docs.crowdstrike.com/r/i499c81a), if needed,
+      directly from one of those detections prior to executing this workflow.'
     width: 4
     title: ''
     type: note
@@ -1655,7 +1682,7 @@ widgets:
     x: 6
     description: This widget will show any error messages for your 3rd-party data
       connectors within the last 7 days
-    height: 4
+    height: 3
     queryString: |-
       #repo = 3pi_connection_errors
       | @dataConnectionID = *
@@ -1663,7 +1690,7 @@ widgets:
     end: now
     start: 7d
     width: 6
-    y: 2
+    y: 0
     interactions:
     - name: Show connector details
       urlEncodeArgs: true
