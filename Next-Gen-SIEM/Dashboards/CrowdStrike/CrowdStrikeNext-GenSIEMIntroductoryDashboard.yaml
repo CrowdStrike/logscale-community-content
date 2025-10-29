@@ -111,6 +111,7 @@ sections:
       end: now
       start: 7d
     widgetIds:
+    - note-1761756215578-0
     - note-1757086781971-0
     - note-1756934974973-1
     - parameter-panel-1756922584654-0
@@ -536,6 +537,13 @@ widgets:
       - [**SIEM 200**: Administering and Optimizing Next-Gen SIEM](https://university.crowdstrike.com/learn/course/1451/siem-200-administering-and-optimizing-next-gen-siem)
       - [**SIEM 210**: Onboarding Third-Party Data and Managing Falcon Next-Gen SIEM](https://university.crowdstrike.com/learn/courses/998/siem-210-onboarding-third-party-data-and-managing-falcon-next-gen-siem)
       - [**SIEM 211**: Incident Response and Investigation with Falcon Next-Gen SIEM](https://university.crowdstrike.com/pages/43/course-catalog?ctl131=t-_elearning_classroom~se-%22SIEM%20211%22)
+
+      ---
+      ## Courses for related content
+      **ELEARNING COURSES**
+      - [**SIEM 106**: Case Management Fundamentals](https://university.crowdstrike.com/learn/courses/1762/siem-106-case-management-fundamentals)
+      - [**FALCON 141**: Charlotte AI Fundamentals](https://university.crowdstrike.com/learn/courses/1513/falcon-141-charlotte-ai-fundamentals)
+      - [**FALCON 175**: Falcon Foundry Fundamentals](https://university.crowdstrike.com/learn/courses/995/falcon-175-falcon-foundry-fundamentals)
     width: 6
     title: 📓 CrowdStrike University
     type: note
@@ -731,16 +739,17 @@ widgets:
     x: 0
     y: 2
     height: 6
-    text: |2
+    text: |2-
 
       |                                                                                                                                       Dashboard                                                                                                                                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
       | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
       |                                             [Next-Gen SIEM Reference Dashboard - v1.9.2](/investigate/search/custom-dashboards/Next-Gen%20SIEM%20Reference%20Dashboard%20-%20v1.9.2?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                             | The reference dashboard features many different styles of SOC analysis and threat hunting use cases. The first two sections show instructions and basic detection metrics. The remaining sections show common scenarios that may be of interest for investigations, including matching to IOCs, analyzing logon events, and looking at high entropy DNS names. You can use the dashboard to explore your data, or as a reference to make your own threat hunting experiences.         |
       | [CrowdStrike Next-Gen SIEM - Correlation Rule Template Discovery](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Correlation%20Rule%20Template%20Discovery?packageScope=falcon%2Fngsiem-content-crt&repoOrViewName=search-all&sharedTime=false&start=15m)  | This dashboard provides a comprehensive view of CrowdStrike's Next-Gen SIEM out-of-the-box correlation rule templates, enabling customers to discover content that aligns with their existing security log sources, detection requirements, and strategy.                                                                                                                                                                                                                             |
+      |                                                                            [Case Management](/investigate/search/custom-dashboards/Case%20management?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                                            | Monitoring dashboard of metrics around Cases, including: active and total cases, SLA statuses, case user assignments, and more.                                                                                                                                                                                                                                                                                                                                                       |
       |                                                                     [Fusion SOAR Execution](/investigate/search/custom-dashboards/Fusion%20SOAR%20Execution?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                                     | Visualizes your workflow execution data in a variety of ways to help you keep track of what’s happening in your system.                                                                                                                                                                                                                                                                                                                                                               |
       |                          [CrowdStrike - Endpoint - AI Service Usage Monitoring](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20AI%20Service%20Usage%20Monitoring?packageScope=falcon%2Fngsiem-content-ai&repoOrViewName=search-all)                           | As organizations increasingly adopt AI technologies, understanding AI usage becomes critical for maintaining security and compliance. CrowdStrike's AI Monitoring Dashboard provides comprehensive visibility into AI service interactions, data movements, and potential risks across your environment, enabling informed security decisions through detailed insights into AI-related activities.                                                                                   |
       | [CrowdStrike - Endpoint - Active Binaries with Revoked or Expired Certificates](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20Active%20Binaries%20with%20Revoked%20or%20Expired%20Certificates?repoOrViewName=search-all&packageScope=falcon/ngsiem-content) | This dashboard enables security teams to quickly identify systems running software with certificate issues, investigate suspicious driver activity, correlate driver deployment patterns, and leverage CrowdStrike Falcon sensor detections related to malicious driver activity. It serves as an essential tool for threat hunting, vulnerability management, and maintaining environment security by identifying software operating with compromised or outdated trust credentials. |
-      |                             [Malicious Browser Extension Investigation](/investigate/search/custom-dashboards/Malicious%20Browser%20Extension%20Investigation?packageScope=falcon%2Fngsiem-content-et&repoOrViewName=search-all&sharedTime=true&start=1d)                             | This dashboard leverages the CrxFileWritten event to determine if a particular extension version was downloaded to a system. **NOTE**: Only available for EDR events from Windows sensors                                                                                                                                                                                                                                                                                        |
+      |                             [Malicious Browser Extension Investigation](/investigate/search/custom-dashboards/Malicious%20Browser%20Extension%20Investigation?packageScope=falcon%2Fngsiem-content-et&repoOrViewName=search-all&sharedTime=true&start=1d)                             | This dashboard leverages the CrxFileWritten event to determine if a particular extension version was downloaded to a system. **NOTE**: Only available for EDR events from Windows sensors                                                                                                                                                                                                                                                                                             |
       |                                                      [Asset Ownership Investigation: DNS](/investigate/search/custom-dashboards/Asset%20Ownership%20Investigation%3A%20DNS?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                      | This dashboard helps identify asset ownership when you have only a DNS name, by showing which users and computers connect to that domain most frequently based on Falcon sensor telemetry. This can be helpful when investigating who, in an organization, is responsible for certain assets, such as those identified through network scanning or EASM results.                                                                                                                      |
       |                                                       [Asset Ownership Investigation: IP](/investigate/search/custom-dashboards/Asset%20Ownership%20Investigation%3A%20IP?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                       | This dashboard helps identify asset ownership when you have only an IP address, by showing which users and computers connect to that IP most frequently based on Falcon sensor telemetry. This can be helpful when investigating who, in an organization, is responsible for certain assets, such as those identified through network scanning or EASM results.                                                                                                                       |
       |                                                                              [SOC Efficacy](/investigate/search/custom-dashboards/SOC%20Efficacy?packageScope=falcon%2Fngsiem&repoOrViewName=search-all)                                                                              | Combines incident and detection data from all of your data sources into a single, intuitive view of your threat landscape to inform your decision making with clear, up-to-date data.                                                                                                                                                                                                                                                                                                 |
@@ -1032,8 +1041,8 @@ widgets:
     text: |-
       ```
       DASHBOARD INFO
-          Version: 1.1.0
-          Last Updated: 2025-10-24
+          Version: 1.2.0
+          Last Updated: 2025-10-29
       ```
     width: 4
     title: ''
@@ -1053,13 +1062,13 @@ widgets:
     height: 6
     text: |-
       ## The following videos show how to setup the connectors of some solutions commonly integrated with CrowdStrike's Next-Gen SIEM
-      ###  [Amazon Security Lake](https://www.crowdstrike.com/tech-hub/ng-siem/?id=8nxw539DthVQDK314gAFNa&cspage=1&lang=English)
-      ###  [Fortinet FortiGate](https://www.crowdstrike.com/tech-hub/ng-siem/?id=wAbXb9dP4RuHSkvudss6eQ&cspage=0&lang=English)
-      ### [Generic Log Ingestion - Push Connector](https://www.crowdstrike.com/tech-hub/ng-siem/?id=RG7BYUCZxeg1mucQrd3VH9&cspage=0&lang=English)
-      ###  [Microsoft Entra ID](https://www.crowdstrike.com/tech-hub/ng-siem/?id=6z6i2Qhb36Hfx3Q1vbntA2&cspage=0&lang=English)
-      ###  [Mimecast](https://www.crowdstrike.com/tech-hub/ng-siem/?id=i9Lz1noREoFgU1SUsrsnxD&cspage=0&lang=English)
-      ###  [Okta](https://www.crowdstrike.com/tech-hub/ng-siem/?id=YEdw9CsQuFNrcz449njjqw&cspage=0&lang=English)
-      ###  [Zscaler](https://www.crowdstrike.com/tech-hub/ng-siem/?id=pbahoSvybCFatQu2Tt1hR1&cspage=0&lang=English)
+      ###  [Amazon Security Lake](https://vid.crowdstrike.com/watch/8nxw539DthVQDK314gAFNa?)
+      ###  [Fortinet FortiGate](https://vid.crowdstrike.com/watch/wAbXb9dP4RuHSkvudss6eQ?)
+      ### [Generic Log Ingestion - Push Connector](https://vid.crowdstrike.com/watch/RG7BYUCZxeg1mucQrd3VH9?)
+      ###  [Microsoft Entra ID](https://vid.crowdstrike.com/watch/6z6i2Qhb36Hfx3Q1vbntA2?)
+      ###  [Mimecast](https://vid.crowdstrike.com/watch/i9Lz1noREoFgU1SUsrsnxD?)
+      ###  [Okta Identity Management](https://vid.crowdstrike.com/watch/YEdw9CsQuFNrcz449njjqw?)
+      ###  [Zscaler Internet Access](https://vid.crowdstrike.com/watch/pbahoSvybCFatQu2Tt1hR1?)
 
       ⓘ ***See the links in the note next to this one to view documentation for setup of these and other data connectors in CrowdStrike***
     width: 5
@@ -1149,7 +1158,7 @@ widgets:
     type: note
   000ebefe-4bce-4e92-9d98-30fbe8bf93e4:
     x: 0
-    y: 10
+    y: 15
     description: This is not an exhaustive list of all dashboards available for external
       data sources due to CrowdStrike and our partners developing new dashboards regularly.
       You can view all available dashboards using the link in the red widget above,
@@ -1572,6 +1581,23 @@ widgets:
     width: 4
     title: ''
     type: note
+  note-1761756215578-0:
+    x: 0
+    y: 8
+    description: Review each dashboard to see a list of the applicable Supported Data
+      Sources
+    height: 5
+    text: |2
+
+      |                                                                                                           Dashboard                                                                                                           | Description                                                                                                                                                                                                                                                                         |
+      | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+      |                          [Compliance Monitoring - HIPAA](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20HIPAA?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                          | This dashboard surfaces important data that maps directly to the Health Insurance Portability and Accountability Act (HIPAA) compliance framework, facilitating organizations to meeting the appropriate controls for this compliance regulation.                                   |
+      |                  [Compliance Monitoring - NERC CIP v2](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20NERC%20CIP%20v2?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                  | This dashboard surfaces important data that maps directly to the North American Electric Reliability Corporation Critical Infrastructure Protection (NERC CIP) compliance framework, facilitating organizations to meeting the appropriate controls for this compliance regulation. |
+      | [Compliance Monitoring - NIST SP 800-53 Rev5 (AU)](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20NIST%20SP%20800-53%20Rev5%20%28AU%29?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl) | This dashboard surfaces important data that maps directly to the NIST SP 800-53 compliance framework, facilitating organizations in meeting the appropriate controls for this compliance regulation.                                                                                |
+      |                       [Compliance Monitoring - PCI DSS](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20PCI%20DSS?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                       | This dashboard provides real-time visibility and continuous monitoring of PCI-DSS compliance status with a primary focus on authentication controls and access management to ensure cardholder data protection and regulatory adherence.                                            |
+    width: 12
+    title: Compliance monitoring dashboards
+    type: note
   note-1757087213965-1:
     x: 0
     y: 8
@@ -1659,7 +1685,7 @@ widgets:
     type: note
   parameter-panel-1756922584654-0:
     x: 0
-    y: 8
+    y: 13
     parameterIds:
     - Data_Source
     height: 2
@@ -1735,7 +1761,7 @@ widgets:
     type: note
   note-1756934974973-1:
     x: 0
-    y: 18
+    y: 23
     description: Resources to help you start creating more in CrowdStrike!
     height: 2
     text: |2-
