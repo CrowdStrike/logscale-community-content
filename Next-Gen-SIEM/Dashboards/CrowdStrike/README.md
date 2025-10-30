@@ -11,3 +11,9 @@
 ## [next-gen-siem-reference-dashboard](next-gen-siem-reference-dashboard.yaml)
 
 ![Screenshot 1](screenshots/next-gen-siem-reference-dashboard.png)
+
+## [data-protection-hunt-dashboard](data-protection-hunt-dashboard.yaml)
+![Screenshot 2](screenshots/data-protection-hunt-dashboard.png)
+
+## [next-gen-siem-third-party-data-explorer](next-gen-siem-third-party-data-explorer.yaml)
+![Screenshot 3](screenshots/next-gen-siem-third-party-data-explorer.jpg)
