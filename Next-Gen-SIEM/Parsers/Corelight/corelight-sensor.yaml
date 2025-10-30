@@ -1,0 +1,2690 @@
+name: corelight-sensor
+fieldsToBeRemovedBeforeParsing: []
+testCases:
+- assertions:
+  - fieldsHaveValues:
+      Vendor.AA: 'false'
+      Vendor.answers[2]: 100.100.100.101
+      event.id: CBXYzu22zhEPIAAh6g
+      network.protocol: dns
+      Vendor._system_name: server001
+      Vendor.rtt: '0.00008487701416015625'
+      Vendor.rcode: '0'
+      Vendor.Z: '0'
+      client.port: '57390'
+      Vendor.answers[0]: general.lab.example.com
+      Vendor.ts: '2025-08-27T13:42:41.353595Z'
+      Vendor.query: general1.example.com
+      Vendor.id.orig_p: '57390'
+      network.community_id: 1:5+Xn4OHAjs5yO99Tckriltyirwo=
+      Vendor._path: dns
+      event.type[0]: connection
+      Vendor.rcode_name: NOERROR
+      observer.hostname: server001
+      dns.question.type: A
+      Vendor.TTLs[0]: '35.0'
+      Vendor.trans_id: '12492'
+      dns.answers[0].data: general.lab.example.com
+      source.port: '57390'
+      '#event.kind': event
+      Vendor.answers[3]: 100.100.100.102
+      dns.answers[1].ttl: '35.0'
+      Vendor.answers[1]: 100.100.100.100
+      Vendor.id.orig_h: 10.0.1.100
+      network.transport: udp
+      Vendor.id.resp_p: '53'
+      event.category[0]: network
+      dns.answers[3].data: 100.100.100.102
+      Vendor.TTLs[1]: '35.0'
+      '#event.dataset': ndr.dns
+      Vendor.id.resp_h: 10.0.1.1
+      Vendor.is_trusted_domain: 'false'
+      event.type[1]: protocol
+      dns.answers[1].data: 100.100.100.100
+      Vendor._write_ts: '2025-08-27T13:42:41.353680Z'
+      '#event.module': ndr
+      Vendor.qclass: '1'
+      server.port: '53'
+      destination.port: '53'
+      source.ip: 10.0.1.100
+      dns.answers[2].ttl: '35.0'
+      Vendor.uid: CBXYzu22zhEPIAAh6g
+      Vendor.TTLs[3]: '35.0'
+      dns.question.name: general1.example.com
+      dns.answers[0].ttl: '35.0'
+      Vendor.rejected: 'false'
+      Vendor.TTLs[2]: '35.0'
+      dns.answers[2].data: 100.100.100.101
+      Vendor.icann_tld: com
+      Vendor.qtype: '1'
+      Vendor.proto: udp
+      dns.answers[3].ttl: '35.0'
+      Vendor.RA: 'true'
+      dns.response_code: NOERROR
+      Vendor.icann_domain: example.com
+      server.ip: 10.0.1.1
+      Vendor.qtype_name: A
+      Vendor.TC: 'false'
+      Vendor.icann_host_subdomain: general1
+      Vendor.qclass_name: C_INTERNET
+      Vendor.RD: 'true'
+      client.ip: 10.0.1.100
+      destination.ip: 10.0.1.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dns","_system_name":"server001","_write_ts":"2025-08-27T13:42:41.353680Z","ts":"2025-08-27T13:42:41.353595Z","uid":"CBXYzu22zhEPIAAh6g","id.orig_h":"10.0.1.100","id.orig_p":57390,"id.resp_h":"10.0.1.1","id.resp_p":53,"proto":"udp","trans_id":12492,"rtt":0.00008487701416015625,"query":"general1.example.com","qclass":1,"qclass_name":"C_INTERNET","qtype":1,"qtype_name":"A","rcode":0,"rcode_name":"NOERROR","AA":false,"TC":false,"RD":true,"RA":true,"Z":0,"answers":["general.lab.example.com","100.100.100.100","100.100.100.101","100.100.100.102"],"TTLs":[35.0,35.0,35.0,35.0],"rejected":false,"is_trusted_domain":"false","icann_host_subdomain":"general1","icann_domain":"example.com","icann_tld":"com"}'
+- assertions:
+  - fieldsHaveValues:
+      Vendor.AA: 'false'
+      Vendor.answers[2]: 100.100.100.102
+      event.id: CBXYzu22zhEPIAAh6g
+      network.protocol: dns
+      Vendor._system_name: server001
+      '#event.kind': event
+      Vendor.rtt: '0.049623966217041016'
+      Vendor.TTLs[1]: '60.0'
+      Vendor.rcode: '0'
+      Vendor.Z: '0'
+      client.port: '34520'
+      Vendor.answers[0]: 100.100.100.100
+      Vendor.ts: '2025-08-27T13:42:41.309046Z'
+      Vendor.query: p-digital.example.com
+      Vendor.id.orig_p: '34520'
+      network.community_id: 1:WwYgKMN6ACjJISmkLGplR23SL7o=
+      Vendor._path: dns
+      event.type[0]: connection
+      Vendor.rcode_name: NOERROR
+      observer.hostname: server001
+      dns.question.type: A
+      Vendor.TTLs[0]: '60.0'
+      Vendor.trans_id: '49253'
+      dns.answers[0].data: 100.100.100.100
+      source.port: '34520'
+      dns.answers[1].ttl: '60.0'
+      Vendor.answers[1]: 100.100.100.10
+      Vendor.id.orig_h: 10.0.1.100
+      network.transport: udp
+      Vendor.id.resp_p: '53'
+      event.category[0]: network
+      '#event.dataset': ndr.dns
+      Vendor.id.resp_h: 10.0.1.51
+      Vendor.is_trusted_domain: 'false'
+      event.type[1]: protocol
+      dns.answers[1].data: 100.100.100.10
+      Vendor._write_ts: '2025-08-27T13:42:41.358670Z'
+      '#event.module': ndr
+      Vendor.qclass: '1'
+      server.port: '53'
+      destination.port: '53'
+      source.ip: 10.0.1.100
+      dns.answers[2].ttl: '60.0'
+      Vendor.uid: CBXYzu22zhEPIAAh6g
+      dns.question.name: p-digital.example.com
+      dns.answers[0].ttl: '60.0'
+      Vendor.rejected: 'false'
+      Vendor.TTLs[2]: '60.0'
+      dns.answers[2].data: 100.100.100.102
+      Vendor.icann_tld: com
+      Vendor.qtype: '1'
+      Vendor.proto: udp
+      Vendor.RA: 'true'
+      dns.response_code: NOERROR
+      Vendor.icann_domain: example.com
+      server.ip: 10.0.1.51
+      Vendor.qtype_name: A
+      Vendor.TC: 'false'
+      Vendor.icann_host_subdomain: digital
+      Vendor.qclass_name: C_INTERNET
+      Vendor.RD: 'true'
+      client.ip: 10.0.1.100
+      destination.ip: 10.0.1.51
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dns","_system_name":"server001","_write_ts":"2025-08-27T13:42:41.358670Z","ts":"2025-08-27T13:42:41.309046Z","uid":"CBXYzu22zhEPIAAh6g","id.orig_h":"10.0.1.100","id.orig_p":34520,"id.resp_h":"10.0.1.51","id.resp_p":53,"proto":"udp","trans_id":49253,"rtt":0.049623966217041016,"query":"p-digital.example.com","qclass":1,"qclass_name":"C_INTERNET","qtype":1,"qtype_name":"A","rcode":0,"rcode_name":"NOERROR","AA":false,"TC":false,"RD":true,"RA":true,"Z":0,"answers":["100.100.100.100","100.100.100.10","100.100.100.102"],"TTLs":[60.0,60.0,60.0],"rejected":false,"is_trusted_domain":"false","icann_host_subdomain":"digital","icann_domain":"example.com","icann_tld":"com"}'
+- assertions:
+  - fieldsHaveValues:
+      Vendor.AA: 'true'
+      event.id: CBXYzu22zhEPIAAh6g
+      network.protocol: dns
+      Vendor._system_name: server001
+      '#event.kind': event
+      Vendor.TTLs[1]: '300.0'
+      Vendor.rcode: '0'
+      Vendor.TC: 'false'
+      Vendor.RD: 'false'
+      Vendor.Z: '0'
+      client.port: '39658'
+      Vendor.answers[0]: TXT 137 example-law.com. IN TXT "v=spf1 mx a ip4:100.100.100.100/19
+        a:100.100.100.100/24 a:100.100.100.100/25 a:192.168.1.0/24 a:192.168.2.0/24
+        ?all"
+      Vendor.ts: '2025-08-27T12:05:58.740911Z'
+      Vendor.query: example-law.com
+      Vendor.id.orig_p: '39658'
+      network.community_id: 1:tmEKTFOt3LxaT+tBvZ5oW9v7TfM=
+      Vendor._path: dns
+      event.type[0]: connection
+      Vendor.rcode_name: NOERROR
+      observer.hostname: server001
+      Vendor.TTLs[0]: '300.0'
+      Vendor.trans_id: '46787'
+      dns.answers[0].data: TXT 137 example-law.com. IN TXT "v=spf1 mx a ip4:100.100.100.100/19
+        a:100.100.100.100/24 a:100.100.100.100/25 a:192.168.1.0/24 a:192.168.2.0/24
+        ?all"
+      source.port: '39658'
+      dns.answers[1].ttl: '300.0'
+      Vendor.answers[1]: TXT 148 v=spf1 include:_netblocks.example.com ip4:100.100.100.100/32
+        ip4:100.100.100.100/19 include:spf-us.example.com include:spf.protection.outlook.com
+        -all
+      Vendor.id.orig_h: 203.0.113.1
+      network.transport: udp
+      Vendor.id.resp_p: '53'
+      event.category[0]: network
+      '#event.dataset': ndr.dns
+      Vendor.id.resp_h: 198.51.100.1
+      Vendor.is_trusted_domain: 'false'
+      event.type[1]: protocol
+      dns.answers[1].data: TXT 148 v=spf1 include:_netblocks.example.com ip4:100.100.100.100/32
+        ip4:100.100.100.100/19 include:spf-us.example.com include:spf.protection.outlook.com
+        -all
+      Vendor._write_ts: '2025-08-27T12:06:08.741628Z'
+      '#event.module': ndr
+      server.port: '53'
+      destination.port: '53'
+      source.ip: 203.0.113.1
+      Vendor.uid: CBXYzu22zhEPIAAh6g
+      dns.question.name: example-law.com
+      dns.answers[0].ttl: '300.0'
+      Vendor.rejected: 'false'
+      Vendor.icann_tld: com
+      Vendor.proto: udp
+      Vendor.RA: 'false'
+      dns.response_code: NOERROR
+      Vendor.icann_domain: example.com
+      server.ip: 198.51.100.1
+      client.ip: 203.0.113.1
+      destination.ip: 198.51.100.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dns","_system_name":"server001","_write_ts":"2025-08-27T12:06:08.741628Z","ts":"2025-08-27T12:05:58.740911Z","uid":"CBXYzu22zhEPIAAh6g","id.orig_h":"203.0.113.1","id.orig_p":39658,"id.resp_h":"198.51.100.1","id.resp_p":53,"proto":"udp","trans_id":46787,"query":"example-law.com","rcode":0,"rcode_name":"NOERROR","AA":true,"TC":false,"RD":false,"RA":false,"Z":0,"answers":["TXT
+      137 example-law.com. IN TXT \"v=spf1 mx a ip4:100.100.100.100/19 a:100.100.100.100/24
+      a:100.100.100.100/25 a:192.168.1.0/24 a:192.168.2.0/24 ?all\"","TXT 148 v=spf1
+      include:_netblocks.example.com ip4:100.100.100.100/32 ip4:100.100.100.100/19
+      include:spf-us.example.com include:spf.protection.outlook.com -all"],"TTLs":[300.0,300.0],"rejected":false,"is_trusted_domain":"false","icann_host_subdomain":"","icann_domain":"example.com","icann_tld":"com"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '57670'
+      event.id: cnXAAi42YJEpgvNgag
+      network.protocol: ssh
+      source.port: '57670'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 172.1.1.1
+      server.ip: 172.2.2.2
+      event.type[0]: connection
+      observer.hostname: example-9000
+      '#event.dataset': ndr.ssh
+      event.type[1]: protocol
+      '#event.module': ndr
+      server.port: '22'
+      destination.port: '22'
+      client.ip: 172.1.1.1
+      destination.ip: 172.2.2.2
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ssh","_system_name":"example-9000","_write_ts":"2025-08-07T19:06:28.845869Z","ts":"2025-08-07T19:06:17.368388Z","uid":"cnXAAi42YJEpgvNgag","id.orig_h":"172.1.1.1","id.orig_p":57670,"id.resp_h":"172.2.2.2","id.resp_p":22,"auth_attempts":0,"client":"\\x00\\x00\\x00<\t\\x00\\xa45b\\x00\\x00\\x00\\x00\\x00\t2O\\x00;\\x00\\x00\\x00\\x01hcurve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,ext-info-c,kex-strict-c-v00@openssh.com\\x00\\x00\\x01necdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp521-cert-v01@openssh.com,ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-512,rsa-sha2-256,rsa-sha2-512-cert-v01@openssh.com,rsa-sha2-256-cert-v01@openssh.com,ssh-rsa,ssh-rsa-cert-v01@openssh.com,ssh-dss\\x00\\x00\\x00\\xdeaes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr,chacha20-poly1305@openssh.com,aes256-cbc,rijndael-cbc@lysator.liu.se,aes192-cbc,aes128-cbc,blowfish-cbc,arcfour128,arcfour,cast128-cbc,3des-cbc\\x00\\x00\\x00\\xdeaes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr,chacha20-poly1305@openssh.com,aes256-cbc,rijndael-cbc@lysator.liu.se,aes192-cbc,aes128-cbc,blowfish-cbc,arcfour128,arcfour,cast128-cbc,3des-cbc\\x00\\x00\\x00\\xadhmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com,hmac-md5,hmac-md5-96,hmac-sha1,hmac-sha1-96,hmac-ripemd160,hmac-ripemd160@openssh.com\\x00\\x00\\x00\\xadhmac-sha2-512,hmac-sha2-512-etm@openssh.com,hmac-sha2-256,hmac-sha2-256-etm@openssh.com,hmac-md5,hmac-md5-96,hmac-sha1,hmac-sha1-96,hmac-ripemd160,hmac-ripemd160@openssh.com\\x00\\x00\\x00\\x04none\\x00\\x00\\x00\\x04none\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x9cI\t\\x001\\x0fy\\x00\\x00\\x00,\\x00\\x1e\\x00\\x00\\x00
+      \\xcd\t+\\x000\\xdek\\x00\\xc8E0\\x00,\\x00\\x00\\x18h\\xeb\\x00\\x00\\x00\\x00","server":"SSH-2.0-OpenSSH_8.0","inferences":["SV"]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '55485'
+      event.id: cnXAAi42YJEpgvNgag
+      source.port: '55485'
+      '#event.kind': event
+      event.category[0]: network
+      server.ip: 100.100.100.100
+      destination.address: example-9000
+      Vendor.ts: '2025-08-08T11:38:55.074280Z'
+      server.address: example-9000
+      event.type[0]: connection
+      observer.hostname: example-9000
+      '#event.dataset': ndr.smtp
+      event.type[1]: protocol
+      '#event.module': ndr
+      server.port: '25'
+      destination.port: '25'
+      source.ip: 172.1.1.1
+      Vendor.uid: cnXAAi42YJEpgvNgag
+      client.ip: 172.1.1.1
+      destination.ip: 100.100.100.100
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"smtp","_system_name":"example-9000","_write_ts":"2025-08-08T11:39:01.771953Z","ts":"2025-08-08T11:38:55.074280Z","uid":"cnXAAi42YJEpgvNgag","id.orig_h":"172.1.1.1","id.orig_p":55485,"id.resp_h":"100.100.100.100","id.resp_p":25,"trans_depth":1,"helo":"example-9000","last_reply":"220
+      Starting TLS [86Off2AHP8u-PZKaaqB9Q.us33]","path":["100.100.100.100","172.1.1.1"],"tls":true,"fuids":[],"is_webmail":false}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '12219'
+      network.community_id: 1:QmjkPkFuCFaYKi/lqZfDkypdnJY=
+      event.id: CV22xq2f9UEEur4LLc
+      network.protocol: dns
+      source.port: '12219'
+      '#event.kind': event
+      network.transport: udp
+      event.category[0]: network
+      dns.response_code: SERVFAIL
+      server.ip: 172.2.2.2
+      event.type[0]: connection
+      observer.hostname: example-9000
+      dns.question.type: AAAA
+      '#event.dataset': ndr.dns
+      event.type[1]: protocol
+      '#event.module': ndr
+      server.port: '53'
+      destination.port: '53'
+      source.ip: 172.1.1.1
+      dns.question.name: example-9000-node-1
+      client.ip: 172.1.1.1
+      destination.ip: 172.2.2.2
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dns","_system_name":"example-9000","_write_ts":"2025-08-08T12:38:16.871695Z","ts":"2025-08-08T12:38:16.871368Z","uid":"CV22xq2f9UEEur4LLc","id.orig_h":"172.1.1.1","id.orig_p":12219,"id.resp_h":"172.2.2.2","id.resp_p":53,"proto":"udp","trans_id":23709,"query":"example-9000-node-1","qclass":1,"qclass_name":"C_INTERNET","qtype":28,"qtype_name":"AAAA","rcode":2,"rcode_name":"SERVFAIL","AA":false,"TC":false,"RD":true,"RA":false,"Z":0,"rejected":true,"is_trusted_domain":"true","icann_host_subdomain":"","icann_domain":"local","icann_tld":"local"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '64910'
+      rule.name: intel
+      event.id: CNh51N3dSRfMZG1Pt4
+      source.port: '64910'
+      event.category[1]: network
+      '#event.kind': alert
+      event.category[0]: threat
+      event.severity: '90'
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: indicator
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.intel
+      event.type[1]: info
+      server.port: '80'
+      destination.port: '80'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: |
+      {"_path":"intel","_system_name":"Lab-AP200","_write_ts":"2023-01-06T05:13:38.841292Z","ts":"2023-01-06T05:13:38.841292Z","uid":"CNh51N3dSRfMZG1Pt4","id.orig_h":"127.0.0.1","id.orig_p":64910,"id.resp_h":"127.0.0.1","id.resp_p":80,"seen.indicator":"127.0.0.1","seen.indicator_type":"Intel::ADDR","seen.where":"Conn::IN_ORIG","matched":["Intel::ADDR"],"sources":["blocklist_de","cinsscore_ci_badguys","blocklist_net_ua","CrowdStrike","dshield_block"],"confidence":["high"],"desc":["CrowdStrike"],"lastseen":["2023-01-03T16:10:54Z"],"firstseen":["2021-03-20T10:10:01Z"]}
+- assertions:
+  - fieldsHaveValues:
+      client.port: '63446'
+      rule.name: intel
+      network.vlan.id: '1'
+      event.id: CncLNK2cd8f4GfsVYh
+      source.port: '63446'
+      event.category[1]: network
+      '#event.kind': alert
+      event.category[0]: threat
+      event.severity: '70'
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: indicator
+      observer.hostname: Lagermann-AP200
+      '#event.dataset': ndr.intel
+      event.type[1]: info
+      server.port: '443'
+      destination.port: '443'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    fieldsNotPresent:
+    - Vendor.confidence[0]
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"intel","_system_name":"Lagermann-AP200","_write_ts":"2025-04-17T17:17:18.197813Z","ts":"2025-04-17T17:17:18.197813Z","uid":"CncLNK2cd8f4GfsVYh","id.orig_h":"127.0.0.1","id.orig_p":63446,"id.resp_h":"127.0.0.1","id.resp_p":443,"id.vlan":1,"seen.indicator":"127.0.0.1","seen.indicator_type":"Intel::ADDR","seen.where":"Conn::IN_RESP","seen.node":"worker-01","matched":["Intel::ADDR"],"sources":["Fortinet
+      Threat Research"],"url":["https://www.fortinet.com/blog/threat-research/fortisandbox-detects-evolving-snake-keylogger-variant"]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '64910'
+      rule.name: intel
+      event.id: CNh51N3dSRfMZG1Pt4
+      source.port: '64910'
+      event.category[1]: network
+      '#event.kind': alert
+      event.category[0]: threat
+      event.severity: '100'
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: indicator
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.intel
+      event.type[1]: info
+      server.port: '80'
+      destination.port: '80'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: |
+      {"_path":"intel","_system_name":"Lab-AP200","_write_ts":"2023-01-06T05:13:38.841292Z","ts":"2023-01-06T05:13:38.841292Z","uid":"CNh51N3dSRfMZG1Pt4","id.orig_h":"127.0.0.1","id.orig_p":64910,"id.resp_h":"127.0.0.1","id.resp_p":80,"seen.indicator":"127.0.0.1","seen.indicator_type":"Intel::ADDR","seen.where":"Conn::IN_ORIG","matched":["Intel::ADDR"],"sources":["blocklist_de","cinsscore_ci_badguys","blocklist_net_ua","Mandiant","dshield_block"],"confidence":[99],"threat_score":[100],"verdict":["malicious"],"verdict_source":["analystVerdict"],"desc":["MandiantThreatIntellegence"],"lastseen":["2023-01-03T16:10:54Z"],"firstseen":["2021-03-20T10:10:01Z"],"url":["https://advantage.mandiant.com/"],"reports":["ID:23-00000242,Type:NewsAnalysis"],"campaigns":[],"associated":["ID:threat-actor--b7e371c2-724e-5ffa-9e3c-9b1410513c27,Name:FIN13;ID:threat-actor--8211bc17-9216-5e83-b54d-d1b04add12f3,Name:APT28;ID:threat-actor--7a39953e-0dae-569a-9d49-d52a4a8865b1,Name:APT29;ID:threat-actor--2f0ab36a-02a6-59f7-ac23-bcd824cc7c8e,Name:FIN4"],"category":["exploit","exploit/vuln-scanning,exploit"]}
+- assertions:
+  - fieldsHaveValues:
+      client.port: '39138'
+      network.protocol: TCP
+      source.port: '39138'
+      '#event.kind': event
+      event.category[0]: network
+      '#event.dataset': ndr.weird_agg
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '8080'
+      destination.port: '8080'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"weird_agg","_system_name":"Lab-AP200","_write_ts":"2025-04-17T19:35:56.972173Z","count":8,"id.orig_h":"127.0.0.1","id.orig_p":39138,"id.resp_h":"127.0.0.1","id.resp_p":8080,"name":"data_before_established","notice":false,"peer":"worker-02","source":"TCP","ts":"2025-04-17T19:30:55.005232Z","ts_last":"2025-04-17T19:35:53.468792Z","uids":["CvTB154LqmWlEWQWhl","CtutYK2SOMMqGjR1Jf","Cn4mUAkK9bJ9qlYHh","CzkGId3wQp9eYwKoqa","CVdZdl2fdCn24ge1q6","CXdhHx2KxlLBC542Kh","CaXFXctwywtoYQid6","CHoVoD4achuJmK1oP9"]}'
+- assertions:
+  - fieldsHaveValues:
+      network.vlan.id: '12'
+      dns.question.type: A
+      '#event.kind': event
+      event.category[0]: network
+      dns.response_code: NOERROR
+      client.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.dns_agg
+      event.type[1]: protocol
+      server.port: '53'
+      destination.port: '53'
+      source.ip: 127.0.0.1
+      dns.question.name: backstory.chronicle.security
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dns_agg","_system_name":"Lab-AP200","_write_ts":"2025-04-17T19:35:52.856767Z","answers":["www.google.com"],"count":1,"icann_domain":"chronicle.security","icann_host_subdomain":"backstory","icann_tld":"security","id.orig_h":"127.0.0.1","id.resp_p":53,"id.vlan":12,"is_trusted_domain":false,"qtype":1,"qtype_name":"A","query":"backstory.chronicle.security","rcode":0,"rcode_name":"NOERROR","rejected":[false],"ts":"2025-04-17T19:30:50.630164Z","ts_last":"2025-04-17T19:30:50.630164Z","uids":["CZWs1h2bKynwW7wmmi"]}'
+- assertions:
+  - fieldsHaveValues:
+      file.hash.md5: 7e4e7299f7923879c1cf3d30d40c3e47
+      network.protocol: HTTP
+      '#event.kind': event
+      event.category[0]: file
+      '#event.dataset': ndr.files_agg
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.duration: '0.09296107292175292'
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+      file.size: '3531'
+      file.hash.sha256: 1a84d0034492526fa4deb96b6ce5cedf59ecc576db9f125bcf91d65db3b2d64a
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"files_agg","_system_name":"Lab-AP200","_write_ts":"2025-04-17T19:35:02.892942Z","analyzers":["SHA256","MD5","DATA_EVENT","SHA1"],"count":1,"duration":0.09296107292175292,"fuid":"F851bk3qgexyNyylT","id.orig_h":"127.0.0.1","id.resp_h":"127.0.0.1","is_orig":false,"local_orig":false,"md5":"7e4e7299f7923879c1cf3d30d40c3e47","mime_types":["text/json"],"missing_bytes":0,"overflow_bytes":0,"seen_bytes":3531,"sha1":"c98bc2d00d032c669a9b0ae00360e4565573a843","sha256":"1a84d0034492526fa4deb96b6ce5cedf59ecc576db9f125bcf91d65db3b2d64a","source":"HTTP","timedouts":[false],"total_bytes":3531,"ts":"2025-04-17T19:30:00.806151Z","ts_last":"2025-04-17T19:30:00.806151Z","uids":["CR69442D1saHBjScel"]}'
+- assertions:
+  - fieldsHaveValues:
+      server.bytes: '0'
+      network.community_id: 1:uncxxpbOO9+YWh5O+3iRGns2pEI=
+      source.bytes: '44'
+      network.transport: tcp
+      event.category[0]: network
+      '#event.dataset': ndr.conn_agg
+      source.ip: 127.0.0.1
+      network.bytes: '44'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.kind': event
+      network.direction: inbound
+      server.port: '49830'
+      destination.port: '49830'
+      destination.bytes: '0'
+      server.ip: 127.0.0.1
+      client.bytes: '44'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"conn_agg","_system_name":"Lab-AP200","_write_ts":"2025-04-17T19:34:30.800768Z","community_ids":["1:pnYGhqnrGelHglimJaWQtfWiZDc="],"conn_state":"S0","corelight_shunted":[false],"count":1,"history":"S","id.orig_h":"127.0.0.1","id.resp_h":"127.0.0.1","id.resp_p":49830,"local_orig":false,"local_resp":true,"missed_bytes":0,"orig_ip_bytes":44,"proto":"tcp","resp_ip_bytes":0,"ts":"2025-04-17T19:29:23.835216Z","ts_last":"2025-04-17T19:29:23.835216Z","uids":["CdDQ0sAF1BnEl0Xua"]}'
+- assertions:
+  - fieldsHaveValues:
+      http.request.method: POST
+      url.path: /ubus
+      event.type[2]: access
+      http.response.mime_type: text/html
+      event.category[1]: web
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.kind': event
+      url.domain: 127.0.0.1
+      '#event.dataset': ndr.http_agg
+      event.type[1]: protocol
+      http.response.status_code: '301'
+      server.ip: 127.0.0.1
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"http_agg","_system_name":"Lab-AP200","_write_ts":"2025-04-17T19:34:01.914513Z","count":1,"host":"127.0.0.1","id.orig_h":"127.0.0.1","id.resp_h":"127.0.0.1","method":"POST","orig_fuids":["FbFsyn23z1twD7JjJb"],"orig_mime_types":["text/json"],"post_body":"{
+      \"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"call\", \"params\": [ \"00000000000000000000000000000000\",
+      \"uci\", \"get\", { \"config\": \"krouter\" } ] }","request_body_len":136,"resp_fuids":["FNktoU149A5FsOeZ85"],"resp_mime_types":["text/html"],"response_body_len":162,"status_code":301,"status_msg":"Moved
+      Permanently","tags":[],"ts":"2025-04-17T19:28:59.486139Z","ts_last":"2025-04-17T19:28:59.486139Z","uids":["CJd99H3sp8fPhCAw8c"],"uri":"/ubus","versions":["1.1"]}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: network
+      tls.client.ja3: 3ed8bccd9c2e89f8a38994c7f89369f6
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      tls.server.ja3s: adc06261ef82c2e4688b3cf08c1b2f24
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ssl_agg
+      event.type[1]: protocol
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ssl_agg","_system_name":"Lab-AP200","_write_ts":"2025-04-17T19:33:09.956089Z","cert_chain_fps":["1494370aca64d759c73072d199a5aea941741b1cd524e842f5713e1b586a64ab","c8025f9fc65fdfc95b3ca8cc7867b9a587b5277973957917463fc813d0b625a9","cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f"],"cipher":"TLS_DHE_RSA_WITH_AES_256_GCM_SHA384","client_cert_chain_fps":[],"count":5,"established":true,"id.orig_h":"127.0.0.1","id.resp_h":"127.0.0.1","ja3":"3ed8bccd9c2e89f8a38994c7f89369f6","ja3s":"adc06261ef82c2e4688b3cf08c1b2f24","resumeds":[false],"ssl_history":"CsxknGIi","ts":"2025-04-17T19:28:08.206144Z","ts_last":"2025-04-17T19:31:55.390430Z","uids":["CDPC0hvpi3YCUxSi4","C0HIiOt4ftyLWwLU4","CiCI6J1f5BO6RnxLX2","CzhP6Y49U2SWQk5ab","CYt4DX36Dy8z2ej3og"],"validation_status":"ok","version":"TLSv12"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: network
+      '#event.dataset': ndr.generic_dns_tunnels
+      source.ip: 127.0.0.1
+      client.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"generic_dns_tunnels","_system_name":"Lab-AP200","_write_ts":"2025-04-17T18:19:27.213542Z","ts":"2025-04-17T18:19:27.403586Z","dns_client":"127.0.0.1","domain":"sentinelone.net","bytes":4768,"capture_secs":86399.22099995613}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '37074'
+      network.community_id: 1:R2XQk5H4Ig9BtGX+3CK+v4bnxwg=
+      event.id: CGro5t4kDMCQjlfOZj
+      source.port: '37074'
+      '#event.kind': event
+      network.transport: tcp
+      event.category[0]: process
+      '#event.dataset': ndr.corelight_burst
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+      server.port: '8888'
+      destination.port: '8888'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"corelight_burst","_system_name":"Lab-AP200","_write_ts":"2025-04-17T10:00:15.241550Z","ts":"2025-04-17T10:00:15.241550Z","uid":"CGro5t4kDMCQjlfOZj","id.orig_h":"127.0.0.1","id.orig_p":37074,"id.resp_h":"127.0.0.1","id.resp_p":8888,"proto":"tcp","orig_size":558,"resp_size":307139469,"mbps":196.61712988873384,"age_of_conn":11.916560888290405}'
+- assertions:
+  - fieldsHaveValues:
+      event.id: CIdq6l138e3JxT4FI9
+      '#event.kind': event
+      event.category[0]: network
+      server.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.encrypted_dns
+      event.type[1]: protocol
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"encrypted_dns","_system_name":"Lab-AP200","_write_ts":"2025-04-17T18:01:29.146043Z","ts":"2025-04-17T18:01:28.825275Z","uid":"CIdq6l138e3JxT4FI9","resp_h":"127.0.0.1","sni":"doh.dns.apple.com","match":"K"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '56270'
+      network.community_id: 1:mtRdVwMNFLi8FaseUREUbIXCDT4=
+      event.id: CqaaRq4YF26EhqxQl7
+      source.port: '56270'
+      '#event.kind': event
+      network.transport: udp
+      event.category[0]: network
+      '#event.dataset': ndr.syslog
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '514'
+      destination.port: '514'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"syslog","_system_name":"Lab-AP200","_write_ts":"2025-04-17T12:44:04.133622Z","ts":"2025-04-17T12:44:04.133622Z","uid":"CqaaRq4YF26EhqxQl7","id.orig_h":"127.0.0.1","id.orig_p":56270,"id.resp_h":"127.0.0.1","id.resp_p":514,"proto":"udp","facility":"AUTH","severity":"EMERG","message":"1
+      2025-04-13T07:00:15.481854 - - - - vxor.vv loves dragons a bit too much. Really
+      good dragon image btw (you have been warned) e621.net/posts/4681316. Also this
+      is a friendly reminder that you should fix your security. ughh i gotta go to
+      bed it''s 5am here."}'
+- assertions:
+  - fieldsHaveValues:
+      event.id: CMY5Kt3KbaZwXsfl8j
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.etc_viz
+      destination.address: 127.0.0.1
+      server.address: 127.0.0.1
+      event.type[0]: info
+      observer.hostname: Lab-vSensor3
+      server.port: '80'
+      destination.port: '80'
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"etc_viz","_system_name":"Lab-vSensor3","_write_ts":"2025-04-17T15:09:02.670956Z","ts":"2025-04-17T15:08:57.116729Z","uid":"CMY5Kt3KbaZwXsfl8j","server_a":"127.0.0.1","server_p":80,"service":[],"viz_stat":"c","c2s_viz.size":239,"c2s_viz.enc_dev":-1.0,"c2s_viz.enc_frac":0.0,"c2s_viz.pdu1_enc":false,"c2s_viz.clr_frac":0.5,"s2c_viz.size":495,"s2c_viz.enc_dev":-1.0,"s2c_viz.enc_frac":0.0,"s2c_viz.pdu1_enc":false,"s2c_viz.clr_frac":1.0,"s2c_viz.clr_ex":"<address>Apache/2.4.29
+      (Ubuntu) Server at LAMP1.example.com Port 80</address>"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '63443'
+      network.community_id: 1:ewBMaEK9aI9QajRMQbHzneYVkgk=
+      network.vlan.id: '1'
+      event.id: C0nJp04rpHv228ohdf
+      source.port: '63443'
+      '#event.kind': event
+      network.transport: udp
+      event.category[0]: network
+      '#event.dataset': ndr.stun_nat
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '3478'
+      destination.port: '3478'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"stun_nat","_system_name":"Lab-AP200","_write_ts":"2025-04-17T15:18:34.720683Z","ts":"2025-04-17T15:18:34.720683Z","uid":"C0nJp04rpHv228ohdf","id.orig_h":"127.0.0.1","id.orig_p":63443,"id.resp_h":"127.0.0.1","id.resp_p":3478,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.vlan":1,"proto":"udp","is_orig":false,"wan_addrs":["127.0.0.1","127.0.0.1"],"wan_ports":[63443,63443],"lan_addrs":["127.0.0.1","127.0.0.1"]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '15676'
+      '#event.outcome': unknown
+      event.id: CPA2i1OugHyWfG9Ng
+      source.port: '15676'
+      event.category[1]: authentication
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.radius
+      event.type[1]: info
+      server.port: '1812'
+      destination.port: '1812'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"radius","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:01:00.400818Z","ts":"2025-04-17T16:00:00.395897Z","uid":"CPA2i1OugHyWfG9Ng","id.orig_h":"127.0.0.1","id.orig_p":15676,"id.resp_h":"127.0.0.1","id.resp_p":1812,"result":"unknown"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      network.transport: icmp
+      event.category[0]: network
+      '#event.dataset': ndr.traceroute
+      source.ip: 127.0.0.1
+      client.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"traceroute","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:56:30.117191Z","ts":"2025-04-17T16:56:30.117191Z","src":"127.0.0.1","dst":"127.0.0.1","proto":"icmp"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '0'
+      event.id: CHrsgn3krDTHYE05Hl
+      source.port: '0'
+      '#event.kind': event
+      event.category[0]: network
+      '#event.dataset': ndr.tunnel
+      source.ip: 127.0.0.1
+      event.action: Tunnel::DISCOVER
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '0'
+      destination.port: '0'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: "\t\n{\"_path\":\"tunnel\",\"_system_name\":\"Lab-AP200\",\"_write_ts\"\
+      :\"2025-04-17T17:08:15.462987Z\",\"ts\":\"2025-04-17T17:08:15.462987Z\",\"uid\"\
+      :\"CHrsgn3krDTHYE05Hl\",\"id.orig_h\":\"127.0.0.1\",\"id.orig_p\":0,\"id.resp_h\"\
+      :\"127.0.0.1\",\"id.resp_p\":0,\"tunnel_type\":\"Tunnel::GRE\",\"action\":\"\
+      Tunnel::DISCOVER\"}"
+- assertions:
+  - fieldsHaveValues:
+      client.port: '55726'
+      event.id: Cmkj3t2oHJitbHPwq
+      network.protocol: ssh
+      source.port: '55726'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ssh
+      event.type[1]: protocol
+      server.port: '22'
+      destination.port: '22'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ssh","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:34:31.105023Z","ts":"2025-04-17T17:34:26.103603Z","uid":"Cmkj3t2oHJitbHPwq","id.orig_h":"127.0.0.1","id.orig_p":55726,"id.resp_h":"127.0.0.1","id.resp_p":22,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.resp_ep_status":"Unsecured","id.resp_ep_uid":"2081027202239115000","id.resp_ep_name":"mynas","id.resp_ep_source":"SentinelOne
+      Network Discovery","auth_attempts":0,"server":"SSH-2.0-OpenSSH_9.3 FreeBSD-20230719","inferences":["SP"],"hasshVersion":"1.0"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '33888'
+      event.id: CWb9ay4A2tI0bcs5c5
+      source.port: '33888'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.bacnet_property
+      event.type[1]: protocol
+      server.port: '47807'
+      destination.port: '47807'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"bacnet_property","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:19:02.883084Z","ts":"2025-04-17T17:19:02.883084Z","uid":"CWb9ay4A2tI0bcs5c5","id.orig_h":"127.0.0.1","id.orig_p":33888,"id.resp_h":"127.0.0.1","id.resp_p":47807,"is_orig":true,"invoke_id":1,"pdu_service":"read-property-request","object_type":"device","instance_number":4194303,"property":"object-identifier"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '15555'
+      event.id: Cj6w1N31fV2uvjdjJ1
+      network.protocol: krbtgt/NM
+      source.port: '15555'
+      event.category[1]: authentication
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.kerberos
+      event.type[1]: info
+      server.port: '88'
+      destination.port: '88'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"kerberos","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:18:04.231103Z","ts":"2025-04-17T17:17:04.214542Z","uid":"Cj6w1N31fV2uvjdjJ1","id.orig_h":"127.0.0.1","id.orig_p":15555,"id.resp_h":"127.0.0.1","id.resp_p":88,"request_type":"AS","client":"/NM","service":"krbtgt/NM","till":"1970-01-01T00:00:00.000000Z","forwardable":true,"renewable":true}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_certs
+      event.duration: '900.1126811504364'
+      email.subject: O=SplunkUser,CN=SplunkServerDefaultCert
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: "\t\n{\"_path\":\"known_certs\",\"_system_name\":\"Lab-AP200\",\"_write_ts\"\
+      :\"2025-04-17T17:29:59.758517Z\",\"ts\":\"2025-04-17T17:13:54.591441Z\",\"duration\"\
+      :900.1126811504364,\"kuid\":\"KfHu9e17eit7k\",\"host_ip\":\"127.0.0.1\",\"host_vlan\"\
+      :12,\"hash\":\"420dd88a275dfbbc61a4d51d1d0b86d8ce63eba8\",\"port\":8089,\"protocol\"\
+      :\"tcp\",\"serial\":\"B7011F246D7CB3F8\",\"subject\":\"O=SplunkUser,CN=SplunkServerDefaultCert\"\
+      ,\"issuer_subject\":\"emailAddress=support@splunk.com,CN=SplunkCommonCA,O=Splunk,L=San\
+      \ Francisco,ST=CA,C=US\",\"num_conns\":16,\"long_conns\":0,\"annotations\":[],\"\
+      last_active_session\":\"KfEinM917m0u8\",\"last_active_interval\":960.1192860603333}"
+- assertions:
+  - fieldsHaveValues:
+      client.port: '22901'
+      event.id: Cm9sPY2OsPIXxRxMsj
+      source.port: '22901'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.enip
+      event.type[1]: protocol
+      server.port: '44818'
+      destination.port: '44818'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"enip","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:29:53.052058Z","ts":"2025-04-17T17:29:53.052058Z","uid":"Cm9sPY2OsPIXxRxMsj","id.orig_h":"127.0.0.1","id.orig_p":22901,"id.resp_h":"127.0.0.1","id.resp_p":44818,"is_orig":true,"enip_command_code":"0x63","enip_command":"List
+      Identity","length":0,"session_handle":"0x00000000","enip_status":"Success","sender_context":"0x0000000000000000","options":"0x00000000"}'
+- assertions:
+  - fieldsHaveValues:
+      host.os.name: Windows 10
+      '#event.kind': event
+      event.category[0]: file
+      '#event.dataset': ndr.pe
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"pe","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:17:23.133237Z","ts":"2025-04-17T17:17:21.883082Z","id":"FRlky8QUzq3SPoFPb","machine":"AMD64","compile_ts":"2025-04-17T09:04:12.000000Z","os":"Windows
+      10","subsystem":"WINDOWS_GUI","is_exe":true,"is_64bit":true,"uses_aslr":true,"uses_dep":true,"uses_code_integrity":false,"uses_seh":true,"has_import_table":true,"has_export_table":false,"has_cert_table":true,"has_debug_data":true,"section_names":[".text",".rdata",".data",".pdata",".rsrc",".reloc"]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '52301'
+      network.community_id: 1:8ndwLPohGR0/dGhbZJmYCqbm/Tg=
+      network.vlan.id: '1'
+      event.id: CF4SIJ2lxDqnNX3Lxa
+      source.port: '52301'
+      '#event.kind': event
+      network.transport: udp
+      event.category[0]: network
+      '#event.dataset': ndr.dpd
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '443'
+      destination.port: '443'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dpd","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:28:18.156266Z","ts":"2025-04-17T17:28:18.156266Z","uid":"CF4SIJ2lxDqnNX3Lxa","id.orig_h":"127.0.0.1","id.orig_p":52301,"id.resp_h":"127.0.0.1","id.resp_p":443,"id.vlan":1,"proto":"udp","analyzer":"QUIC","failure_reason":"unhandled
+      frame type FrameType::STOP_SENDING in 0 (/zeek/src/analyzer/protocol/quic/QUIC.spicy:290:7-290:95)
+      [\\xc7\\x00\\x00\\x00\\x01\\x00\b\\xfdYF\\x1e\\x95\\x12\\xac/\\x00D\\xd0sy\\xb2\r{\\x8b\\xd0\\xe7A-\\xc8\\xee@\\xa8[i\\xd8\\x80\\xb2]\\xb8m...]"}'
+- assertions:
+  - fieldsHaveValues:
+      client.mac: 04-D9-F5-82-69-C0
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      client.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.dhcp
+      event.type[1]: protocol
+      source.mac: 04-D9-F5-82-69-C0
+      event.duration: '0.00025391578674316406'
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dhcp","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:28:21.726465Z","ts":"2025-04-17T17:28:11.695821Z","uids":["CQ8ISlYfqJylCBvWh"],"client_addr":"127.0.0.1","server_addr":"127.0.0.1","mac":"04:d9:f5:82:69:c0","host_name":"MyDesktop","client_fqdn":"MyDesktop.Lab.net","domain":"Lab.net","assigned_addr":"127.0.0.1","lease_time":86400.0,"msg_types":["REQUEST","ACK"],"duration":0.00025391578674316406}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '33127'
+      event.id: C5RlVi438rFngGyDf8
+      source.port: '33127'
+      event.category[1]: authentication
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ldap_search
+      event.type[1]: info
+      server.port: '389'
+      destination.port: '389'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ldap_search","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:27:36.728019Z","ts":"2025-04-17T17:26:36.726754Z","uid":"C5RlVi438rFngGyDf8","id.orig_h":"127.0.0.1","id.orig_p":33127,"id.resp_h":"127.0.0.1","id.resp_p":389,"message_id":1,"scope":"base","deref_aliases":"never","result_count":0,"filter":"(objectclass=*)"}'
+- assertions:
+  - fieldsHaveValues:
+      http.request.method: OPTIONS
+      event.id: Cnkl2U1IdPb24lrGil
+      source.port: '44107'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      user_agent.original: friendly-scanner
+      server.ip: 127.0.0.1
+      url.path: sip:100@127.0.0.1
+      client.port: '44107'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.sip
+      event.type[1]: protocol
+      server.port: '5060'
+      destination.port: '5060'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"sip","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:21:03.397344Z","ts":"2025-04-17T17:20:03.391692Z","uid":"Cnkl2U1IdPb24lrGil","id.orig_h":"127.0.0.1","id.orig_p":44107,"id.resp_h":"127.0.0.1","id.resp_p":5060,"trans_depth":0,"method":"OPTIONS","uri":"sip:100@127.0.0.1","request_from":"\"PBX\"<sip:100@1.1.1.1>","request_to":"\"PBX\"<sip:100@1.1.1.1>","call_id":"351164452855910215640138","seq":"1
+      OPTIONS","request_path":["SIP/2.0/UDP 127.0.0.1:0"],"response_path":[],"user_agent":"friendly-scanner","request_body_len":0}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '6268'
+      event.id: CVkh9D1O7cJsbf9NZj
+      source.port: '6268'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ipsec
+      event.type[1]: protocol
+      server.port: '3243'
+      destination.port: '3243'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ipsec","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:20:31.797151Z","ts":"2025-04-17T17:20:31.797151Z","uid":"CVkh9D1O7cJsbf9NZj","id.orig_h":"127.0.0.1","id.orig_p":6268,"id.resp_h":"127.0.0.1","id.resp_p":3243,"is_orig":true,"initiator_spi":"78629a0f5f3f164f","responder_spi":"0000000000000000","maj_ver":2,"min_ver":0,"exchange_type":34,"flag_e":false,"flag_c":false,"flag_a":false,"flag_i":true,"flag_v":false,"flag_r":false,"message_id":0,"vendor_ids":[],"notify_messages":[],"transforms":[],"ke_dh_groups":[1],"proposals":[1],"certificates":[],"transform_attributes":[],"length":392,"hash":"758ea99bc3dcb7f3b9b3fa1b2e71fabc"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '32765'
+      event.id: CiN6ko2tSCmlTTusj9
+      source.port: '32765'
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.mqtt_publish
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+      server.port: '1883'
+      destination.port: '1883'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"mqtt_publish","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:24:24.388621Z","ts":"2025-04-17T17:24:24.388621Z","uid":"CiN6ko2tSCmlTTusj9","id.orig_h":"127.0.0.1","id.orig_p":32765,"id.resp_h":"127.0.0.1","id.resp_p":1883,"from_client":true,"retain":false,"qos":"at
+      most once","status":"ok","topic":"$aws/things/5CCF7F285567/shadow/update","payload":"{\"state\":{\"reported\":{\"o3A\":\"jAASiShEjjri\",\"3NQb\":\"Ul''Qxzl''x\",\"Nx''x&y\":\"H\",\"3NxQ\":\"\",\"U&1\":\"HE\",\"Cl1","payload_len":199}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '54471'
+      '#event.outcome': success
+      event.id: CCihED4jHfuCEcmPUa
+      source.port: '54471'
+      event.category[1]: authentication
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      user.name: me
+      destination.address: mynas
+      server.address: mynas
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ntlm
+      event.type[1]: info
+      server.port: '445'
+      destination.port: '445'
+      client.domain: .
+      host.hostname: my-desktop
+      source.domain: .
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ntlm","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:22:21.334872Z","ts":"2025-04-17T17:22:21.320294Z","uid":"CCihED4jHfuCEcmPUa","id.orig_h":"127.0.0.1","id.orig_p":54471,"id.resp_h":"127.0.0.1","id.resp_p":445,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.resp_ep_status":"Unsecured","id.resp_ep_uid":"2081027202239115000","id.resp_ep_name":"mynas","id.resp_ep_source":"SentinelOne
+      Network Discovery","username":"me","hostname":"my-desktop","domainname":".","server_nb_computer_name":"mynas","server_dns_computer_name":"mynas.Lab.net","success":true}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_users
+      user.name: me
+      event.duration: '0.0'
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"known_users","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:22:59.734814Z","ts":"2025-04-17T17:12:05.012952Z","duration":0.0,"kuid":"Kf7UwULmMewZ2","host_ip":"127.0.0.1","remote_ip":"127.0.0.1","user":"me","protocol":"NTLM","num_conns":1,"long_conns":0,"annotations":[],"last_active_session":"KfF6xDT7fAyB9","last_active_interval":632.0104839801788}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '33888'
+      event.id: CWb9ay4A2tI0bcs5c5
+      source.port: '33888'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.bacnet
+      event.type[1]: protocol
+      server.port: '47807'
+      destination.port: '47807'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"bacnet","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:19:02.883084Z","ts":"2025-04-17T17:19:02.883084Z","uid":"CWb9ay4A2tI0bcs5c5","id.orig_h":"127.0.0.1","id.orig_p":33888,"id.resp_h":"127.0.0.1","id.resp_p":47807,"is_orig":true,"bvlc_function":"Original_Unicast_NPDU","pdu_type":"CONFIRMED_REQUEST","pdu_service":"read_property","invoke_id":1}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '51154'
+      event.id: CVwaov2xkARuA02k3d
+      source.port: '51154'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.smb_mapping
+      event.type[1]: protocol
+      server.port: '445'
+      destination.port: '445'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"smb_mapping","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:22:21.355183Z","ts":"2025-04-17T17:22:21.354572Z","uid":"CVwaov2xkARuA02k3d","id.orig_h":"127.0.0.1","id.orig_p":51154,"id.resp_h":"127.0.0.1","id.resp_p":445,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.resp_ep_status":"Unsecured","id.resp_ep_uid":"2081027202239115000","id.resp_ep_name":"mynas","id.resp_ep_source":"SentinelOne
+      Network Discovery","path":"\\\\mynas\\IPC$","share_type":"PIPE"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.corelight_metrics_zeek_doctor
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"corelight_metrics_zeek_doctor","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:21:08Z","ts":"2025-04-17T17:21:08Z","check.bursty.percent":0,"check.dns_half_duplex_orig.percent":0,"check.dns_half_duplex_resp.percent":0,"check.local_to_local.percent":53.33333333333333,"check.remote_to_remote.percent":1.6666666666666665,"check.tcp_backscatter.percent":0,"check.tcp_byte_counts_wrong.percent":0,"check.tcp_checksum_errors.percent":0,"check.tcp_half_duplex.percent":0,"check.tcp_missed_bytes.percent":0,"check.tcp_no_ssl_on_443.percent":0,"check.tcp_no_three_way_handshake.percent":0,"check.tcp_retransmissions.percent":44.444444444444436,"check.tcp_scan.percent":76.3157894736842}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '65535'
+      event.id: uCvjgjVaWAVJocc
+      source.port: '65535'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      email.to.address[1]: svs@xyz.com
+      user_agent.original: sample string
+      server.ip: 127.0.0.1
+      destination.address: sample string
+      server.address: sample string
+      email.subject: sample string
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.smtp
+      email.sender.address: abc@xyz.com
+      email.to.address[0]: ss@xyz.com
+      event.type[1]: protocol
+      server.port: '65535'
+      destination.port: '65535'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"smtp","_system_name":"Lab-AP200","_write_ts":"2025-04-18T15:59:46.797248Z","ts":"2025-04-18T15:59:46.797248Z","uid":"uCvjgjVaWAVJocc","id.orig_h":"127.0.0.1","id.orig_p":65535,"id.resp_h":"127.0.0.1","id.resp_p":65535,"trans_depth":10,"helo":"sample
+      string","mailfrom":"abc@xyz.com","rcptto":["ss@xyz.com","svs@xyz.com"],"date":"sample
+      string","from":"sample string","to":["sample string","another sample"],"cc":["a@abc.com","b@abc.com"],"reply_to":"sample
+      string","msg_id":"sample string","in_reply_to":"sample string","subject":"sample
+      string","x_originating_ip":"127.0.0.1","first_received":"sample string","second_received":"sample
+      string","last_reply":"sample string","path":["127.0.0.1","127.0.0.1"],"user_agent":"sample
+      string","tls":true,"fuids":["sample string","another sample"],"is_webmail":true,"urls":["sample
+      string","another sample"],"domains":["sample string","another sample"]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '43619'
+      event.id: CUnhsV1UtfFeTq8Fg9
+      source.port: '43619'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.duration: '0.0'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.snmp
+      event.type[1]: protocol
+      server.port: '161'
+      destination.port: '161'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"snmp","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:20:40.825770Z","ts":"2025-04-17T17:19:40.812435Z","uid":"CUnhsV1UtfFeTq8Fg9","id.orig_h":"127.0.0.1","id.orig_p":43619,"id.resp_h":"127.0.0.1","id.resp_p":161,"duration":0.0,"version":"3","get_requests":0,"get_bulk_requests":0,"get_responses":0,"set_requests":0}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '63446'
+      rule.name: intel
+      network.vlan.id: '1'
+      event.id: CncLNK2cd8f4GfsVYh
+      source.port: '63446'
+      event.category[1]: network
+      '#event.kind': alert
+      event.category[0]: threat
+      event.severity: '70'
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: indicator
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.intel
+      event.type[1]: info
+      server.port: '443'
+      destination.port: '443'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"intel","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:17:18.197813Z","ts":"2025-04-17T17:17:18.197813Z","uid":"CncLNK2cd8f4GfsVYh","id.orig_h":"127.0.0.1","id.orig_p":63446,"id.resp_h":"127.0.0.1","id.resp_p":443,"id.vlan":1,"seen.indicator":"127.0.0.1","seen.indicator_type":"Intel::ADDR","seen.where":"Conn::IN_RESP","seen.node":"worker-01","matched":["Intel::ADDR"],"sources":["Fortinet
+      Threat Research"],"url":["https://www.fortinet.com/blog/threat-research/fortisandbox-detects-evolving-snake-keylogger-variant"]}'
+- assertions:
+  - fieldsHaveValues:
+      file.x509.signature_algorithm: sha256WithRSAEncryption
+      file.x509.public_key_exponent: '65537'
+      network.vlan.id: '1'
+      file.x509.not_after: '2025-10-01T23:59:59.000000Z'
+      event.category[0]: network
+      file.x509.subject.distinguished_name: CN=4g2.vzwdm.com,O=Verizon Data Services
+        LLC,L=Temple Terrace,ST=Florida,C=US
+      file.x509.not_before: '2024-09-12T00:00:00.000000Z'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.kind': event
+      file.x509.serial_number: 02C816C1D892F7B0FAEC7C2C47CD024B
+      file.x509.public_key_algorithm: rsaEncryption
+      '#event.dataset': ndr.x509
+      file.x509.issuer.distinguished_name: CN=DigiCert Global G2 TLS RSA SHA256 2020
+        CA1,O=DigiCert Inc,C=US
+      event.type[1]: protocol
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"x509","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:19:40.775870Z","ts":"2025-04-17T17:19:40.775870Z","fingerprint":"c995e82518c59a30c279aadf697bee53df02fea8a1a3fc7e722576c3d4609074","certificate.version":3,"certificate.serial":"02C816C1D892F7B0FAEC7C2C47CD024B","certificate.subject":"CN=4g2.vzwdm.com,O=Verizon
+      Data Services LLC,L=Temple Terrace,ST=Florida,C=US","certificate.issuer":"CN=DigiCert
+      Global G2 TLS RSA SHA256 2020 CA1,O=DigiCert Inc,C=US","certificate.not_valid_before":"2024-09-12T00:00:00.000000Z","certificate.not_valid_after":"2025-10-01T23:59:59.000000Z","certificate.key_alg":"rsaEncryption","certificate.sig_alg":"sha256WithRSAEncryption","certificate.key_type":"rsa","certificate.key_length":2048,"certificate.exponent":"65537","san.dns":["4g2.vzwdm.com","www.4g2.vzwdm.com"],"basic_constraints.ca":false,"host_cert":true,"client_cert":false,"vlan":1}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_domains
+      event.duration: '910.5456178188324'
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"known_domains","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:17:39.723388Z","ts":"2025-04-17T17:01:27.263533Z","duration":910.5456178188324,"kuid":"KfkbkjfIwyQP1","host_ip":"127.0.0.1","host_vlan":1,"domain":"Lab","protocols":["SentinelOne
+      Network Discovery"],"num_conns":0,"long_conns":0,"annotations":["SentinelOne
+      Network Discovery/Unsupported"],"last_active_session":"KfIILlch7nsq6","last_active_interval":910.2952678203583}'
+- assertions:
+  - fieldsHaveValues:
+      file.x509.signature_algorithm: sha256WithRSAEncryption
+      file.x509.public_key_exponent: '65537'
+      network.vlan.id: '1'
+      file.x509.not_after: '2028-04-02T23:59:59.000000Z'
+      event.category[0]: network
+      file.x509.subject.distinguished_name: CN=DigiCert Global Root G2,OU=www.digicert.com,O=DigiCert
+        Inc,C=US
+      file.x509.not_before: '2018-04-03T00:00:00.000000Z'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.kind': event
+      file.x509.serial_number: 4B2B0115CDE5C7481B3CDDFEDE11169E
+      file.x509.public_key_algorithm: rsaEncryption
+      '#event.dataset': ndr.x509_red
+      file.x509.issuer.distinguished_name: CN=VeriSign Class 3 Public Primary Certification
+        Authority - G5,OU=(c) 2006 VeriSign\, Inc. - For authorized use only,OU=VeriSign
+        Trust Network,O=VeriSign\, Inc.,C=US
+      event.type[1]: protocol
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"x509_red","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:14:03.419787Z","ts":"2025-04-17T17:14:03.419787Z","fingerprint":"aadadd5a879d2eb8c41a89597291292709d42052f5b6399541c694c3b7353cd1","certificate.version":3,"certificate.serial":"4B2B0115CDE5C7481B3CDDFEDE11169E","certificate.subject":"CN=DigiCert
+      Global Root G2,OU=www.digicert.com,O=DigiCert Inc,C=US","certificate.issuer":"CN=VeriSign
+      Class 3 Public Primary Certification Authority - G5,OU=(c) 2006 VeriSign\\,
+      Inc. - For authorized use only,OU=VeriSign Trust Network,O=VeriSign\\, Inc.,C=US","certificate.not_valid_before":"2018-04-03T00:00:00.000000Z","certificate.not_valid_after":"2028-04-02T23:59:59.000000Z","certificate.key_alg":"rsaEncryption","certificate.sig_alg":"sha256WithRSAEncryption","certificate.key_type":"rsa","certificate.key_length":2048,"certificate.exponent":"65537","basic_constraints.ca":true,"host_cert":false,"client_cert":false,"vlan":1}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '63451'
+      rule.name: SSL certificate validation failed with (unable to get local issuer
+        certificate)
+      network.vlan.id: '1'
+      event.id: CApmxkrP7I4SeaU3f
+      source.port: '63451'
+      event.category[1]: network
+      '#event.kind': alert
+      network.transport: tcp
+      event.category[0]: threat
+      event.severity: '40'
+      source.ip: 127.0.0.1
+      network.community_id: 1:NwBELunkyHd2K6WTqBb8AO9F47Q=
+      log.level: error
+      event.type[0]: indicator
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.notice
+      event.type[1]: info
+      server.port: '443'
+      destination.port: '443'
+      event.reason: SSL certificate validation failed with (unable to get local issuer
+        certificate)
+      server.ip: 127.0.0.1
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"notice","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:17:21.798101Z","ts":"2025-04-17T17:17:21.798101Z","uid":"CApmxkrP7I4SeaU3f","id.orig_h":"127.0.0.1","id.orig_p":63451,"id.resp_h":"127.0.0.1","id.resp_p":443,"id.vlan":1,"fuid":"FZ2Jkh4BC8LcgXU6y4","proto":"tcp","note":"SSL::Invalid_Server_Cert","msg":"SSL
+      certificate validation failed with (unable to get local issuer certificate)","sub":"CN=*.prod.do.dsp.mp.microsoft.com,OU=DSP,O=Microsoft,L=Redmond,ST=WA,C=US","src":"127.0.0.1","dst":"127.0.0.1","p":443,"peer_descr":"worker-01","actions":["Notice::ACTION_LOG"],"suppress_for":86400.0,"severity.level":3,"severity.name":"error"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_names
+      host.hostname: unifi
+      event.duration: '851.4270520210266'
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"known_names","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:17:09.722209Z","ts":"2025-04-17T17:00:59.149013Z","duration":851.4270520210266,"kuid":"KfnUYnph2ptpc","host_ip":"127.0.0.1","host_vlan":1,"hostname":"UNIFI","protocols":["SSL"],"num_conns":4,"long_conns":0,"annotations":[],"last_active_session":"Kfg8s3e4YplG6","last_active_interval":1152.949301958084}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '51154'
+      event.type[2]: info
+      event.id: COYytu4xB5XqMAtOJk
+      network.protocol: smb
+      source.port: '51154'
+      event.category[1]: file
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      event.action: SMB::FILE_OPEN
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.smb_files
+      event.type[1]: protocol
+      server.port: '445'
+      destination.port: '445'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"smb_files","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:11:49.354793Z","ts":"2025-04-17T17:11:49.354217Z","uid":"COYytu4xB5XqMAtOJk","id.orig_h":"127.0.0.1","id.orig_p":51154,"id.resp_h":"127.0.0.1","id.resp_p":445,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.resp_ep_status":"Unsecured","id.resp_ep_uid":"2081027202239115000","id.resp_ep_name":"mynas","id.resp_ep_source":"SentinelOne
+      Network Discovery","action":"SMB::FILE_OPEN","name":"rufus-3.3.exe","size":1027128,"times.modified":"2018-10-23T22:44:00.667862Z","times.accessed":"2019-01-27T20:02:57.475316Z","times.created":"2018-10-29T19:46:25.258246Z","times.changed":"2018-10-23T22:44:00.667862Z"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.zeek_doctor
+      event.type[0]: info
+      observer.hostname: Lab-vSensor1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"zeek_doctor","_system_name":"Lab-vSensor1","_write_ts":"2025-04-17T17:15:10.915568Z","ts":"2025-04-17T17:15:10.915568Z","node":"worker-02","check":"tcp_scan","total":0,"hits":0,"total_delta":0,"hits_delta":0,"percent":0.0}'
+- assertions:
+  - fieldsHaveValues:
+      source.packets: '1681'
+      client.port: '52558'
+      server.bytes: '2900525'
+      event.id: CfKAUu1SapIquY7HL8
+      network.protocol: ssl
+      source.port: '52558'
+      source.bytes: '819999'
+      network.transport: tcp
+      event.category[0]: network
+      '#event.dataset': ndr.conn_long
+      source.ip: 127.0.0.1
+      network.bytes: '3720524'
+      event.duration: '1801.9931871891022'
+      network.community_id: 1:21DezAPlCVZqfRmwZhaHnGpdgWI=
+      destination.packets: '2306'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.kind': event
+      network.direction: outbound
+      server.port: '443'
+      destination.port: '443'
+      destination.bytes: '2900525'
+      server.ip: 127.0.0.1
+      client.bytes: '819999'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"conn_long","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:14:51.616958Z","ts":"2025-04-17T16:44:48.584653Z","uid":"CfKAUu1SapIquY7HL8","id.orig_h":"127.0.0.1","id.orig_p":52558,"id.resp_h":"127.0.0.1","id.resp_p":443,"proto":"tcp","service":"ssl","duration":1801.9931871891022,"orig_bytes":819999,"resp_bytes":2900525,"conn_state":"S1","local_orig":true,"local_resp":false,"missed_bytes":0,"history":"ShADadTt","orig_pkts":1681,"orig_ip_bytes":888153,"resp_pkts":2306,"resp_ip_bytes":2993332,"community_id":"1:21DezAPlCVZqfRmwZhaHnGpdgWI=","corelight_shunted":false}'
+- assertions:
+  - fieldsHaveValues:
+      event.category[1]: package
+      '#event.kind': event
+      event.category[0]: network
+      '#event.dataset': ndr.software
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"software","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:14:06.706316Z","ts":"2025-04-17T17:14:06.704766Z","host_header":"127.0.0.1","software_type":"HTTP::BROWSER","name":"Debian
+      APT-HTTP","version.major":1,"version.minor":3,"version.addl":"1.6.14","unparsed_version":"Debian
+      APT-HTTP/1.3 (1.6.14)"}'
+- assertions:
+  - fieldsHaveValues:
+      source.geo.region_name: MO
+      client.port: '53932'
+      network.community_id: 1:SH/6H+Z52dQuM9rNSdXulpqRfqI=
+      network.protocol: ssl
+      source.port: '53932'
+      source.bytes: '1862'
+      '#event.kind': event
+      event.category[0]: network
+      tls.client.ja3: 3fed133de60c35724739b913924b6c24
+      '#event.dataset': ndr.vpn
+      source.ip: 127.0.0.1
+      network.bytes: '5126'
+      destination.geo.region_name: VA
+      destination.address: log.tailscale.io
+      server.address: log.tailscale.io
+      server.bytes: '3264'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      destination.geo.country_iso_code: US
+      event.id: CavBCx41ifQuSuMfze
+      source.geo.country_iso_code: US
+      network.transport: tcp
+      server.port: '443'
+      destination.port: '443'
+      source.geo.city_name: St Louis
+      destination.bytes: '3264'
+      server.ip: 127.0.0.1
+      tls.server.ja3s: f4febc55ea12b31ae17cfb7e614afda8
+      event.duration: '101.896395921'
+      client.bytes: '1862'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"vpn","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:13:43.221005Z","ts":"2025-04-17T17:13:43.219853Z","uid":"CavBCx41ifQuSuMfze","id.orig_h":"127.0.0.1","id.orig_p":53932,"id.resp_h":"127.0.0.1","id.resp_p":443,"proto":"tcp","vpn_type":"VPNInsights::Tailscale","service":"ssl","inferences":["FW","COM"],"server_name":"log.tailscale.io","duration":101.896395921,"orig_bytes":1862,"resp_bytes":3264,"orig_cc":"US","orig_region":"MO","orig_city":"St
+      Louis","resp_cc":"US","resp_region":"VA","resp_city":"Ashburn","ja3":"3fed133de60c35724739b913924b6c24","ja3s":"f4febc55ea12b31ae17cfb7e614afda8"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: network
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ocsp
+      event.type[1]: protocol
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ocsp","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:12:34.125204Z","ts":"2025-04-17T17:12:34.125204Z","id":"Fcg6IzAMR6cAyFHOh","hashAlgorithm":"sha1","issuerNameHash":"BF9BCBEF71E2B39B8D19487ACFC75885354F8F02","issuerKeyHash":"8A23EB9E6BD7F9375DF96D2139769AA167DE10A8","serialNumber":"0736D5719D2C48F4CB35D8A4FE2F0EC6","certStatus":"good","thisUpdate":"2025-04-14T15:39:01.000000Z","nextUpdate":"2025-04-21T14:39:01.000000Z"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_remotes
+      event.duration: '0.0'
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"known_remotes","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:12:19.711498Z","ts":"2025-04-17T16:56:15.804730Z","duration":0.0,"kuid":"KfkIWfQnPq0Qi","host_ip":"127.0.0.1","host_vlan":13,"num_conns":1,"long_conns":0,"annotations":[]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '37865'
+      event.id: CnwGzo2pX3OtvCovwa
+      dns.question.type: HTTPS
+      source.port: '37865'
+      '#event.kind': event
+      event.category[0]: network
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.dns_red
+      event.type[1]: protocol
+      server.port: '53'
+      destination.port: '53'
+      source.ip: 127.0.0.1
+      dns.question.name: rr1---sn-hgn7yn7e.googlevideo.com
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dns_red","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:11:50.964253Z","ts":"2025-04-17T17:11:41.179136Z","uid":"CnwGzo2pX3OtvCovwa","id.orig_h":"127.0.0.1","id.orig_p":37865,"id.resp_h":"127.0.0.1","id.resp_p":53,"query":"rr1---sn-hgn7yn7e.googlevideo.com","qtype_name":"HTTPS","rcode":0,"answers":["rr1.sn-hgn7yn7e.googlevideo.com"],"num":1}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.corelight_metrics_disk
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path": "corelight_metrics_disk", "_system_name": "Lab-AP200", "_write_ts":
+      "2025-04-17T17:11:06Z", "ts": "2025-04-17T17:11:06Z", "io.data.all.active":
+      0, "io.data.all.time": 0, "io.data.all.time.per-second": 0, "io.data.all.time_weighted":
+      0, "io.data.all.time_weighted.per-second": 0, "io.data.read.bytes": 61952467968,
+      "io.data.read.bytes.per-second": 10057.955555555556, "io.data.read.completed":
+      1354157, "io.data.read.completed.per-second": 1.4533333333333334, "io.data.read.merged":
+      0, "io.data.read.merged.per-second": 0, "io.data.read.time": 0, "io.data.read.time.per-second":
+      0, "io.data.write.bytes": 719338717184, "io.data.write.bytes.per-second": 1009427.3422222222,
+      "io.data.write.completed": 167596937, "io.data.write.completed.per-second":
+      242.22222222222223, "io.data.write.merged": 0, "io.data.write.merged.per-second":
+      0, "io.data.write.time": 0, "io.data.write.time.per-second": 0, "io.dm-0.all.active":
+      0, "io.dm-0.all.time": 1665.232, "io.dm-0.all.time.per-second": 0.0024266666666663797,
+      "io.dm-0.all.time_weighted": 18510.796000000002, "io.dm-0.all.time_weighted.per-second":
+      0.05443555555556183, "io.dm-0.read.bytes": 3390541312, "io.dm-0.read.bytes.per-second":
+      1421.0844444444444, "io.dm-0.read.completed": 445948, "io.dm-0.read.completed.per-second":
+      0.39555555555555555, "io.dm-0.read.merged": 0, "io.dm-0.read.merged.per-second":
+      0, "io.dm-0.read.time": 1134.42, "io.dm-0.read.time.per-second": 8.0000000000129e-05,
+      "io.dm-0.write.bytes": 17256738816, "io.dm-0.write.bytes.per-second": 29263.644444444446,
+      "io.dm-0.write.completed": 4382262, "io.dm-0.write.completed.per-second": 7.38,
+      "io.dm-0.write.merged": 0, "io.dm-0.write.merged.per-second": 0, "io.dm-0.write.time":
+      17376.376, "io.dm-0.write.time.per-second": 0.05435555555555362, "io.dm-1.all.active":
+      0, "io.dm-1.all.time": 136.704, "io.dm-1.all.time.per-second": 0.00016888888888887422,
+      "io.dm-1.all.time_weighted": 39.084, "io.dm-1.all.time_weighted.per-second":
+      4.4444444444451e-05, "io.dm-1.read.bytes": 893134848, "io.dm-1.read.bytes.per-second":
+      1146.88, "io.dm-1.read.completed": 211842, "io.dm-1.read.completed.per-second":
+      0.28, "io.dm-1.read.merged": 0, "io.dm-1.read.merged.per-second": 0, "io.dm-1.read.time":
+      38.536, "io.dm-1.read.time.per-second": 4.4444444444451e-05, "io.dm-1.write.bytes":
+      645120, "io.dm-1.write.bytes.per-second": 0, "io.dm-1.write.completed": 534,
+      "io.dm-1.write.completed.per-second": 0, "io.dm-1.write.merged": 0, "io.dm-1.write.merged.per-second":
+      0, "io.dm-1.write.time": 0.548, "io.dm-1.write.time.per-second": 0, "io.dm-10.all.active":
+      0, "io.dm-10.all.time": 1598.9560000000001, "io.dm-10.all.time.per-second":
+      0.0023555555555559394, "io.dm-10.all.time_weighted": 15127.94, "io.dm-10.all.time_weighted.per-second":
+      0.05442666666666709, "io.dm-10.read.bytes": 2845258752, "io.dm-10.read.bytes.per-second":
+      791.8933333333333, "io.dm-10.read.completed": 241095, "io.dm-10.read.completed.per-second":
+      0.14666666666666667, "io.dm-10.read.merged": 0, "io.dm-10.read.merged.per-second":
+      0, "io.dm-10.read.time": 1108.708, "io.dm-10.read.time.per-second": 7.1111111111451e-05,
+      "io.dm-10.write.bytes": 16829526016, "io.dm-10.write.bytes.per-second": 29263.644444444446,
+      "io.dm-10.write.completed": 4266856, "io.dm-10.write.completed.per-second":
+      7.38, "io.dm-10.write.merged": 0, "io.dm-10.write.merged.per-second": 0, "io.dm-10.write.time":
+      14019.232, "io.dm-10.write.time.per-second": 0.05435555555555362, "io.dm-11.all.active":
+      0, "io.dm-11.all.time": 1587.092, "io.dm-11.all.time.per-second": 0.0023466666666667555,
+      "io.dm-11.all.time_weighted": 26400.328, "io.dm-11.all.time_weighted.per-second":
+      0.054435555555553745, "io.dm-11.read.bytes": 2362622976, "io.dm-11.read.bytes.per-second":
+      664.4622222222222, "io.dm-11.read.completed": 123264, "io.dm-11.read.completed.per-second":
+      0.11555555555555555, "io.dm-11.read.merged": 0, "io.dm-11.read.merged.per-second":
+      0, "io.dm-11.read.time": 86.33200000000001, "io.dm-11.read.time.per-second":
+      7.1111111111135e-05, "io.dm-11.write.bytes": 17475493888, "io.dm-11.write.bytes.per-second":
+      30219.37777777778, "io.dm-11.write.completed": 4266856, "io.dm-11.write.completed.per-second":
+      7.38, "io.dm-11.write.merged": 0, "io.dm-11.write.merged.per-second": 0, "io.dm-11.write.time":
+      26313.996, "io.dm-11.write.time.per-second": 0.05436444444444431, "io.dm-12.all.active":
+      0, "io.dm-12.all.time": 56.824, "io.dm-12.all.time.per-second": 7.1111111111103e-05,
+      "io.dm-12.all.time_weighted": 22.764, "io.dm-12.all.time_weighted.per-second":
+      8.888888888884e-06, "io.dm-12.read.bytes": 307912704, "io.dm-12.read.bytes.per-second":
+      318.5777777777778, "io.dm-12.read.completed": 75174, "io.dm-12.read.completed.per-second":
+      0.07777777777777778, "io.dm-12.read.merged": 0, "io.dm-12.read.merged.per-second":
+      0, "io.dm-12.read.time": 12.768, "io.dm-12.read.time.per-second": 8.888888888888e-06,
+      "io.dm-12.write.bytes": 2002944, "io.dm-12.write.bytes.per-second": 0, "io.dm-12.write.completed":
+      489, "io.dm-12.write.completed.per-second": 0, "io.dm-12.write.merged": 0, "io.dm-12.write.merged.per-second":
+      0, "io.dm-12.write.time": 9.996, "io.dm-12.write.time.per-second": 0, "io.dm-13.all.active":
+      0, "io.dm-13.all.time": 56.256, "io.dm-13.all.time.per-second": 7.1111111111103e-05,
+      "io.dm-13.all.time_weighted": 10.912, "io.dm-13.all.time_weighted.per-second":
+      8.888888888892e-06, "io.dm-13.read.bytes": 241840128, "io.dm-13.read.bytes.per-second":
+      318.5777777777778, "io.dm-13.read.completed": 59043, "io.dm-13.read.completed.per-second":
+      0.07777777777777778, "io.dm-13.read.merged": 0, "io.dm-13.read.merged.per-second":
+      0, "io.dm-13.read.time": 10.912, "io.dm-13.read.time.per-second": 8.888888888892e-06,
+      "io.dm-13.write.bytes": 0, "io.dm-13.write.bytes.per-second": 0, "io.dm-13.write.completed":
+      0, "io.dm-13.write.completed.per-second": 0, "io.dm-13.write.merged": 0, "io.dm-13.write.merged.per-second":
+      0, "io.dm-13.write.time": 0, "io.dm-13.write.time.per-second": 0, "io.dm-14.all.active":
+      0, "io.dm-14.all.time": 130, "io.dm-14.all.time.per-second": 6.2222222222204e-05,
+      "io.dm-14.all.time_weighted": 3355.404, "io.dm-14.all.time_weighted.per-second":
+      0, "io.dm-14.read.bytes": 147021824, "io.dm-14.read.bytes.per-second": 191.14666666666668,
+      "io.dm-14.read.completed": 35894, "io.dm-14.read.completed.per-second": 0.04666666666666667,
+      "io.dm-14.read.merged": 0, "io.dm-14.read.merged.per-second": 0, "io.dm-14.read.time":
+      4.676, "io.dm-14.read.time.per-second": 0, "io.dm-14.write.bytes": 470700032,
+      "io.dm-14.write.bytes.per-second": 0, "io.dm-14.write.completed": 114917, "io.dm-14.write.completed.per-second":
+      0, "io.dm-14.write.merged": 0, "io.dm-14.write.merged.per-second": 0, "io.dm-14.write.time":
+      3350.728, "io.dm-14.write.time.per-second": 0, "io.dm-15.all.active": 0, "io.dm-15.all.time":
+      54.716, "io.dm-15.all.time.per-second": 6.2222222222219e-05, "io.dm-15.all.time_weighted":
+      9.36, "io.dm-15.all.time_weighted.per-second": 0, "io.dm-15.read.bytes": 242913280,
+      "io.dm-15.read.bytes.per-second": 318.5777777777778, "io.dm-15.read.completed":
+      59305, "io.dm-15.read.completed.per-second": 0.07777777777777778, "io.dm-15.read.merged":
+      0, "io.dm-15.read.merged.per-second": 0, "io.dm-15.read.time": 9.36, "io.dm-15.read.time.per-second":
+      0, "io.dm-15.write.bytes": 0, "io.dm-15.write.bytes.per-second": 0, "io.dm-15.write.completed":
+      0, "io.dm-15.write.completed.per-second": 0, "io.dm-15.write.merged": 0, "io.dm-15.write.merged.per-second":
+      0, "io.dm-15.write.time": 0, "io.dm-15.write.time.per-second": 0, "io.dm-16.all.active":
+      16, "io.dm-16.all.time": 637767.992, "io.dm-16.all.time.per-second": 0.9083644444443699,
+      "io.dm-16.all.time_weighted": 2641850.304, "io.dm-16.all.time_weighted.per-second":
+      3.434506666666518, "io.dm-16.read.bytes": 61582685184, "io.dm-16.read.bytes.per-second":
+      9675.662222222221, "io.dm-16.read.completed": 1283732, "io.dm-16.read.completed.per-second":
+      1.36, "io.dm-16.read.merged": 0, "io.dm-16.read.merged.per-second": 0, "io.dm-16.read.time":
+      16091.096, "io.dm-16.read.time.per-second": 0.011724444444444088, "io.dm-16.write.bytes":
+      752279527424, "io.dm-16.write.bytes.per-second": 1052826.7377777777, "io.dm-16.write.completed":
+      167568543, "io.dm-16.write.completed.per-second": 242.17777777777778, "io.dm-16.write.merged":
+      0, "io.dm-16.write.merged.per-second": 0, "io.dm-16.write.time": 2625759.208,
+      "io.dm-16.write.time.per-second": 3.4227822222219157, "io.dm-2.all.active":
+      0, "io.dm-2.all.time": 104.164, "io.dm-2.all.time.per-second": 0.00013333333333333838,
+      "io.dm-2.all.time_weighted": 22.22, "io.dm-2.all.time_weighted.per-second":
+      3.5555555555552e-05, "io.dm-2.read.bytes": 367007744, "io.dm-2.read.bytes.per-second":
+      477.8666666666667, "io.dm-2.read.completed": 129344, "io.dm-2.read.completed.per-second":
+      0.1711111111111111, "io.dm-2.read.merged": 0, "io.dm-2.read.merged.per-second":
+      0, "io.dm-2.read.time": 22.22, "io.dm-2.read.time.per-second": 3.5555555555552e-05,
+      "io.dm-2.write.bytes": 2048, "io.dm-2.write.bytes.per-second": 0, "io.dm-2.write.completed":
+      3, "io.dm-2.write.completed.per-second": 0, "io.dm-2.write.merged": 0, "io.dm-2.write.merged.per-second":
+      0, "io.dm-2.write.time": 0, "io.dm-2.write.time.per-second": 0, "io.dm-3.all.active":
+      0, "io.dm-3.all.time": 56.684000000000005, "io.dm-3.all.time.per-second": 7.1111111111119e-05,
+      "io.dm-3.all.time_weighted": 9.564, "io.dm-3.all.time_weighted.per-second":
+      8.888888888888e-06, "io.dm-3.read.bytes": 75597824, "io.dm-3.read.bytes.per-second":
+      95.57333333333334, "io.dm-3.read.completed": 58199, "io.dm-3.read.completed.per-second":
+      0.07777777777777778, "io.dm-3.read.merged": 0, "io.dm-3.read.merged.per-second":
+      0, "io.dm-3.read.time": 9.564, "io.dm-3.read.time.per-second": 8.888888888888e-06,
+      "io.dm-3.write.bytes": 2048, "io.dm-3.write.bytes.per-second": 0, "io.dm-3.write.completed":
+      3, "io.dm-3.write.completed.per-second": 0, "io.dm-3.write.merged": 0, "io.dm-3.write.merged.per-second":
+      0, "io.dm-3.write.time": 0, "io.dm-3.write.time.per-second": 0, "io.dm-4.all.active":
+      0, "io.dm-4.all.time": 54.788000000000004, "io.dm-4.all.time.per-second": 8.8888888888887e-05,
+      "io.dm-4.all.time_weighted": 3.436, "io.dm-4.all.time_weighted.per-second":
+      8.888888888889e-06, "io.dm-4.read.bytes": 96223232, "io.dm-4.read.bytes.per-second":
+      127.43111111111111, "io.dm-4.read.completed": 23492, "io.dm-4.read.completed.per-second":
+      0.03111111111111111, "io.dm-4.read.merged": 0, "io.dm-4.read.merged.per-second":
+      0, "io.dm-4.read.time": 3.436, "io.dm-4.read.time.per-second": 8.888888888889e-06,
+      "io.dm-4.write.bytes": 0, "io.dm-4.write.bytes.per-second": 0, "io.dm-4.write.completed":
+      0, "io.dm-4.write.completed.per-second": 0, "io.dm-4.write.merged": 0, "io.dm-4.write.merged.per-second":
+      0, "io.dm-4.write.time": 0, "io.dm-4.write.time.per-second": 0, "io.dm-5.all.active":
+      0, "io.dm-5.all.time": 58.424, "io.dm-5.all.time.per-second": 9.7777777777771e-05,
+      "io.dm-5.all.time_weighted": 12.168000000000001, "io.dm-5.all.time_weighted.per-second":
+      3.5555555555556e-05, "io.dm-5.read.bytes": 240766976, "io.dm-5.read.bytes.per-second":
+      318.5777777777778, "io.dm-5.read.completed": 58781, "io.dm-5.read.completed.per-second":
+      0.07777777777777778, "io.dm-5.read.merged": 0, "io.dm-5.read.merged.per-second":
+      0, "io.dm-5.read.time": 12.168000000000001, "io.dm-5.read.time.per-second":
+      3.5555555555556e-05, "io.dm-5.write.bytes": 0, "io.dm-5.write.bytes.per-second":
+      0, "io.dm-5.write.completed": 0, "io.dm-5.write.completed.per-second": 0, "io.dm-5.write.merged":
+      0, "io.dm-5.write.merged.per-second": 0, "io.dm-5.write.time": 0, "io.dm-5.write.time.per-second":
+      0, "io.dm-6.all.active": 0, "io.dm-6.all.time": 50.32, "io.dm-6.all.time.per-second":
+      7.1111111111103e-05, "io.dm-6.all.time_weighted": 2.024, "io.dm-6.all.time_weighted.per-second":
+      8.888888888889e-06, "io.dm-6.read.bytes": 95088640, "io.dm-6.read.bytes.per-second":
+      127.43111111111111, "io.dm-6.read.completed": 23215, "io.dm-6.read.completed.per-second":
+      0.03111111111111111, "io.dm-6.read.merged": 0, "io.dm-6.read.merged.per-second":
+      0, "io.dm-6.read.time": 2.024, "io.dm-6.read.time.per-second": 8.888888888889e-06,
+      "io.dm-6.write.bytes": 0, "io.dm-6.write.bytes.per-second": 0, "io.dm-6.write.completed":
+      0, "io.dm-6.write.completed.per-second": 0, "io.dm-6.write.merged": 0, "io.dm-6.write.merged.per-second":
+      0, "io.dm-6.write.time": 0, "io.dm-6.write.time.per-second": 0, "io.dm-7.all.active":
+      0, "io.dm-7.all.time": 52.72, "io.dm-7.all.time.per-second": 7.1111111111103e-05,
+      "io.dm-7.all.time_weighted": 6.268, "io.dm-7.all.time_weighted.per-second":
+      8.888888888888e-06, "io.dm-7.read.bytes": 240766976, "io.dm-7.read.bytes.per-second":
+      318.5777777777778, "io.dm-7.read.completed": 58781, "io.dm-7.read.completed.per-second":
+      0.07777777777777778, "io.dm-7.read.merged": 0, "io.dm-7.read.merged.per-second":
+      0, "io.dm-7.read.time": 6.268, "io.dm-7.read.time.per-second": 8.888888888888e-06,
+      "io.dm-7.write.bytes": 0, "io.dm-7.write.bytes.per-second": 0, "io.dm-7.write.completed":
+      0, "io.dm-7.write.completed.per-second": 0, "io.dm-7.write.merged": 0, "io.dm-7.write.merged.per-second":
+      0, "io.dm-7.write.time": 0, "io.dm-7.write.time.per-second": 0, "io.dm-8.all.active":
+      0, "io.dm-8.all.time": 60.696, "io.dm-8.all.time.per-second": 7.1111111111103e-05,
+      "io.dm-8.all.time_weighted": 13.76, "io.dm-8.all.time_weighted.per-second":
+      8.888888888888e-06, "io.dm-8.read.bytes": 266770432, "io.dm-8.read.bytes.per-second":
+      318.5777777777778, "io.dm-8.read.completed": 59560, "io.dm-8.read.completed.per-second":
+      0.07777777777777778, "io.dm-8.read.merged": 0, "io.dm-8.read.merged.per-second":
+      0, "io.dm-8.read.time": 13.212, "io.dm-8.read.time.per-second": 8.888888888888e-06,
+      "io.dm-8.write.bytes": 694272, "io.dm-8.write.bytes.per-second": 0, "io.dm-8.write.completed":
+      534, "io.dm-8.write.completed.per-second": 0, "io.dm-8.write.merged": 0, "io.dm-8.write.merged.per-second":
+      0, "io.dm-8.write.time": 0.548, "io.dm-8.write.time.per-second": 0, "io.dm-9.all.active":
+      0, "io.dm-9.all.time": 59.112, "io.dm-9.all.time.per-second": 8.8888888888887e-05,
+      "io.dm-9.all.time_weighted": 11.936, "io.dm-9.all.time_weighted.per-second":
+      2.6666666666668e-05, "io.dm-9.read.bytes": 240766976, "io.dm-9.read.bytes.per-second":
+      318.5777777777778, "io.dm-9.read.completed": 58142, "io.dm-9.read.completed.per-second":
+      0.07777777777777778, "io.dm-9.read.merged": 0, "io.dm-9.read.merged.per-second":
+      0, "io.dm-9.read.time": 11.936, "io.dm-9.read.time.per-second": 2.6666666666668e-05,
+      "io.dm-9.write.bytes": 0, "io.dm-9.write.bytes.per-second": 0, "io.dm-9.write.completed":
+      0, "io.dm-9.write.completed.per-second": 0, "io.dm-9.write.merged": 0, "io.dm-9.write.merged.per-second":
+      0, "io.dm-9.write.time": 0, "io.dm-9.write.time.per-second": 0, "io.md0.all.active":
+      0, "io.md0.all.time": 0, "io.md0.all.time.per-second": 0, "io.md0.all.time_weighted":
+      0, "io.md0.all.time_weighted.per-second": 0, "io.md0.read.bytes": 61952467968,
+      "io.md0.read.bytes.per-second": 10057.955555555556, "io.md0.read.completed":
+      1354157, "io.md0.read.completed.per-second": 1.4533333333333334, "io.md0.read.merged":
+      0, "io.md0.read.merged.per-second": 0, "io.md0.read.time": 0, "io.md0.read.time.per-second":
+      0, "io.md0.write.bytes": 719338717184, "io.md0.write.bytes.per-second": 1009427.3422222222,
+      "io.md0.write.completed": 167596937, "io.md0.write.completed.per-second": 242.22222222222223,
+      "io.md0.write.merged": 0, "io.md0.write.merged.per-second": 0, "io.md0.write.time":
+      0, "io.md0.write.time.per-second": 0, "io.os.all.active": 0, "io.os.all.time":
+      1867.412, "io.os.all.time.per-second": 0.0026755555555554463, "io.os.all.time_weighted":
+      54.328, "io.os.all.time_weighted.per-second": 0.0002844444444444447, "io.os.read.bytes":
+      6335244288, "io.os.read.bytes.per-second": 5275.875555555555, "io.os.read.completed":
+      1157257, "io.os.read.completed.per-second": 1.4844444444444445, "io.os.read.merged":
+      108571, "io.os.read.merged.per-second": 0, "io.os.read.time": 222.06, "io.os.read.time.per-second":
+      0.00024222222222224194, "io.os.write.bytes": 17257387008, "io.os.write.bytes.per-second":
+      29263.644444444446, "io.os.write.completed": 1520668, "io.os.write.completed.per-second":
+      2.1377777777777776, "io.os.write.merged": 2862109, "io.os.write.merged.per-second":
+      5.242222222222222, "io.os.write.time": 999.556, "io.os.write.time.per-second":
+      0.0017666666666668284, "io.sda.all.active": 0, "io.sda.all.time": 1867.412,
+      "io.sda.all.time.per-second": 0.0026755555555554463, "io.sda.all.time_weighted":
+      54.328, "io.sda.all.time_weighted.per-second": 0.0002844444444444447, "io.sda.read.bytes":
+      6335244288, "io.sda.read.bytes.per-second": 5275.875555555555, "io.sda.read.completed":
+      1157257, "io.sda.read.completed.per-second": 1.4844444444444445, "io.sda.read.merged":
+      108571, "io.sda.read.merged.per-second": 0, "io.sda.read.time": 222.06, "io.sda.read.time.per-second":
+      0.00024222222222224194, "io.sda.write.bytes": 17257387008, "io.sda.write.bytes.per-second":
+      29263.644444444446, "io.sda.write.completed": 1520668, "io.sda.write.completed.per-second":
+      2.1377777777777776, "io.sda.write.merged": 2862109, "io.sda.write.merged.per-second":
+      5.242222222222222, "io.sda.write.time": 999.556, "io.sda.write.time.per-second":
+      0.0017666666666668284, "io.sdb.all.active": 0, "io.sdb.all.time": 604133.336,
+      "io.sdb.all.time.per-second": 0.8646399999999752, "io.sdb.all.time_weighted":
+      824529.36, "io.sdb.all.time_weighted.per-second": 1.1067377777777923, "io.sdb.read.bytes":
+      39336180736, "io.sdb.read.bytes.per-second": 7467.235555555556, "io.sdb.read.completed":
+      913772, "io.sdb.read.completed.per-second": 1.1733333333333333, "io.sdb.read.merged":
+      27107, "io.sdb.read.merged.per-second": 0.0022222222222222222, "io.sdb.read.time":
+      11608.338, "io.sdb.read.time.per-second": 0.011466666666666344, "io.sdb.write.bytes":
+      723171647488, "io.sdb.write.bytes.per-second": 1012647.2533333333, "io.sdb.write.completed":
+      124143748, "io.sdb.write.completed.per-second": 181.2288888888889, "io.sdb.write.merged":
+      43687049, "io.sdb.write.merged.per-second": 61.54666666666667, "io.sdb.write.time":
+      998376.752, "io.sdb.write.time.per-second": 1.3692977777777964, "io.sdc.all.active":
+      0, "io.sdc.all.time": 605029.404, "io.sdc.all.time.per-second": 0.8673422222222305,
+      "io.sdc.all.time_weighted": 826202.8, "io.sdc.all.time_weighted.per-second":
+      1.0944888888889304, "io.sdc.read.bytes": 22736346112, "io.sdc.read.bytes.per-second":
+      2853.5466666666666, "io.sdc.read.completed": 537202, "io.sdc.read.completed.per-second":
+      0.46444444444444444, "io.sdc.read.merged": 14023, "io.sdc.read.merged.per-second":
+      0, "io.sdc.read.time": 6483.71, "io.sdc.read.time.per-second": 0.004668888888888129,
+      "io.sdc.write.bytes": 723171647488, "io.sdc.write.bytes.per-second": 1012647.2533333333,
+      "io.sdc.write.completed": 124097230, "io.sdc.write.completed.per-second": 181.25333333333333,
+      "io.sdc.write.merged": 43733644, "io.sdc.write.merged.per-second": 61.522222222222226,
+      "io.sdc.write.time": 1005026.115, "io.sdc.write.time.per-second": 1.358008888888742,
+      "usage.data": 39.73282532596121, "usage.os": 86.05915625626606}'
+- assertions:
+  - fieldsHaveValues:
+      file.hash.md5: 68644403ead675fa40f4de8440091039
+      network.protocol: HTTP
+      file.hash.sha256: 6e00d3a25478da0bd32104e380ec76a20cb7cb8d43105856252a5178f71e5174
+      '#event.kind': event
+      event.category[0]: file
+      '#event.dataset': ndr.files_red
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"files_red","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:10:30.930486Z","ts":["2025-04-17T17:00:28.362861Z"],"fuid":"FAMeL13eAQ3KtB9Xu5","tx_hosts":["127.0.0.1"],"rx_hosts":["127.0.0.1"],"conn_uids":["CPHP1L3nKik4PfQkLi"],"source":"HTTP","depth":0,"analyzers":["SHA1","MD5","DATA_EVENT","SHA256"],"mime_type":"application/xml","local_orig":true,"is_orig":false,"seen_bytes":2109,"missing_bytes":0,"overflow_bytes":0,"timedout":false,"extracted":[],"md5":"68644403ead675fa40f4de8440091039","sha1":"b48f99fab90300bba83c1cbcb1b9b24806389f89","sha256":"6e00d3a25478da0bd32104e380ec76a20cb7cb8d43105856252a5178f71e5174","num":1}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_hosts
+      event.duration: '910.0891220569611'
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"known_hosts","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:10:09.698135Z","ts":"2025-04-17T16:53:55.914098Z","duration":910.0891220569611,"kuid":"KfKhs64hpZ6Wi","host_ip":"127.0.0.1","host_vlan":9,"conns_opened":0,"conns_closed":0,"conns_pending":0,"long_conns":0,"annotations":[],"last_active_session":"Kf6EDno4fYgp9","last_active_interval":975.0918500423431,"ep.status":"unknown"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_services
+      event.duration: '428.69005489349365'
+      event.type[0]: info
+      observer.hostname: Lab-vSensor4
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"known_services","_system_name":"Lab-vSensor4","_write_ts":"2025-04-17T17:09:36.132194Z","ts":"2025-04-17T16:56:35.124859Z","duration":428.69005489349365,"kuid":"Kfy9Rl0ApqyPg","host_ip":"127.0.0.1","port":53,"protocol":"udp","service":["DNS"],"software":[],"app":[],"num_conns_pending":0,"num_conns_complete":13,"long_conns":0,"annotations":[],"last_active_session":"KfdGvNuUQpPCk","last_active_interval":865.7293698787689}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.corelight_service_status
+      event.type[0]: info
+      observer.hostname: Lab-vSensor4
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"corelight_service_status","_system_name":"Lab-vSensor4","_write_ts":"2025-04-17T17:09:04Z","ts":"2025-04-17T17:09:04Z","id":"sensor_implementation","name":"Classic
+      Sensor","group":"platform","status":true,"message":""}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '50564'
+      rule.name: ET DROP Dshield Block Listed Source group 1
+      network.community_id: 1:9bM39TAIl4Rw2JYARBD0i0Avi3g=
+      event.id: CFZjEK2duHtV5BCf49
+      source.port: '50564'
+      event.category[1]: network
+      '#event.kind': alert
+      event.category[0]: threat
+      event.severity: '70'
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: indicator
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.suricata_corelight
+      event.type[1]: connection
+      server.port: '21'
+      destination.port: '21'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"suricata_corelight","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:08:13.811250Z","ts":"2025-04-17T17:08:13.803383Z","uid":"CFZjEK2duHtV5BCf49","id.orig_h":"127.0.0.1","id.orig_p":50564,"id.resp_h":"127.0.0.1","id.resp_p":21,"suri_id":"SO84bmaiNiAh","flow_id":1480182953770061,"tx_id":0,"pcap_cnt":0,"alert.action":"allowed","alert.gid":1,"alert.signature_id":2402000,"alert.rev":7329,"alert.signature":"ET
+      DROP Dshield Block Listed Source group 1","alert.category":"Misc Attack","alert.severity":2,"alert.metadata":["affected_product:Any","attack_target:Any","created_at:2010_12_30","deployment:Perimeter","signature_severity:Major","tag:Dshield","updated_at:2025_04_03"],"alert.rule":"alert
+      ip [127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24,127.0.0.1/24]
+      any -> $HOME_NET any (msg:\"ET DROP Dshield Block Listed Source group 1\"; reference:url,feeds.dshield.org/block.txt;
+      metadata:affected_product Any, attack_target Any, deployment Perimeter, tag
+      Dshield, signature_severity Major, created_at 2010_12_30, updated_at 2025_04_03;
+      classtype:misc-attack; threshold: type limit, track by_src, seconds 3600, count
+      1; flowbits:set,ET.Evil; flowbits:set,ET.DshieldIP;  gid:1; sid:2402000; rev:7329;)","alert.references":["http://feeds.dshield.org/block.txt"],"community_id":"1:9bM39TAIl4Rw2JYARBD0i0Avi3g=","metadata":["flowbits:ET.Evil","flowbits:ET.DshieldIP"]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '59178'
+      event.id: Cx0ese4lTdU0HlWXE5
+      source.port: '59178'
+      '#event.kind': event
+      event.category[0]: process
+      error.message: 'Invalid version in TLS connection. Version: 16248'
+      '#event.dataset': ndr.analyzer
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: error
+      observer.hostname: Lab-AP200
+      server.port: '443'
+      destination.port: '443'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"analyzer","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:07:43.846471Z","ts":"2025-04-17T17:07:43.846471Z","cause":"violation","analyzer_kind":"protocol","analyzer_name":"SSL","uid":"Cx0ese4lTdU0HlWXE5","id.orig_h":"127.0.0.1","id.orig_p":59178,"id.resp_h":"127.0.0.1","id.resp_p":443,"failure_reason":"Invalid
+      version in TLS connection. Version: 16248"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '53308'
+      event.id: CT5n7k3szVcb2Z9nij
+      source.port: '53308'
+      event.category[0]: network
+      '#event.dataset': ndr.ssdp
+      source.ip: 127.0.0.1
+      event.action: M-SEARCH * HTTP/1.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.kind': event
+      url.domain: 127.0.0.1:1900
+      server.port: '1900'
+      destination.port: '1900'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ssdp","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:06:51.312633Z","ts":"2025-04-17T17:06:51.312632Z","uid":"CT5n7k3szVcb2Z9nij","id.orig_h":"127.0.0.1","id.orig_p":53308,"id.resp_h":"127.0.0.1","id.resp_p":1900,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","is_orig":true,"operation":"M-SEARCH * HTTP/1.1","host":"127.0.0.1:1900","target":"urn:dial-multiscreen-org:service:dial:1","man":"\"ssdp:discover\"","mx":"1","remaining_header_names":[],"remaining_header_values":[]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '38934'
+      network.vlan.id: '9'
+      event.id: CVljyn2eEGa0QBZE19
+      network.protocol: TCP
+      source.port: '38934'
+      '#event.kind': event
+      event.category[0]: network
+      '#event.dataset': ndr.weird
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '8080'
+      destination.port: '8080'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"weird","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:06:51.796347Z","ts":"2025-04-17T17:06:51.796347Z","uid":"CVljyn2eEGa0QBZE19","id.orig_h":"127.0.0.1","id.orig_p":38934,"id.resp_h":"127.0.0.1","id.resp_p":8080,"id.resp_ep_status":"Unsupported","id.resp_ep_uid":"2081026184155705172","id.resp_ep_name":"udm","id.resp_ep_source":"SentinelOne
+      Network Discovery","id.vlan":9,"name":"data_before_established","notice":false,"peer":"worker-03","source":"TCP"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '38934'
+      network.vlan.id: '9'
+      event.id: CVljyn2eEGa0QBZE19
+      network.protocol: TCP
+      source.port: '38934'
+      '#event.kind': event
+      event.category[0]: network
+      '#event.dataset': ndr.weird_red
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '8080'
+      destination.port: '8080'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: "\t\n{\"_path\":\"weird_red\",\"_system_name\":\"Lab-AP200\",\"_write_ts\"\
+      :\"2025-04-17T17:06:51.796347Z\",\"ts\":\"2025-04-17T17:06:51.796347Z\",\"uid\"\
+      :\"CVljyn2eEGa0QBZE19\",\"id.orig_h\":\"127.0.0.1\",\"id.orig_p\":38934,\"id.resp_h\"\
+      :\"127.0.0.1\",\"id.resp_p\":8080,\"id.resp_ep_status\":\"Unsupported\",\"id.resp_ep_uid\"\
+      :\"2081026184155705172\",\"id.resp_ep_name\":\"udm\",\"id.resp_ep_source\":\"\
+      SentinelOne Network Discovery\",\"id.vlan\":9,\"name\":\"data_before_established\"\
+      ,\"notice\":false,\"peer\":\"worker-03\",\"source\":\"TCP\"}"
+- assertions:
+  - fieldsHaveValues:
+      client.port: '123'
+      network.vlan.id: '12'
+      event.id: C4KnEm6oK0fsMxKr3
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      agent.id: fae3f73ce1404e0aae1626dbddfc3abc
+      source.port: '123'
+      '#event.dataset': ndr.ntp
+      event.type[1]: protocol
+      server.port: '123'
+      destination.port: '123'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ntp","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:06:31.759233Z","ts":"2025-04-17T17:06:31.759233Z","uid":"C4KnEm6oK0fsMxKr3","id.orig_h":"127.0.0.1","id.orig_p":123,"id.resp_h":"127.0.0.1","id.resp_p":123,"id.orig_ep_status":"managed","id.orig_ep_uid":"fae3f73ce1404e0aae1626dbddfc3abc","id.orig_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.orig_ep_name":"myserver","id.orig_ep_source":"CrowdStrike","id.vlan":12,"version":4,"mode":4,"stratum":2,"poll":64.0,"precision":5.960464477539063e-8,"root_delay":0.004180908203125,"root_disp":0.021026611328125,"ref_id":"127.0.0.1","ref_time":"2025-04-17T17:02:42.656591Z","org_time":"2025-04-17T17:06:30.637954Z","rec_time":"2025-04-17T17:06:31.696407Z","xmt_time":"2025-04-17T17:06:31.696428Z","num_exts":0}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.corelight_overall_capture_loss
+      event.type[0]: info
+      observer.hostname: Lab-vSensor4
+    outputEventIndex: 0
+  event:
+    rawString: |
+      {"_path":"corelight_overall_capture_loss","_system_name":"Lab-vSensor4","_write_ts":"2025-04-17T17:05:53.198853Z","ts":"2025-04-17T17:05:53.198853Z","gaps":0.0,"acks":49.0,"percent_lost":0.0}
+- assertions:
+  - fieldsHaveValues:
+      client.mac: DC-A6-32-C7-24-34
+      '#event.kind': event
+      event.category[0]: host
+      '#event.dataset': ndr.known_devices
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+      source.mac: DC-A6-32-C7-24-34
+      event.duration: '920.7938411235809'
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"known_devices","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:05:19.674550Z","ts":"2025-04-17T16:49:06.671083Z","duration":920.7938411235809,"kuid":"KfdD0C5KCONE1","host_ip":"127.0.0.1","host_vlan":12,"mac":"dc:a6:32:c7:24:34","vendor_mac":"Raspberry
+      Pi Trading Ltd","protocols":["CrowdStrike"],"num_conns":0,"long_conns":0,"annotations":["CrowdStrike/unsupported"],"last_active_session":"Kfhb1sjkgKi9f","last_active_interval":888.3273181915283}'
+- assertions:
+  - fieldsHaveValues:
+      http.request.method: BINDING
+      client.port: '56885'
+      network.community_id: 1:/X5QIb9grLdVKdPMVx2/BS+owrA=
+      event.id: C2j99toF2ToHySZVh
+      source.port: '56885'
+      '#event.kind': event
+      network.transport: udp
+      event.category[0]: network
+      '#event.dataset': ndr.stun
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      server.port: '3478'
+      destination.port: '3478'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"stun","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:00:47.969691Z","ts":"2025-04-17T17:00:47.969691Z","uid":"C2j99toF2ToHySZVh","id.orig_h":"127.0.0.1","id.orig_p":56885,"id.resp_h":"127.0.0.1","id.resp_p":3478,"proto":"udp","is_orig":true,"trans_id":"Ua5xQ2QuP8+t","method":"BINDING","class":"REQUEST","attr_types":[],"attr_vals":[]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '59354'
+      network.vlan.id: '1'
+      event.id: CXb9Mo1uYMuU4EP0y1
+      source.port: '59354'
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.quic
+      event.type[1]: start
+      server.port: '443'
+      destination.port: '443'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"quic","_system_name":"Lab-AP200","_write_ts":"2025-04-17T17:00:47.363948Z","ts":"2025-04-17T16:59:47.192371Z","uid":"CXb9Mo1uYMuU4EP0y1","id.orig_h":"127.0.0.1","id.orig_p":59354,"id.resp_h":"127.0.0.1","id.resp_p":443,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.vlan":1,"version":"1","client_initial_dcid":"e33cb3100d73681b","client_scid":"","server_scid":"e33cb3100d73681b","history":"IIZiiishH"}'
+- assertions:
+  - fieldsHaveValues:
+      http.request.method: GET
+      event.type[2]: access
+      network.vlan.id: '1'
+      event.id: CPHP1L3nKik4PfQkLi
+      source.port: '52431'
+      event.category[1]: web
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      user_agent.original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36
+      url.path: /en-US/splunkd/__raw/services/search/shelper?output_mode=json&snippet=true&snippetEmbedJS=false&namespace=search&search=search
+        index=corelight path!=conn path!=ssl_red path!=ecat_arp_info&useTypeahead=true&showCommandHelp=true&showCommandHistory=true&showFieldInfo=false&_=1744908176843
+      client.port: '52431'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.http_red
+      event.type[1]: protocol
+      server.port: '65535'
+      destination.port: '65535'
+      http.response.status_code: '200'
+      server.ip: 127.0.0.1
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"http_red","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:58:54.934800Z","ts":"2025-04-17T16:58:54.876519Z","uid":"CPHP1L3nKik4PfQkLi","id.orig_h":"127.0.0.1","id.orig_p":52431,"id.resp_h":"127.0.0.1","id.resp_p":65535,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.vlan":1,"trans_depth":454,"method":"GET","dest_host":"splunk.Lab.net","uri":"/en-US/splunkd/__raw/services/search/shelper?output_mode=json&snippet=true&snippetEmbedJS=false&namespace=search&search=search
+      index=corelight path!=conn path!=ssl_red path!=ecat_arp_info&useTypeahead=true&showCommandHelp=true&showCommandHistory=true&showFieldInfo=false&_=1744908176843","version":"1.1","user_agent":"Mozilla/5.0
+      (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0
+      Safari/537.36","request_body_len":0,"response_body_len":39440,"status_code":200,"status_msg":"OK","tags":[],"resp_fuids":["FmwVCl33F6bQVHuZUd"],"resp_mime_types":["text/json"]}'
+- assertions:
+  - fieldsHaveValues:
+      network.vlan.id: '12'
+      event.id: CkZAUX1lbYUjahd93l
+      source.port: '48040'
+      '#event.kind': event
+      event.category[0]: network
+      tls.client.ja3: d39e1be3241d516b1f714bd47c2bc968
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      tls.server.ja3s: 567bb420d39046dbfd1f68b558d86382
+      device.id: e29b670f12d342e3bcc7170a999a0abc_abb6c27309cf3730bb73e8cfd732d838
+      client.port: '48040'
+      destination.address: release.api.corelight.io
+      server.address: release.api.corelight.io
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ssl_red
+      event.type[1]: protocol
+      server.port: '443'
+      destination.port: '443'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ssl_red","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:58:08.691872Z","ts":"2025-04-17T16:58:08.611599Z","uid":"CkZAUX1lbYUjahd93l","id.orig_h":"127.0.0.1","id.orig_p":48040,"id.resp_h":"127.0.0.1","id.resp_p":443,"id.orig_ep_status":"unmanaged","id.orig_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_abb6c27309cf3730bb73e8cfd732d838","id.orig_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.orig_ep_source":"CrowdStrike","id.vlan":12,"version":"TLSv12","cipher":"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384","curve":"x25519","server_name":"release.api.corelight.io","resumed":false,"established":true,"ssl_history":"CsxkrnXGYIti","cert_chain_fps":["f7a978806e2a3cb1547c837c7c1e2e73c426321e1d455a4715ddbc3e28c1f931"],"client_cert_chain_fps":["bd3b240e5d824c3a0fc1ca1d9f85a4327596a484166b6c02b540df169623c5a1","0ac0d2c0906872cc4dbf50153788a5a3758ebaaca83481b80b545ff0bde62c0a","c86b9c79c08d0d370560333346215251594bb17dd3a7fa29f34334fa1708bead"],"sni_matches_cert":true,"validation_status":"unable
+      to get local issuer certificate","ja3":"d39e1be3241d516b1f714bd47c2bc968","ja3s":"567bb420d39046dbfd1f68b558d86382"}'
+- assertions:
+  - fieldsHaveValues:
+      '#event.kind': event
+      event.category[0]: process
+      '#event.dataset': ndr.suricata_stats
+      event.type[0]: info
+      observer.hostname: Lab-vSensor4
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path": "suricata_stats", "_system_name": "Lab-vSensor4", "_write_ts":
+      "2025-04-17T16:55:51.272473Z", "raw_mgmt": {"timestamp": "2025-04-17T09: 55:
+      51.271847-0700", "event_type": "stats", "stats": {"uptime": 688386, "capture":
+      {"kernel_packets": 2964294, "kernel_drops": 0}, "decoder": {"pkts": 2964294,
+      "bytes": 1525955212, "invalid": 0, "ipv4": 1922528, "ipv6": 392, "ethernet":
+      2964294, "arp": 674493, "unknown_ethertype": 366881, "chdlc": 0, "raw": 0, "null":
+      0, "sll": 0, "tcp": 1589937, "udp": 321094, "sctp": 0, "esp": 0, "icmpv4": 148,
+      "icmpv6": 392, "ppp": 0, "pppoe": 0, "geneve": 0, "gre": 0, "vlan": 0, "vlan_qinq":
+      0, "vlan_qinqinq": 0, "vxlan": 0, "vntag": 0, "ieee8021ah": 0, "teredo": 0,
+      "ipv4_in_ipv6": 0, "ipv6_in_ipv6": 0, "mpls": 0, "avg_pkt_size": 514, "max_pkt_size":
+      1514, "max_mac_addrs_src": 0, "max_mac_addrs_dst": 0, "erspan": 0, "nsh": 0,
+      "event": {"ipv4": {"pkt_too_small": 0, "hlen_too_small": 0, "iplen_smaller_than_hlen":
+      0, "trunc_pkt": 0, "opt_invalid": 0, "opt_invalid_len": 0, "opt_malformed":
+      0, "opt_pad_required": 11349, "opt_eol_required": 0, "opt_duplicate": 0, "opt_unknown":
+      0, "wrong_ip_version": 0, "icmpv6": 0, "frag_pkt_too_large": 0, "frag_overlap":
+      0, "frag_ignored": 0}, "icmpv4": {"pkt_too_small": 0, "unknown_type": 0, "unknown_code":
+      0, "ipv4_trunc_pkt": 0, "ipv4_unknown_ver": 0}, "icmpv6": {"unknown_type": 0,
+      "unknown_code": 0, "pkt_too_small": 0, "ipv6_unknown_version": 0, "ipv6_trunc_pkt":
+      0, "mld_message_with_invalid_hl": 0, "unassigned_type": 0, "experimentation_type":
+      0}, "ipv6": {"pkt_too_small": 0, "trunc_pkt": 0, "trunc_exthdr": 0, "exthdr_dupl_fh":
+      0, "exthdr_useless_fh": 0, "exthdr_dupl_rh": 0, "exthdr_dupl_hh": 0, "exthdr_dupl_dh":
+      0, "exthdr_dupl_ah": 0, "exthdr_dupl_eh": 0, "exthdr_invalid_optlen": 0, "wrong_ip_version":
+      0, "exthdr_ah_res_not_null": 0, "hopopts_unknown_opt": 0, "hopopts_only_padding":
+      0, "dstopts_unknown_opt": 0, "dstopts_only_padding": 0, "rh_type_0": 0, "zero_len_padn":
+      6, "fh_non_zero_reserved_field": 0, "data_after_none_header": 0, "unknown_next_header":
+      0, "icmpv4": 0, "frag_pkt_too_large": 0, "frag_overlap": 0, "frag_invalid_length":
+      0, "frag_ignored": 0, "ipv4_in_ipv6_too_small": 0, "ipv4_in_ipv6_wrong_version":
+      0, "ipv6_in_ipv6_too_small": 0, "ipv6_in_ipv6_wrong_version": 0}, "tcp": {"pkt_too_small":
+      0, "hlen_too_small": 0, "invalid_optlen": 0, "opt_invalid_len": 0, "opt_duplicate":
+      0}, "udp": {"pkt_too_small": 0, "hlen_too_small": 0, "hlen_invalid": 0, "len_invalid":
+      0}, "sll": {"pkt_too_small": 0}, "ethernet": {"pkt_too_small": 0}, "ppp": {"pkt_too_small":
+      0, "vju_pkt_too_small": 0, "ip4_pkt_too_small": 0, "ip6_pkt_too_small": 0, "wrong_type":
+      0, "unsup_proto": 0}, "pppoe": {"pkt_too_small": 0, "wrong_code": 0, "malformed_tags":
+      0}, "gre": {"pkt_too_small": 0, "wrong_version": 0, "version0_recur": 0, "version0_flags":
+      0, "version0_hdr_too_big": 0, "version0_malformed_sre_hdr": 0, "version1_chksum":
+      0, "version1_route": 0, "version1_ssr": 0, "version1_recur": 0, "version1_flags":
+      0, "version1_no_key": 0, "version1_wrong_protocol": 0, "version1_malformed_sre_hdr":
+      0, "version1_hdr_too_big": 0}, "vlan": {"header_too_small": 0, "unknown_type":
+      0, "too_many_layers": 0}, "ieee8021ah": {"header_too_small": 0}, "vntag": {"header_too_small":
+      0, "unknown_type": 0}, "ipraw": {"invalid_ip_version": 0}, "ltnull": {"pkt_too_small":
+      0, "unsupported_type": 0}, "sctp": {"pkt_too_small": 0}, "esp": {"pkt_too_small":
+      0}, "mpls": {"header_too_small": 0, "pkt_too_small": 0, "bad_label_router_alert":
+      0, "bad_label_implicit_null": 0, "bad_label_reserved": 0, "unknown_payload_type":
+      0}, "vxlan": {"unknown_payload_type": 0}, "geneve": {"unknown_payload_type":
+      0}, "erspan": {"header_too_small": 0, "unsupported_version": 0, "too_many_vlan_layers":
+      0}, "dce": {"pkt_too_small": 0}, "chdlc": {"pkt_too_small": 0}, "nsh": {"header_too_small":
+      0, "unsupported_version": 0, "bad_header_length": 0, "reserved_type": 0, "unsupported_type":
+      0, "unknown_payload": 0}}, "too_many_layers": 0}, "tcp": {"syn": 6607, "synack":
+      5925, "rst": 8162, "active_sessions": 2, "sessions": 6420, "ssn_memcap_drop":
+      0, "ssn_from_cache": 5317, "ssn_from_pool": 1103, "pseudo": 0, "pseudo_failed":
+      0, "invalid_checksum": 0, "midstream_pickups": 0, "pkt_on_wrong_thread": 0,
+      "ack_unseen_data": 2924, "segment_memcap_drop": 0, "segment_from_cache": 264405,
+      "segment_from_pool": 1600, "stream_depth_reached": 211, "reassembly_gap": 0,
+      "overlap": 66, "overlap_diff_data": 0, "insert_data_normal_fail": 0, "insert_data_overlap_fail":
+      0, "memuse": 5920000, "reassembly_memuse": 241664}, "flow": {"memcap": 0, "total":
+      130696, "active": 41, "tcp": 6744, "udp": 123565, "icmpv4": 0, "icmpv6": 387,
+      "tcp_reuse": 59, "get_used": 0, "get_used_eval": 0, "get_used_eval_reject":
+      0, "get_used_eval_busy": 0, "get_used_failed": 0, "wrk": {"spare_sync_avg":
+      99, "spare_sync": 1260, "spare_sync_incomplete": 418, "spare_sync_empty": 0,
+      "flows_evicted_needs_work": 5319, "flows_evicted_pkt_inject": 6090, "flows_evicted":
+      404, "flows_injected": 5290, "flows_injected_max": 2}, "end": {"state": {"new":
+      12049, "established": 112870, "closed": 5526, "local_bypassed": 210, "capture_bypassed":
+      0}, "tcp_state": {"none": 0, "syn_sent": 650, "syn_recv": 23, "established":
+      210, "fin_wait1": 1, "fin_wait2": 0, "time_wait": 0, "last_ack": 0, "close_wait":
+      8, "closing": 0, "closed": 5526}, "tcp_liberal": 0}, "mgr": {"full_hash_pass":
+      69109, "rows_per_sec": 6553, "rows_maxlen": 2, "flows_checked": 312706, "flows_notimeout":
+      182196, "flows_timeout": 130510, "flows_evicted": 130510, "flows_evicted_needs_work":
+      5290}, "spare": 9850, "emerg_mode_entered": 0, "emerg_mode_over": 0, "recycler":
+      {"recycled": 125220, "queue_avg": 0, "queue_max": 33}, "memuse": 7154304}, "defrag":
+      {"ipv4": {"fragments": 0, "reassembled": 0}, "ipv6": {"fragments": 0, "reassembled":
+      0}, "max_frag_hits": 0}, "flow_bypassed": {"local_pkts": 1113331, "local_bytes":
+      1050845218, "local_capture_pkts": 0, "local_capture_bytes": 0, "closed": 0,
+      "pkts": 0, "bytes": 0}, "detect": {"engines": [{"id": 0, "last_reload": "2025-04-09T10:
+      44: 27.288427-0700", "rules_loaded": 79994, "rules_failed": 4, "rules_skipped":
+      0}], "alert": 412, "alert_queue_overflow": 0, "alerts_suppressed": 107}, "app_layer":
+      {"flow": {"http": 88, "ftp": 0, "smtp": 0, "tls": 4156, "ssh": 2, "imap": 0,
+      "smb": 0, "dcerpc_tcp": 0, "dns_tcp": 741, "nfs_tcp": 0, "ntp": 3262, "ftp-data":
+      0, "tftp": 0, "ike": 0, "krb5_tcp": 0, "quic": 0, "dhcp": 0, "rfb": 0, "telnet":
+      0, "rdp": 0, "failed_tcp": 2, "dcerpc_udp": 0, "dns_udp": 109553, "nfs_udp":
+      0, "krb5_udp": 0, "failed_udp": 10750}, "tx": {"http": 200, "ftp": 0, "smtp":
+      0, "tls": 0, "ssh": 0, "imap": 0, "smb": 0, "dcerpc_tcp": 0, "dns_tcp": 1614,
+      "nfs_tcp": 0, "ntp": 3262, "ftp-data": 0, "tftp": 0, "ike": 0, "krb5_tcp": 0,
+      "quic": 0, "dhcp": 0, "rfb": 0, "telnet": 0, "rdp": 0, "dcerpc_udp": 0, "dns_udp":
+      238173, "nfs_udp": 0, "krb5_udp": 0}, "error": {"http": {"gap": 0, "alloc":
+      0, "parser": 0, "internal": 0}, "ftp": {"gap": 0, "alloc": 0, "parser": 0, "internal":
+      0}, "smtp": {"gap": 0, "alloc": 0, "parser": 0, "internal": 0}, "tls": {"gap":
+      0, "alloc": 0, "parser": 816, "internal": 0}, "ssh": {"gap": 0, "alloc": 0,
+      "parser": 0, "internal": 0}, "imap": {"gap": 0, "alloc": 0, "parser": 0, "internal":
+      0}, "smb": {"gap": 0, "alloc": 0, "parser": 0, "internal": 0}, "dcerpc_tcp":
+      {"gap": 0, "alloc": 0, "parser": 0, "internal": 0}, "dns_tcp": {"gap": 0, "alloc":
+      0, "parser": 0, "internal": 0}, "nfs_tcp": {"gap": 0, "alloc": 0, "parser":
+      0, "internal": 0}, "ntp": {"gap": 0, "alloc": 0, "parser": 0, "internal": 0},
+      "ftp-data": {"gap": 0, "alloc": 0, "parser": 0, "internal": 0}, "tftp": {"gap":
+      0, "alloc": 0, "parser": 0, "internal": 0}, "ike": {"gap": 0, "alloc": 0, "parser":
+      0, "internal": 0}, "krb5_tcp": {"gap": 0, "alloc": 0, "parser": 0, "internal":
+      0}, "quic": {"gap": 0, "alloc": 0, "parser": 0, "internal": 0}, "dhcp": {"gap":
+      0, "alloc": 0, "parser": 0, "internal": 0}, "rfb": {"gap": 0, "alloc": 0, "parser":
+      0, "internal": 0}, "telnet": {"gap": 0, "alloc": 0, "parser": 0, "internal":
+      0}, "rdp": {"gap": 0, "alloc": 0, "parser": 0, "internal": 0}, "failed_tcp":
+      {"gap": 0}, "dcerpc_udp": {"alloc": 0, "parser": 0, "internal": 0}, "dns_udp":
+      {"alloc": 0, "parser": 0, "internal": 0}, "nfs_udp": {"alloc": 0, "parser":
+      0, "internal": 0}, "krb5_udp": {"alloc": 0, "parser": 0, "internal": 0}}, "expectations":
+      0}, "memcap": {"pressure": 8, "pressure_max": 8}, "http": {"memuse": 0, "memcap":
+      0}, "ftp": {"memuse": 0, "memcap": 0}, "file_store": {"open_files": 0}}, "host":
+      "Lab-AP200"}}'
+- assertions:
+  - fieldsHaveValues:
+      source.packets: '6'
+      server.bytes: '104'
+      network.vlan.id: '12'
+      event.id: CsggHv2hiCLxF9TIZ5
+      network.protocol: dns
+      source.port: '39139'
+      source.bytes: '86'
+      network.transport: tcp
+      event.category[0]: network
+      destination.mac: DC-A6-32-C7-24-34
+      '#event.dataset': ndr.conn_red
+      source.ip: 127.0.0.1
+      network.bytes: '190'
+      device.id: e29b670f12d342e3bcc7170a999a0abc_a4898ad116e93d108ae98545d57ebabc
+      client.port: '39139'
+      network.community_id: 1:GPEvHckvENDo3QN6YdEEy2icprY=
+      client.mac: 00-50-56-95-70-F2
+      destination.packets: '4'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.kind': event
+      network.direction: internal
+      server.port: '53'
+      destination.port: '53'
+      destination.bytes: '104'
+      server.ip: 127.0.0.1
+      source.mac: 00-50-56-95-70-F2
+      event.duration: '0.01592397689819336'
+      client.bytes: '86'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"conn_red","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:55:51.393737Z","ts":"2025-04-17T16:55:46.377799Z","uid":"CsggHv2hiCLxF9TIZ5","id.orig_h":"127.0.0.1","id.orig_p":39139,"id.resp_h":"127.0.0.1","id.resp_p":53,"id.orig_ep_status":"unmanaged","id.orig_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_a4898ad116e93d108ae98545d57ebabc","id.orig_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.orig_ep_source":"CrowdStrike","id.resp_ep_status":"unsupported","id.resp_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_ced83f0c26493b638086fdc7b8b2cabc","id.resp_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.resp_ep_source":"CrowdStrike","id.vlan":12,"proto":"tcp","service":"dns","duration":0.01592397689819336,"orig_bytes":86,"resp_bytes":104,"conn_state":"SF","local_orig":true,"local_resp":true,"missed_bytes":0,"history":"ShADadFf","orig_pkts":6,"orig_ip_bytes":406,"resp_pkts":4,"resp_ip_bytes":320,"id.orig_h_name.src":"DNS_A","id.orig_h_name.vals":["Lab-vsensor3.Lab.net"],"id.resp_h_name.src":"DNS_PTR","id.resp_h_name.vals":["ns2.Lab.net","pi.hole"],"orig_l2_addr":"00:50:56:95:70:f2","resp_l2_addr":"dc:a6:32:c7:24:34","vlan":12,"community_id":"1:GPEvHckvENDo3QN6YdEEy2icprY=","corelight_shunted":false,"orig_ep_status":"unmanaged","orig_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_a4898ad116e93d108ae98545d57ebabc","orig_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","orig_ep_source":"CrowdStrike","resp_ep_status":"unsupported","resp_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_ced83f0c26493b638086fdc7b8b2cabc","resp_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","resp_ep_source":"CrowdStrike"}'
+- assertions:
+  - fieldsHaveValues:
+      client.mac: 00-0C-29-3D-9A-09
+      '#event.kind': event
+      event.category[0]: network
+      destination.mac: FF-FF-FF-FF-FF-FF
+      source.mac: 00-0C-29-3D-9A-09
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ecat_arp_info
+      event.type[1]: protocol
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ecat_arp_info","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:55:51.813794Z","ts":"2025-04-17T16:55:51.813794Z","arp_type":"Request","mac_src":"00:0c:29:3d:9a:09","mac_dst":"ff:ff:ff:ff:ff:ff","SPA":"127.0.0.1","SHA":"00:0c:29:3d:9a:09","TPA":"127.0.0.1","THA":"00:00:00:00:00:00"}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '53087'
+      network.vlan.id: '1'
+      file.hash.md5: 5a62d6268b975858d513740d4423a14d
+      event.id: CJSlFT1DfUmHD74r1
+      network.protocol: HTTP
+      '#event.kind': event
+      event.category[0]: file
+      '#event.dataset': ndr.files
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      event.duration: '0.000010967254638671875'
+      event.type[0]: info
+      observer.hostname: Lab-AP200
+      source.port: '53087'
+      file.hash.sha256: f280267a4b23db23a8725ff1433f893e4d3bf476f254a6000382174e705e6ea2
+      server.port: '65535'
+      destination.port: '65535'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"files","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:55:51.877662Z","ts":"2025-04-17T16:55:51.877651Z","fuid":"FCqjJX3gViIYsRbvHd","uid":"CJSlFT1DfUmHD74r1","id.orig_h":"127.0.0.1","id.orig_p":53087,"id.resp_h":"127.0.0.1","id.resp_p":65535,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.vlan":1,"source":"HTTP","depth":0,"analyzers":["SHA1","DATA_EVENT","MD5","SHA256"],"mime_type":"text/json","duration":0.000010967254638671875,"local_orig":true,"is_orig":false,"seen_bytes":7015,"missing_bytes":0,"overflow_bytes":0,"timedout":false,"md5":"5a62d6268b975858d513740d4423a14d","sha1":"88e86ae02e6e16e54213b33afc1552e9938c9a06","sha256":"f280267a4b23db23a8725ff1433f893e4d3bf476f254a6000382174e705e6ea2","tx_hosts":["127.0.0.1"],"rx_hosts":["127.0.0.1"],"conn_uids":["CJSlFT1DfUmHD74r1"],"vlan":1}'
+- assertions:
+  - fieldsHaveValues:
+      http.request.method: GET
+      event.type[2]: access
+      network.vlan.id: '1'
+      event.id: CPHP1L3nKik4PfQkLi
+      source.port: '52431'
+      event.category[1]: web
+      '#event.kind': event
+      event.category[0]: network
+      source.ip: 127.0.0.1
+      user_agent.original: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+        (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36
+      url.path: /en-US/splunkd/__raw/servicesNS/nobody/search/search/v2/jobs/1744908462.1845402?output_mode=json&_=1744908176419
+      client.port: '52431'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      network.protocol: http
+      http.response.mime_type: text/json
+      '#event.dataset': ndr.http
+      event.type[1]: protocol
+      server.port: '65535'
+      destination.port: '65535'
+      http.response.status_code: '200'
+      server.ip: 127.0.0.1
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"http","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:47:55.585487Z","ts":"2025-04-17T16:47:55.579912Z","uid":"CPHP1L3nKik4PfQkLi","id.orig_h":"127.0.0.1","id.orig_p":52431,"id.resp_h":"127.0.0.1","id.resp_p":65535,"id.orig_ep_status":"Secured","id.orig_ep_uid":"60f49f177a234282bac10ad25b1fbabc","id.orig_ep_name":"MyDesktop","id.orig_ep_ostype":"windows","id.orig_ep_type":"desktop","id.orig_ep_source":"SentinelOne
+      Agents","id.vlan":1,"trans_depth":166,"method":"GET","dest_host":"splunk.Lab.net","uri":"/en-US/splunkd/__raw/servicesNS/nobody/search/search/v2/jobs/1744908462.1845402?output_mode=json&_=1744908176419","version":"1.1","user_agent":"Mozilla/5.0
+      (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0
+      Safari/537.36","request_body_len":0,"response_body_len":7054,"status_code":200,"status_msg":"OK","tags":[],"resp_fuids":["FZ5cqA1zc1lErZXp3d"],"resp_mime_types":["text/json"]}'
+- assertions:
+  - fieldsHaveValues:
+      client.port: '52185'
+      event.id: CIy4yz33i5xIPTrTCl
+      network.protocol: ssl
+      source.port: '52185'
+      '#event.kind': event
+      event.category[0]: network
+      tls.client.ja3: e2b3f11e24dd58143ea31083d73ebd13
+      source.ip: 127.0.0.1
+      server.ip: 127.0.0.1
+      tls.server.ja3s: f590053ff246338aff7c203dbe7164d6
+      destination.address: malachiteingestion-pa.googleapis.com
+      server.address: malachiteingestion-pa.googleapis.com
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      '#event.dataset': ndr.ssl
+      event.type[1]: protocol
+      server.port: '443'
+      destination.port: '443'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"ssl","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:46:44.910686Z","ts":"2025-04-17T16:46:44.880347Z","uid":"CIy4yz33i5xIPTrTCl","id.orig_h":"127.0.0.1","id.orig_p":52185,"id.resp_h":"127.0.0.1","id.resp_p":443,"version":"TLSv13","cipher":"TLS_AES_256_GCM_SHA384","curve":"x25519","server_name":"malachiteingestion-pa.googleapis.com","resumed":true,"established":true,"ssl_history":"CsiI","ja3":"e2b3f11e24dd58143ea31083d73ebd13","ja3s":"f590053ff246338aff7c203dbe7164d6"}'
+- assertions:
+  - fieldsHaveValues:
+      network.vlan.id: '12'
+      event.id: CBmfLz2oqRgbUUMyhk
+      network.protocol: dns
+      dns.question.type: A
+      '#event.kind': event
+      dns.answers[1].ttl: '46.0'
+      event.category[0]: network
+      dns.answers[2].data: 127.0.0.1
+      dns.response_code: NOERROR
+      server.ip: 127.0.0.1
+      device.id: e29b670f12d342e3bcc7170a999a0abc_a4898ad116e93d108ae98545d57ebabc
+      client.port: '55503'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      dns.answers[0].data: 127.0.0.1
+      source.port: '55503'
+      '#event.dataset': ndr.dns
+      event.type[1]: protocol
+      dns.answers[1].data: 127.0.0.1
+      server.port: '53'
+      destination.port: '53'
+      source.ip: 127.0.0.1
+      dns.answers[2].ttl: '46.0'
+      dns.question.name: ingest.us-2.crowdstrike.com
+      dns.answers[0].ttl: '46.0'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"dns","_system_name":"Lab-AP200","_write_ts":"2025-04-18T15:59:46.797248Z","ts":"2025-04-18T15:59:46.793421Z","uid":"CBmfLz2oqRgbUUMyhk","id.orig_h":"127.0.0.1","id.orig_p":55503,"id.resp_h":"127.0.0.1","id.resp_p":53,"id.orig_ep_status":"unmanaged","id.orig_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_a4898ad116e93d108ae98545d57ebabc","id.orig_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.orig_ep_source":"CrowdStrike","id.resp_ep_status":"unsupported","id.resp_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_9caa11e26d1f371797e73e9b9199dabc","id.resp_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.resp_ep_source":"CrowdStrike","id.vlan":12,"proto":"udp","trans_id":59714,"rtt":0.0038268566131591797,"query":"ingest.us-2.crowdstrike.com","qclass":1,"qclass_name":"C_INTERNET","qtype":1,"qtype_name":"A","rcode":0,"rcode_name":"NOERROR","AA":false,"TC":false,"RD":true,"RA":true,"Z":0,"answers":["127.0.0.1","127.0.0.1","127.0.0.1"],"TTLs":[46.0,46.0,46.0],"rejected":false,"is_trusted_domain":false,"icann_host_subdomain":"ingest.us-2","icann_domain":"crowdstrike.com","icann_tld":"com"}'
+- assertions:
+  - fieldsHaveValues:
+      source.packets: '2'
+      client.port: '53326'
+      server.bytes: '172'
+      network.vlan.id: '12'
+      event.id: CHT3jx1xVeqkjdI2bf
+      network.protocol: dns
+      source.bytes: '84'
+      network.transport: udp
+      event.category[0]: network
+      destination.mac: DC-A6-32-C7-2B-45
+      '#event.dataset': ndr.conn
+      source.ip: 127.0.0.1
+      network.bytes: '256'
+      network.community_id: 1:aZrRCvaWIw/gZtt9bjie+lfxT70=
+      client.mac: 00-50-56-A1-1F-07
+      destination.packets: '2'
+      event.type[0]: connection
+      observer.hostname: Lab-AP200
+      agent.id: fae3f73ce1404e0aae1626dbddfc3abc
+      source.port: '53326'
+      '#event.kind': event
+      network.direction: internal
+      server.port: '53'
+      destination.port: '53'
+      destination.bytes: '172'
+      server.ip: 127.0.0.1
+      source.mac: 00-50-56-A1-1F-07
+      event.duration: '0.0018169879913330078'
+      client.bytes: '84'
+      client.ip: 127.0.0.1
+      destination.ip: 127.0.0.1
+    outputEventIndex: 0
+  event:
+    rawString: '{"_path":"conn","_system_name":"Lab-AP200","_write_ts":"2025-04-17T16:42:19.666616Z","ts":"2025-04-17T16:42:09.666579Z","uid":"CHT3jx1xVeqkjdI2bf","id.orig_h":"127.0.0.1","id.orig_p":53326,"id.resp_h":"127.0.0.1","id.resp_p":53,"id.orig_ep_status":"managed","id.orig_ep_uid":"fae3f73ce1404e0aae1626dbddfc3abc","id.orig_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.orig_ep_name":"myserver","id.orig_ep_source":"CrowdStrike","id.resp_ep_status":"unsupported","id.resp_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_9caa11e26d1f371797e73e9b9199dabc","id.resp_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","id.resp_ep_source":"CrowdStrike","id.vlan":12,"proto":"udp","service":"dns","duration":0.0018169879913330078,"orig_bytes":84,"resp_bytes":172,"conn_state":"SF","local_orig":true,"local_resp":true,"missed_bytes":0,"history":"Dd","orig_pkts":2,"orig_ip_bytes":140,"resp_pkts":2,"resp_ip_bytes":228,"id.orig_h_name.src":"DNS_A","id.orig_h_name.vals":["fleet.Lab.net"],"id.resp_h_name.src":"DNS_A","id.resp_h_name.vals":["smtp.Lab.net"],"orig_l2_addr":"00:50:56:a1:1f:07","resp_l2_addr":"dc:a6:32:c7:2b:45","vlan":12,"community_id":"1:aZrRCvaWIw/gZtt9bjie+lfxT70=","corelight_shunted":false,"orig_ep_status":"managed","orig_ep_uid":"fae3f73ce1404e0aae1626dbddfc3abc","orig_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","orig_ep_name":"myserver","orig_ep_source":"CrowdStrike","resp_ep_status":"unsupported","resp_ep_uid":"e29b670f12d342e3bcc7170a999a0abc_9caa11e26d1f371797e73e9b9199dabc","resp_ep_cid":"e29b670f12d342e3bcc7170a999a0abc","resp_ep_source":"CrowdStrike"}'
+$schema: https://schemas.humio.com/parser/v0.3.0
+script: |-
+  // Corelight Sensor Parser
+
+  // #region PREPARSE
+  /************************************************************
+  ****** Parse timestamp and log headers
+  ****** Extract message field for parsing
+  ****** Parse structured data
+  ************************************************************/
+
+  // Documentation: https://docs.zeek.org/en/master/log-formats.html#zeek-json-format-logs
+
+  parseJson(prefix="Vendor.", excludeEmpty=true, handleNull=discard)
+  | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXX", field=Vendor._write_ts)
+
+  // For later use
+  | _path := Vendor._path
+
+  // #endregion
+
+  // #region METADATA
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser.version := "3.0.1"
+  | Cps.version := "1.1.0"
+  | Vendor := "corelight"
+  // Corelight Sensor is part of the Corelight's OpenNDR
+  | event.module := "ndr"
+  | ecs.version := "9.0.0"
+  | event.kind := "event"
+
+  // #endregion
+
+  // #region NORMALIZATION
+  /************************************************************
+  ****** Parse unstructured data (i.e. message field)
+  ****** Normalize fields to data model
+  ************************************************************/
+
+  // Event Fields
+  | event.action := coalesce([Vendor.operation,Vendor.action])
+  | error.message := Vendor.failure_reason
+  | event.dataset := format(format="%s.%s", field=["event.module","_path"])
+  | event.reason := Vendor.msg
+  | event.id := Vendor.uid
+  | event.duration := Vendor.duration
+  | Vendor.success match {
+      "true" =>
+          event.outcome := "success";
+      "false" =>
+          event.outcome := "failure";
+      * => *;
+  }
+  | Vendor.result match {
+      in(values=["failed", "SSL_NOT_ALLOWED_BY_SERVER", "HYBRID_REQUIRED_BY_SERVER", "SSL_CERT_NOT_ON_SERVER", "SSL_WITH_USER_AUTH_REQUIRED_BY_SERVER", "INCONSISTENT_FLAGS", "SSL_REQUIRED_BY_SERVER"]) =>
+          event.outcome := "failure";
+      /failure/i =>
+          event.outcome := "failure";
+      /success/i =>
+          event.outcome := "success";
+      "encrypted" =>
+          event.outcome := "success";
+      "unknown" =>
+          event.outcome := "unknown";
+      * => *;
+  }
+
+  // Event Categorization
+  | _path match {
+      "known*" =>
+          array:append("event.category[]", values=["host"])
+          | array:append("event.type[]", values=["info"])
+      ;
+      in(values=["conn*", "specific_dns_tunnels", "generic_dns_tunnels", "tunnel", "vpn", "stun*"]) =>
+          array:append("event.category[]", values=["network"])
+          | array:append("event.type[]", values=["connection"])
+      ;
+      in(values=["corelight*", "etc_viz", "suricata_stats", "zeek_doctor", "mqtt*"]) =>
+          array:append("event.category[]", values=["process"])
+          | array:append("event.type[]", values=["info"])
+      ;
+      in(values=["dce_rpc", "dns*", "dhcp", "encrypted_dns", "ftp", "irc", "ntp", "dga", "ocsp"]) =>
+          array:append("event.category[]", values=["network"])
+          | array:append("event.type[]", values=["connection", "protocol"])
+      ;
+      in(values=["dpd", "rfb", "traceroute", "ssdp"]) =>
+          array:append("event.category[]", values=["network"])
+          | array:append("event.type[]", values=["connection"])
+      ;
+      in(values=["files*", "pe"]) =>
+          array:append("event.category[]", values=["file"])
+          | array:append("event.type[]", values=["info"])
+      ;
+      "http*" =>
+          array:append("event.category[]", values=["network", "web"])
+          | array:append("event.type[]", values=["connection", "protocol", "access"])
+      ;
+      "intel" =>
+          event.kind := "alert"
+          | array:append("event.category[]", values=["threat", "network"])
+          | array:append("event.type[]", values=["indicator", "info"])
+          | rule.name := "intel"
+          // default to severity of "70" if no confidence score is available
+          | event.severity := "70"
+          // if the confidence score is a number, use it for the severity.
+          | event.severity := Vendor.confidence[0]
+          // if confidence is a string, use one of the following scores.
+          | Vendor.confidence[0] match {
+              "high" =>
+                  event.severity := 90;
+              "medium" =>
+                  event.severity := 70;
+              "low" =>
+                  event.severity := 20;
+              "unverified" =>
+                  event.severity := 10;
+              * => *;
+          }
+          // if the threat score is available, use it instead of the confidence score.
+          | event.severity := Vendor.threat_score[0]
+      ;
+      "suricata_corelight" =>
+          event.kind := "alert"
+          | array:append("event.category[]", values=["threat", "network"])
+          | array:append("event.type[]", values=["indicator", "connection"])
+          | rule.name := Vendor.alert.signature
+          | Vendor.alert.severity match {
+              // "informational"
+              "4" =>
+                  event.severity := "10";
+              // "minor"
+              "3" =>
+                  event.severity := "50";
+              // "major"
+              "2" =>
+                  event.severity := "70";
+              // "critical"
+              "1" =>
+                  event.severity := "90";
+              * => *;
+          }
+      ;
+      "notice" =>
+          event.kind := "alert"
+          | array:append("event.category[]", values=["threat", "network"])
+          | array:append("event.type[]", values=["indicator", "info"])
+          | rule.name := Vendor.msg
+          | Vendor.severity.name match {
+              // severity.level 6 & 7
+              in(values=["informational","debugging"]) =>
+                  event.severity := "10";
+              // severity.level 5
+              "notification" =>
+                  event.severity := "20";
+              // severity.level 4
+              "warning" =>
+                  event.severity := "30";
+              // severity.level 3
+              "error" =>
+                  event.severity := "40";
+              // severity.level 2
+              "critical" =>
+                  event.severity := "70";
+              // severity.level 1 and 0
+              in(values=["alert", "emergency"]) =>
+                  event.severity := "90";
+              * => *;
+          }
+      ;
+      "mysql" =>
+          array:append("event.category[]", values=["network", "database"])
+          | array:append("event.type[]", values=["connection", "protocol", "info"])
+      ;
+      in(values=["ntlm", "radius", "kerberos", "ldap*"]) =>
+          array:append("event.category[]", values=["network", "authentication"])
+          | array:append("event.type[]", values=["connection", "info"])
+      ;
+      in(values=["rdp", "quic"]) =>
+          array:append("event.category[]", values=["network"])
+          | array:append("event.type[]", values=["connection", "start"])
+      ;
+      in(values=["analyzer", "reporter"]) =>
+          array:append("event.category[]", values=["process"])
+          | array:append("event.type[]", values=["error"])
+      ;
+      in(values=["sip", "smb_mapping", "snmp", "smtp", "socks", "ssh", "ssl*", "x509*", "ipsec", "ecat_arp*", "bacnet*", "enip"]) =>
+          array:append("event.category[]", values=["network"])
+          | array:append("event.type[]", values=["connection", "protocol"])
+      ;
+      "smb_files" =>
+          array:append("event.category[]", values=["network", "file"])
+          | array:append("event.type[]", values=["connection", "protocol", "info"])
+          | event.action match {
+              in(values=["SMB::FILE_OPEN", "SMB::FILE_QUERY_DIRECTORY", "SMB::PIPE_READ", "SMB::PIPE_OPEN", "SMB::UNKNOWN_OPEN", "SMB::UNKNOWN_READ"]) =>
+                  array:append(array="event.type[]", values=["access"]);
+              in(values=["SMB::FILE_WRITE", "SMB::FILE_RENAME", "SMB::PIPE_WRITE"]) =>
+                  array:append(array="event.type[]", values=["change"]);
+              in(values=["SMB::FILE_CLOSE", "SMB::PIPE_CLOSE", "SMB::UNKNOWN_CLOSE", "SMB::LOGOFF"]) =>
+                  array:append(array="event.type[]", values=["end"]);
+              "SMB::FILE_DELETE" =>
+                  array:append(array="event.type[]", values=["deletion"]);
+              * => *;
+          }
+      ;
+      "software" =>
+          array:append("event.category[]", values=["network", "package"])
+          | array:append("event.type[]", values=["info"])
+      ;
+      in(values=["syslog", "weird*"]) =>
+          array:append("event.category[]", values=["network"])
+          | array:append("event.type[]", values=["connection"])
+      ;
+      * => *;
+  }
+
+  // Log Fields
+  | case {
+      Vendor.level = * | Vendor.level = /::(?<log.level>.*)/;
+      * | log.level := Vendor.severity.name;
+  }
+
+  | _path match {
+      in(values=["http", "http_agg"]) =>
+          case {
+              Vendor.resp_mime_types[0] = *
+                  | concatArray(field="Vendor.resp_mime_types", separator=", ", as="http.response.mime_type");
+              Vendor.orig_mime_types[0] = *
+                  | concatArray(field="Vendor.orig_mime_types", separator=", ", as="http.request.mime_type");
+              *
+          }
+      ;
+      "dns" =>
+          case {
+              // Pull out the answer data if there was no error
+              Vendor.rcode_name="NOERROR"
+                  // dns data - SPF Records have quotes and slashes in them that need to be escaped before processing
+                  | objectArray:eval(array="Vendor.answers[]", asArray="__tmp_dns_answers[]", var="x", function={__tmp_dns_answers := replace(field=x, regex="\\\\", with="\\\\\\\\")})
+                  | objectArray:eval(array="__tmp_dns_answers[]", asArray="__tmp_dns_answers2[]", var="x", function={__tmp_dns_answers2 := replace(field=x, regex="\"", with="\\\\\"")})
+
+                  | concatArray(field="__tmp_dns_answers2", as="__tmp_dns_answers", separator="\"},{\"data\":\"")
+                  | format(format="{\"dns.answers\":[{\"data\":\"%s\"}]}", field=[__tmp_dns_answers], as="__tmp_dns_answers")
+                  | parseJson(field=__tmp_dns_answers)
+                  | array:drop("__tmp_dns_answers[]")
+                  | array:drop("__tmp_dns_answers2[]")
+                  // dns ttl
+                  | _tmp_dns_ttl := concatArray("Vendor.TTLs", separator="\"},{\"ttl\":\"")
+                  | _tmp_dns_ttl := format(format="{\"dns.answers\":[{\"ttl\":\"%s\"}]}", field=[_tmp_dns_ttl])
+                  | parseJson(_tmp_dns_ttl)
+                  | drop([__tmp_dns_answers, _tmp_dns_ttl]);
+              *;
+          }
+      ;
+      "smtp" =>
+          // This should allow helo messages to pass through
+          case {
+              Vendor.rcptto[0] = *
+                  | objectArray:eval(array="Vendor.rcptto[]", asArray="_tmp_eta[]", var="x", function={_tmp_eta := lower(x)})
+                  | concatArray(field="_tmp_eta", separator=";", as="_tmp_eta")
+                  | splitString(field="_tmp_eta", by=";", as=email.to.address)
+                  | drop([_tmp_eta])
+                  | array:drop("_tmp_eta[]");
+              *;
+          };
+
+      * => *;
+  }
+
+  // User Fields
+  | user.name := coalesce([Vendor.user, Vendor.username, Vendor.cookie])
+  | case {
+      in(field="user.name", values=["","<problem-decoding>*","<unknown>"]) | drop([user.name]);
+      user.name = /(?<user.domain>.*?)\\(?<user.name>.*)/;
+      user.name = /host\/(?<source.address>.*)/ | drop([user.name]);
+      *;
+  }
+  | user_agent.original := Vendor.user_agent
+
+  // Source Fields
+  | source.bytes := coalesce([Vendor.orig_bytes, Vendor.orig_ip_bytes])
+  | source.domain := lower(Vendor.domainname)
+  | source.ip := coalesce([Vendor.id.orig_h, Vendor.client_src, Vendor.src, Vendor.dns_client, Vendor.client_addr, Vendor.data_channel.orig_h])
+  | source.mac := coalesce([Vendor.orig_l2_addr, Vendor.mac, Vendor.mac_src])
+  | source.mac := replace(":", with="-", field="source.mac")
+  | source.mac := upper(source.mac)
+  | source.port := coalesce([Vendor.host_p, Vendor.id.orig_p])
+  | source.packets := Vendor.orig_pkts
+
+  | case {
+      // Test if the original IP and data channel original IP's are the same. If so, assign id.orig_h as the ip. If not, assign data_channel.orig_h.
+      !Vendor.data_channel.orig_h | source.ip := Vendor.id.orig_h;
+      Vendor.id.orig_h = Vendor.data_channel.orig_h | source.ip := Vendor.id.orig_h;
+      Vendor.id.orig_h != Vendor.data_channel.orig_h | source.ip := Vendor.data_channel.orig_h;
+      *;
+  }
+  | case {
+      // Test if the original port and data channel original ports are the same. If so, assign id.orig_p as the ip. If not, assign data_channel.orig_p.
+      !Vendor.data_channel.orig_p | source.port := Vendor.id.orig_p;
+      Vendor.id.orig_p = Vendor.data_channel.orig_p | source.port := Vendor.id.orig_p;
+      Vendor.id.orig_p != Vendor.data_channel.orig_p | source.port := Vendor.data_channel.orig_p;
+      *;
+  }
+
+  // Client Fields
+  | client.address := source.address
+  | client.bytes := source.bytes
+  | client.domain := source.domain
+  | client.ip := source.ip
+  | client.mac := source.mac
+  | client.port := source.port
+
+  // Destination Fields
+  | destination.address := coalesce([lower(Vendor.server_nb_computer_name), lower(Vendor.helo), lower(Vendor.server_a), lower(Vendor.server_name)])
+  | destination.bytes := coalesce([Vendor.resp_bytes, Vendor.resp_ip_bytes])
+  | destination.domain := lower(Vendor.server_tree_name)
+  | destination.ip := coalesce([Vendor.resolver, Vendor.resp_h, Vendor.id.resp_h])
+  | destination.port := coalesce([Vendor.server_p, Vendor.id.resp_p])
+  | destination.mac := coalesce([Vendor.resp_l2_addr, Vendor.mac_dst])
+  | destination.mac := replace(":", with="-", field="destination.mac")
+  | destination.mac := upper(destination.mac)
+  | destination.packets := Vendor.resp_pkts
+
+  | case {
+      // Test if the response IP and data channel response IP's are the same. If so, assign id.resp_h as the ip. If not, assign data_channel.resp_h.
+      !Vendor.data_channel.resp_h | destination.ip := Vendor.id.resp_h;
+      Vendor.id.resp_h = Vendor.data_channel.resp_h | destination.ip := Vendor.id.resp_h;
+      Vendor.id.resp_h != Vendor.data_channel.resp_h | destination.ip := Vendor.data_channel.resp_h;
+      *;
+  }
+
+  | case {
+      // Test if the response port and data channel response ports are the same. If so, assign id.resp_p as the port. If not, assign data_channel.resp_p.
+      !Vendor.data_channel.resp_p | destination.port := Vendor.id.resp_p;
+      Vendor.id.resp_p = Vendor.data_channel.resp_p | destination.port := Vendor.id.resp_p;
+      Vendor.id.resp_p != Vendor.data_channel.resp_p | destination.port := Vendor.data_channel.resp_p;
+      *;
+  }
+
+  | case {
+      Vendor.id.orig_ep_source="CrowdStrike" AND Vendor.id.orig_ep_status="managed" | agent.id := Vendor.id.orig_ep_uid;
+      Vendor.id.orig_ep_source="CrowdStrike" AND Vendor.id.orig_ep_status!="managed" | device.id := Vendor.id.orig_ep_uid;
+      // Vendor.id.orig_ep_source="CrowdStrike" | customer.id := Vendor.id.orig_ep_cid;
+      Vendor.orig_ep_source="CrowdStrike" AND Vendor.orig_ep_status="managed" | agent.id := Vendor.orig_ep_uid;
+      Vendor.orig_ep_source="CrowdStrike" AND Vendor.orig_ep_status!="managed" | device.id := Vendor.orig_ep_uid;
+      // Vendor.orig_ep_source="CrowdStrike" | customer.id := Vendor.orig_ep_cid;
+      *;
+  }
+
+  // Server Fields
+  | server.address := destination.address
+  | server.bytes := destination.bytes
+  | server.domain := destination.domain
+  | server.ip := destination.ip
+  | server.port := destination.port
+
+  // Observer Fields
+  | observer.hostname := Vendor._system_name
+
+  // Host Fields
+  | host.hostname := lower(Vendor.hostname)
+
+  // OS Fields
+  | host.os.name := Vendor.os
+
+  // Network Fields
+  | network.transport := Vendor.proto
+  | network.inner.vlan.id := Vendor.inner_vlan
+  | network.bytes := source.bytes + destination.bytes
+  | network.protocol := coalesce([Vendor.source, Vendor.service])
+  | network.application := lower(Vendor.app[0])
+  | case{
+      Vendor.local_orig=true AND Vendor.local_resp=true | network.direction := "internal";
+      Vendor.local_orig=true AND Vendor.local_resp=false | network.direction := "outbound";
+      Vendor.local_orig=false AND Vendor.local_resp=true | network.direction := "inbound";
+      Vendor.local_orig=false AND Vendor.local_resp=false | network.direction := "external";
+      *;
+  }
+
+  | _path match {
+      "ssl" =>
+          network.protocol := "ssl";
+      "ssh" =>
+          network.protocol := "ssh";
+      "smb_files" =>
+          network.protocol := "smb";
+      "dns" =>
+          network.protocol := "dns";
+      "http" =>
+          network.protocol := "http";
+      "rdp" =>
+          network.protocol := "rdp";
+      * => *;
+  }
+
+  | case {
+      Vendor.community_id = * | network.community_id := Vendor.community_id;
+      * | communityId(as="network.community_id", proto=network.transport, sourceip=source.ip, sourceport=source.port, destinationip=destination.ip, destinationport=destination.port);
+  }
+  // in case there are no src/dst ip's or invalid ip's
+  | case { network.community_id = "" | drop([network.community_id]); *; }
+
+  // VLAN Fields
+  | network.vlan.id := coalesce([Vendor.id.vlan, Vendor.vlan])
+
+  // File Fields
+  | file.size := Vendor.total_bytes
+
+  // Hash Fields
+  | file.hash.md5 := lower(Vendor.md5)
+  | file.hash.sha256 := lower(Vendor.sha256)
+
+  // HTTP Fields
+  | http.request.method := Vendor.method
+  | url.path := Vendor.uri
+  | url.domain := lower(Vendor.host)
+  | http.response.status_code := Vendor.status_code
+
+  // DNS Fields
+  | dns.question.type := Vendor.qtype_name
+  | dns.question.name := Vendor.query
+  | dns.response_code := Vendor.rcode_name
+
+  // Email Fields
+  | email.sender.address := lower(Vendor.mailfrom)
+  | email.subject := Vendor.subject
+
+  // Geo Fields
+  | destination.geo.country_iso_code := Vendor.resp_cc
+  | destination.geo.region_name := Vendor.resp_region
+  | source.geo.country_iso_code := Vendor.orig_cc
+  | source.geo.region_name := Vendor.orig_region
+  | source.geo.city_name := Vendor.orig_city
+
+  // x509 Fields
+  | file.x509.issuer.distinguished_name := Vendor.certificate.issuer
+  | file.x509.not_after := Vendor.certificate.not_valid_after
+  | file.x509.not_before := Vendor.certificate.not_valid_before
+  | file.x509.public_key_algorithm := Vendor.certificate.key_alg
+  | file.x509.public_key_exponent := Vendor.certificate.exponent
+  | file.x509.serial_number := Vendor.certificate.serial
+  | file.x509.signature_algorithm := Vendor.certificate.sig_alg
+  | file.x509.subject.distinguished_name := Vendor.certificate.subject
+
+  //tls Fields
+  | tls.client.ja3 := Vendor.ja3
+  | tls.server.ja3s := Vendor.ja3s
+
+  //alerts
+  // suricata, notice and intel severity is set in the "Event Categorization" section above
+  | case {
+    event.kind = "alert"
+      //Flattens "metadata" array to allow for use of fields within modeling
+      | case {
+          Vendor.alert.metadata[0] = *
+              | concatArray(field="Vendor.alert.metadata", separator="myseparator", as="_tmp")
+              | _tmp := format("{\"%s\"}", field=[_tmp])
+              | replace(field="_tmp", ":", with="\":\"")
+              | replace(field="_tmp", "myseparator", with="\",\"")
+              | parseJson(field=_tmp, prefix="Vendor.")
+              | drop(_tmp)
+          ;
+          *;
+      }
+      | case {
+          Vendor.mitre_technique_id = "*" | match(file="epp/lookups/MitreMappings-ecs.csv", field=Vendor.mitre_technique_id, column=threat.technique.id[0], mode=glob, ignoreCase=true, include= ["threat.framework","threat.tactic.id[0]","threat.tactic.name[0]","threat.technique.id[0]","threat.technique.name[0]","threat.technique.reference[0]"]);
+          *;
+      };
+    *
+  }
+
+  // #endregion
+
+  // #region POST-NORMALIZATION
+  /************************************************************
+  ****** Post Normalization
+  ****** Custom parser logic needed after normalization
+  ************************************************************/
+  | drop(_path)
+  // #endregion
+tagFields:
+- Cps.version
+- Vendor
+- ecs.version
+- event.dataset
+- event.kind
+- event.module
+- event.outcome
+- observer.type

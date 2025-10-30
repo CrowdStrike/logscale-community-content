@@ -1,0 +1,314 @@
+name: Corelight notices
+description: ''
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- Security Workflow
+widgets:
+  df3035d2-752f-4ed3-9437-17ea68d0b140:
+    x: 0
+    description: '"Additional filter" or severity does not apply.'
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | in(field=observer.hostname, values=[?system_name])
+      | event.reason=?{msg=*} and Vendor.note=?{note=*}
+      | source.ip=?{filter=*} or destination.ip=?{filter=*} or network.transport=?{filter=*} or Vendor.p=?{filter=*}
+      | timeChart(#event.dataset, function=count())
+    end: now
+    start: 24h
+    width: 4
+    y: 1
+    interactions:
+    - name: Details of notices over time
+      titleTemplate: Details of notices data
+      queryString: |-
+        #Vendor = corelight and #event.module =ndr
+        | #event.dataset = ?path
+        | in(field=observer.hostname, values=[?system_name])
+        | event.reason=?msg and Vendor.note=?note
+        | source.ip=?filter or destination.ip=?filter or network.transport=?filter or Vendor.p=?filter
+      useWidgetTimeWindow: true
+      arguments:
+        path: '["{{ fields.#event.dataset }}"]'
+        filter: '["{{ parameters.filter }}"]'
+        note: '["{{ parameters.note }}"]'
+        msg: '["{{ parameters.msg }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: bottom
+      interpolation: ''
+      xAxisTitle: Time
+      legend: true
+      horizontalPlotLineLabel: ''
+      connect-points: false
+      yAxisScale: linear
+      plotType: area
+      maxSeriesCount: 10
+      imputation: none
+      yAxisUnit: ''
+      series: {}
+      yAxisTitle: ''
+      stacking: none
+    visualization: time-chart
+    title: Notices over time
+    isLive: false
+    type: query
+  f4cc09b0-eeaf-4419-8495-567324f7a63f:
+    x: 0
+    height: 5
+    queryString: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | in(field=observer.hostname, values=[?system_name])
+      | event.reason=?{msg=*} and Vendor.note=?{note=*} Vendor.severity.name=?{severity=*} and ?{additional_filter=*}
+      | source.ip=?{filter=*} or destination.ip=?{filter=*} or network.transport=?{filter=*} or Vendor.p=?{filter=*}
+      | format(format="%s/%s", field=[network.transport, Vendor.p], as=pp)
+      | format(format="%s (%s)", field=[Vendor.severity.name, Vendor.severity.level], as=severity_display)
+      | groupBy([Vendor.note, severity_display], function=collect([pp], separator=","), limit=max)
+      | rename([[Vendor.note, "Notes"], [severity_display, "Severity"], [pp, "Protocol"]])
+    end: now
+    start: 24h
+    width: 12
+    y: 5
+    interactions:
+    - name: Details of notice details
+      titleTemplate: Details of {{ fields.Notes }}
+      queryString: |-
+        #Vendor = corelight and #event.module =ndr
+        | #event.dataset = ndr.notice
+        | in(field=observer.hostname, values=[?system_name])
+        | event.reason=?msg and Vendor.note=?note Vendor.severity.name=?severity and ?additional_filter
+        | source.ip=?filter or destination.ip=?filter or network.transport=?filter or Vendor.p=?filter
+        | Vendor.note=?notes
+      useWidgetTimeWindow: true
+      arguments:
+        filter: '["{{ parameters.filter }}"]'
+        note: '["{{ parameters.note }}"]'
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+        msg: '["{{ parameters.msg }}"]'
+        severity: '["{{ parameters.severity }}"]'
+        notes: '["{{ fields.Notes }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Notice details
+    isLive: false
+    type: query
+  note-1735646016785-0:
+    x: 0
+    y: 0
+    description: Intel and Notice events
+    height: 1
+    text: ''
+    width: 12
+    title: Notices
+    type: note
+  f48798c2-c2c2-4cea-8839-c9e810a32c7c:
+    x: 8
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | in(field=observer.hostname, values=[?system_name])
+      | event.reason=?{msg=*} and Vendor.note=?{note=*} Vendor.severity.name=?{severity=*} and ?{additional_filter=*}
+      | source.ip=?{filter=*} or destination.ip=?{filter=*} or network.transport=?{filter=*} or Vendor.p=?{filter=*}
+      | format(format="%s (%s)", field=[Vendor.severity.name, Vendor.severity.level], as=severity_display)
+      | top([severity_display])
+    end: now
+    start: 24h
+    width: 4
+    y: 1
+    interactions:
+    - name: Details of severities
+      titleTemplate: Details of {{ fields.severity_display }}
+      queryString: |-
+        #Vendor = corelight and #event.module =ndr
+        | #event.dataset = ndr.notice
+        | in(field=observer.hostname, values=[?system_name])
+        | event.reason=?msg and Vendor.note=?note Vendor.severity.name=?severity and ?additional_filter
+        | source.ip=?filter or destination.ip=?filter or network.transport=?filter or Vendor.p=?filter
+        | format(format="%s (%s)", field=[Vendor.severity.name, Vendor.severity.level], as=severity_display)
+        | severity_display=?chart_severity
+      useWidgetTimeWindow: true
+      arguments:
+        filter: '["{{ parameters.filter }}"]'
+        note: '["{{ parameters.note }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+        msg: '["{{ parameters.msg }}"]'
+        severity: '["{{ parameters.severity }}"]'
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        chart_severity: '["{{ fields.severity_display }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+      innerRadius: 0
+      maxSeriesCount: 10
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Severities
+    isLive: false
+    type: query
+  e4ded854-40a0-41bc-8bb7-b9333c82cc1a:
+    x: 0
+    y: 10
+    height: 6
+    queryString: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | in(field=observer.hostname, values=[?system_name])
+      | event.reason=?{msg=*} and Vendor.note=?{note=*} Vendor.severity.name=?{severity=*} and ?{additional_filter=*}
+      | source.ip=?{filter=*} or destination.ip=?{filter=*} or network.transport=?{filter=*} or Vendor.p=?{filter=*}
+      | format(format="%s (%s)", field=[Vendor.severity.name, Vendor.severity.level], as=severity_display)
+      | formatTime(format="%F %r", as="Time")
+      | select(["Time", "source.ip", severity_display, "@rawstring"])
+      | sort("Time", order=desc, limit=500)
+      | rename([[source.ip, "Source IP"], [severity_display, "Severity"], [@rawstring, "Raw Data"]])
+    end: now
+    start: 24h
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Log data
+    isLive: false
+    type: query
+  cb7473e4-34e0-4de7-8ddf-ea2f0b853968:
+    x: 4
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | in(field=observer.hostname, values=[?system_name])
+      | event.reason=?{msg=*} and Vendor.note=?{note=*} Vendor.severity.name=?{severity=*} and ?{additional_filter=*}
+      | source.ip=?{filter=*} or destination.ip=?{filter=*} or network.transport=?{filter=*} or Vendor.p=?{filter=*}
+      | top([Vendor.note])
+    end: now
+    start: 'calendar: now@y'
+    width: 4
+    y: 1
+    interactions:
+    - name: Details of notices
+      titleTemplate: Details of {{ fields.Vendor.note }}
+      queryString: |-
+        #Vendor = corelight and #event.module =ndr
+        | #event.dataset = ndr.notice
+        | in(field=observer.hostname, values=[?system_name])
+        | event.reason=?msg and Vendor.note=?note Vendor.severity.name=?severity and ?additional_filter
+        | source.ip=?filter or destination.ip=?filter or network.transport=?filter or Vendor.p=?filter
+        | Vendor.note=?chart_note
+      useWidgetTimeWindow: true
+      arguments:
+        filter: '["{{ parameters.filter }}"]'
+        chart_note: '["{{ fields.Vendor.note }}"]'
+        note: '["{{ parameters.note }}"]'
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+        msg: '["{{ parameters.msg }}"]'
+        severity: '["{{ parameters.severity }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+      legendLabelOverflow: truncate
+      innerRadius: 0
+      maxSeriesCount: 10
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Notices
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  filter:
+    label: Filter (IP, Port, Protocol)
+    order: 3
+    type: text
+    defaultValue: '*'
+    width: 1
+  note:
+    label: Note
+    query: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | Vendor.note=*
+      | in(field=observer.hostname, values=[?system_name])
+      | top([Vendor.note], limit=100)
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 5
+    valueField: Vendor.note
+  additional_filter:
+    label: Additional filter
+    order: 6
+    type: text
+    defaultValue: '*'
+    width: 1
+  system_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and #event.module =ndr
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: observer.hostname
+  msg:
+    label: Message
+    query: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | event.reason=*
+      | in(field=observer.hostname, values=[?system_name])
+      | top([event.reason], limit=100)
+      | drop([_count])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 4
+    valueField: event.reason
+  severity:
+    label: Severity
+    query: |-
+      #Vendor = corelight and #event.module =ndr
+      | #event.dataset = ndr.notice
+      | in(field=observer.hostname, values=[?system_name])
+      | format(format="%s (%s)", field=[Vendor.severity.name, Vendor.severity.level], as=severity_display)
+      | groupBy([severity_display, Vendor.severity.name], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    defaultValue: '*'
+    width: 1
+    order: 2
+    valueField: Vendor.severity.name
+    type: query
+    labelField: severity_display

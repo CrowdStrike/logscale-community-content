@@ -1,0 +1,761 @@
+name: Corelight secure channel insights
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- SIEM
+- Workflow
+widgets:
+  60a05146-35b6-4e94-b712-fa72559b384e:
+    x: 6
+    y: 2
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | regex(field=Vendor.cipher,regex="RC4|DES|3DES|MD5|NULL|EXPORT")
+      | groupBy([Vendor.cipher], function=[], limit=max)
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Less secure ciphers
+    isLive: false
+    type: query
+  d6dae322-3f56-44ad-9b13-71c0325afd7f:
+    x: 6
+    y: 29
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(Inference, function=tail(limit=max), limit=max)], var="Inference")
+      | in(field=Inference, values=["abp", "rsp", "rsi", "rsia", "rsl", "rsk"], ignoreCase=true)
+      | upper("Inference", as=Inference)
+      | groupBy([event.id], function=tail(1), limit=max)
+      | groupBy([event.id, source.ip, destination.ip, Inference], function=count(as=Count), limit=max)
+      | default(value="No Results", field=["event.id"])
+      | default(value="N/A", field=[source.ip, destination.ip, Inference])
+      | rename([[event.id, "UID"], [source.ip, "Source IP"], [destination.ip, "Destination IP"]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: SSH advanced threats inferences
+    isLive: false
+    type: query
+  bd751781-c602-41be-880a-ad06789757c6:
+    x: 0
+    y: 9
+    height: 2
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | is_src_internal_ip:=if(cidr("source.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | is_dest_internal_ip:=if(cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | case{
+          is_src_internal_ip="true" AND is_dest_internal_ip="false"|Direction:="Outbound";
+          is_src_internal_ip="false" AND is_dest_internal_ip="true"|Direction:="Inbound";
+          is_src_internal_ip="true" AND is_dest_internal_ip="true"|Direction:="Internal";
+          * |Direction:="EEther";
+      }
+      | Direction=?{traffic_direction=*}
+      | case {
+          Vendor.version="TLSv13" | Classification:="Most Secure (v1.3)";
+          Vendor.version="TLSv12" | Classification:="Secure (v1.2)";
+          Vendor.version="DTLSv12" | Classification:="Secure (v1.2)";
+          Vendor.version="unknown-64282" | Classification:="Unknown";
+          * | Classification:="Old Version < (v1.2)"
+      }
+      | !in(field=Classification, values=["*Secure*"])
+      | groupBy([Direction,Classification,Vendor.version], function=[count(event.id, as=Counter,distinct=true)], limit=max)
+      | sum(Counter, as=Count)
+    end: now
+    start: 1d
+    width: 3
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Connections using less secure TLS versions (< TLS1.2)
+    isLive: false
+    type: query
+  23cace04-e011-4163-8acb-ad0466294ab4:
+    x: 2
+    y: 21
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">A SSL certificate that is about to\
+      \ expire (default window is 30 days) was observed. Expiration of an SSL certificate\
+      \ may result in unexpected behavior such as refused network connections or unencrypted\
+      \ network traffic.</div>"
+    width: 4
+    title: ''
+    type: note
+  289ef336-4c2b-4ce1-9be8-833530bf7218:
+    x: 6
+    y: 8
+    height: 3
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:exists(array="Vendor.inferences[]", condition=in(field=Vendor.inferences, values=["ks", "auto"], ignoreCase=true))
+      | upper("inferences", as="inferences")
+      | groupBy([event.id,source.ip,destination.ip,inferences], limit=max, function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Interactive sessions and keystrokes
+    isLive: false
+    type: query
+  fae3c9b8-83c9-442a-9262-a6421239f689:
+    x: 6
+    y: 27
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:exists(array="Vendor.inferences[]", condition=in(field=Vendor.inferences, values=["abp", "rsp", "rsi", "rsia", "rsl", "rsk"], ignoreCase=true))
+      | groupBy([event.id, source.ip, destination.ip, inference],function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Advanced threat indicators
+    isLive: false
+    type: query
+  951abd19-dc78-4c98-9af2-39985c0cf3b0:
+    x: 0
+    y: 17
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | destination.ip = *
+      | text:contains(Vendor.validation_status, substring="self signed certificate")
+      | is_dest_internal_ip:=if(cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | is_dest_internal_ip = "true"
+      | is_src_internal_ip:=if(cidr("source.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | case{
+          is_src_internal_ip="false" AND is_dest_internal_ip="true"|Traffic_Direction:="Inbound";
+          is_src_internal_ip="true" AND is_dest_internal_ip="true"|Traffic_Direction:="East-West";
+          is_src_internal_ip="true" AND is_dest_internal_ip="false"|Traffic_Direction:="Outbound";
+          is_src_internal_ip="false" AND is_dest_internal_ip="false"|Traffic_Direction:="Ether";
+          * | Traffic_Direction= "Undefined";
+      }
+      | Destination_Host_Type := if(is_dest_internal_ip=="true",then="Internal",else="External")
+      | groupBy([destination.address,destination.ip], function=[collect([destination.address],separator=", "),collect([Vendor.validation_status],separator=", "),collect([destination.ip], separator=", "),collect([Destination_Host_Type], separator=", "), collect([Traffic_Direction], separator=", ")], limit=max)
+      | default(value="No Results", field=[destination.address])
+      | default(value="N/A", field=[Vendor.validation_status,destination.ip,Destination_Host_Type,Traffic_Direction])
+      | rename([[destination.address,Subject],[destination.ip,"Destination IP"],[Vendor.validation_status,Status],[Destination_Host_Type,"Destination Host Type"],[Traffic_Direction,"Traffic Direction"]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network evidence for self signed internal certificates
+    isLive: false
+    type: query
+  fe503adb-df9d-4182-ba32-b18531f45c37:
+    x: 0
+    y: 23
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | is_dest_internal_ip:=if(cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | is_dest_internal_ip = "true"
+      | array:reduceAll(array="Vendor.cert_chain_fps[]", function=[groupBy(fingerprint, function=tail(limit=max), limit=max)], var="fingerprint")
+      | join(query={
+              #Vendor = corelight and #event.module = ndr
+              | in(field=#event.dataset, values= ["ndr.x509", "ndr.x509_red"])
+              | in(field=observer.hostname, values=[?sensor_name])
+              | rename(field=Vendor.fingerprint, as="fingerprint")
+              | ts_now := now()
+              | parseTimestamp(field=Vendor.certificate.not_valid_after, as=ts_then)
+              | time_diff := ts_then - ts_now
+              | time_diff >0
+              | formatDuration("time_diff",as=time_diff,from=ms)
+              | regex(field=time_diff,regex="(?<days>\\d+)d")
+              | days<30
+              | days_to_expiry:= days
+      }, field=fingerprint, key=fingerprint, mode=inner,include=[Vendor.certificate.subject,Vendor.certificate.not_valid_after,days_to_expiry], limit=20000)
+      | groupBy([Vendor.certificate.subject,destination.ip],function=[collect([destination.port],separator=", "),collect([Vendor.certificate.not_valid_after],separator=", "),collect([days_to_expiry],separator=", ")], limit=max)
+      | default(value="N/A", field=["destination.ip", "destination.port", "Vendor.certificate.not_valid_after", "days_to_expiry"])
+      | default(value="No Results", field=[Vendor.certificate.subject])
+      | rename([[Vendor.certificate.subject,"Subject"],["destination.ip","Host"],["destination.port","Port"],[Vendor.certificate.not_valid_after,"Not Valid After"],["days_to_expiry","Days to Expire"]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns:
+        Days to Expire:
+          data-type: number
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network evidence for self signed internal certificates
+    isLive: false
+    type: query
+  cbc0b3c4-c3f6-4124-89b8-a22b0902759c:
+    x: 8
+    y: 27
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Helps to identify potential advanced\
+      \ threat indicators such as Client Authentication Bypass (ABP) and Reverse SSH\
+      \ tunneling activities (RSP, RSI, RSIA, RSL, RSK) for in-depth investigation.</div>"
+    width: 4
+    title: ''
+    type: note
+  note-1734516079568-1:
+    x: 0
+    y: 1
+    description: For Further Investigations view Security Workflows - SSH Inferences
+      Overview
+    height: 1
+    text: ''
+    width: 12
+    title: Encrypted traffic notables
+    type: note
+  4e5ff238-9919-420f-b367-b52118cb6cc8:
+    x: 0
+    y: 11
+    description: Classification based on Industry best practices
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | is_src_internal_ip:=if(cidr("source.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | is_dest_internal_ip:=if(cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | case{
+          is_src_internal_ip="true" AND is_dest_internal_ip="false"|Direction:="Outbound";
+          is_src_internal_ip="false" AND is_dest_internal_ip="true"|Direction:="Inbound";
+          is_src_internal_ip="true" AND is_dest_internal_ip="true"|Direction:="Internal";
+          *|Direction:="EEther";
+      }
+      | Direction=?{traffic_direction=*}
+      | ip_class := if(is_dest_internal_ip=="true",then="Internal",else="External")
+      | case {
+          Vendor.version="TLSv13" | Classification:="Most Secure (v1.3)";
+          Vendor.version="TLSv12" | Classification:="Secure (v1.2)";
+          Vendor.version="DTLSv12" | Classification:="Secure (v1.2)";
+          Vendor.version="unknown-64282" | Classification:="Unknown";
+          * | Classification:="Old Version < (v1.2)"
+      }
+      | groupBy([Direction,Classification,Vendor.version], function=[count(event.id, as=Counter,distinct=true),collect(["ip_class"],separator=", ")],  limit=max)
+      | rename([[Direction,"Traffic Direction"],["ip_class","Responder Location"],["Vendor.version","Version"]])
+      | default(value="N/A", field=["Traffic Direction","Responder Location"])
+      | default(value="No Results", field=["Version"])
+      | select([Version,"Traffic Direction",Counter,"Responder Location",Classification])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network evidence for all TLS versions seen
+    isLive: false
+    type: query
+  2285edb7-3ccc-4f4a-a2ac-d93aae7a7b58:
+    x: 2
+    y: 15
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">This dashboard panel identifies self-signed\
+      \ certificates in use within internal networks, highlighting a key security\
+      \ concern due to their lack of third-party validation. Addressing this issue\
+      \ by transitioning to certificates from trusted authorities enhances network\
+      \ security and trustworthiness.</div>"
+    width: 4
+    title: ' '
+    type: note
+  a6ef404a-24d3-4ff4-879f-610dc2f6aa3b:
+    x: 6
+    y: 4
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | regex(field=Vendor.cipher,regex="RC4|DES|3DES|MD5|NULL|EXPORT")
+      | is_src_internal_ip:=if(cidr(source.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | is_dest_internal_ip:=if(cidr(destination.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | host_type :=if(is_src_internal_ip=="true",then="Internal",else="External")
+      | Direction := if(is_src_internal_ip=="true", then=if(is_dest_internal_ip=="false",then="Outbound",else="Inbound"),else="Inbound")
+      | groupBy([Vendor.cipher], function=[selectLast(destination.ip),count(field=event.id,as="Unique Conns"),collect([host_type],separator=", "),collect([Direction],separator=", "),count(as=Count)], limit=max)
+      | sort(["Unique Conns",Count])
+      | default(value="No Result", field=[Vendor.cipher])
+      | default(value="N/A", field=[host_type,Direction,destination.ip])
+      | rename([[Vendor.cipher,"Cipher"],[host_type,"Host Type"],[destination.ip,"Destination IP"]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Less secure ciphers seen in the period
+    isLive: false
+    type: query
+  6ded8ea9-6664-403f-b3db-0753575f3c69:
+    x: 6
+    y: 17
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inferences, function=tail(limit=max), limit=max)], var="inferences")
+      | in(field=inferences, values=["sfd","lfd","sfu","lfu"], ignoreCase=true)
+      | upper("inferences", as="inferences")
+      | match(file="corelight_ssh_inference_lookup.csv", field=[inferences],include=[Description])
+      | groupBy([event.id],function=tail(1), limit=max)
+      | groupBy([event.id,source.ip,destination.ip,inferences,Description], limit=max, function=count(as=Count))
+      | default(value="No Results", field=event.id)
+      | default(value="N/A", field=[source.ip,destination.ip,inferences])
+      | rename([[event.id,UID],[source.ip,"Source IP"],[destination.ip,"Destination IP"],[inferences,Inferences]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Possible file transfer
+    isLive: false
+    type: query
+  622c4ad2-c9b8-4d2f-8f4e-9cee1e4d9195:
+    x: 6
+    y: 23
+    height: 4
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inferences, function=tail(limit=max), limit=max)], var="inferences")
+      | in(field=inferences, values=["sc", "sp", "sv", "sa", "afr", "ban"], ignoreCase=true)
+      | upper("inferences", as="inferences")
+      | groupBy([event.id,source.ip,destination.ip,inferences], limit=max, function=count(as=Count))
+      | default(value="No Results", field=event.id)
+      | default(value="N/A", field=[source.ip,destination.ip,inferences])
+      | rename([[event.id,UID],[source.ip,"Source IP"],[destination.ip,"Destination IP"],[inferences,Inferences]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: SSH inferences for potential security risks
+    isLive: false
+    type: query
+  f1e111ee-4d07-4c2e-9b77-60b74ca90934:
+    x: 0
+    y: 27
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:exists(array="Vendor.inferences[]", condition=in(field=Vendor.inferences, values=["pka", "auto", "ks", "cts"], ignoreCase=true))      
+      | groupBy([event.id], function=[])
+      | count(as=Count)
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Automated SSH session indicators
+    isLive: false
+    type: query
+  82382ce0-e7c5-44df-b002-c116fb6f3765:
+    x: 0
+    y: 2
+    height: 2
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.x509", "ndr.x509_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | rename([[Vendor.certificate.key_length, key_length],[Vendor.fingerprint,match_fingerprint]])
+      | key_length < 2048
+      | join({
+          #Vendor = corelight and #event.module = ndr
+          | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+          | in(field=observer.hostname, values=[?sensor_name])
+          | array:reduceAll(array="Vendor.cert_chain_fps[]", function=[groupBy(x, function=tail(limit=1), limit=max)], var="x")
+          | rename(field=x, as="match_fingerprint")
+          | host_type:=if(cidr(destination.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="Internal", else="External")
+          },
+          field= match_fingerprint,
+          key=match_fingerprint,
+          include=[event.id, source.ip, destination.ip, destination.port, host_type, destination.address],
+          mode=inner)
+      | groupBy([match_fingerprint], function=tail(1), limit=max)
+      | host_type=Internal
+      | groupBy([destination.address, destination.ip,destination.port,key_length, host_type],function=[], limit=max)
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Weak certs. used internally
+    isLive: false
+    type: query
+  7b374888-dbb2-4781-8cee-05d14ff86da1:
+    x: 0
+    y: 15
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | text:contains(Vendor.validation_status, substring="self signed certificate")
+      | destination.ip = *
+      | is_dest_internal_ip:=if(cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | is_dest_internal_ip = "true"
+      | groupBy([destination.address,destination.ip], function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Self signed certs
+    isLive: false
+    type: query
+  note-1734516696574-3:
+    x: 2
+    y: 2
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">SSL/TLS sessions utilizing weak keys\
+      \ are vulnerable to cryptographic attacks. This traffic may indicate the presence\
+      \ of old and/or unpatched resources on the network. It could also be the result\
+      \ of a successful downgrade attack.</div>"
+    width: 4
+    title: ''
+    type: note
+  note-1734515404580-0:
+    x: 0
+    y: 0
+    description: Deep dive from Security Posture Encrypted, non-encrypted SSL, SSH,
+      TLS and x509 facts.
+    height: 1
+    text: ''
+    width: 12
+    title: Secure channel insights
+    type: note
+  533d8b16-c166-4d86-909b-2850752e7102:
+    x: 3
+    y: 8
+    height: 3
+    text: "# \n<div style=\"font-weight: 600;\">Connections employing TLS versions\
+      \ older than 1.2 are recognized as less secure, presenting a higher risk of\
+      \ being compromised. These outdated protocols may indicate legacy systems with\
+      \ configurations that are not aligned with modern security standards.</div>"
+    width: 3
+    title: ''
+    type: note
+  df40ccfd-4bb0-48db-8618-670f145a719b:
+    x: 8
+    y: 8
+    height: 3
+    text: "# \n<div style=\"font-weight: 600;\">Highlight interactive sessions (KS)\
+      \ and automated interactions (AUTO) to understand the nature of SSH traffic\
+      \ — manual vs. automated.</div>"
+    width: 4
+    title: ''
+    type: note
+  9e6bf18d-1b0f-4a70-8496-dcb442c97168:
+    x: 0
+    y: 21
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | is_dest_internal_ip:=if(cidr("destination.ip", subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="true", else="false")
+      | is_dest_internal_ip = "true"
+      | array:reduceAll(array="Vendor.cert_chain_fps[]", function=[groupBy(fingerprint, function=tail(limit=max), limit=max)], var="fingerprint")
+      | join(query={
+              #Vendor = corelight and #event.module = ndr
+              | in(field=#event.dataset, values= ["ndr.x509", "ndr.x509_red"])
+              | in(field=observer.hostname, values=[?sensor_name])
+              | rename(field=Vendor.fingerprint, as="fingerprint")
+              | ts_now := now()
+              | parseTimestamp(field=Vendor.certificate.not_valid_after, as=ts_then)
+              | time_diff := ts_then - ts_now
+              | time_diff >0
+              | formatDuration("time_diff",as=time_diff,from=ms)
+              | regex(field=time_diff,regex="(?<days>\\d+)d")
+              | days<30
+      }, field=fingerprint, key=fingerprint, mode=inner,include=[Vendor.certificate.subject], limit=200000)
+      | groupBy([Vendor.certificate.subject,destination.ip],function=count(as=Count))
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Certificates about to expire
+    isLive: false
+    type: query
+  ce3c5561-844d-4913-afd6-927a289f7916:
+    x: 2
+    y: 27
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Tracks automated SSH sessions to enhance\
+      \ security and operational efficiency, highlighting potential risks and compliance\
+      \ issues. It identifies anomalies and unauthorized activities, ensuring that\
+      \ automation tools are used securely and efficiently. This tool is crucial for\
+      \ SOC analysts to monitor for security breaches and optimize system management.</div>"
+    width: 4
+    title: ''
+    type: note
+  304efb9d-b805-48d1-8ac1-1991ab5cd00a:
+    x: 0
+    y: 4
+    height: 4
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.x509", "ndr.x509_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | rename([[Vendor.certificate.key_length, key_length],[Vendor.fingerprint,match_fingerprint]])
+      | key_length < 2048
+      | join({
+          #Vendor = corelight and #event.module = ndr
+          | in(field=#event.dataset, values= ["ndr.ssl", "ndr.ssl_red"])
+          | in(field=observer.hostname, values=[?sensor_name])
+          | array:reduceAll(array="Vendor.cert_chain_fps[]", function=[groupBy(x, function=tail(limit=1), limit=max)], var="x")
+          | rename(field=x, as="match_fingerprint")
+          | host_type:=if(cidr(destination.ip, subnet=["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]), then="Internal", else="External")
+          },
+          field= match_fingerprint,
+          key=match_fingerprint,
+          include=[event.id, source.ip, destination.ip, destination.port, host_type, destination.address],
+          mode=inner)
+      | groupBy([match_fingerprint], function=tail(1), limit=max)
+      | host_type=Internal
+      | groupBy([destination.address, destination.ip,destination.port,key_length, host_type],function=count(as=Count), limit=max)
+      | sort(field=destination.address, limit=max)
+      | rename([[destination.address,"Server Name"],[destination.ip,"Destination IP"],[destination.port,"Dest Port"],[key_length,"Key Length"],[host_type,"Host Type"]])
+      | default(value="No Results", field=["Server Name"])
+      | default(value="N/A", field=["Responder Host","Resp Port","Key Length","Host Type"])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network evidence for weak key length certs
+    isLive: false
+    type: query
+  f1fb699f-a012-4d88-8510-a6879e35988e:
+    x: 8
+    y: 21
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Monitors for signs of scanning (SC,\
+      \ SP, SV, SA), banner messages (BAN), and agent forwarding (AFR) for compliance\
+      \ and security risk identification.</div>"
+    width: 4
+    title: ''
+    type: note
+  parameter-panel-1734957190058-0:
+    x: 0
+    y: 8
+    parameterIds:
+    - traffic_direction
+    height: 1
+    width: 3
+    title: ''
+    type: parameterPanel
+  c0a491b6-26db-47ae-9ba9-4193e578309b:
+    x: 0
+    y: 29
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inference, function=tail(limit=max), limit=max)], var="inference")
+      | in(field=inference, values=["pka", "auto", "ks", "cts"], ignoreCase=true)
+      | upper("inference",as="inference")
+      | groupBy([event.id], function=[collect([source.ip],separator=", "), collect([destination.ip],separator=", "), collect([inference],separator=", ")], limit=max)
+      | default(value="N/A", field=[source.ip, destination.ip, inference])
+      | default(value="No Results", field=["event.id"])
+      | rename([[event.id, "UID"], [source.ip, "Source IP"], [destination.ip, "Destination IP"],[inference,Inferences]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: SSH session inferences
+    isLive: false
+    type: query
+  3985794c-01bc-4954-bc85-928821a71d78:
+    x: 6
+    y: 15
+    height: 2
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:exists(array="Vendor.inferences[]", condition=in(field=Vendor.inferences, values=["sfd","lfd","sfu","lfu"], ignoreCase=true))
+      | upper("inferences", as="inferences")
+      | groupBy([event.id,source.ip,destination.ip,inferences], limit=max, function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Possible file uploaded
+    isLive: false
+    type: query
+  c3e7110c-d787-4964-8df0-f2ab2c67076d:
+    x: 6
+    y: 21
+    height: 2
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:exists(array="Vendor.inferences[]", condition=in(field=Vendor.inferences, values=["sc", "sp", "sv", "sa", "afr", "ban"], ignoreCase=true))
+      | upper("inferences", as="inferences")
+      | groupBy([event.id,source.ip,destination.ip,inferences], limit=max, function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Potential security risks
+    isLive: false
+    type: query
+  8efb5c20-3cc3-4608-ba59-a602e079d871:
+    x: 8
+    y: 2
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">SSL/TLS sessions utilizing weak cipher\
+      \ suites (eg. RC4) are easily decrypted. This traffic may indicate the presence\
+      \ of old and/or unpatched resources on the network. It could also be the result\
+      \ of a successful downgrade attack.</div>"
+    width: 4
+    title: ' '
+    type: note
+  9f4bef53-5053-4350-a29a-f67ed7df10b9:
+    x: 8
+    y: 15
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">This use case tracks SSH file transfer\
+      \ activity (inferences SFD, LFD, SFU, LFU). It uncovers potential data exfiltration\
+      \ by attackers or the introduction of malicious files. Focus on file names,\
+      \ sizes, unusual source IPs, and sensitive destination systems.</div>"
+    width: 4
+    title: ''
+    type: note
+  9a279129-41e7-451a-aeb9-179c31a8a9fe:
+    x: 6
+    y: 11
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values= ["ndr.ssh", "ndr.ssh_red"])
+      | in(field=observer.hostname, values=[?sensor_name])
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inferences, function=tail(limit=max), limit=max)], var="inferences")
+      | in(field=inferences, values=["ks", "auto"], ignoreCase=true)
+      | upper("inferences", as="inferences")
+      | groupBy([event.id],function=tail(1), limit=max)
+      | groupBy([event.id,source.ip,destination.ip,inferences], limit=max, function=count(as=Count))
+      | default(value="No Results", field=event.id)
+      | default(value="N/A", field=[source.ip,destination.ip,inferences])
+      | rename([[event.id,UID],[source.ip,"Source IP"],[destination.ip,"Destination IP"],[inferences,Inferences]])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Network evidence for interactive sessions and keystrokes - SSH inferences
+    isLive: false
+    type: query
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  sensor_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and #event.module = ndr
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 50
+    valueField: observer.hostname
+  traffic_direction:
+    label: Traffic direction
+    order: 1
+    values:
+      '*': All
+      Internal: Internal
+      Outbound: Outbound
+      Inbound: Inbound
+      External: External
+    type: list
+    defaultValue: '*'
+    width: 3

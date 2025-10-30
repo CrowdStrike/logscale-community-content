@@ -1,0 +1,415 @@
+sections:
+  section-1732705335173-0:
+    description: For Further Investigations view RDP Inferences Overview Dashboard
+    collapsed: false
+    widgetIds:
+    - e09d6926-2eb6-4395-a690-f94921ae7f37
+    - b5cda53f-0db7-4e31-b78c-a5713bbbdd2a
+    - 3c1ad2d7-9e25-44e1-9394-6756748e6095
+    - 34362f8a-902a-4a7c-aaac-344ca9b9ca75
+    - note-1732701278746-0
+    - bc047ded-603e-4e86-bd57-3e2a1dfcf934
+    order: 0
+    title: Remote access hygiene
+  section-1732705453173-1:
+    description: For Further Investigations view VPN Insights Dashboard
+    collapsed: true
+    widgetIds:
+    - 1f464bbe-a447-4cb3-b4a9-8040cf24e8a4
+    - note-1732772282836-0
+    - 5c0c29e8-ce7b-4125-a495-d103765c0112
+    - f72b2a81-9f56-4fde-8c2d-1532b29a9dcb
+    - 255bad92-457d-4dbd-aaa8-716fc0650dc4
+    - 4dc7d9fb-56e5-431a-8a13-0d4e85bac777
+    - 7f51ceab-4df1-4c9a-a1e5-4eae082a905d
+    - 2e64757b-d8d4-4597-bf8c-698220c06b5a
+    - bf0df78c-9ce3-4f0b-9854-46d13dc8be23
+    order: 1
+    title: VPN insights
+name: Corelight remote activity insights
+updateFrequency: never
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- SIEM
+- Workflow
+widgets:
+  3c1ad2d7-9e25-44e1-9394-6756748e6095:
+    x: 0
+    height: 4
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.rdp"
+      | in(field=observer.hostname, values=[?system_name])
+      | !in(field=#event.outcome, values=unknown)
+      | timeChart(#event.outcome)
+    end: now
+    start: 1d
+    width: 6
+    y: 2
+    interactions:
+    - name: Details of failed vs successful authentications
+      titleTemplate: Details of {{ fields.#event.outcome}}
+      queryString: |-
+        #Vendor=corelight and #event.module = ndr
+        | #event.dataset="ndr.rdp"
+        | in(field=observer.hostname, values=[?system_name])
+        | !in(field=#event.outcome, values=unknown)
+        | #event.outcome=?outcome
+      useWidgetTimeWindow: true
+      arguments:
+        outcome: '["{{fields.#event.outcome}}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: bottom
+      series: {}
+      gradient: false
+      interpolation: linear
+      lastBucketBehavior: include
+      legendLabelOverflow: full
+      showDataPoints: false
+      connect-points: false
+      stacking: none
+      yAxisScale: linear
+      extrapolate: true
+      plotType: area
+      show-utc: false
+      imputation: zero
+      regression: false
+      regressionType: linear
+    visualization: time-chart
+    title: Failed vs successful authentications
+    isLive: false
+    type: query
+  255bad92-457d-4dbd-aaa8-716fc0650dc4:
+    x: 0
+    y: 0
+    description: Total count of VPN connections that have the following inferences
+      NSP - Non-Standard Port RW - Road warrior configuration detected (i.e. Cisco
+      Anyconnect) COM - Commercial VPN service occurring at the same time which is
+      deemed suspicious.
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.vpn"
+      | in(field=observer.hostname, values=[?system_name])
+      | array:contains("Vendor.inferences[]", value="COM")
+      | array:contains("Vendor.inferences[]", value="RW")
+      | array:contains("Vendor.inferences[]", value="NSP")
+      | concatArray("Vendor.inferences", as=Inferences, separator=", ")
+      | groupBy([source.ip, destination.ip,Vendor.vpn_type, Inferences], function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Unusual remote activity
+    isLive: false
+    type: query
+  1f464bbe-a447-4cb3-b4a9-8040cf24e8a4:
+    x: 0
+    y: 2
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.vpn"
+      | in(field=observer.hostname, values=[?system_name])
+      | array:contains("Vendor.inferences[]", value="COM")
+      | array:contains("Vendor.inferences[]", value="RW")
+      | array:contains("Vendor.inferences[]", value="NSP")
+      | concatArray("Vendor.inferences", as= Inferences, separator=", ")
+      | groupBy([source.ip, destination.ip, Vendor.vpn_type, Inferences], function=count(as=Count),limit=max)
+      | rename([[source.ip,"Source IP"],[destination.ip,"Destination IP"],[Vendor.vpn_type,"VPN Type"]])
+      | default(value="N/A", field=["Source IP","Responder IP","VPN Type","Inferences"])
+      | table(["Source IP","Destination IP","Inferences","VPN Type",Count], sortby=Count, limit=max)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: ''
+    isLive: false
+    type: query
+  34362f8a-902a-4a7c-aaac-344ca9b9ca75:
+    x: 0
+    description: Total count of RDP success and failed actions within the specified
+      time.
+    height: 2
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.rdp"
+      | in(field=observer.hostname, values=[?system_name])
+      | !in(field=#event.outcome, values=unknown)
+      | count(field=#event.outcome)
+    end: now
+    start: 1d
+    width: 2
+    y: 0
+    interactions:
+    - name: Details of RDP authentication attempts
+      titleTemplate: Details of RDP authentication attempts
+      queryString: |-
+        #Vendor=corelight and #event.module = ndr
+        | #event.dataset="ndr.rdp"
+        | in(field=observer.hostname, values=[?system_name])
+        | !in(field=#event.outcome, values=unknown)
+      useWidgetTimeWindow: true
+      arguments:
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      default: {}
+    visualization: single-value
+    title: RDP authentication attempts
+    isLive: false
+    type: query
+  4dc7d9fb-56e5-431a-8a13-0d4e85bac777:
+    x: 0
+    y: 6
+    description: Total count of VPN connections that are using the RW- Road warrior
+      configuration detected (i.e. Cisco Anyconnect) and FW - Firewall subversion
+      inferences.
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.vpn"
+      | in(field=observer.hostname, values=[?system_name])
+      | concatArray("Vendor.inferences", separator=":", as=Inferences)
+      | array:regex(array="Vendor.inferences[]", regex="^RW$|^FW$",flags=i)
+      | groupBy([event.id], function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+    visualization: single-value
+    title: Possible unauthorized remote access attempts
+    isLive: false
+    type: query
+  2e64757b-d8d4-4597-bf8c-698220c06b5a:
+    x: 6
+    y: 2
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.vpn"
+      | in(field=observer.hostname, values=[?system_name])
+      | concatArray("Vendor.inferences", separator=":", as=Inferences)
+      | array:regex(array="Vendor.inferences[]", regex="^TLS$|^SK$",flags=i)
+      | groupBy([source.ip,destination.ip], function=[selectLast([Inferences]),collect([Vendor.resp_cc],separator=", "),collect([Vendor.vpn_type],separator=", "),count(as=Count)],limit=max)
+      | default(value="N/A", field=[source.ip,destination.ip,Vendor.resp_cc,Vendor.vpn_type,Inferences])
+      | rename([[source.ip,"Source IP"],[destination.ip,"Destination IP"],[Vendor.resp_cc,"Destination Country"],[Vendor.vpn_type,"VPN Type"]])
+      | sort(Count,limit=max)
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: ''
+    isLive: false
+    type: query
+  5c0c29e8-ce7b-4125-a495-d103765c0112:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.vpn"
+      | in(field=observer.hostname, values=[?system_name])
+      | concatArray("Vendor.inferences", separator=":", as=Inferences)
+      | array:regex(array="Vendor.inferences[]", regex="^RW$|^FW$",flags=i)
+      | groupBy([event.id], function=[collect([source.ip],separator=", "),collect([destination.ip],separator=", "),collect([network.transport],separator=", "),selectLast([Inferences]),collect([destination.port],separator=","),collect([Vendor.orig_bytes],separator=", "),count(as=Count)], limit=max)
+      | drop([event.id])
+      | default(value="N/A", field=[destination.ip,network.transport,Inferences,destination.port,Vendor.orig_bytes])
+      | default(value="No Results", field=[source.ip])
+      | rename([[source.ip,"Source IP"],[destination.ip,"Destination IP"],[network.transport, Proto],[destination.port,"Dest Port"],[Vendor.orig_bytes,Bytes]])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: ''
+    isLive: false
+    type: query
+  b5cda53f-0db7-4e31-b78c-a5713bbbdd2a:
+    x: 6
+    y: 0
+    description: Total count of users with login failures within the specified time.
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.rdp"
+      | in(field=observer.hostname, values=[?system_name])
+      | #event.outcome = /failure/i or Vendor.auth_success = /false/i
+      | count(user.name,distinct=true)
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Identifying failed RDP logins
+    isLive: false
+    type: query
+  bc047ded-603e-4e86-bd57-3e2a1dfcf934:
+    x: 8
+    y: 0
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Monitoring failed RDP logins is essential\
+      \ for detecting unauthorized access attempts. Security teams should analyze\
+      \ patterns of failed entries against user and IP data to identify potential\
+      \ breaches. This focus helps in quickly addressing vulnerabilities in RDP security.\
+      \ Effective monitoring of these incidents is crucial for maintaining system\
+      \ integrity.</div>"
+    width: 4
+    title: ' '
+    type: note
+  e09d6926-2eb6-4395-a690-f94921ae7f37:
+    x: 6
+    y: 2
+    height: 4
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.rdp"
+      | in(field=observer.hostname, values=[?system_name])
+      | #event.outcome = /failure/i or Vendor.auth_success = /false/i
+      | groupBy([user.name], function=count(as=Count))
+      | user.name =~ join(query={
+          #Vendor = corelight and #event.module = ndr
+          | #event.dataset="ndr.rdp"
+          | in(field=observer.hostname, values=[?system_name])
+          | #event.outcome = /failure/i or Vendor.auth_success = /false/i},
+          include=[user.name, source.ip, destination.ip, Vendor.auth_success, #event.outcome],
+          mode=left)
+      | default(value="N/A", field=[source.ip, destination.ip, Vendor.auth_success, #event.outcome])
+      | default(value="No Results", field=[user.name])
+      | rename([["user.name","User"],["source.ip","Source IP"],["destination.ip","Destination IP"],["Vendor.auth_success","Auth Success"],["#event.outcome","Result"]])
+      | select([User,"Source IP","Destination IP","Auth Success","Result",Count])
+    end: now
+    start: 1d
+    width: 6
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: ''
+    isLive: false
+    type: query
+  note-1732701278746-0:
+    x: 2
+    y: 0
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Monitoring RDP authentications is\
+      \ crucial for identifying unauthorized access and distinguishing between successful\
+      \ and failed login attempts. Security teams should analyze trends and cross-reference\
+      \ user activity for rapid response and mitigation.</div>"
+    width: 4
+    title: ''
+    type: note
+  f72b2a81-9f56-4fde-8c2d-1532b29a9dcb:
+    x: 6
+    y: 0
+    description: Total count of VPN connections using potentially unusual connection
+      configurations such as static TLS key auth.
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset="ndr.vpn"
+      | in(field=observer.hostname, values=[?system_name])
+      | concatArray("Vendor.inferences", separator=":", as=Inferences)
+      | array:regex(array="Vendor.inferences[]", regex="^TLS$|^SK$",flags=i)
+      | groupBy([source.ip,destination.ip], function=[])
+      | count()
+    end: now
+    start: 1d
+    width: 2
+    options:
+      default: {}
+      value-format: abbreviated
+    visualization: single-value
+    title: Suspected data exfiltration
+    isLive: false
+    type: query
+  7f51ceab-4df1-4c9a-a1e5-4eae082a905d:
+    x: 8
+    y: 0
+    height: 2
+    text: " # \n<div style=\"font-weight: 600;\">Unmonitored commercial VPNs with\
+      \ a typical traffic patterns or static keys could be used to bypass security\
+      \ controls for data theft. \n<div style=\"font-weight: 800;\">Investigate:</div>Examine\
+      \ VPN sessions with large outgoing transfers, focusing on unusual destinations\
+      \ or protocols.</div>"
+    width: 4
+    title: ''
+    type: note
+  note-1732772282836-0:
+    x: 2
+    y: 0
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">The combination of the \"COM\", \"\
+      RW\", and \"NSP\" inferences in a single VPN connection raises questions: Policy\
+      \ Violation: Is the use of commercial VPNs allowed in your organization's security\
+      \ policy? If not, this could indicate a violation. Hidden Activity: Is the non-standard\
+      \ port usage an attempt to mask other activities happening over the VPN tunnel?</div>"
+    width: 4
+    title: ''
+    type: note
+  note-1734523265259-0:
+    x: 0
+    y: 0
+    description: Insights for Remote Activity (VPN)
+    height: 1
+    text: ''
+    width: 12
+    title: Remote activity insights
+    type: note
+  bf0df78c-9ce3-4f0b-9854-46d13dc8be23:
+    x: 2
+    y: 6
+    height: 2
+    text: "# \n<div style=\"font-weight: 600;\">Monitoring for \"RW\" (Road Warrior)\
+      \ and \"FW\" (Firewall subversion) inferences is crucial for detecting potential\
+      \ unauthorized access, as these patterns may indicate attempts to bypass security\
+      \ controls. Security teams should prioritize correlating these inferences with\
+      \ internal IP ranges and device logs to identify suspicious activities.</div>"
+    width: 10
+    title: ''
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  system_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and #event.module = ndr
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: observer.hostname
