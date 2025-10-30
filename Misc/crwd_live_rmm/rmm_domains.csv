@@ -1,0 +1,580 @@
+rmm_tool,rmm_domain
+247ithelp.com (ConnectWise),*.247ithelp.com
+Absolute (Computrace),*search.namequery.com
+Absolute (Computrace),*server.absolute.com
+Acronis Cyber Protect (Remotix),connect.acronis.com
+Acronis Cyber Protect (Remotix),gw.remotix.com
+Acronis Cyber Protect (Remotix),agents*-cloud.acronis.com
+Acronis Cyber Protect (Remotix),cloud.acronis.com
+Action1,*.action1.com
+Action1,a1-backend-packages.s3.amazonaws.com
+Addigy,agents.addigy.com
+Addigy,grtmprod.addigy.com
+Addigy,prod.addigy.com
+AeroAdmin,aeroadmin.com
+AeroAdmin,auth*.aeroadmin.com
+AliWangWang-remote-control,wangwang.taobao.com
+Alpemix,*.teknopars.com
+Alpemix,*.alpemix.com
+Ammyy Admin,ammyy.com
+Ammyy Admin,*ammyy.com
+Any Support,*.anysupport.net
+AnyDesk,*.net.anydesk.com
+AnyDesk,*anydesk.com
+AnyDesk,relay-*.net.anydesk.com
+AnyDesk,*.anydesk.com
+AnyDesk,boot.net.anydesk.com
+AnyViewer,*.aomeisoftware.com
+AnyViewer,*.anyviewer.com
+Anyplace Control,anyplace-control.com
+Aspia,*.aspia.org
+Aspia,aspia.org
+Aspia,*.aspia.ru
+Aspia,aspia.ru
+Aspia,github.com/dchapyshev/aspia
+Atera,a32dl55qcodech-ats.iot.eu-west-1.amazonaws.com
+Atera,ticketingitemsstoreeu.blob.core.windows.net
+Atera,atera-agent-heartbeat-cus.servicebus.windows.net
+Atera,*atera.com
+Atera,agentreporting.atera.com
+Atera,pubsub.pubnub.com
+Atera,app.atera.com
+Atera,agenthb.atera.com
+Atera,packagesstore.blob.core.windows.net
+Atera,ps.pndsn.com
+Atera,agent-api.atera.com
+Atera,cacerts.thawte.com
+Atera,agentreportingstore.blob.core.windows.net
+Atera,atera-agent-heartbeat.servicebus.windows.net
+Atera,ps.atera.com
+Atera,pubsub.atera.com
+Atera,atera.pubnubapi.com
+Atera,appcdn.atera.com
+Atera,getalphacontrol.com
+Auvik,*.auvik.com
+Auvik,auvik.com
+Auvik,*.my.auvik.com
+AweRay,client-api.aweray.com
+AweRay,asapi*.aweray.net
+Barracuda,barracuda.com
+Barracuda,rmm.barracudamsp.com
+Barracuda,*.islonline.net
+Barracuda,barracudamsp.com
+BeamYourScreen,beamyourscreen.com
+BeamYourScreen,*.beamyourscreen.com
+BeyondTrust (Bomgar),*.bomgarcloud.com
+BeyondTrust (Bomgar),bomgarcloud.com
+BeyondTrust (Bomgar),*.beyondtrustcloud.com
+Bluetrait,*.bluetrait.io
+Bluetrait,bluetrait.io
+Chrome Remote Desktop,*chromoting-client.talkgadget.google.com
+Chrome Remote Desktop,*remotedesktop.google.com
+Chrome Remote Desktop,*chromoting-oauth.talkgadget.google.com
+Chrome Remote Desktop,remotedesktop*.google.com
+Chrome Remote Desktop,chromoting-host.talkgadget.google.com
+Chrome Remote Desktop,chromoting-oauth.talkgadget.google.com
+Chrome Remote Desktop,*chromoting-host.talkgadget.google.com
+Chrome Remote Desktop,*remotedesktop-pa.googleapis.com
+Chrome Remote Desktop,remotedesktop.google.com
+Chrome Remote Desktop,chromoting-client.talkgadget.google.com
+CloudFlare Tunnel,cftunnel.com
+CloudFlare Tunnel,*.argotunnel.com
+CloudFlare Tunnel,pqtunnels.cloudflareresearch.com
+CloudFlare Tunnel,*.cftunnel.com
+CloudFlare Tunnel,*.cloudflareaccess.com
+Comodo RMM,*.itsm-us1.comodo.com
+Comodo RMM,*mdmsupport.comodo.com
+Comodo RMM,one.comodo.com
+ConnectWise Automate,*.hostedrmm.com
+ConnectWise Control,control.connectwise.com
+ConnectWise Control,live.screenconnect.com
+CrossLoop,crossloop.en.softonic.com
+CrossLoop,*.crossloop.com
+CrossTec Remote Control,*.crosstecsoftware.com
+DW Service,*.dwservice.net
+DWService,*dwservice.net
+DameWare,dameware.com
+Datto RMM,*.rmm.datto.com
+Datto RMM,*cc.centrastage.net
+Datto RMM,datto.com/au/products/rmm
+DeskDay,app.deskday.ai
+DeskDay,deskday.ai
+DesktopNow,*.nchuser.com
+Dev Tunnels (aka Visual Studio Dev Tunnel),learn.microsoft.com/en-us/azure/developer/dev-tunnels/overview
+Distant Desktop,*.distantdesktop.com
+Distant Desktop,*signalserver.xyz
+Domotz,*.domotz.co
+Domotz,domotz.com
+Domotz,*cell-1.domotz.com
+EMCO Remote Console,emcosoftware.com
+ESET Remote Administrator,eset.com/me/business/remote-management/remote-administrator
+Electric AI (Kaseya),electric.ai
+Ericom AccessNow,ericom.com
+Ericom Connect,ericom.com
+FastViewer,fastviewer.com
+FastViewer,*.fastviewer.com
+Firefly,github.com/safe3/firefly
+FixMe.It,*techinline.net
+FixMe.It,*fixme.it
+FixMe.it,*.fixme.it
+FixMe.it,*set.me
+FixMe.it,fixme.it
+FixMe.it,*.techinline.net
+FixMe.it,*setme.net
+FleetDeck,*.fleetdeck.io
+FleetDeck,*fleetdeck.io
+FleetDeck,fleetdm.com
+FleetDeck,fleetdeck.io
+FleetDeck,*fleetdm.com
+FleetDeck.io,*.fleetdeck.io
+FleetDeck.io,cognito-idp.us-west-2.amazonaws.com
+FleetDeck.io,fleetdeck.io
+Fortra,fortra.com
+GatherPlace-desktop sharing,gatherplace.com
+GatherPlace-desktop sharing,*.gatherplace.net
+GatherPlace-desktop sharing,*.gatherplace.com
+GetScreen,*.getscreen.me
+GetScreen,getscreen.me
+Getscreen.me,*getscreen.me
+GoToAssist,*.gotoassist.com
+GoToAssist,*.fastsupport.com
+GoToAssist,*.getgo.com
+GoToAssist,*.gotoassist.me
+GoToAssist,goto.com
+GoToAssist,*.gotoassist.at
+GoToAssist,*.desktopstreaming.com
+GoToAssist,*.cdn.getgo.com
+GoToAssist,helpme.net
+GoToMyPC,*.GoToMyPC.com
+GoToMyPC,*gotomypc.com
+GoToMyPC,*getgo.com
+GoToMyPC,poll.gotomypc.com
+GoToResolve,*.services.gotoresolve.com
+GoToResolve,*.remoteview.logmein.com
+GoToResolve,*logmeinrescue.com
+GoToResolve,*gotoresolve.com
+GoToResolve,console.gotoassist.com
+GoToResolve,*.console.logmeinrescue.com
+GoToResolve,console.gotoresolve.com
+GoToResolve,*.console.gotoresolve.com
+GoToResolve,*.console.gotoassist.com
+GoToResolve,*gotoassist.com
+GotoHTTP,gotohttp.com
+GotoHTTP,*.gotohttp.com
+Goverlan,goverlan.com
+Guacamole,guacamole.apache.org
+HelpBeam,helpbeam.software.informer.com
+HelpU,helpu.co.kr
+HelpU,*.helpu.co.kr
+I'm InTouch,01com.com/imintouch-remote-pc-desktop
+I'm InTouch,*.01com.com
+ISL Light,islonline.com
+ISL Online,*.islonline.com
+ISL Online,*.islonline.net
+ITSupport247 (ConnectWise),itsupport247.net
+ITSupport247 (ConnectWise),*.itsupport247.net
+Impero Connect,imperosoftware.com
+Instant Housecall,instanthousecall.com
+Instant Housecall,secure.instanthousecall.com
+Instant Housecall,*.instanthousecall.net
+Instant Housecall,*.instanthousecall.com
+IntelliAdmin Remote Control,*.intelliadmin.com
+IntelliAdmin Remote Control,intelliadmin.com/remote-control
+Iperius Remote,*.iperius-rs.com
+Iperius Remote,iperiusremote.com
+Iperius Remote,*.iperiusremote.com
+Iperius Remote,*.iperius.com
+Itarian,remoteaccess.itarian.com
+Itarian,servicedesk.itarian.com
+Itarian,*.cmdm.comodo.com
+Itarian,*.itsm-us1.comodo.com
+Itarian,mdmsupport.comodo.com
+Itarian Endpoint Manager,*cmdm.comodo.com
+Ivanti Remote Control,*.ivanticloud.com
+Jump Cloud,*.assist.jumpcloud.com
+Jump Cloud,*.api.jumpcloud.com
+Jump Desktop,jumpto.me
+Jump Desktop,*.jumpto.me
+Jump Desktop,*.jumpdesktop.com
+Jump Desktop,jumpdesktop.com
+KHelpDesk,*.khelpdesk.com.br
+Kabuto,repairtechsolutions.com/kabuto
+Kabuto,*.kabuto.io
+Kaseya (VSA),deploy01.kaseya.com
+Kaseya (VSA),kaseya.com
+Kaseya (VSA),*.kaseya.net
+Kaseya (VSA),*managedsupport.kaseya.net
+KickIdler,my.kickidler.com
+KickIdler,kickidler.com
+LANDesk,ivanti.com
+LANDesk,*.ivanti.com
+LANDesk,*.ivanticloud.com
+LabTech RMM (Now ConnectWise Automate),connectwise.com
+Laplink Everywhere,le.laplink.com
+Laplink Everywhere,everywhere.laplink.com
+Laplink Everywhere,atled.syspectr.com
+Laplink Gold,wen.laplink.com/product/laplink-gold
+Level.io,builds.level.io
+Level.io,online.level.io
+Level.io,agents.level.io
+Level.io,level.io
+Level.io,*level.io
+Level.io,downloads.io
+Level.io,*.level.io
+Level.io,downloads.level.io
+LiteManager,*.litemanager.ru
+LiteManager,*.litemanager.com
+LiteManager,litemanager.com
+LogMeIn,logmein-gateway.com
+LogMeIn,*.logmein.com
+LogMeIn,*.logmein.eu
+LogMeIn,*.logmeininc.com
+LogMeIn,*.logmeinrescue.eu
+LogMeIn,logmeinrescue.com
+LogMeIn,rescue-list.*.logmein-gateway.com
+LogMeIn,rescue-data-center.logmein-gateway.com
+LogMeIn,*.logmeinrescue.com
+LogMeIn,*logmein.com
+MS QuickAssist,remoteassistanceprodacs*
+MS QuickAssist,*support.services.microsoft.com
+MS QuickAssist,remoteassistance.support.services.microsoft.com
+MS QuickAssist,*.support.services.microsoft.com
+MSP360,*.cloudberrylab.com
+MSP360,*.msp360.com
+MSP360,*.mspbackups.com
+MSP360,msp360.com
+Manage Engine (Desktop Central),manageengine.com/remote-monitoring-management
+ManageEngine,*.dms.zoho.com
+ManageEngine,*zoho*.com
+ManageEngine,desktopcentral.manageengine.com.eu
+ManageEngine,desktopcentral.manageengine.cn
+ManageEngine,*.dms.zoho.com.eu
+ManageEngine,*.-dms.zoho.com.cn
+ManageEngine,desktopcentral.manageengine.com
+ManageEngine,*manageengine.com
+MeshCentral,meshcentral.com
+Microsoft Quick Assist,*.support.services.microsoft.com
+Mikogo,mikogo.com
+Mikogo,*.mikogo.com
+Mikogo,*.mikogo4.com
+Mikogo,*.real-time-collaboration.com
+MyGreenPC,*mygreenpc.com
+MyIVO,myivo-server.software.informer.com
+N-Able,*.n-able.com
+N-Able,*.swi-tc.com
+N-Able,beanywhere.en.uptodown.com/windows
+N-Able,remote.management
+N-Able,systemmonitor.us
+N-Able,logicnow.com
+N-Able,system-monitor.com
+N-Able,api.ecosystem-middleware.us-west-2.prd.esp.system-monitor.com
+N-Able,cloudbackup.management
+N-Able,systemmonitor.eu.com
+N-Able,*.logicnow.com
+N-Able,*systemmonitor.co.uk
+N-Able,api.ecosystem-middleware.eu-west-1.prd.esp.system-monitor.com
+N-Able,api.ecosystem-middleware.eu-central-1.prd.esp.system-monitor.com
+N-Able,*cloudbackup.management
+N-Able,systemmonitor.us.cdn.cloudflare.net
+N-Able,sis.n-able.com
+N-Able,*systemmonitor.eu.com
+N-Able,send.n-able.com
+N-Able,*remote.management
+N-Able,*systemmonitor.us
+N-Able,systemmonitor.co.uk
+N-Able,*.beanywhere.com
+N-Able,licensing.n-able.com
+N-Able,api.ecosystem-middleware.ap-southeast-2.prd.esp.system-monitor.com
+N-Able,*swi-rc.cdn-sw.net
+N-Able,beanywhere.com
+N-Able,update.n-able.com
+N-Able,feeds.n-able.com
+N-Able,servermetrics.n-able.com
+N-Able,push.n-able.com
+N-Able,n-able.com
+N-Able,scep.n-able.com
+N-Able,keybox.n-able.com
+N-Able,*swi-rc.com
+N-Able,ui.ecosystem-middleware.prd.esp.system-monitor.com
+N-Able,*beanywhere.com
+N-Able,*swi-tc.com
+N-Able,*system-monitor.com
+N-Able,*updatewarranty.com
+N-Able,updatewarranty.com
+N-Able,*n-able.com
+NTR Remote,*.ntrsupport.com
+Narrowlink,github.com/narrowlink/narrowlink
+Naverisk,naverisk.com
+NetSupport Manager,netsupportmanager.com
+NetSupport Manager,geo.netsupportsoftware.com
+NetSupport Manager,*.netsupportmanager.com
+Netop Remote Control (Impero Connect),*.netop.com
+Netop Remote Control (Impero Connect),imperosoftware.com/impero-connect
+Netop Remote Control (Impero Connect),*.connect.backdrop.cloud
+Neturo,neturo.uplus.co.kr
+Neturo,charon.netreo.net
+Neturo,*.api.netreo.com
+Neturo,netreo.com
+Neturo,activation.netreo.net
+Netviewer,download.cnet.com/Net-Viewer/3000-2370_4-10034828.html
+Ngrok,*ngrok-free.app
+Ngrok,connect.ngrok-agent.com
+Ngrok,connect.us.ngrok-agent.com
+Ngrok,connect.eu.ngrok-agent.com
+Ngrok,connect.ap.ngrok-agent.com
+Ngrok,connect.au.ngrok-agent.com
+Ngrok,connect.sa.ngrok-agent.com
+Ngrok,connect.jp.ngrok-agent.com
+Ngrok,*ngrok-free.dev
+Ngrok,ngrok.com
+Ngrok,connect.in.ngrok-agent.com
+Ngrok,*ngrok-agent.com
+Ngrok,*ngrok.dev
+Ngrok,tunnel.*.ngrok.com
+Ngrok,tunnel.ngrok.com
+Ngrok,*ngrok.io
+Ngrok,*ngrok.pizza
+Ngrok,*update.equinox.io
+Ngrok,*ngrok-free.pizza
+Ngrok,update.equinox.io
+Ngrok,*.ngrok-agent.com
+Ngrok,*ngrok.com
+Ngrok,*ngrok.app
+NinjaRMM,*ninjarmm.net
+NinjaRMM,*ninjarmm.com
+NinjaRMM,ninja*.s3.amazonaws.com
+NinjaRMM,*rmmservice.com
+NinjaRMM,ninja-backup.com
+NinjaRMM,*.ninja-backup.com
+NinjaRMM,*.rmmservice.com
+NinjaRMM,ninjauploads.s3.amazonaws.com/app.ninjarmm.com*
+NinjaRMM,*.ninjarmm.net
+NinjaRMM,*.ninjarmm.com
+NinjaRMM,ninjaresources.s3.amazonaws.com/AgentBinaries/patchmgmt
+NinjaRMM,*.ninjaone.com
+NinjaRMM,resources.ninjarmm.com
+NinjaRMM,ninjaone.com
+NinjaRMM,ninjarmm.net
+NinjaRMM,rmmservice.eu
+NinjaRMM,rmmservice.com.au
+NinjaRMM,https://ninjabuilds.s3.amazonaws.com/
+NinjaRMM,*.rmmservice.eu
+NinjaRMM,*.rmmservice.ca
+NinjaRMM,rmmservice.ca
+NinjaRMM,*.rmmservice.com.au
+NoMachine,nomachine.com
+OCS inventory,ocsinventory-ng.org
+OptiTune,*.opti-tune.com
+OptiTune,*.optitune.us
+PDQ Connect,cfcdn.pdq.com
+PDQ Connect,app.pdq.com
+PDQ Connect,pdqinstallers.*.r2.cloudflarestorage.com
+Pandora RC (eHorus),portal.ehorus.com
+Panorama9,changes.panorama9.com
+Panorama9,panorama9.com
+Panorama9,trusted.panorama9.com
+Parallels Access,parallels.com/products/ras/try
+Parallels Access,*.parallels.com
+Parsec,parsec.gg
+Parsec,parsec.app
+Parsec,*.parsec.app
+Pcnow,au.pcmag.com/utilities/21470/webex-pcnow
+Pcvisit,*.pcvisit.de
+Pcvisit,pcvisit.de
+Pilixo,pilixo.com
+Pilixo,download.pilixo.com
+Pilixo,*.pilixo.com
+Pocket Controller,soti.net/products/soti-pocket-controller
+Pocket Controller (Soti Xsight),*soti.net
+Pulseway,pulseway.com
+Pulseway,*pulseway.com
+QQ IM-remote assistance,qq-messenger.en.softonic.com
+QQ IM-remote assistance,upload_data.qq.com
+QQ IM-remote assistance,*.desktop.qq.com
+QQ IM-remote assistance,*.mdt.qq.com
+Quest KACE Agent (formerly Dell KACE),quest.com/kace
+Quest KACE Agent (formerly Dell KACE),*.kace.com
+RAdmin,radmin.com
+RDPView,systemmanager.ru/dntu.en/rdp_view.htm
+RES Automation Manager,ivanti.com
+RPort,rport.io
+RS Clinet,github.com/luchanso/remote-desktop
+Rapid7,*.analytics.insight.rapid7.com
+Rapid7,*.endpoint.ingress.rapid7.com
+RealVNC,*update-check.realvnc.com
+RealVNC,*services.vnc.com
+Remobo,remobo.en.softonic.com
+Remote Desktop Plus,donkz.nl
+Remote Manipulator System,*rmansys.ru
+Remote Manipulator System,rmansys.ru
+Remote Manipulator System,*.internetid.ru
+Remote Utilities,*.internetid.ru
+Remote Utilities,remoteutilities.com
+Remote.it,remote.it
+Remote.it,api.remote.it
+Remote.it,auth.api.remote.it
+RemoteCall,*.startsupport.com
+RemoteCall,*.remotecall.com
+RemoteCall,remotecall.com
+RemotePC,*.remotepc.com
+RemotePC,*.remotedesktop.com
+RemotePC,remotepc.com
+RemoteView,*.rview.com
+RemoteView,*content.rview.com
+RemoteView,content.rview.com
+Resilio Sync,*getsync.com
+Resilio Sync,*resilioservices.com
+Resilio Sync,*resilio.com
+Resilio Sync,*resilio.us
+Resilio Sync,*resiliodocs.com
+Resilio Sync,*resiliorequests.com
+Royal TS,royalapps.com
+RuDesktop,rudesktop.ru
+RuDesktop,*.rudesktop.ru
+RunSmart,runsmart.io
+RustDesk,*rustdesk.com
+RustDesk,api.rustdesk.com
+RustDesk,web.rustdesk.com
+RustDesk,rs-ny.rustdesk.com
+RustDesk,rustdesk.com
+ScreenConnect,myconnectwise.com
+ScreenConnect,*.screenconnect.com
+ScreenConnect,connectwise.com
+ScreenConnect,*screenconnect.com
+ScreenConnect,*itsupport247.net
+ScreenConnect,*connectwise.com
+ScreenConnect,screenconnect.com
+ScreenConnect,itsupport247.net
+ScreenConnect,control.connectwise.com
+ScreenConnect,*.connectwise.com
+ScreenMeet,*.screenmeet.com
+ScreenMeet,*.scrn.mt
+Seetrol,seetrol.co.kr
+Senso.cloud,*.senso.cloud
+Senso.cloud,senso.cloud
+ServerEye,*.server-eye.de
+ShowMyPC,showmypc.com
+ShowMyPC,*.showmypc.com
+SimpleHelp,simple-help.com
+Site24x7,plus*.site24x7.net.au
+Site24x7,plus*.site24x7.in
+Site24x7,plus*.site24x7.eu
+Site24x7,plus*.site24x7.com
+Site24x7,site24x7.com/msp
+Site24x7,plus*.site24x7.cn
+SkyFex,*.deskroll.com
+SkyFex,deskroll.com
+SkyFex,skyfex.com
+Sophos-Remote Management System,community.sophos.com/on-premise-endpoint/f/sophos-endpoint-software/5725/sophos-remote-management-system
+Sophos-Remote Management System,*.sophosupd.net
+Sophos-Remote Management System,*.sophosupd.com
+Sophos-Remote Management System,*.sophos.com
+Splashtop,*.splashtop.com
+Splashtop,*splashtop.com
+Splashtop,*.splashtop.eu
+Splashtop,*splashtop.eu
+Splashtop (Beta),splashtop.com
+Splashtop Remote,*.relay.splashtop.com
+Splashtop Remote,*.api.splashtop.com
+Splashtop Remote,splashtop.com
+Splashtop Remote,*.api.splashtop.eu
+SpyAnywhere,*.spytech-web.com
+SpyAnywhere,spyanywhere.com
+SunLogin,client.oray.net
+SunLogin,sunlogin.oray.com
+SuperOps,*.superopsalpha.com
+SuperOps,*.superops.ai
+SuperOps,serv.superopsalpha.com
+SuperOps,superops.ai
+SuperOps,*.superopsbeta.com
+Supremo,supremocontrol.com
+Supremo,*.nanosystems.it
+Supremo,*nanosystems.it
+Supremo,*supremocontrol.com
+Supremo,*.nanosystems.it
+Supremo,*.supremocontrol.com
+Syncro,*.syncroapi.com
+Syncro,kabuto.io
+Syncro,attachments.servably.com
+Syncro,kabutoservices.com
+Syncro,repairshopr.com
+Syncro,app.kabuto.io
+Syncro,ld.aurelius.host
+Syncro,servably.com
+Syncro,*.syncromsp.com
+Syncro,syncromsp.com
+Syncro,*.kabutoservices.com
+Syspectr,app.syspectr.com
+Syspectr,atled.syspectr.com
+TSPlus,secure-download-file.com
+TSPlus,licenseapi.dl-files.com
+TSPlus,monitoring.tsplus.net
+TSPlus,tsplus-remotesupport.com
+TSPlus,securityapi.dl-files.com
+Tactical RMM,login.tailscale.com
+Tactical RMM,docs.tacticalrmm.com
+Tailscale,*tailscale.io
+Tailscale,*.tailscale.io
+Tailscale,*.tailscale.com
+Tailscale,tailscale.com
+Tailscale,*tailscale.com
+Tanium,cloud.tanium.com
+Tanium,*.cloud.tanium.com
+Tanium Deploy,tanium.com/products/tanium-deploy
+Teamviewer,*teamviewer.com
+Teamviewer,taf.teamviewer.com
+Teamviewer,client.teamviewer.com
+Teamviewer,router15.teamviewer.com
+Teamviewer,*.teamviewer.com
+TeleDesktop,tele-desk.com
+TightVNC,tightvnc.com
+ToDesk,todesk.com
+ToDesk,api.hoptodesk.com
+ToDesk,turn.hoptodesk.com
+ToDesk,*.todesk.com
+ToDesk,todesktop.com
+ToDesk,signal.hoptodesk.com
+UltraVNC,*uvnc.eu
+UltraVNC,*uvnc.com
+UltraVNC,ultravnc.com
+UltraViewer,ultraviewer.net
+UltraViewer,*.ultraviewer.net
+VNC,realvnc.com/en/connect/download/vnc
+VSCodeTunnel,*.devtunnels.ms
+VSCodeTunnel,*.tunnels.api.visualstudio.com
+Visual Studio Dev Tunnel,*.devtunnels.ms
+Visual Studio Dev Tunnel,global.rel.tunnels.api.visualstudio.com
+Visual Studio Dev Tunnel,*.rel.tunnels.api.visualstudio.com
+WebRDP,github.com/Mikej81/WebRDP
+Weezo,weezo.en.softonic.com
+Weezo,*.weezo.net
+Weezo,weezo.net
+Weezo,*.weezo.me
+XMReality,*xmreality.com
+Xeox,xeox.com
+Xeox,*.xeox.com
+Xeox,*xeox.com
+Zabbix Agent,zabbix.com
+ZeroTier,zerotier.com
+ZeroTier,*.zerotier.com
+ZohoAssist,assist.zoho.com
+ZohoAssist,zoho.com/assist
+ZohoAssist,*zoho.com
+ZohoAssist,*.zoho.eu
+ZohoAssist,gateway.zohoassist.com
+ZohoAssist,downloads.zohocdn.com
+ZohoAssist,*.zoho.com
+ZohoAssist,*.zohoassist.com.cn
+ZohoAssist,downloads.zohodl.com.cn
+ZohoAssist,*.zohoassist.com
+ZohoAssist,*.zoho.com.cn
+ZohoAssist,*.zoho.com.au
+ZohoAssist,*zohoassist.com
+ZohoAssist,*.zohoassist.jp
+ZohoAssist,*.zoho.in
+eHorus,ehorus.com
+ezHelp,*.ezhelp.co.kr
+ezHelp,ezhelp.co.kr
+mRemoteNG,mremoteng.org
+rdp2tcp,github.com/V-E-O/rdp2tcp
+rdpwrap,github.com/stascorp/rdpwrap

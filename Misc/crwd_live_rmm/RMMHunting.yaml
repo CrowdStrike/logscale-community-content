@@ -4,6 +4,7 @@ sections:
     order: 0
     title: RMM Processes
     widgetIds:
+    - 18b0e530-1332-4d49-af2f-4261c5560cc7
     - 8230cc19-c099-46bf-80cf-2c5f26fc79b4
     - 55fa9750-ae59-4630-b3e4-bfae1fcfe7a9
     - parameter-panel-1733981304194-0
@@ -34,11 +35,14 @@ sections:
     - 52e95ca4-f42a-4eec-a777-34ab13bdb236
 name: RMM Hunting
 updateFrequency: never
-timeSelector: {}
+timeSelector:
+  defaultTimeJumpInMs: 30000
 sharedTimeInterval:
-  enabled: false
+  enabled: true
   isLive: false
   start: 1d
+labels:
+- ngsiem
 widgets:
   55fa9750-ae59-4630-b3e4-bfae1fcfe7a9:
     x: 0
@@ -48,11 +52,11 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
-      | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten])
+      // Define EDR events to include
+      | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -65,7 +69,7 @@ widgets:
 
       // Get the unique number of hosts running RMM Tools
       // Graph with Gauge
-      | groupBy([rmm_tool], function=count(ComputerName, distinct=true))
+      | groupBy([rmm_tool], function=count(ComputerName, distinct=true), limit=max)
     end: now
     start: 1d
     width: 8
@@ -77,20 +81,20 @@ widgets:
     type: query
   c2ceeaac-963d-44ac-97c4-34ca79b0984d:
     x: 0
-    y: 18
+    y: 22
     height: 6
     queryString: |-
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
-      | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten])
+      // Define EDR events to include
+      | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+      //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | UserName =~ wildcard(?{UserName=*}, ignoreCase=true)
@@ -106,7 +110,7 @@ widgets:
       connect-points: false
       imputation: none
     visualization: time-chart
-    title: RMM Tool Occurances (Top 10)
+    title: RMM Tool Occurrences (Top 10)
     isLive: false
     type: query
   parameter-panel-1733981304194-0:
@@ -115,7 +119,6 @@ widgets:
     parameterIds:
     - FileName
     - UserName
-    - rmm_tool
     height: 2
     width: 12
     title: RMM Process Filters
@@ -127,22 +130,23 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(#event_simpleName,values=[DnsRequest])
 
       // Match DomainName from lookup file
-      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true)
+      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/i
+      //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | DomainName =~ wildcard(?{DomainName=*}, ignoreCase=true)
       | ContextBaseFileName =~ wildcard(?{ContextBaseFileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Create the output table
-      | groupBy([_count, ContextBaseFileName, DomainName, ComputerName]) | sort(_count, order=asc, limit=20000)
+      | groupBy([_count, rmm_tool, ContextBaseFileName, DomainName, ComputerName], limit=max) | sort(_count, order=asc, limit=20000)
     end: now
     start: 1d
     width: 6
@@ -161,7 +165,7 @@ widgets:
       configured-columns: {}
       row-numbers-enabled: false
     visualization: table-view
-    title: ' RMM DNS Requests'
+    title: RMM DNS Requests
     isLive: false
     type: query
   parameter-panel-1733978610192-6:
@@ -181,14 +185,14 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(field="#event_simpleName", values=[ProcessRollup2,SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+      //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Use regular expression to get the directory the process is runing from
       | regex(regex="^.*?(\\\\|\\/).*?(\\\\|\\/).*?(\\\\|\\/)(?<InstallDirectory>.*)$", field=FilePath)
@@ -204,14 +208,14 @@ widgets:
     end: now
     start: 1d
     width: 12
-    y: 13
+    y: 17
     interactions:
     - name: default
       urlEncodeArgs: true
       titleTemplate: Investigate Events
       urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BProcessRollup2%2C%20SyntheticProcessRollup2%5D)%0A%7C%20FileName%3D{{
-        fields.FileName }}%20FilePath%3D{{ fields.FilePath }}&repo=all&start={{ startTime
-        }}
+        fields.FileName }}%20FilePath%3D%22%2A{{ fields.FilePath }}%2A%22&repo=all&start={{
+        startTime }}
       openInNewTab: true
       type: customlink
     options:
@@ -229,14 +233,14 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+      //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
@@ -254,11 +258,11 @@ widgets:
       | Time := formatTime("%FT%TZ", field=@timestamp)
 
       // Create the output table
-      | groupBy([Time, aid, ComputerName, UserName, LocalIP, ParentBaseFileName, FileName, CommandLine, id]) | sort(Time, order=desc, limit=20000)
+      | groupBy([Time, aid, ComputerName, UserName, LocalIP, rmm_tool, ParentBaseFileName, FileName, CommandLine, id]) | sort(Time, order=desc, limit=20000)
     end: now
     start: 1d
     width: 12
-    y: 24
+    y: 28
     interactions:
     - name: default
       urlEncodeArgs: true
@@ -287,19 +291,20 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(#event_simpleName,values=[DnsRequest])
 
       // Match DomainName from lookup file
-      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true)
+      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/i
+      //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | DomainName =~ wildcard(?{DomainName=*}, ignoreCase=true)
       | ContextBaseFileName =~ wildcard(?{ContextBaseFileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Visualize data as sankey
       | sankey(source="ContextBaseFileName", target="DomainName")
@@ -310,17 +315,6 @@ widgets:
     title: Parent Process  --> RMM Domain Name
     isLive: false
     type: query
-  parameter-panel-1733982969000-0:
-    x: 0
-    y: 0
-    parameterIds:
-    - LocalIP
-    - RemoteIP
-    - RemotePort
-    height: 2
-    width: 12
-    title: RMM Network Filters
-    type: parameterPanel
   486bf94d-88e4-4458-aed6-8730ed64a3b5:
     x: 0
     height: 7
@@ -328,14 +322,14 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
-      | in(#event_simpleName,values=[PeFileWritten])
+      // Define EDR events to include
+      | in(#event_simpleName,values=[PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+      //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
@@ -347,11 +341,11 @@ widgets:
       | Time := formatTime("%FT%TZ", field=@timestamp)
 
       // Create the output table
-      | groupBy([Time, aid, ComputerName, UserName, LocalIP, ContextBaseFileName, FileName, FilePath, id]) | sort(Time, order=desc, limit=20000)
+      | groupBy([Time, aid, ComputerName, UserName, LocalIP, rmm_tool, ContextBaseFileName, FileName, FilePath, id]) | sort(Time, order=desc, limit=20000)
     end: now
     start: 1d
     width: 12
-    y: 31
+    y: 35
     interactions:
     - name: default
       urlEncodeArgs: true
@@ -379,14 +373,14 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(#event_simpleName,values=[ProcessRollup2, SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+      //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
@@ -402,11 +396,11 @@ widgets:
       }
 
       // Create the output table
-      | groupBy([_count, ParentBaseFileName, FileName, ComputerName, UserName], limit=max) | sort(_count, order=asc, limit=20000)
+      | groupBy([_count, rmm_tool, ParentBaseFileName, FileName, ComputerName, UserName], limit=max) | sort(_count, order=asc, limit=20000)
     end: now
     start: 1d
     width: 6
-    y: 8
+    y: 12
     interactions:
     - name: default
       urlEncodeArgs: true
@@ -421,7 +415,7 @@ widgets:
       configured-columns: {}
       row-numbers-enabled: false
     visualization: table-view
-    title: ' RMM Processes Executions'
+    title: RMM Processes Executions
     isLive: false
     type: query
   46ee5e88-3ee1-48bb-a9d4-58f8fc3e4819:
@@ -431,25 +425,41 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(#event_simpleName,values=[DnsRequest])
 
       // Match DomainName from lookup file
-      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true)
+      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/i
+      //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+
+      // Enrich with IOC lookup
+      | ioc:lookup(FirstIP4Record, type="ip_address", prefix="ip4_ioc")
+      | case {
+          ip4_ioc.detected!=true | ip4_ioc.detected:=false ;
+          * ;
+      }
+      | rename("ip4_ioc.detected", as="IP4IOCDetected")
+      | ioc:lookup(FirstIP6Record, type="ip_address", prefix="ip6_ioc")
+      | case {
+          ip6_ioc.detected!=true | ip6_ioc.detected:=false ;
+          * ;
+      }
+      | rename("ip6_ioc.detected", as="IP6IOCDetected")
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | DomainName =~ wildcard(?{DomainName=*}, ignoreCase=true)
       | ContextBaseFileName =~ wildcard(?{ContextBaseFileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Format timestamp
       | Time := formatTime("%FT%TZ", field=@timestamp)
 
       // Create the output table
-      | groupBy([Time, aid, ComputerName, LocalIP, ContextBaseFileName, DomainName, FirstIP4Record, id]) | sort(Time, order=desc, limit=20000)
+      | groupBy([Time, aid, ComputerName, LocalIP, rmm_tool, ContextBaseFileName, DomainName, FirstIP4Record, IP4IOCDetected, FirstIP6Record, IP6IOCDetected, id])
+      | sort(Time, order=desc, limit=20000)
     end: now
     start: 1d
     width: 12
@@ -481,11 +491,11 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
-      | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten])
+      // Define EDR events to include
+      | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
       //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
@@ -507,7 +517,7 @@ widgets:
     - name: default
       urlEncodeArgs: true
       titleTemplate: Investigate Events
-      urlTemplate: /investigate/search?end=&parameters=N4Igwg9gtgDgrgFwKYCcByBDKSQC4QBUIANCAKoDOqm2ehJIKUUA%2BghBADZ1EC%2BQA&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BProcessRollup2%2CSyntheticProcessRollup2%2CPeFileWritten%5D)%0A%7C%20match(file%3D%22rmm_tools.csv%22%2C%20field%3D%5BFileName%5D%2C%20column%3Drmm_binary%2C%20mode%3Dglob%2C%20strict%3Dtrue%2C%20ignoreCase%3Dtrue)%0A%7C%20ComputerName%20%3D~%20wildcard(%3F%7BComputerName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20UserName%20%3D~%20wildcard(%3F%7BUserName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20rmm_tool%20%3D~%20wildcard(%3F%7Brmm_tool%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20groupBy(%5Brmm_tool%2C%20ComputerName%5D%2C%20function%3Dcount(ComputerName%2C%20distinct%3Dtrue))%20%7C%20drop(_count)&repo=all&searchViewInteractions=NoXSA&start={{
+      urlTemplate: /investigate/search?end=&parameters=N4Igwg9gtgDgrgFwKYCcByBDKSQC4QBUIANCAKoDOqm2ehJIKUUA%2BghBADZ1EC%2BQA&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BProcessRollup2%2CSyntheticProcessRollup2%2CPeFileWritten%5D)%0A%7C%20match(file%3D%22rmm_tools.csv%22%2C%20field%3D%5BFileName%5D%2C%20column%3Drmm_binary%2C%20mode%3Dglob%2C%20strict%3Dtrue%2C%20ignoreCase%3Dtrue%2C%20include%3D%5Brmm_tool%5D)%0A%7C%20ComputerName%20%3D~%20wildcard(%3F%7BComputerName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20UserName%20%3D~%20wildcard(%3F%7BUserName%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20rmm_tool%20%3D~%20wildcard(%3F%7Brmm_tool%3D*%7D%2C%20ignoreCase%3Dtrue)%0A%7C%20groupBy(%5Brmm_tool%2C%20ComputerName%5D%2C%20function%3Dcount(ComputerName%2C%20distinct%3Dtrue))%20%7C%20drop(_count)&repo=all&searchViewInteractions=NoXSA&start={{
         startTime }}
       openInNewTab: true
       type: customlink
@@ -528,7 +538,7 @@ widgets:
       | #event_simpleName=/^Network/iF
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[ContextBaseFileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[ContextBaseFileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       //Filter Multicast
       | LocalIP!=224.0.0.*
@@ -549,11 +559,20 @@ widgets:
       | LocalIP =~ wildcard(?{LocalIP=*}, ignoreCase=true)
       | RemoteIP =~ wildcard(?{RemoteIP=*}, ignoreCase=true)
       | RemotePort =~ wildcard(?{RemotePort=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Format timestamp
       | Time := formatTime("%FT%TZ", field=@timestamp)
 
-      | groupBy([Time, aid, ComputerName, ContextBaseFileName, ConnectionDirection, Protocol, LocalIP, LocalPort, RemoteIP, RemotePort, Country, State, id], limit=max) | sort(field=Time, order=desc, limit=20000)
+      // Enrich with IOC lookup
+      | ioc:lookup(RemoteIP, type="ip_address")
+      | case {
+          ioc.detected!=true
+          | ioc.detected:=false ;
+          * ;
+      }
+      | rename("ioc.detected", as="IOCDetected")
+      | groupBy([Time, aid, ComputerName, rmm_tool, ContextBaseFileName, ConnectionDirection, Protocol, LocalIP, LocalPort, RemoteIP, RemotePort, IOCDetected, Country, State, id], limit=max) | sort(field=Time, order=desc, limit=20000)
     end: now
     start: 1d
     width: 12
@@ -586,19 +605,20 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(#event_simpleName,values=[DnsRequest])
 
       // Match DomainName from lookup file
-      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true)
+      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/i
+      //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | DomainName =~ wildcard(?{DomainName=*}, ignoreCase=true)
       | ContextBaseFileName =~ wildcard(?{ContextBaseFileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
       // Create time chart for file names
       | timeChart(DomainName, limit=10)
@@ -609,7 +629,7 @@ widgets:
       connect-points: false
       imputation: none
     visualization: time-chart
-    title: RMM Domain Occurences (Top 10)
+    title: RMM Domain Occurrences (Top 10)
     isLive: false
     type: query
   a4e822fe-69ae-4c2a-b571-c9ba7db2de97:
@@ -619,14 +639,14 @@ widgets:
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
-      | in(#event_simpleName,values=[PeFileWritten])
+      // Define EDR events to include
+      | in(#event_simpleName,values=[PeFileWritten,ELFFileWritten,MachOFileWritten])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+      //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
@@ -639,13 +659,29 @@ widgets:
     end: now
     start: 1d
     width: 6
-    y: 8
+    y: 12
     interactions:
-    - name: default
+    - conditions:
+      - argument: ''
+        fieldName: ContextBaseFileName
+        operator: not-equal
+      name: default
       urlEncodeArgs: true
       titleTemplate: Investigate Events
-      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20in(%23event_simpleName%2Cvalues%3D%5BPeFileWritten%5D)%0A%7C%20ContextBaseFileName%3D{{
-        fields.ContextBaseFileName }}%20FileName%3D{{ fields.FileName }}&repo=all&start={{
+      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20%23event_simpleName%3D%2FFileWritten%2Fi%0A%7C%20ContextBaseFileName%3D%22{{
+        fields.ContextBaseFileName }}%22%0A%7C%20FileName%3D%22{{ fields.FileName
+        }}%22&repo=all&start={{ startTime }}
+      openInNewTab: true
+      type: customlink
+    - conditions:
+      - argument: ''
+        fieldName: ContextBaseFileName
+        operator: equal
+      name: default2
+      urlEncodeArgs: true
+      titleTemplate: Investigate Events
+      urlTemplate: /investigate/search?end=&query=%23repo%3D%22base_sensor%22%0A%7C%20%23event_simpleName%3D%2FFileWritten%2Fi%0A%7C%20ComputerName%3D{{
+        fields.ComputerName }}%0A%7C%20FileName%3D%22{{ fields.FileName }}%22&repo=all&start={{
         startTime }}
       openInNewTab: true
       type: customlink
@@ -657,22 +693,74 @@ widgets:
     title: RMM Files Written
     isLive: false
     type: query
+  parameter-panel-1733982969000-0:
+    x: 0
+    y: 0
+    parameterIds:
+    - LocalIP
+    - RemoteIP
+    - RemotePort
+    height: 2
+    width: 12
+    title: RMM Network Filters
+    type: parameterPanel
+  18b0e530-1332-4d49-af2f-4261c5560cc7:
+    x: 0
+    y: 8
+    height: 4
+    queryString: |-
+      // Define the repository
+      #repo="base_sensor"
+
+      // Define EDR events to include
+      | in(#event_simpleName,values=[ProcessRollup2,SyntheticProcessRollup2,PeFileWritten,ELFFileWritten,MachOFileWritten])
+
+      // Match FileNames from lookup file
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
+
+      // Define the list of processes to exclude
+      //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+
+      // Define Filters
+      | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
+      | UserName =~ wildcard(?{UserName=*}, ignoreCase=true)
+      | FileName =~ wildcard(?{FileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true, includeEverythingOnAsterisk=true)
+
+      // Get the unique number of hosts running RMM Tools
+      // Graph with Gauge
+      | groupBy([ComputerName], function=[collect([rmm_tool, UserName, ContextBaseFileName, FileName]), count(rmm_tool, distinct=true, as=TotalTools)], limit=max)
+
+      // Filter computers with more than 1 RMM tool to detect misuse
+      | TotalTools > 1
+      | sort(TotalTools, order=DESC, limit=max)
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Multiple RMM tools per host
+    isLive: false
+    type: query
   fbb61e10-574f-4ce7-82e3-d0be2023c7e9:
     x: 6
-    y: 18
+    y: 22
     height: 6
     queryString: |-
       // Define the repository
       #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(field="#event_simpleName", values=[ProcessRollup2,SyntheticProcessRollup2])
 
       // Match FileNames from lookup file
-      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | match(file="rmm_tools.csv", field=[FileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
+      //| FileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | UserName =~ wildcard(?{UserName=*}, ignoreCase=true)
@@ -690,31 +778,40 @@ widgets:
     type: query
   b5100429-4de3-44f1-8a91-9be38c8dbc6a:
     x: 0
-    description: Look for potentially renamed binaries. DNS doesn't lie.
+    description: Look for potentially renamed binaries. DNS doesn't lie. IOC enrichment
+      has been added to aid analysis.
     height: 5
     queryString: |
       // Define the repository
-      #repo="base_sensor"
+      | #repo="base_sensor"
 
-      // Define EDR events to inclue
+      // Define EDR events to include
       | in(#event_simpleName,values=[DnsRequest])
 
       // Match RMM domains from processes that are not RMM binaries to look for potential renamed binaries
       // Match DomainName from lookup file
-      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true)
+      | match(file="rmm_domains.csv", field=[DomainName], column=rmm_domain, mode=glob, strict=true, include=[rmm_tool])
+
       // Match processes not in the lookup file
-      | !match(file="rmm_tools.csv", field=[ContextBaseFileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true)
+      | !match(file="rmm_tools.csv", field=[ContextBaseFileName], column=rmm_binary, mode=glob, strict=true, ignoreCase=true, include=[rmm_tool])
 
       // Define the list of processes to exclude
-      | ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/i
+      //| ContextBaseFileName!=/chrome\.exe|msedge.*\.exe|firefox.*\.exe/iF
 
       // Define Filters
       | ComputerName =~ wildcard(?{ComputerName=*}, ignoreCase=true)
       | DomainName =~ wildcard(?{DomainName=*}, ignoreCase=true)
       | ContextBaseFileName =~ wildcard(?{ContextBaseFileName=*}, ignoreCase=true)
+      | rmm_tool =~ wildcard(?{rmm_tool=*}, ignoreCase=true)
 
+      // IOC enrichment to help detect false positives
+      | ioc:lookup(field=DomainName, type=domain, confidenceThreshold="Unverified")
+      | case {
+        ioc.detected=true | rename(field="ioc[0].malicious_confidence", as="malicious_confidence") | rename(field="ioc[0].labels", as="ioc_labels");
+        ioc.detected!=true | ioc.detected:=false | malicious_confidence:="" | ioc_labels:=""
+      }
       // Create the output table
-      | groupBy([_count, ContextBaseFileName, DomainName, ComputerName]) | sort(_count, order=asc, limit=20000)
+      | groupBy([_count, ContextBaseFileName, DomainName, ComputerName, ioc.detected, malicious_confidence, ioc_labels], limit=max) | sort([ioc.detected,_count], order=desc, limit=20000)
     end: now
     start: 1d
     width: 6
@@ -737,10 +834,10 @@ widgets:
           color: '#C93637'
       row-numbers-enabled: false
     visualization: table-view
-    title: RMM Domains from Non-RMM Processes
+    title: RMM Domains from Non-RMM Processes + IOC enrichment
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.17.0
+$schema: https://schemas.humio.com/dashboard/v0.20.0
 parameters:
   ContextBaseFileName:
     defaultValue: '*'
@@ -777,7 +874,7 @@ parameters:
     type: file
     defaultValue: '*'
     width: 1
-    order: 0
+    order: 1
     valueField: rmm_tool
   LocalIP:
     label: LocalIP
@@ -799,6 +896,6 @@ parameters:
     width: 1
   ComputerName:
     defaultValue: '*'
-    order: 1
+    order: 0
     type: text
     width: 1
