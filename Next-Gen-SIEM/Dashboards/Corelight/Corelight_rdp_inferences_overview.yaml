@@ -1,0 +1,348 @@
+name: Corelight rdp inferences overview
+description: ''
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- Security Workflow
+widgets:
+  5843cb6c-a01e-45a1-800f-46016a22432f:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(x, function=tail(limit=max), limit=max)], var="x")
+      | timechart(span=auto, series=x, function=count())
+      | rename([[x, Inferences]])
+    end: now
+    start: 1d
+    width: 6
+    y: 1
+    interactions:
+    - name: Details of Inferences Over Time
+      titleTemplate: Details of {{ fields.Inferences }}
+      queryString: |-
+        #Vendor = corelight and #event.module = ndr
+        | #event.dataset = ndr.rdp
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | array:contains("Vendor.inferences[]", value=?inference)
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        inference: '["{{ fields.Inferences }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: bottom
+      gradient: false
+      interpolation: linear
+      showOthers: true
+      xAxisTitle: ''
+      legendLabelOverflow: truncate
+      legend: true
+      connect-points: false
+      yAxisScale: linear
+      plotType: area
+      maxSeriesCount: 10
+      regression: false
+      show-utc: false
+      imputation: none
+      yAxisUnit: ''
+      series: {}
+      horizontalPlotLineLabel: ''
+      showDataPoints: false
+      yAxisTitle: ''
+      stacking: normal
+    visualization: time-chart
+    title: Inferences over time
+    isLive: false
+    type: query
+  03ea5154-bcac-49a1-bf73-928902071f42:
+    x: 4
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | event.outcome != /success/i
+      | count()
+    end: now
+    start: 1d
+    width: 4
+    y: 5
+    interactions:
+    - name: Details of Failed Connections
+      titleTemplate: Details of failed connections
+      queryString: |
+        #Vendor = corelight and #event.module = ndr
+        | #event.dataset = ndr.rdp
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | event.outcome != /success/i
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+      decimal-places: 2
+      color-method: static
+      use-colorised-thresholds: false
+      value-format: raw
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Failed connections
+    isLive: false
+    type: query
+  c0e2293d-84de-48d4-89ee-98cf95a3085f:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(x, limit=max)], var="x")
+      | rename([[x, Inferences],[_count,Count]])
+    end: now
+    start: 1d
+    width: 6
+    y: 1
+    interactions:
+    - name: Details of Inferences
+      titleTemplate: Details of {{ fields.Inferences }}
+      queryString: |-
+        #Vendor = corelight and #event.module = ndr
+        | #event.dataset = ndr.rdp
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | array:contains("Vendor.inferences[]", value=?inference)
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        inference: '["{{ fields.Inferences }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      maxSeriesCount: 10
+      innerRadius: 0
+      legendPosition: right
+      legendTitle: Inferences
+    visualization: pie-chart
+    title: Inferences
+    isLive: false
+    type: query
+  10f6c940-6510-4f61-81be-e2a30028e18a:
+    x: 0
+    height: 2
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | event.outcome = /success/i
+      | count()
+    end: now
+    start: 1d
+    width: 4
+    y: 5
+    interactions:
+    - name: Details of Successful Connections
+      titleTemplate: Details of successful connections
+      queryString: |-
+        #Vendor = corelight and #event.module = ndr
+        | #event.dataset = ndr.rdp
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | event.outcome = /success/i
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      ct:
+      - bg: inherit
+        txt: var(--single-value-trend-negative-text-color)
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+      - bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+      - bg: inherit
+        txt: var(--single-value-warning-text-color)
+      decimal-places: 2
+      color-method: static
+      use-colorised-thresholds: false
+      value-format: raw
+      default:
+        bg: inherit
+        txt: var(--single-value-trend-positive-text-color)
+    visualization: single-value
+    title: Successful connections
+    isLive: false
+    type: query
+  4a4ff7c0-ca52-4ea4-a39d-d28d6cfedabd:
+    x: 0
+    y: 11
+    height: 5
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | array:reduceAll(array="Vendor.inferences[]", function=[groupBy(inferences, function=tail(limit=max), limit=max)], var="inferences")
+      | groupBy([@timestamp,observer.hostname,user.name,source.ip,destination.ip,destination.port,event.outcome,inferences,@rawstring], limit=max)
+      | match(file=corelight_inferences_description.csv, column=Code,field=inferences, include=Name)
+      | rename([["inferences","Inference"],[user.name, "User Name"],[observer.hostname,"Corelight Sensor"],[source.ip,"Source IP"],[destination.ip,"Destination IP"],[destination.port,"Destination Port"],[event.outcome,"Auth Success"],[@rawstring,"Raw Logs"], [Name, "Inference Name"]])
+      | default(value="unknown", field=[@timestamp, "User Name","Corelight Sensor","Source IP","Destination IP","Destination Port","Inference","Inference Name","Auth Success","Raw Logs"])
+      | formatTime(format="%F %r", as="Time")
+      | select([Time, "User Name","Corelight Sensor","Source IP","Destination IP","Destination Port","Inference","Inference Name","Auth Success","Raw Logs"])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: RDP connection detail
+    isLive: false
+    type: query
+  e57a3bc5-2a25-482d-afcd-005b12d212b5:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | top(Vendor.security_protocol)
+    end: now
+    start: 1d
+    width: 8
+    y: 7
+    interactions:
+    - name: Details of Security Protocol Used
+      titleTemplate: Details of {{ fields.Vendor.security_protocol }}
+      queryString: |-
+        #Vendor = corelight and #event.module = ndr
+        | #event.dataset = ndr.rdp
+        | in(field=observer.hostname, values=[?system_name])
+        | ?additional_filter
+        | Vendor.security_protocol = ?protocol
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        protocol: '["{{ fields.Vendor.security_protocol }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      enableTrellis: false
+      maxSeriesCount: 10
+      innerRadius: 0
+      legendPosition: right
+      legendTitle: Security Protocols
+    visualization: pie-chart
+    title: Security protocol used
+    isLive: false
+    type: query
+  0138ce0e-6702-4a1f-8c12-12a6ca3fd029:
+    x: 8
+    height: 6
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | top(field=["user.name",event.outcome],limit=20)
+      | default(value="no_value", field=[event.outcome,user.name])
+      | rename([[event.outcome,"Auth Success"],[user.name,"Connecting User"],[_count,Count]])
+    end: now
+    start: 1d
+    width: 4
+    y: 5
+    interactions:
+    - name: Details of Connecting Users
+      titleTemplate: Details of user '{{ fields["Connecting User"] }}' and auth success
+        '{{ fields["Auth Success"] }}'
+      queryString: "#Vendor = corelight and #event.module = ndr\n| #event.dataset\
+        \ = ndr.rdp\n| in(field=observer.hostname, values=[?system_name])  \n| ?additional_filter\n\
+        | default(value=\"no_value\", field=[event.outcome])\n| event.outcome = ?auth_success\
+        \ AND user.name = ?user_name"
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        auth_success: '["{{ fields[\"Auth Success\"] }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+        user_name: '["{{ fields[\"Connecting User\"] }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Connecting users
+    isLive: false
+    type: query
+  note-1734426431234-0:
+    x: 0
+    y: 0
+    height: 1
+    text: ''
+    width: 12
+    title: RDP inferences overview
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  additional_filter:
+    label: Additional filter
+    order: 2
+    type: text
+    defaultValue: '*'
+    width: 1
+  system_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and #event.module = ndr
+      | #event.dataset = ndr.rdp
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: observer.hostname
