@@ -1,6 +1,9 @@
 // Fleshed out query for clickfix detection
 
-#event_simpleName=ProcessRollup2 ParentBaseFileName=explorer.exe
+#event_simpleName=ProcessRollup2 
+| #repo=base_sensor
+| ParentBaseFileName=explorer.exe
+| TargetProcessId=*
 |in(field="FileName",ignoreCase=true, values=[
     *powershell*,*pwsh*,*cmd*,*mshta*,*wscript*,*cscript*,
     *rundll32*,*regsvr32*,*wmic*,*msbuild*,*installutil*,
@@ -12,8 +15,5 @@
     *invoke-expression*,*reflection.assembly*,*frombase64string*,
     *start-process*,*comobject*,*new-object*,*datetime*,*encoded*
 ])
-| case {
- TargetProcessId=* | process_tree := format("[PT](/graphs/process-explorer/tree?_cid=%s&id=pid:%s:%s&investigate=true&pid=pid:%s:%s)",field=["#repo.cid","aid","TargetProcessId","aid","TargetProcessId"]);
- *
-}
-|groupBy([process_tree,ComputerName,ParentBaseFileName,FileName,CommandLine])
+| process_tree := format("[PT](/graphs/process-explorer/tree?_cid=%s&id=pid:%s:%s&investigate=true&pid=pid:%s:%s)", field=["#repo.cid","aid","TargetProcessId","aid","TargetProcessId"])
+| groupBy([process_tree,ComputerName,ParentBaseFileName,FileName,CommandLine], limit=max)
