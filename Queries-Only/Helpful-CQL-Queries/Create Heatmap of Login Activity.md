@@ -1,7 +1,7 @@
 Accounts for when events do not contain all hour/day permutations:
 
 ```
-#event_simpleName=UserLogon \\UserName="demo"
+#event_simpleName=UserLogon //UserName="name@example.com"
 | UserName=~wildcard(?{UserName="*"}, ignoreCase=true)
 | LogonTime:=LogonTime*1000
 | time:dayOfWeekName(LogonTime)
