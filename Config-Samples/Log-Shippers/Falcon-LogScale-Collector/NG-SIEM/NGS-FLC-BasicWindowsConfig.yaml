@@ -19,6 +19,9 @@ sources:
       - name: System
       - name: Windows PowerShell
       - name: ForwardedEvents
+    ## Format options listed here: 
+    ## https://library.humio.com/falcon-logscale-collector/log-collector-config-advanced-example.html#log_collector_config_example-wineventlog
+    format: xmlOnly
     sink: next-gen-siem-windows
 
   ## Collect syslog udp 1514.
@@ -42,7 +45,6 @@ sinks:
     ## Replace with your specified ingest token.
     token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
-    ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
     ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
@@ -55,7 +57,6 @@ sinks:
     ## Replace with your specified ingest token.
     token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     ## Replace with the "Ingest URL" on the FLC download page. It must include the "https://" at the beginning.
-    ## NOTE: you MUST REMOVE the "services/collector" from the URL if it exists.  
     url: https://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.ingest.YY-Y.crowdstrike.com
     ## Optional: maxBatchsize generally handled automatically by FLC but can be manually set if needed
     ## If set, as of Aug 2025, max payload before compression limit is 32M, minus 2M to account for meta-data (plus 2M buffer)
