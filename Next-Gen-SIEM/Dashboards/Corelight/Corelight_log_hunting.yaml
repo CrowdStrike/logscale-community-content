@@ -1,0 +1,199 @@
+name: Corelight log hunting
+description: ''
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- Security Workflow
+widgets:
+  17d56b3f-fe43-4372-bba3-f08d75f88a3f:
+    x: 0
+    height: 4
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | !in(field=Vendor._path, values=[corelight_audit_log,corelight_metrics_bro,corelight_metrics_cpu,corelight_metrics_disk,corelight_metrics_docker,
+          corelight_metrics_iface,corelight_metrics_memory,corelight_metrics_s,corelight_metrics_smartpcap,
+          corelight_metrics_suricata,corelight_metrics_system,corelight_metrics_utilizationcorelight_metrics_zeek_doctor,
+          corelight_overall_capture_losscorelight_pipeline_test,corelight_service_status])
+      | in(Vendor._path,values=[?sourcetype])
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | source.ip =?{filter=*} OR destination.ip=?{filter=*} OR event.id=?{filter=*} OR Vendor.fuid=?{filter=*} OR network.community_id=?{filter=*}
+      | top(Vendor._path)
+    end: now
+    start: 1d
+    width: 6
+    y: 1
+    interactions:
+    - name: Details of filtered corelight data for this unique entity
+      titleTemplate: Details of Log type {{ fields.Vendor._path }}
+      queryString: "#Vendor = corelight and #event.module = \"ndr\"\n| in(field=\"observer.hostname\", values=[?system_name])\n\
+        | ?additional_filter \n| source.ip =?filter OR destination.ip=?filter OR event.id=?filter\
+        \ OR Vendor.fuid=?filter OR network.community_id=?filter\n| Vendor._path =\
+        \ ?sourcetype\n"
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        filter: '["{{ parameters.filter }}"]'
+        sourcetype: '["{{ fields.Vendor._path }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      series: {}
+      maxSeriesCount: 10
+      innerRadius: 0
+      legendPosition: right
+      legendTitle: Source Types
+    visualization: pie-chart
+    title: Filtered corelight data for this unique entity
+    isLive: false
+    type: query
+  2d38934a-a9cf-47b3-baac-8640233e3aa9:
+    x: 0
+    y: 5
+    height: 6
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | !in(field=Vendor._path, values=[corelight_audit_log,corelight_metrics_bro,corelight_metrics_cpu,corelight_metrics_disk,corelight_metrics_docker,
+          corelight_metrics_iface,corelight_metrics_memory,corelight_metrics_s,corelight_metrics_smartpcap,
+          corelight_metrics_suricata,corelight_metrics_system,corelight_metrics_utilizationcorelight_metrics_zeek_doctor,
+          corelight_overall_capture_losscorelight_pipeline_test,corelight_service_status])
+      | in(Vendor._path,values=[?sourcetype])
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | source.ip =?{filter=*} OR destination.ip=?{filter=*} OR event.id=?{filter=*} OR Vendor.fuid=?{filter=*} OR network.community_id=?{filter=*}
+      | formatTime(format="%F %r", as="Time")
+      | select([Time, "Vendor._path", "source.ip", "destination.ip", "destination.port", @rawstring])
+      | rename([[Vendor._path,"Source Type"],[source.ip,"Source IP"],[destination.ip,"Destination IP"],[destination.port,"Destination Port"],[@rawstring,"Raw Data"]])
+    end: now
+    start: 1d
+    width: 12
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Log data
+    isLive: false
+    type: query
+  88cb7e27-1710-47c4-b716-d80a037cff10:
+    x: 6
+    height: 4
+    queryString: |
+      #Vendor = corelight and #event.module = ndr
+      | !in(field=Vendor._path, values=[corelight_audit_log,corelight_metrics_bro,corelight_metrics_cpu,corelight_metrics_disk,corelight_metrics_docker,
+          corelight_metrics_iface,corelight_metrics_memory,corelight_metrics_s,corelight_metrics_smartpcap,
+          corelight_metrics_suricata,corelight_metrics_system,corelight_metrics_utilizationcorelight_metrics_zeek_doctor,
+          corelight_overall_capture_losscorelight_pipeline_test,corelight_service_status])
+      | in(field=observer.hostname, values=[?system_name])
+      | top(Vendor._path,limit=10)
+    end: now
+    start: 1d
+    width: 6
+    y: 1
+    interactions:
+    - name: Details of all corelight data for this unique entity
+      titleTemplate: Details of log type {{ fields.Vendor._path }}
+      queryString: |
+        #Vendor = corelight and #event.module = ndr
+        | in(field=observer.hostname, values=[?system_name])
+        | Vendor._path = ?sourcetype
+      useWidgetTimeWindow: true
+      arguments:
+        sourcetype: '["{{ fields.Vendor._path }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: bottom
+      series: {}
+      labelAngle: 0
+      valuesOnBars: true
+      xAxisTitle: Source Types
+      barChartType: grouped
+      legend: false
+      yAxisTitle: Count
+      barChartOrientation: horizontal
+      labelLimit: 44
+      maxSeriesCount: 10
+      seriesPadding: 0
+      sortOrder: descending
+      orderBy: _count
+      labelAlign: right
+      withYAxisTitle: false
+      categoryPadding: 0.05
+      inputDataFormat: ''
+    visualization: bar-chart
+    title: All corelight data for this unique entity (Only time range filter applies
+      to this graph)
+    isLive: false
+    type: query
+  note-1734958798038-0:
+    x: 0
+    y: 0
+    height: 1
+    text: ''
+    width: 12
+    title: Log hunting
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  additional_filter:
+    label: Additional filter
+    order: 4
+    type: text
+    defaultValue: '*'
+    width: 1
+  filter:
+    label: IP, uid, fuid, or community_id
+    order: 3
+    type: text
+    defaultValue: '*'
+    width: 1
+  sourcetype:
+    label: Source type
+    query: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=observer.hostname, values=[?system_name])
+      | !in(field=Vendor._path, values=[corelight_audit_log,
+                                          corelight_metrics_bro,
+                                          corelight_metrics_cpu,
+                                          corelight_metrics_disk,
+                                          corelight_metrics_docker,
+                                          corelight_metrics_iface,
+                                          corelight_metrics_memory,
+                                          corelight_metrics_s,
+                                          corelight_metrics_smartpcap,
+                                          corelight_metrics_suricata,
+                                          corelight_metrics_system,
+                                          corelight_metrics_utilization,
+                                          corelight_metrics_zeek_doctor,
+                                          corelight_overall_capture_loss,
+                                          corelight_pipeline_test,
+                                          corelight_service_status])
+      | groupBy(Vendor._path, function=[])
+    timeInterval: 1d
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 2
+    valueField: Vendor._path
+  system_name:
+    label: Corelight sensor
+    query: |
+      #Vendor = corelight and #event.module = ndr
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: observer.hostname
