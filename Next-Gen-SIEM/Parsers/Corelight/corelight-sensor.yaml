@@ -3,6 +3,104 @@ fieldsToBeRemovedBeforeParsing: []
 testCases:
 - assertions:
   - fieldsHaveValues:
+      event.type[0]: info
+      vulnerability.description: Detection of unusual network connection patterns
+      event.id: CxR4Nz2MwCdKqh9Fj3
+      '#Vendor': corelight
+      '#event.kind': event
+      event.category[0]: malware
+      '#event.dataset': ndr.anomaly
+      vulnerability.classification: unusual_connection_pattern
+    outputEventIndex: 0
+  event:
+    rawString: |2-
+
+       {
+         "_path": "anomaly",
+         "uid": "CxR4Nz2MwCdKqh9Fj3",
+         "use_case": "unusual_connection_pattern",
+         "use_case_description": "Detection of unusual network connection patterns",
+         "entity": "192.168.2.45",
+         "original_entity": "server-db-prod-01",
+         "entity_training_items": "[\"10.0.0.5\",\"10.0.0.6\",\"172.16.1.10\"]",
+         "item": "45.33.21.98",
+         "item_score": 0.87,
+         "item_assoc_entities": "[\"192.168.2.46\",\"192.168.2.47\"]",
+         "item_assoc_entities_similarity": "",
+         "ignorable": false,
+         "history_days": 14,
+         "history": 1209600,
+         "nn1_entities": "[\"192.168.2.40\",\"192.168.2.41\"]",
+         "nn1_entity_similarity": 0.92,
+         "nn1_train_items": "[\"10.0.0.7\",\"10.0.0.8\"]",
+         "nn1_pred_items": "[\"45.33.21.99\",\"45.33.21.100\"]",
+         "nn2_entities": "[\"192.168.2.42\",\"192.168.2.43\"]",
+         "nn2_entity_similarity": 0.89,
+         "nn2_train_items": "[\"10.0.0.9\",\"10.0.0.10\"]",
+         "nn2_pred_items": "[\"45.33.21.101\",\"45.33.21.102\"]",
+         "nn3_entities": "[\"192.168.2.44\",\"192.168.2.46\"]",
+         "nn3_entity_similarity": 0.85,
+         "nn3_train_items": "[\"10.0.0.11\",\"10.0.0.12\"]",
+         "nn3_pred_items": "[\"45.33.21.103\",\"45.33.21.104\"]",
+         "nn4_entities": "[\"192.168.2.47\",\"192.168.2.48\"]",
+         "nn4_entity_similarity": 0.82,
+         "nn4_train_items": "[\"10.0.0.13\",\"10.0.0.14\"]",
+         "nn4_pred_items": "[\"45.33.21.105\",\"45.33.21.106\"]",
+         "nn5_entities": "[\"192.168.2.49\",\"192.168.2.50\"]",
+         "nn5_entity_similarity": 0.79,
+         "nn5_train_items": "[\"10.0.0.15\",\"10.0.0.16\"]",
+         "nn5_pred_items": "[\"45.33.21.107\",\"45.33.21.108\"]",
+         "nn6_entities": "[\"192.168.2.51\",\"192.168.2.52\"]",
+         "nn6_entity_similarity": 0.76,
+         "nn6_train_items": "[\"10.0.0.17\",\"10.0.0.18\"]",
+         "nn6_pred_items": "[\"45.33.21.109\",\"45.33.21.110\"]",
+         "nn7_entities": "[\"192.168.2.53\",\"192.168.2.54\"]",
+         "nn7_entity_similarity": 0.73,
+         "nn7_train_items": "[\"10.0.0.19\",\"10.0.0.20\"]",
+         "nn7_pred_items": "[\"45.33.21.111\",\"45.33.21.112\"]",
+         "nn8_entities": "[\"192.168.2.55\",\"192.168.2.56\"]",
+         "nn8_entity_similarity": 0.7,
+         "nn8_train_items": "[\"10.0.0.21\",\"10.0.0.22\"]",
+         "nn8_pred_items": "[\"45.33.21.113\",\"45.33.21.114\"]",
+         "nn9_entities": "[\"192.168.2.57\",\"192.168.2.58\"]",
+         "nn9_entity_similarity": 0.67,
+         "nn9_train_items": "[\"10.0.0.23\",\"10.0.0.24\"]",
+         "nn9_pred_items": "[\"45.33.21.115\",\"45.33.21.116\"]",
+         "nn10_entities": "[\"192.168.2.59\",\"192.168.2.60\"]",
+         "nn10_entity_similarity": 0.64,
+         "nn10_train_items": "[\"10.0.0.25\",\"10.0.0.26\"]",
+         "nn10_pred_items": "[\"45.33.21.117\",\"45.33.21.118\"]",
+         "ts": "2025-10-07T10:40:51.750992Z"
+       }
+- assertions:
+  - fieldsHaveValues:
+      '@timestamp': '1759833651750'
+      event.type[0]: connection
+      event.id: Cj7Uc44USVbhN5Lhx9
+      '#Vendor': corelight
+      '#event.kind': event
+      event.category[0]: network
+      '#event.dataset': ndr.first_seen
+      '#event.module': ndr
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+                      "_path": "first_seen",
+                      "ts": "2025-10-07T10:40:51.750992Z",
+                      "uid": "Cj7Uc44USVbhN5Lhx9",
+                      "use_case": "network_connection",
+                      "use_case_description": "Detect unusual network connections",
+                      "entity": "192.168.1.100",
+                      "original_entity": "workstation-1234",
+                      "entity_training_items": ["10.0.0.1", "10.0.0.2", "172.16.0.5"],
+                      "item": "203.0.113.45",
+                      "first_seen_type": "NEW_CONNECTION",
+                      "history_days": 30,
+                      "history": 2592000
+                  }
+- assertions:
+  - fieldsHaveValues:
       Vendor.AA: 'false'
       Vendor.answers[2]: 100.100.100.101
       event.id: CBXYzu22zhEPIAAh6g
@@ -1652,7 +1750,7 @@ testCases:
       '#event.dataset': ndr.analyzer
       source.ip: 127.0.0.1
       server.ip: 127.0.0.1
-      event.type[0]: error
+      event.type[0]: info
       observer.hostname: Lab-AP200
       server.port: '443'
       destination.port: '443'
@@ -2213,7 +2311,10 @@ script: |-
   // Documentation: https://docs.zeek.org/en/master/log-formats.html#zeek-json-format-logs
 
   parseJson(prefix="Vendor.", excludeEmpty=true, handleNull=discard)
-  | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXX", field=Vendor._write_ts)
+  | case {
+      Vendor._write_ts = * | parseTimestamp("yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXX", field=Vendor._write_ts);
+      * | parseTimestamp(field=Vendor.ts, format="yyyy-MM-dd'T'HH:mm:ss[.SSSSSS]XXX")
+  }
 
   // For later use
   | _path := Vendor._path
@@ -2224,12 +2325,12 @@ script: |-
   /************************************************************
   ****** Static Metadata Definitions
   ************************************************************/
-  | Parser.version := "3.0.1"
+  | Parser.version := "3.1.0"
   | Cps.version := "1.1.0"
   | Vendor := "corelight"
   // Corelight Sensor is part of the Corelight's OpenNDR
   | event.module := "ndr"
-  | ecs.version := "9.0.0"
+  | ecs.version := "9.1.0"
   | event.kind := "event"
 
   // #endregion
@@ -2384,7 +2485,7 @@ script: |-
       ;
       in(values=["analyzer", "reporter"]) =>
           array:append("event.category[]", values=["process"])
-          | array:append("event.type[]", values=["error"])
+          | array:append("event.type[]", values=["info"])
       ;
       in(values=["sip", "smb_mapping", "snmp", "smtp", "socks", "ssh", "ssl*", "x509*", "ipsec", "ecat_arp*", "bacnet*", "enip"]) =>
           array:append("event.category[]", values=["network"])
@@ -2413,9 +2514,23 @@ script: |-
           array:append("event.category[]", values=["network"])
           | array:append("event.type[]", values=["connection"])
       ;
+      "anomaly" =>
+          array:append("event.category[]", values=["malware"])
+          | array:append("event.type[]", values=["info"])
+      ;
+      "first_seen" =>
+          array:append("event.category[]", values=["network"])
+          | array:append("event.type[]", values=["connection"])
+      ;
       * => *;
   }
-
+  | _path match {
+      in(values=["anomaly", "first_seen"]) =>
+          vulnerability.classification := Vendor.use_case
+          | vulnerability.description := Vendor.use_case_description
+      ;
+      * => *;
+  }
   // Log Fields
   | case {
       Vendor.level = * | Vendor.level = /::(?<log.level>.*)/;
@@ -2565,7 +2680,7 @@ script: |-
   | host.os.name := Vendor.os
 
   // Network Fields
-  | network.transport := Vendor.proto
+  | network.transport := lower(Vendor.proto)
   | network.inner.vlan.id := Vendor.inner_vlan
   | network.bytes := source.bytes + destination.bytes
   | network.protocol := coalesce([Vendor.source, Vendor.service])
