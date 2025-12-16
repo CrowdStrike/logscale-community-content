@@ -744,7 +744,7 @@ widgets:
       |                                                                                                                                       Dashboard                                                                                                                                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
       | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
       |                                             [Next-Gen SIEM Reference Dashboard - v1.9.2](/investigate/search/custom-dashboards/Next-Gen%20SIEM%20Reference%20Dashboard%20-%20v1.9.2?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                             | The reference dashboard features many different styles of SOC analysis and threat hunting use cases. The first two sections show instructions and basic detection metrics. The remaining sections show common scenarios that may be of interest for investigations, including matching to IOCs, analyzing logon events, and looking at high entropy DNS names. You can use the dashboard to explore your data, or as a reference to make your own threat hunting experiences.         |
-      | [CrowdStrike Next-Gen SIEM - Correlation Rule Template Discovery](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Correlation%20Rule%20Template%20Discovery?packageScope=falcon%2Fngsiem-content-crt&repoOrViewName=search-all&sharedTime=false&start=15m)  | This dashboard provides a comprehensive view of CrowdStrike's Next-Gen SIEM out-of-the-box correlation rule templates, enabling customers to discover content that aligns with their existing security log sources, detection requirements, and strategy.                                                                                                                                                                                                                             |
+      | [CrowdStrike Next-Gen SIEM - Rule Template Discovery](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Rule%20Template%20Discovery?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-crt)  | This dashboard provides a comprehensive view of CrowdStrike's Next-Gen SIEM out-of-the-box correlation rule templates, enabling customers to discover content that aligns with their existing security log sources, detection requirements, and strategy.                                                                                                                                                                                                                             |
       |                                                                            [Case Management](/investigate/search/custom-dashboards/Case%20management?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                                            | Monitoring dashboard of metrics around Cases, including: active and total cases, SLA statuses, case user assignments, and more.                                                                                                                                                                                                                                                                                                                                                       |
       |                                                                     [Fusion SOAR Execution](/investigate/search/custom-dashboards/Fusion%20SOAR%20Execution?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                                     | Visualizes your workflow execution data in a variety of ways to help you keep track of what’s happening in your system.                                                                                                                                                                                                                                                                                                                                                               |
       |                          [CrowdStrike - Endpoint - AI Service Usage Monitoring](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20AI%20Service%20Usage%20Monitoring?packageScope=falcon%2Fngsiem-content-ai&repoOrViewName=search-all)                           | As organizations increasingly adopt AI technologies, understanding AI usage becomes critical for maintaining security and compliance. CrowdStrike's AI Monitoring Dashboard provides comprehensive visibility into AI service interactions, data movements, and potential risks across your environment, enabling informed security decisions through detailed insights into AI-related activities.                                                                                   |
@@ -842,7 +842,7 @@ widgets:
     text: |-
       Rather than having to turn off tons of rules creating false-positives alerts, CrowdStrike provides rule templates for many supported data sources to help organizations start monitoring logs for security concerns quickly and meaningfully.
 
-      To discover rule templates that align to your data sources, check out the [**CrowdStrike Next-Gen SIEM - Correlation Rule Template Discovery**](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Correlation%20Rule%20Template%20Discovery?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-crt) dashboard.
+      To discover rule templates that align to your data sources, check out the [**CrowdStrike Next-Gen SIEM - Rule Template Discovery**](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Rule%20Template%20Discovery?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-crt) dashboard.
       - ⓘ *A walkthrough of this dashboard is available on [**YouTube**](https://www.youtube.com/watch?v=9N6m_NErrns)*
 
       Click [HERE](/xdr/rules/templates) to view all rule templates developed by CrowdStrike. You can select [**Create rule**] to turn the template into an active rule to begin monitoring your data.
@@ -957,6 +957,7 @@ widgets:
     width: 4
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns: {}
       row-numbers-enabled: false
     visualization: table-view
@@ -1026,6 +1027,7 @@ widgets:
     width: 4
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns:
         ComputerName:
           width: 150
@@ -1041,8 +1043,8 @@ widgets:
     text: |-
       ```
       DASHBOARD INFO
-          Version: 1.2.0
-          Last Updated: 2025-10-29
+          Version: 1.2.1
+          Last Updated: 2025-12-16
       ```
     width: 4
     title: ''
@@ -1417,6 +1419,7 @@ widgets:
     width: 12
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns:
         Dashboard Name:
           color: '#29a34bff'
@@ -1535,6 +1538,7 @@ widgets:
     width: 6
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns:
         ioc.ip:
           color: '#AFDDF4'
@@ -1669,6 +1673,7 @@ widgets:
     width: 4
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns: {}
       row-numbers-enabled: false
     visualization: table-view
@@ -1738,6 +1743,7 @@ widgets:
       type: searchlink
     options:
       cell-overflow: truncate
+      column-overflow: truncate
       configured-columns:
         '@dataConnectionID':
           color: '#F0424233'
@@ -1771,14 +1777,14 @@ widgets:
     width: 12
     title: '🔧 DIY (Dashboard It Yourself) '
     type: note
-$schema: https://schemas.humio.com/dashboard/v0.20.0
+$schema: https://schemas.humio.com/dashboard/v0.23.0
 parameters:
   CrowdStrike_cloud:
     label: CrowdStrike_cloud
     order: 1
     values:
-      falcon.: US-1
       falcon.us-2.: US-2
+      falcon.: US-1
       falcon.eu-1.: EU-1
     type: list
     defaultValue: falcon.us-2.
@@ -1787,17 +1793,17 @@ parameters:
     label: Data_Source
     order: 2
     values:
+      Corelight: Corelight
+      Snyk: Snyk
+      Microsoft: Microsoft
+      Palo Alto: Palo Alto
+      Extrahop: Extrahop
+      Mimecast: Mimecast
       '*': All
       AWS: AWS
-      Corelight: Corelight
-      Extrahop: Extrahop
       Fortinet: Fortinet
-      Microsoft: Microsoft
-      Mimecast: Mimecast
-      Okta: Okta
-      Palo Alto: Palo Alto
-      Snyk: Snyk
       VMware: VMware
+      Okta: Okta
     type: list
     defaultValue: '*'
     width: 1
