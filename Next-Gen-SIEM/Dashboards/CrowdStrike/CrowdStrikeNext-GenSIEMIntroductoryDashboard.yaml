@@ -4,6 +4,7 @@ sections:
     order: 7
     title: 🚧 Images not loading?
     widgetIds:
+    - b2eb8639-ed6d-4e77-bab0-80a7bc4a9334
     - note-1757003741233-0
     - note-1757000826350-3
     - parameter-panel-1757000480358-1
@@ -28,6 +29,9 @@ sections:
       data available within Advanced event search.
     collapsed: true
     widgetIds:
+    - note-1768925364113-0
+    - 7b6e7419-fb5c-42ef-9cfd-38e0e4693021
+    - note-1768488227899-0
     - note-1758206804753-0
     - 75935dc3-6121-4859-a708-d3774e857fd2
     - f721802b-6a85-4692-9b28-b6b51e8827aa
@@ -53,6 +57,7 @@ sections:
     - note-1757126625783-0
     - 8772afc6-42cb-49b0-b3f8-b7b584506581
     - note-1756242823460-3
+    - ecdefd65-bed2-41be-866c-f6b86c89bed7
     order: 5
     title: 🤖 Charlotte AI
   section-1757001152219-0:
@@ -60,6 +65,9 @@ sections:
       use of CrowdStrike's Next-Gen SIEM.
     collapsed: true
     widgetIds:
+    - note-1768932863313-0
+    - note-1757278391788-3
+    - note-1768923765109-0
     - note-1758719503701-0
     - note-1757093054520-0
     - note-1757091986288-1
@@ -74,11 +82,11 @@ sections:
       end: now
       start: 1d
     widgetIds:
+    - note-1768928387118-2
     - note-1761313590713-0
     - note-1757277502792-1
     - note-1757277056794-0
     - note-1757016244029-0
-    - 7c5a3d3c-c12e-4d87-aa45-895e29ed7567
     - note-1756927309738-0
     - note-1756233800352-1
     order: 0
@@ -94,7 +102,6 @@ sections:
     - note-1757945817675-1
     - note-1757945604674-0
     - ca8137ad-927b-4c67-9957-79aa4191dea4
-    - note-1757278391788-3
     - 0536b488-0783-425e-bc4e-6bcad4b7723e
     - note-1756995821398-0
     - note-1756993164412-1
@@ -103,20 +110,32 @@ sections:
     order: 4
     title: ⚙️ Fusion SOAR
   section-1756912091740-2:
-    description: |-
-      Links to out-of-the-box dashboards that use CrowdStrike data and/or data from 3rd-party sources.
-      Also, information on creating, importing, and editing dashboards for personalization and use.
+    description: Examples and information on creating, editing, and importing dashboards
+      for personalization and use. Also, links to out-of-the-box dashboards that use
+      CrowdStrike data and/or data from 3rd-party sources.
     collapsed: true
     timeSelector:
       end: now
-      start: 7d
+      start: 10m
     widgetIds:
+    - note-1769221058407-0
+    - 292c87a0-db63-4d11-bf32-147c2c7fd42f
+    - 1c9db9c0-5e5e-427f-8ba9-56d6e0922785
+    - a0f2f36b-b8d6-4588-b8d4-49151f11b22d
+    - a182a8f0-cd8e-4e16-a34c-a72124b78421
+    - 36749f83-2c5f-4e2e-bb4d-5153e3aa4055
+    - 8fdf3f64-eeaf-4d26-88f9-a46f3c576726
+    - 8b17ccbf-0d0a-45d0-af21-d0c58fc6e166
+    - 76c6848e-9325-47e4-9c44-107f3ba794a1
+    - 785c8758-4838-40b1-8824-827f314e0b62
     - note-1761756215578-0
     - note-1757086781971-0
     - note-1756934974973-1
     - parameter-panel-1756922584654-0
     - 000ebefe-4bce-4e92-9d98-30fbe8bf93e4
     - note-1756912227737-3
+    - b094383e-4899-417f-91e1-685768f13a98
+    - 240fee17-233d-4e01-b4f1-0f3d8cd1e412
     order: 2
     title: 📊 Dashboards
 name: CrowdStrike Next-Gen SIEM Introductory Dashboard
@@ -126,7 +145,7 @@ timeSelector: {}
 sharedTimeInterval:
   enabled: false
   isLive: false
-  start: 1d
+  start: 15m
 widgets:
   note-1757091986288-1:
     x: 0
@@ -144,21 +163,6 @@ widgets:
       - [Webinars](https://supportportal.crowdstrike.com/s/webinars)
     width: 2
     title: 📕 Support Portal
-    type: note
-  note-1757278391788-3:
-    x: 6
-    y: 8
-    height: 4
-    text: |-
-      - Check out the [CrowdStrike Developer Blog](https://developer.crowdstrike.com/blog/) to see how you can build your own applications within CrowdStrike using Falcon Foundry and then executing actions from your application with Fusion SOAR
-      - [Deploy a Foundry App Template in 5 Easy Steps](https://www.crowdstrike.com/tech-hub/ng-siem/deploy-a-foundry-app-template-in-5-easy-steps/)
-      - [Dive into Falcon Foundry Functions with Python](https://www.crowdstrike.com/tech-hub/ng-siem/dive-into-falcon-foundry-functions-with-python/)
-      - [A Practical Guide to Building a Falcon Foundry App for the First Time](https://www.crowdstrike.com/tech-hub/ng-siem/a-practical-guide-to-building-a-falcon-foundry-app-for-the-first-time/)
-      - [Enrich Detections with Falcon Foundry Extension Builder](https://www.crowdstrike.com/tech-hub/ng-siem/enrich-detections-with-falcon-foundry-extension-builder/)
-      - [CrowdStrike's OpenAPI Specifications](https://developer.crowdstrike.com/docs/openapi/) (Links to Swagger API documentation also available within the [OAuth2-Based APIs CrowdStrike Documentation](https://docs.crowdstrike.com/r/w3ded7bf))
-      ⓘ *[If necessary, you can add the IP addresses listed in this Support Portal article to your network allowlist for Foundry API integration](https://supportportal.crowdstrike.com/s/article/ka1Ns00000012vpIAA)*
-    width: 6
-    title: Want to dive deeper into automation with CrowdStrike?
     type: note
   note-1756233800352-1:
     x: 0
@@ -178,6 +182,7 @@ widgets:
       ### Support Portal
 
       - [[Index] Next-Gen SIEM Data Connector troubleshooting articles](https://supportportal.crowdstrike.com/s/article/ka1Ns0000001mU1IAI) (Troubleshooting information for using the Falcon LogScale Collector (FLC), 3rd-party data connectors, and HTTP/HEC data connectors)
+      - [How To Create an Effective Support Ticket for Next-Gen SIEM](https://supportportal.crowdstrike.com/s/article/ka1Ns0000005fc1IAA) (This will help you effectively request assistance from our Support team when creating a ticket for Next-Gen SIEM)
 
       ### LogScale documentation
 
@@ -185,77 +190,62 @@ widgets:
       - [Configuration file examples](https://library.humio.com/falcon-logscale-collector/log-collector-config-advanced-example.html)
       - [Install Falcon LogScale Collector](https://library.humio.com/falcon-logscale-collector/log-collector-install.html) (Information similar to what is in the CrowdStrike console for this, but there may be small nuances that can help here that may not be in the console documentation)
       - ⓘ ***Custom Install** method is the manual process of installing the log collector and managing its configuration directly on the host. **Full Install** method is the process of using Fleet Management to manage the configuration and version of the log collector from the CrowdStrike console. Please refer to the CrowdStrike console documentation if you wish to use this method.*
-    width: 7
+    width: 8
     title: Documentation to help you get started using Next-Gen SIEM
     type: note
-  note-1756992852414-0:
-    x: 4
-    y: 0
-    height: 4
-    text: "Alerting is an important part of monitoring an organization's security.\
-      \ Historically, SIEM solutions have made this a difficult experience; often\
-      \ creating so many alerts that responders experience \"alert fatigue\". This\
-      \ can cause the important events to be overlooked amongst the rest of the alerts\
-      \ that they may feel aren't as severe.\n\nCrowdStrike allows for granular customization\
-      \ of alerting, as well as the capability to automate tasks and decide when an\
-      \ action should/shouldn't occur.\n\n### Here are some helpful playbooks to get\
-      \ you started with setting up alert notifications using Fusion SOAR:\n\n| Playbook\
-      \                                                                          \
-      \                                             | Description                \
-      \                                                                          \
-      \                                                                          \
-      \                                                                          \
-      \                                                                          \
-      \                                      |\n| ------------------------------------------------------------------------------------------------------------------------------\
-      \ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\
-      \ |\n| [Notification of a Correlation Rule detection](/workflow/fusion/content-library/playbooks/f07ade95fc1a4619aa9fe785eb9ec8e5)\
-      \    | Sends an email notification when a NG-SIEM Correlation Rule detection\
-      \ is generated. You can also replace the 'Send email' action with a different\
-      \ notification tool such as Slack or Teams.                                \
-      \                                                                          \
-      \                                                                    |\n| [Notification\
-      \ of a 3rd-party generated detection](/workflow/fusion/content-library/playbooks/1a4f70f439414d129783f9a9d45c7616)\
-      \ | Sends an email notification when a NG-SIEM third party detection is generated.\
-      \ Third party detections are pass-through alerts from third party tools such\
-      \ as Okta. Customize this workflow with conditions to filter which alerts to\
-      \ notify on. You can also replace the 'Send email' action with a different notification\
-      \ tool such as Slack or Teams.                  |\n| [Notification of a new\
-      \ Next-Gen SIEM Incident](/workflow/fusion/content-library/playbooks/7bc8eff98dc34a7c8902d3b10329ac57)\
-      \    | Sends an email notification when a NG-SIEM incident is created. The 'Send\
-      \ email' action can be swapped with a different notification tool such as Slack\
-      \ or Teams. |\n \n***ⓘ Incidents are being replaced with Cases and will no longer\
-      \ be available after February 1st, 2026. You can recreate the last  workflow\
-      \ here using the Trigger \"CROWDSTRIKE  Case > Case Created\"***\n\n"
-    width: 8
-    title: Next-Gen SIEM Alerting
-    type: note
-  note-1756991362395-0:
-    x: 10
-    y: 0
-    height: 4
-    text: '![Fancy Bear](https://assets.{{ parameter "CrowdStrike_cloud" }}crowdstrike.com/2014/11/02161030/CS_Actor_Icons_FancyBear.png)'
-    width: 2
-    title: ''
-    type: note
-  note-1757129402228-0:
+  note-1768932863313-0:
     x: 0
-    y: 11
+    y: 7
+    description: Falcon Onum is CrowdStrike's  observability solution for data manipulation,
+      observation, and routing.
     height: 4
     text: |-
-      ## [Prompts](/charlotte-ai/) and [Promptbooks](/charlotte-ai/promptbooks)
-      ### Prompts
-      - Ask Charlotte AI questions about your environment such as adversary attributed activity, get help building queries to run in Advanced event search, and more.
-      ### Promptbooks
-      - These are collections of prompts for common workflows that you can customize for your organization's needs to maximize efficiency. Promptbooks are similar to Fusion SOAR playbooks in that they streamline complex workflows.
-      - ⓘ *Charlotte AI uses Llama (Copyright © Meta Platforms) and several other large language models from OpenAI, Mistral, and Anthropic. Unless listed on the [subprocessor list](https://docs.crowdstrike.com/r/d1f180fb), models are hosted in CrowdStrike’s environment.*
+      ### [About Falcon Onum](https://docs.onum.com/getting-started/about-falcon-onum)
+      ### [Getting Started with Falcon Onum](https://docs.onum.com/getting-started/getting-started-with-falcon-onum)
 
-      ---
+      ⓘ [**See the Onum YouTube account for playlists covering the Onum Platform, as well as tutorials and use cases.**](https://www.youtube.com/@onum_inc/playlists)
 
-      ### CrowdStrike documentation:
-      - [Charlotte AI Conversation Overview](https://docs.crowdstrike.com/r/d90de7f2)
+      ### The Workspace
+      - [Home](https://docs.onum.com/the-workspace/home) (A summary of your Tenant activity)
+      - [Listeners](https://docs.onum.com/the-workspace/listeners) (Everything starts with a good Listener)
+      - [Pipelines](https://docs.onum.com/the-workspace/pipelines) (A Pipeline is Onum's way of streamlining your data)
+      - [Data Sinks](https://docs.onum.com/the-workspace/data-sinks) (The final piece of the puzzle)
     width: 6
-    title: ''
+    title: 🔀 Onum Documentation and Info
     type: note
+  a0f2f36b-b8d6-4588-b8d4-49151f11b22d:
+    x: 0
+    y: 13
+    height: 4
+    queryString: |-
+      createEvents(["example.destination.ip=57.144.204.1", "example.destination.ip=203.96.236.57", "example.destination.ip=212.119.2.199", "example.destination.ip=1.120.96.248", "example.destination.ip=1.178.32.0"])
+      | kvParse()
+      | ipLocation(field="example.destination.ip")
+      | rename([["example.destination.ip.city", "City"], ["example.destination.ip.country", "Country"], ["example.destination.ip.lat", "Lattitude"], ["example.destination.ip.lon", "Longitude"]])
+      | table(["example.destination.ip", "City", "Country", Lattitude, Longitude])
+      | worldMap(lat=Lattitude, lon=Longitude)
+    end: now
+    start: 1d
+    width: 4
+    options:
+      magnitudeMode: opacity
+      projection: orthographic
+      rotZ: 23
+      norm: true
+      opacity: 60
+      rotY: 0
+      clat: 0
+      fixedSize: 10
+      rotX: 0
+      maxOpacity: 60
+      opacityMode: opacity
+      zLevel: 3
+      clon: 0
+      autoRotate: true
+    visualization: world-map
+    title: World Map Example
+    isLive: false
+    type: query
   0536b488-0783-425e-bc4e-6bcad4b7723e:
     x: 7
     y: 4
@@ -284,28 +274,45 @@ widgets:
     title: Workflow Executions Over Time
     isLive: false
     type: query
+  note-1769221058407-0:
+    x: 8
+    y: 13
+    height: 2
+    text: '### ⓘ Interactions allow you to create dynamic actions for widgets, including
+      links to dashboards, event queries, URLs, or updating parameters for queries
+      in the current dashboard.'
+    width: 4
+    title: ''
+    type: note
   note-1757087714985-2:
     x: 9
-    y: 15
-    height: 4
+    y: 17
+    description: CrowdStrike Query Language Information
+    height: 7
     text: |-
-      You can view all of the functions available for use within the CrowdStrike Query Language on our LogScale documentation site.
-      - [Click here to view all available query functions.](https://library.humio.com/data-analysis/functions.html)
+      Read more about the CrowdStrike Query language on our Docs Site:
+      - [Write Queries](https://docs.crowdstrike.com/r/a46f7541c)
+      - [Query Language Syntax](https://docs.crowdstrike.com/r/a628fbf26)
+      - [Query Joins and Lookups](https://docs.crowdstrike.com/r/bbbbbdac)
+      - [Query Functions](https://docs.crowdstrike.com/r/a43ac2d0c)
+
+      You can also view all of the functions available for use within the CrowdStrike Query Language on our LogScale documentation site.
+      - [Query functions on the LogScale Docs site](https://library.humio.com/data-analysis/functions.html)
 
       ⓘ *Wondering what LogScale is?*
       - *LogScale is CrowdStrike's incredibly fast log management and aggregation solution. CrowdStrike uses this as the technology that powers Next-Gen SIEM.*
     width: 3
-    title: Query Functions
+    title: CQL
     type: note
   note-1758206804753-0:
     x: 0
     backgroundColor: '#b52026'
-    y: 19
+    y: 24
     text: |-
       ## ⓘ Did you know?
       **Scheduled searches can be ran against 1st and 3rd party data.**
       - This means you can setup alerts and notifications of findings from a query for anything within your data.
-      - This allows for better automation of monitoring within your environment. [Click here to read the documentation of how to use this feature.](https://docs.crowdstrike.com/r/a4275adf)
+      - This allows for better automation of monitoring within your environment. [**Click here to read the documentation of how to use this feature.**](https://docs.crowdstrike.com/r/a4275adf)
 
       Scheduled searches lets you to take a step back from security and broaden your focus to anything else you wish to monitor for.
 
@@ -325,7 +332,7 @@ widgets:
       // Ad-hoc table 1: Template IDs list by data source info
       defineTable(
         query={
-          readFile("falcon/ngsiem-content-crt/ngsiem_correlation_rule_templates.csv")
+          readFile("falcon/ngsiem-content-crt/ngsiem_rule_templates.csv")
           | stats(function=[
             groupBy([id, data_sources], function=[]),
             count(as=_totalCount)
@@ -341,7 +348,7 @@ widgets:
           }
         },
         include=[id, product, connector, parser, _totalCount, falcon_ds],
-        name="correlation_rule_template_discovery_adhoc_table_1"
+        name="rule_template_discovery_adhoc_table_1"
       )
       | case {
         // Falcon Sensor Telemetry
@@ -363,8 +370,8 @@ widgets:
       }
       | groupBy([#type, _falcon_product, _connector], limit=max, function=[])
       | case {
-        _falcon_product=* | match(file="correlation_rule_template_discovery_adhoc_table_1", field=[_falcon_product, _connector], column=[product, connector], strict=true, include=[id, _totalCount], nrows=max);
-        _falcon_product!=* | falcon_ds := 0 | match(file="correlation_rule_template_discovery_adhoc_table_1", field=[#type, falcon_ds], column=[parser, falcon_ds], strict=true, include=[id, _totalCount], nrows=max);
+        _falcon_product=* | match(file="rule_template_discovery_adhoc_table_1", field=[_falcon_product, _connector], column=[product, connector], strict=true, include=[id, _totalCount], nrows=max);
+        _falcon_product!=* | falcon_ds := 0 | match(file="rule_template_discovery_adhoc_table_1", field=[#type, falcon_ds], column=[parser, falcon_ds], strict=true, include=[id, _totalCount], nrows=max);
       }
       | groupBy([id, _totalCount], function=[])
       | groupBy(_totalCount, function=count(as=_relevantCount))
@@ -469,8 +476,8 @@ widgets:
     title: ''
     type: note
   note-1757126625783-0:
-    x: 6
-    y: 7
+    x: 0
+    y: 5
     height: 4
     text: |
       ## [Cases](/xdr/cases)
@@ -485,7 +492,7 @@ widgets:
     title: ''
     type: note
   note-1757000826350-3:
-    x: 4
+    x: 3
     y: 0
     height: 3
     text: |2
@@ -516,7 +523,7 @@ widgets:
   note-1757091940286-0:
     x: 2
     y: 0
-    height: 6
+    height: 7
     text: |-
       ## Want to get certified in CrowdStrike's Next-Gen SIEM?
       - Go to CrowdStrike University and take the necessary courses to prepare you to become a [CrowdStrike Certified **SIEM Engineer** (CCSE)](https://university.crowdstrike.com/pages/51/certification-siem-engineer)
@@ -533,6 +540,8 @@ widgets:
       - [**SIEM 107**: Creating Correlation Rules with Falcon Next-Gen SIEM](https://university.crowdstrike.com/learn/course/1496/siem-107-creating-correlation-rules-with-falcon-next-gen-siem)
       - [**SIEM 108**: Managing Automation Workflows with Fusion SOAR in Next-Gen SIEM](https://university.crowdstrike.com/learn/courses/1613/siem-108-managing-automation-workflows-with-fusion-soar-in-next-gen-siem)
       **INSTRUCTOR LED COURSES**
+
+      ⓘ *CSU courses level 200 and above may require additional licensing be purchased before you can enroll.*
       - [**CQL 201**: Designing, Optimizing, and Modularizing CQL Queries](https://university.crowdstrike.com/learn/course/1450/cql-201-designing-optimizing-and-modularizing-cql-queries)
       - [**SIEM 200**: Administering and Optimizing Next-Gen SIEM](https://university.crowdstrike.com/learn/course/1451/siem-200-administering-and-optimizing-next-gen-siem)
       - [**SIEM 210**: Onboarding Third-Party Data and Managing Falcon Next-Gen SIEM](https://university.crowdstrike.com/learn/courses/998/siem-210-onboarding-third-party-data-and-managing-falcon-next-gen-siem)
@@ -541,10 +550,11 @@ widgets:
       ---
       ## Courses for related content
       **ELEARNING COURSES**
+      - [**ONUM 100**: Falcon Onum Foundations and Overview](https://university.crowdstrike.com/learn/courses/1822/onum-100-falcon-onum-foundations-and-overview)
       - [**SIEM 106**: Case Management Fundamentals](https://university.crowdstrike.com/learn/courses/1762/siem-106-case-management-fundamentals)
       - [**FALCON 141**: Charlotte AI Fundamentals](https://university.crowdstrike.com/learn/courses/1513/falcon-141-charlotte-ai-fundamentals)
       - [**FALCON 175**: Falcon Foundry Fundamentals](https://university.crowdstrike.com/learn/courses/995/falcon-175-falcon-foundry-fundamentals)
-    width: 6
+    width: 7
     title: 📓 CrowdStrike University
     type: note
   73791ebe-0aaa-440a-8ae4-e33f8b44c84f:
@@ -560,7 +570,7 @@ widgets:
     type: note
   note-1756242823460-3:
     x: 0
-    y: 0
+    y: 10
     description: Using the prompt and instruction here, have Charlotte AI develop
       a query that you can use to fix the widget next to this one.
     height: 6
@@ -581,8 +591,97 @@ widgets:
     width: 6
     title: 🌎 Create a World Map widget using Charlotte AI
     type: note
-  note-1758205323222-0:
+  note-1768923765109-0:
     x: 0
+    y: 4
+    description: Information on sending logs to external destinations using Falcon
+      Data Replicator for CrowdStrike data and third-party data
+    height: 3
+    text: |-
+      CrowdStrike Documentation
+      - [Falcon Data Replicator](https://docs.crowdstrike.com/r/fa572b1c)
+
+      Support Portal
+      - [Can I estimate the volume of data generated by FDR before enabling it?](https://supportportal.crowdstrike.com/s/article/ka16T000000ww2ZQAQ)
+    width: 2
+    title: 📂 FDR
+    type: note
+  ecdefd65-bed2-41be-866c-f6b86c89bed7:
+    x: 0
+    backgroundColor: '#b52026'
+    y: 9
+    text: '## How-To! Create or edit dashboard widgets using Charlotte AI'
+    width: 12
+    height: 1
+    textColor: '#f5f5f5'
+    title: '  '
+    type: note
+  note-1757278391788-3:
+    x: 6
+    y: 7
+    description: Dive deeper into automation in CrowdStrike with Foundry, where you
+      can build your own Fusion SOAR apps within the Falcon Platform.
+    height: 4
+    text: |-
+      - Check out the [CrowdStrike Developer Blog](https://developer.crowdstrike.com/blog/) to see how you can build your own applications within CrowdStrike using Falcon Foundry and then executing actions from your application with Fusion SOAR
+      - [Deploy a Foundry App Template in 5 Easy Steps](https://www.crowdstrike.com/tech-hub/ng-siem/deploy-a-foundry-app-template-in-5-easy-steps/)
+      - [Dive into Falcon Foundry Functions with Python](https://www.crowdstrike.com/tech-hub/ng-siem/dive-into-falcon-foundry-functions-with-python/)
+      - [A Practical Guide to Building a Falcon Foundry App for the First Time](https://www.crowdstrike.com/tech-hub/ng-siem/a-practical-guide-to-building-a-falcon-foundry-app-for-the-first-time/)
+      - [Enrich Detections with Falcon Foundry Extension Builder](https://www.crowdstrike.com/tech-hub/ng-siem/enrich-detections-with-falcon-foundry-extension-builder/)
+      - [Getting Started with Falcon Foundry Collections: Your Guide to Structured Data Storage in Foundry Apps](https://www.crowdstrike.com/tech-hub/ng-siem/getting-started-with-falcon-foundry-collections-your-guide-to-structured-data-storage-in-foundry-apps/)
+      - [API Pagination Strategies for Falcon Foundry: Functions and Workflows](https://www.crowdstrike.com/tech-hub/ng-siem/api-pagination-strategies-for-falcon-foundry-functions-and-workflows/)
+      - [CrowdStrike's OpenAPI Specifications](https://developer.crowdstrike.com/docs/openapi/) (Links to Swagger API documentation also available within the [OAuth2-Based APIs CrowdStrike Documentation](https://docs.crowdstrike.com/r/w3ded7bf))
+      ⓘ *[If necessary, you can add the IP addresses listed in this Support Portal article to your network allowlist for Foundry API integration](https://supportportal.crowdstrike.com/s/article/ka1Ns00000012vpIAA)*
+    width: 6
+    title: 🔩 Falcon Foundry
+    type: note
+  785c8758-4838-40b1-8824-827f314e0b62:
+    x: 4
+    y: 1
+    height: 4
+    queryString: |-
+      createEvents(["example=1st_item",
+       "example=2nd_item",
+       "example=3rd_item",
+       "example=1st_item",
+       "example=2nd_item",
+       "example=1st_item"])
+      | kvParse()
+      | groupBy([example])
+    end: now
+    start: 15m
+    width: 4
+    options:
+      series:
+        _count:
+          color:
+            dark: '#E4C193'
+            light: '#0066A5'
+      labelAngle: 18
+      dualAxes: false
+      yScaleType: linear
+      legend: false
+      yAxisTitle: Count
+      barChartOrientation: vertical
+      xAxisSorting: bySeries
+      labelAlign: right
+      categoryPadding: 0.14
+      titleSize: medium
+      valueFormat: abbreviated
+      valuesOnBars: true
+      line-overlay: false
+      barChartType: grouped
+      series-definition: ''
+      labelLimit: 90
+      seriesPadding: 0.11
+      sortOrder: ascending
+      orderBy: _count
+    visualization: bar-chart
+    title: Bar Chart Example
+    isLive: false
+    type: query
+  note-1758205323222-0:
+    x: 7
     y: 8
     height: 4
     text: |-
@@ -596,13 +695,13 @@ widgets:
       - [HTTP Request](/workflow/fusion/content-library/actions/1ba474f407d9228fc8fa02cdce8ae8ef)
       - [Call webhook](/workflow/fusion/content-library/actions/450fa6add611335063035c5cf0bb87eb)
       - [Request human input - Call webhook](/workflow/fusion/content-library/actions/36de114099fb16abd97ad34fc648867b)
-    width: 6
+    width: 5
     title: Not seeing an application for your solution in the Content Library?
     type: note
   note-1757086781971-0:
     x: 0
     backgroundColor: '#b52026'
-    y: 0
+    y: 19
     text: |-
       ## Below are some helpful out-of-the-box dashboards available within Next-Gen SIEM. [Click here to view all available dashboards.](/investigate/search/custom-dashboards)
       ⓘ ***Like a particular dashboard?** Use the CrowdStrike console's bookmark ability to quickly navigate to it in the future. Click on the bookmark icon near the upper-left section of your screen to create a bookmark for your user account. (HINT: You may want to edit the bookmark name to make it easier to identify in the console menu)*
@@ -618,13 +717,13 @@ widgets:
     text: |
       ## [SOAR Dashboard](/workflow/fusion/dashboard)
       ## [Unified Content Library](/content-library/home)
-      - ⓘ *See the index on the left for Fusion SOAR Apps, Playbooks, Actions, and Triggers*
+      ⓘ *See the index on the left for Fusion SOAR Apps, Playbooks, Actions, and Triggers*
     width: 4
     title: ''
     type: note
   note-1757090958838-0:
     x: 6
-    y: 15
+    y: 17
     height: 4
     text: |-
       ### <-- Integrated Threat Intelligence
@@ -637,6 +736,8 @@ widgets:
   note-1757000250362-0:
     x: 0
     y: 0
+    description: See the "📚 Additional Information" section for links to CQL courses
+      and training in CrowdStrike University
     height: 8
     text: |-
       Using the [Advanced event search](/investigate/search) page, you are able to quickly and efficiently search through large amounts of data without having to wait long periods of time for results. As well, the ability to query that data is made to be very approachable to new or less experienced users.
@@ -680,95 +781,124 @@ widgets:
   note-1756995821398-0:
     x: 0
     y: 4
-    height: 4
+    height: 8
     text: "Fusion workflows allow for automating more than just notifications or actions\
       \ using CrowdStrike's own utilities. Third-party APIs can be used to take action\
       \ outside of the CrowdStrike console. \n\n- **[Explore all the actions available\
-      \ for use within the Content Library.](/workflow/fusion/content-library?filter=cid%3A%27%27&sort=updated.desc&type=actions)**\n\
+      \ for use within the Content Library.](/content-library/catalog/fusion_action)**\n\
       - **[Review automation possibilities available with the workflows already developed\
-      \ in playbooks](/workflow/fusion/content-library?type=playbooks)**\n\nYou are\
-      \ able to build workflows and leave their Status as \"Off\" to come back to\
-      \ as a reference or to continue working on it. Feel free to play around building\
+      \ in playbooks](/content-library/catalog/fusion_playbook)**\n\nYou are able\
+      \ to build workflows and leave their Status as \"Off\" to come back to as a\
+      \ reference or to continue working on it. Feel free to play around building\
       \ these out without the need to enable them for use within the console.\n\n\
       Here are a few playbooks that can introduce you to some of the concepts available\
       \ while building out a workflow for your own use cases:\n\n| Playbook      \
       \                                                                          \
       \                                                                          \
-      \                              | Description                               \
+      \                                   | Description                          \
       \                                                                          \
       \                                                                          \
       \                                                                          \
-      \                                                               |\n| -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\
-      \ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\
-      \ |\n| [Introduction to variables: How to append to an array](/workflow/fusion/content-library/playbooks/fcc5a841a7ca411e8fea930983af6b58)\
+      \                                                                          \
+      \                                                                          \
+      \                                                                      |\n|\
+      \ ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\
+      \ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\
+      \ |\n| [Introduction to variables: How to append to an array](/content-library/details/global:fusion_playbook:fcc5a841a7ca411e8fea930983af6b58)\
       \                                                             | Learn how to\
       \ create a workflow which appends data to an array using the 'Create variable'\
       \ and 'Update variable' actions as it iterates through a list. This workflow\
       \ demonstrates how to query for 'Contained' devices, extract sensor IDs, enrich\
       \ each sensor to retrieve hostnames, and append these hostnames to a 'combined'\
-      \ array |\n| [Introduction to loops: How to use the 'break' action](/workflow/fusion/content-library/playbooks/9a75e12db5cd454b8f8ec323b784e0b6)\
+      \ array                                                                    \
+      \                                                                          \
+      \         |\n| [Introduction to loops: How to use the 'break' action](/content-library/details/global:fusion_playbook:9a75e12db5cd454b8f8ec323b784e0b6)\
       \                                                             | Learn how to\
       \ build a workflow which uses a 'loop break' action. This workflow will accept\
       \ a list of email addresses and then loop through sequentially until the condition\
       \ is met. Once the condition is met, an email will be sent and then the Workflow\
       \ engine will exit the loop via the 'loop break' action.                   \
-      \    |\n| [Introduction to lookup file actions](/workflow/fusion/content-library/playbooks/27c7a89ecf0f43ceaa9cc5fed53495af)\
+      \                                                                          \
+      \                                                                          \
+      \      |\n| [Introduction to lookup file actions](/content-library/details/global:fusion_playbook:27c7a89ecf0f43ceaa9cc5fed53495af)\
       \                                                                          \
       \    | This playbook demonstrates how to create a lookup file from a JSON object\
       \ on-demand or create CSV content if JSON object was not provided. The playbook\
       \ first checks to see if the lookup file already exists. If the lookup file\
       \ exists, the existing lookup file will be overwritten with the contents of\
-      \ the new lookup file.       |\n| [Introduction to data transforms: How to format\
-      \ data returned from an event query](/workflow/fusion/content-library/playbooks/f967cd54fdf74ce894a4e1e7c19c7a45)\
+      \ the new lookup file. [Here is a video showcasing dynamic lookup files using\
+      \ Fusion SOAR.](https://vid.crowdstrike.com/watch/cA5oSceKJKvUT7GNFdMSYh?) \
+      \                            |\n| [Introduction to data transforms: How to format\
+      \ data returned from an event query](/content-library/details/global:fusion_playbook:f967cd54fdf74ce894a4e1e7c19c7a45)\
       \                                 | Learn how to use data transforms to format\
       \ data returned from an event query. In this workflow, we will write data to\
       \ the #repo = fusion, and then query for the same data and format the results\
       \ in a HTML table to send in an email.                                     \
-      \                                                            |\n| [Introduction\
+      \                                                                          \
+      \                                                                          \
+      \                                                              |\n| [Introduction\
       \ to data transforms: How to compare dates in a condition and how to access\
-      \ data without using a loop](/workflow/fusion/content-library/playbooks/1acc888774554844ab3bb6c6591e2aa7)\
+      \ data without using a loop](/content-library/details/global:fusion_playbook:1acc888774554844ab3bb6c6591e2aa7)\
       \ | Learn how to use queries with schema and without schema, how to access data\
       \ returned from a query without using a loop, and how to build conditions which\
       \ compare dates.                                                           \
       \                                                                          \
-      \                          |\n"
+      \                                                                          \
+      \                                                                          \
+      \                            |\n| [Introduction to error handling](/content-library/details/global:fusion_playbook:1265050ccd004f179d3b8278d4c86c18)\
+      \                                                                          \
+      \         | This playbook demonstrates how users can enable 'continue on failure'\
+      \ from the action execution settings in Fusion SOAR, allowing workflows to maintain\
+      \ continuity when an action fails. Instead of the entire workflow failing, the\
+      \ workflow continues to the next node based on your defined error handling configuration,\
+      \ enabling you to add conditional branches to handle errors and implement resilient\
+      \ workflows that gracefully adapt to failures rather than stopping completely.\"\
+      \ |\n"
     width: 7
     title: Actions and building workflows
     type: note
   note-1756912227737-3:
     x: 0
-    y: 2
+    y: 21
+    description: Some dashboards may require subscriptions to other CrowdStrike products
+      in order to show information within them.
     height: 6
-    text: |2-
-
-      |                                                                                                                                       Dashboard                                                                                                                                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-      | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-      |                                             [Next-Gen SIEM Reference Dashboard - v1.9.2](/investigate/search/custom-dashboards/Next-Gen%20SIEM%20Reference%20Dashboard%20-%20v1.9.2?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                             | The reference dashboard features many different styles of SOC analysis and threat hunting use cases. The first two sections show instructions and basic detection metrics. The remaining sections show common scenarios that may be of interest for investigations, including matching to IOCs, analyzing logon events, and looking at high entropy DNS names. You can use the dashboard to explore your data, or as a reference to make your own threat hunting experiences.         |
-      | [CrowdStrike Next-Gen SIEM - Correlation Rule Template Discovery](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Correlation%20Rule%20Template%20Discovery?packageScope=falcon%2Fngsiem-content-crt&repoOrViewName=search-all&sharedTime=false&start=15m)  | This dashboard provides a comprehensive view of CrowdStrike's Next-Gen SIEM out-of-the-box correlation rule templates, enabling customers to discover content that aligns with their existing security log sources, detection requirements, and strategy.                                                                                                                                                                                                                             |
-      |                                                                            [Case Management](/investigate/search/custom-dashboards/Case%20management?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                                            | Monitoring dashboard of metrics around Cases, including: active and total cases, SLA statuses, case user assignments, and more.                                                                                                                                                                                                                                                                                                                                                       |
-      |                                                                     [Fusion SOAR Execution](/investigate/search/custom-dashboards/Fusion%20SOAR%20Execution?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                                     | Visualizes your workflow execution data in a variety of ways to help you keep track of what’s happening in your system.                                                                                                                                                                                                                                                                                                                                                               |
-      |                          [CrowdStrike - Endpoint - AI Service Usage Monitoring](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20AI%20Service%20Usage%20Monitoring?packageScope=falcon%2Fngsiem-content-ai&repoOrViewName=search-all)                           | As organizations increasingly adopt AI technologies, understanding AI usage becomes critical for maintaining security and compliance. CrowdStrike's AI Monitoring Dashboard provides comprehensive visibility into AI service interactions, data movements, and potential risks across your environment, enabling informed security decisions through detailed insights into AI-related activities.                                                                                   |
-      | [CrowdStrike - Endpoint - Active Binaries with Revoked or Expired Certificates](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20Active%20Binaries%20with%20Revoked%20or%20Expired%20Certificates?repoOrViewName=search-all&packageScope=falcon/ngsiem-content) | This dashboard enables security teams to quickly identify systems running software with certificate issues, investigate suspicious driver activity, correlate driver deployment patterns, and leverage CrowdStrike Falcon sensor detections related to malicious driver activity. It serves as an essential tool for threat hunting, vulnerability management, and maintaining environment security by identifying software operating with compromised or outdated trust credentials. |
-      |                             [Malicious Browser Extension Investigation](/investigate/search/custom-dashboards/Malicious%20Browser%20Extension%20Investigation?packageScope=falcon%2Fngsiem-content-et&repoOrViewName=search-all&sharedTime=true&start=1d)                             | This dashboard leverages the CrxFileWritten event to determine if a particular extension version was downloaded to a system. **NOTE**: Only available for EDR events from Windows sensors                                                                                                                                                                                                                                                                                             |
-      |                                                      [Asset Ownership Investigation: DNS](/investigate/search/custom-dashboards/Asset%20Ownership%20Investigation%3A%20DNS?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                      | This dashboard helps identify asset ownership when you have only a DNS name, by showing which users and computers connect to that domain most frequently based on Falcon sensor telemetry. This can be helpful when investigating who, in an organization, is responsible for certain assets, such as those identified through network scanning or EASM results.                                                                                                                      |
-      |                                                       [Asset Ownership Investigation: IP](/investigate/search/custom-dashboards/Asset%20Ownership%20Investigation%3A%20IP?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                       | This dashboard helps identify asset ownership when you have only an IP address, by showing which users and computers connect to that IP most frequently based on Falcon sensor telemetry. This can be helpful when investigating who, in an organization, is responsible for certain assets, such as those identified through network scanning or EASM results.                                                                                                                       |
-      |                                                                              [SOC Efficacy](/investigate/search/custom-dashboards/SOC%20Efficacy?packageScope=falcon%2Fngsiem&repoOrViewName=search-all)                                                                              | Combines incident and detection data from all of your data sources into a single, intuitive view of your threat landscape to inform your decision making with clear, up-to-date data.                                                                                                                                                                                                                                                                                                 |
+    text: |-
+      |                                                                                                                          Dashboard                                                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+      | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+      |                                         [Asset Ownership Investigation: DNS](/investigate/search/custom-dashboards/Asset%20Ownership%20Investigation%3A%20DNS?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                         | This dashboard helps identify asset ownership when you have only a DNS name, by showing which users and computers connect to that domain most frequently based on Falcon sensor telemetry. This can be helpful when investigating who, in an organization, is responsible for certain assets, such as those identified through network scanning or EASM results.                                                                                                              |
+      |                                          [Asset Ownership Investigation: IP](/investigate/search/custom-dashboards/Asset%20Ownership%20Investigation%3A%20IP?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                          | This dashboard helps identify asset ownership when you have only an IP address, by showing which users and computers connect to that IP most frequently based on Falcon sensor telemetry. This can be helpful when investigating who, in an organization, is responsible for certain assets, such as those identified through network scanning or EASM results.                                                                                                               |
+      |                                                               [Case Management](/investigate/search/custom-dashboards/Case%20management?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                               | Monitoring dashboard of metrics around Cases, including: active and total cases, SLA statuses, case user assignments, and more.                                                                                                                                                                                                                                                                                                                                               |
+      | [CrowdStrike - Endpoint - Active Binaries with Revoked Certificates](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20Active%20Binaries%20with%20Revoked%20Certificates?repoOrViewName=search-all&packageScope=falcon/ngsiem-content) | This dashboard monitors potentially vulnerable or malicious software in the environment by identifying active binaries and drivers with problematic digital certificates.                                                                                                                                                                                                                                                                                                     |
+      |             [CrowdStrike - Endpoint - AI Service Usage Monitoring](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20AI%20Service%20Usage%20Monitoring?packageScope=falcon%2Fngsiem-content-ai&repoOrViewName=search-all)              | As organizations increasingly adopt AI technologies, understanding AI usage becomes critical for maintaining security and compliance. CrowdStrike's AI Monitoring Dashboard provides comprehensive visibility into AI service interactions, data movements, and potential risks across your environment, enabling informed security decisions through detailed insights into AI-related activities.                                                                           |
+      |                                  [CrowdStrike - Endpoint - MCP Usage](/investigate/search/custom-dashboards/CrowdStrike%20-%20Endpoint%20-%20MCP%20Usage?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-ai)                                   | Dashboard to quickly identify MCP usage within the environment, detailing general usage, as well as detailed usage of Claude Desktop or Visual Studio Code.                                                                                                                                                                                                                                                                                                                   |
+      |                       [CrowdStrike Falcon - Insider Threat Analytics](/investigate/search/custom-dashboards/CrowdStrike%20Falcon%20-%20Insider%20Threat%20Analytics?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-fdp)                       | Insider threat detection and investigation through risk scoring, behavioral anomalies, and comprehensive FDP analytics.                                                                                                                                                                                                                                                                                                                                                       |
+      |                       [CrowdStrike FDP - User Activity Investigation](/investigate/search/custom-dashboards/CrowdStrike%20FDP%20-%20User%20Activity%20Investigation?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-fdp)                       | Detailed analysis of data egress activity through Falcon Data Protection telemetry.                                                                                                                                                                                                                                                                                                                                                                                           |
+      |                [CrowdStrike Next-Gen SIEM - Rule Template Discovery](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Rule%20Template%20Discovery?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-crt)                | This dashboard provides a comprehensive view of CrowdStrike's Next-Gen SIEM out-of-the-box correlation rule templates, enabling customers to discover content that aligns with their existing security log sources, detection requirements, and strategy.                                                                                                                                                                                                                     |
+      |                                                        [Fusion SOAR Execution](/investigate/search/custom-dashboards/Fusion%20SOAR%20Execution?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                        | Visualizes your workflow execution data in a variety of ways to help you keep track of what’s happening in your system.                                                                                                                                                                                                                                                                                                                                                       |
+      |                [Malicious Browser Extension Investigation](/investigate/search/custom-dashboards/Malicious%20Browser%20Extension%20Investigation?packageScope=falcon%2Fngsiem-content-et&repoOrViewName=search-all&sharedTime=true&start=1d)                | This dashboard leverages the CrxFileWritten event to determine if a particular extension version was downloaded to a system. **NOTE**: Only available for EDR events from Windows sensors                                                                                                                                                                                                                                                                                     |
+      |                                [Next-Gen SIEM Reference Dashboard - v1.9.2](/investigate/search/custom-dashboards/Next-Gen%20SIEM%20Reference%20Dashboard%20-%20v1.9.2?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                | The reference dashboard features many different styles of SOC analysis and threat hunting use cases. The first two sections show instructions and basic detection metrics. The remaining sections show common scenarios that may be of interest for investigations, including matching to IOCs, analyzing logon events, and looking at high entropy DNS names. You can use the dashboard to explore your data, or as a reference to make your own threat hunting experiences. |
+      |                                                                 [SOC Efficacy](/investigate/search/custom-dashboards/SOC%20Efficacy?packageScope=falcon%2Fngsiem&repoOrViewName=search-all)                                                                 | Combines incident and detection data from all of your data sources into a single, intuitive view of your threat landscape to inform your decision making with clear, up-to-date data.                                                                                                                                                                                                                                                                                         |
+      |                                                      [Identity service health](/investigate/search/custom-dashboards/Identity%20service%20health?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                      | --                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+      |                                                        [Webhook Ingest Errors](/investigate/search/custom-dashboards/Webhook%20Ingest%20Errors?repoOrViewName=search-all&packageScope=falcon/ngsiem)                                                        | --                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
     width: 12
     title: CrowdStrike dashboards
     type: note
   note-1757093054520-0:
-    x: 8
+    x: 9
     y: 0
-    height: 4
+    height: 5
     text: |-
       - [CrowdStrike documentation site for Next-Gen SIEM](https://docs.crowdstrike.com/p/ngsiem)
       - [LogScale Documentation Site](https://library.humio.com/)
       - [Next-Gen SIEM Tech Hub](https://www.crowdstrike.com/tech-hub/ng-siem/)
+      - [Charlotte AI Tech Hub](https://www.crowdstrike.com/tech-hub/charlotte-ai/?cspage=0&lang=English)
       - [Next-Gen SIEM and LogScale Community content on Github](https://github.com/CrowdStrike/logscale-community-content)
       - [CrowdStrike "Cool Query Friday" posts on Reddit](https://www.reddit.com/r/crowdstrike/?f=flair_name%3A%22CQF%22)
-      - [CrowdStrike's Next-Gen SIEM YouTube playlist ](https://www.youtube.com/watch?v=9N6m_NErrns&list=PLtojL19AteZs2fIDU1qMHFu73zfO_MFSR)
+      - [CrowdStrike's Next-Gen SIEM YouTube playlist](https://www.youtube.com/watch?v=m2_b-Eq6GTM&list=PLtojL19AteZs2fIDU1qMHFu73zfO_MFSR)
+      - [CrowdStrike's Charlotte AI YouTube playlist](https://www.youtube.com/watch?v=SD714wYP-BE&list=PLtojL19AteZtnpIMufKV4wvPHtb62ouH0)
       - [Developer Center](https://developer.crowdstrike.com/)
-    width: 4
+    width: 3
     title: 📋 Other Resources
     type: note
   note-1757003741233-0:
@@ -776,16 +906,134 @@ widgets:
     y: 0
     height: 3
     text: "### If images in this dashboard are not loading, you can try changing the\
-      \ CrowdStrike_cloud parameter setting to the CrowdStrike cloud your CID is in.\
-      \ \n\nⓘ *You can Edit the Parameter to change the default value to the one that\
-      \ aligns to your CrowdStrike cloud. This way, the change will persist when you\
-      \ come back to this dashboard later on.*"
-    width: 4
+      \ *CrowdStrike_cloud* parameter setting to the CrowdStrike cloud your CID is\
+      \ in. \n\nⓘ *You can Edit the Parameter to change the default value to the one\
+      \ that aligns to your CrowdStrike cloud. This way, the change will persist when\
+      \ you come back to this dashboard later on.*"
+    width: 3
+    title: ''
+    type: note
+  36749f83-2c5f-4e2e-bb4d-5153e3aa4055:
+    x: 4
+    y: 5
+    height: 4
+    queryString: |-
+      createEvents([
+       "example=1st_item exampleEvent=1",
+       "example=1st_item exampleEvent=1",
+       "example=1st_item exampleEvent=1",
+       "example=2nd_item exampleEvent=1",
+       "example=2nd_item exampleEvent=1",
+       "example=3rd_item exampleEvent=1",
+       "example=1st_item exampleEvent=2",
+       "example=1st_item exampleEvent=2",
+       "example=2nd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=1st_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=3rd_item exampleEvent=3",
+       "example=3rd_item exampleEvent=3"
+      ])
+      | kvParse()
+      | case {
+          exampleEvent = 1 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp;
+          exampleEvent = 2 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp - 300000;
+          exampleEvent = 3 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp - 600000;
+          *;
+      }
+      | @timestamp := new_timestamp
+      | timeChart(span=5min, series=example, function=count())
+    end: now
+    start: 15m
+    width: 8
+    options:
+      series: {}
+      plY: 2.5
+      valueFormat: metric
+      interpolation: cardinal
+      tension: 0.2
+      lastBucketBehavior: include
+      horizontalPlotLineLabel: Threshold
+      connect-points: false
+      yAxisScale: linear
+      plotType: line
+      titleSize: small
+      show-utc: true
+      mn: 0
+      imputation: none
+      mx: 3.5
+      xAxisTitle: Time
+      yAxisTitle: Amount
+      stacking: none
+    visualization: time-chart
+    title: Time Chart Example
+    isLive: false
+    type: query
+  note-1756992852414-0:
+    x: 4
+    y: 0
+    height: 4
+    text: "Alerting is an important part of monitoring an organization's security.\
+      \ Historically, SIEM solutions have made this a difficult experience; often\
+      \ creating so many alerts that responders experience \"alert fatigue\". This\
+      \ can cause the important events to be overlooked amongst the rest of the alerts\
+      \ that they may feel aren't as severe.\n\nCrowdStrike allows for granular customization\
+      \ of alerting, as well as the capability to automate tasks and decide when an\
+      \ action should/shouldn't occur.\n\n### Here are some helpful playbooks to get\
+      \ you started with setting up alert notifications using Fusion SOAR:\n\n| Playbook\
+      \                                                                          \
+      \                                             | Description                \
+      \                                                                          \
+      \                                                                          \
+      \                                                                          \
+      \                                                                          \
+      \                                      |\n| ------------------------------------------------------------------------------------------------------------------------------\
+      \ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\
+      \ |\n| [Send a notification when a correlation rule based detection is generated](/content-library/details/global:fusion_playbook:f07ade95fc1a4619aa9fe785eb9ec8e5)\
+      \    | Sends an email notification when a NG-SIEM Correlation Rule detection\
+      \ is generated. You can also replace the 'Send email' action with a different\
+      \ notification tool such as Slack or Teams.                                \
+      \                                                                          \
+      \                                                                    |\n| [Send\
+      \ a notification when a third party detection is generated](/content-library/details/global:fusion_playbook:1a4f70f439414d129783f9a9d45c7616)\
+      \ | Sends an email notification when a NG-SIEM third party detection is generated.\
+      \ Third party detections are pass-through alerts from third party tools such\
+      \ as Okta. Customize this workflow with conditions to filter which alerts to\
+      \ notify on. You can also replace the 'Send email' action with a different notification\
+      \ tool such as Slack or Teams.                  |\n \n***ⓘ There are also many\
+      \ Triggers and Actions available for use with Cases within Next-Gen SIEM. For\
+      \ example, you can remake either of the above workflows with the Trigger \"\
+      CROWDSTRIKE  Case > Case Created\"***\n\n"
+    width: 8
+    title: Next-Gen SIEM Alerting
+    type: note
+  note-1768488227899-0:
+    x: 3
+    y: 21
+    height: 3
+    text: "### <-- Identifying behavioral patterns\nUsing the *correlate()* function,\
+      \ you can combine results of multiple queries into a constellation of events.\
+      \ This allows for the identification of patterns of behavior across one or more\
+      \ data sources. \n\n### Click the title of the **correlate() Example** widget\
+      \ to view this query in Advanced event search to see the **Query graph** and\
+      \ how the constellation of events are connected.\n\n[To learn more about this\
+      \ function, check out our documentation.](https://docs.crowdstrike.com/r/f62ea241)"
+    width: 6
     title: ''
     type: note
   8772afc6-42cb-49b0-b3f8-b7b584506581:
     x: 6
-    y: 0
+    y: 10
     description: Fix this broken query by using the prompt and instructions from the
       "🌎 Create a World Map widget using Charlotte AI" widget
     height: 6
@@ -809,15 +1057,15 @@ widgets:
     isLive: false
     type: query
   note-1757127522716-2:
-    x: 0
-    y: 7
+    x: 6
+    y: 1
     height: 4
     text: |-
       ## [Endpoint and Identity-based Detections](/unified-detections/?filter=data_domains%3A%27Identity%27%2Bsource_products%3A%27Falcon%20Insight%27%2Bsource_products%3A%27Falcon%20Identity%20Protection%27%2Btype%3A!%27correlation-detection%27%2Bdata_domains%3A%27Endpoint%27)
       ### Triage with Charlotte AI
       - Charlotte AI can streamline investigation and response times by automatically triaging Endpoint and Identity-based detections.
       - [Detection Triage Dashboard](/dashboards-v2/dashboard/7F208909-8907-4F5E-8CAF-EDE8D1985611?filter=created_at%3A%27Last%2030%20days%27)
-      - ⓘ ***Note**: Triaging a detection with Charlotte AI doesn’t count toward your monthly quota.*
+      - ⓘ *Triaging a detection with Charlotte AI doesn’t count toward your monthly quota.*
       ### Agentic Response with Charlotte AI
       - Charlotte AI guides you through detection triage by asking high-impact questions and getting fast answers.
       ### Additional capabilities
@@ -832,6 +1080,55 @@ widgets:
     width: 6
     title: ''
     type: note
+  note-1756991362395-0:
+    x: 10
+    y: 0
+    height: 4
+    text: '![Fancy Bear](https://assets.{{ parameter "CrowdStrike_cloud" }}crowdstrike.com/2014/11/02161030/CS_Actor_Icons_FancyBear.png)'
+    width: 2
+    title: ''
+    type: note
+  8b17ccbf-0d0a-45d0-af21-d0c58fc6e166:
+    x: 0
+    y: 1
+    height: 12
+    queryString: |-
+      createEvents(["example=1st_item",
+       "example=2nd_item",
+       "example=3rd_item",
+       "example=1st_item",
+       "example=2nd_item",
+       "example=1st_item"])
+      | kvParse()
+      | groupBy([example])
+    end: now
+    start: 15m
+    width: 4
+    options:
+      show-min-max: false
+      trellisMaxColumns: 1
+      labels:
+      - label: LOW
+        value: 1
+      - label: MEDIUM
+        value: 2
+      - label: HIGH
+        value: 3
+      padding: 0
+      trellisShowBorders: true
+      gaugeType: radialNeedle
+      thresholdConfig:
+        palette: Green yellow red
+        reversePalette: true
+        thresholds:
+        - value: 1
+        - value: 2
+        - value: 3
+      range-max: 4
+    visualization: gauge
+    title: Gauge Example
+    isLive: false
+    type: query
   note-1756945915705-0:
     x: 0
     y: 0
@@ -842,7 +1139,7 @@ widgets:
     text: |-
       Rather than having to turn off tons of rules creating false-positives alerts, CrowdStrike provides rule templates for many supported data sources to help organizations start monitoring logs for security concerns quickly and meaningfully.
 
-      To discover rule templates that align to your data sources, check out the [**CrowdStrike Next-Gen SIEM - Correlation Rule Template Discovery**](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Correlation%20Rule%20Template%20Discovery?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-crt) dashboard.
+      To discover rule templates that align to your data sources, check out the [**CrowdStrike Next-Gen SIEM - Rule Template Discovery**](/investigate/search/custom-dashboards/CrowdStrike%20Next-Gen%20SIEM%20-%20Rule%20Template%20Discovery?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-crt) dashboard.
       - ⓘ *A walkthrough of this dashboard is available on [**YouTube**](https://www.youtube.com/watch?v=9N6m_NErrns)*
 
       Click [HERE](/xdr/rules/templates) to view all rule templates developed by CrowdStrike. You can select [**Create rule**] to turn the template into an active rule to begin monitoring your data.
@@ -857,25 +1154,14 @@ widgets:
     title: Correlation Rules
     type: note
   parameter-panel-1757000480358-1:
-    x: 8
+    x: 7
     y: 0
     parameterIds:
     - CrowdStrike_cloud
     height: 3
-    width: 4
+    width: 3
     title: 'Select one option and click Apply:'
     type: parameterPanel
-  ca8137ad-927b-4c67-9957-79aa4191dea4:
-    x: 0
-    backgroundColor: '#b52026'
-    y: 12
-    text: '## How-To! Create a workflow that can bulk close detections within Next-Gen
-      SIEM'
-    width: 12
-    height: 1
-    textColor: '#f5f5f5'
-    title: ''
-    type: note
   note-1756951484154-2:
     x: 5
     y: 5
@@ -899,6 +1185,28 @@ widgets:
     width: 7
     title: ''
     type: note
+  note-1768928387118-2:
+    x: 7
+    y: 0
+    height: 3
+    text: |-
+      # Use these dashboards in the Data Onboarding section to monitor your sources of data:
+      ## [**Ingest**](/data-connectors/dashboards/ingest)
+      ## [**Data Health**](/data-connectors/dashboards/data-health)
+    width: 5
+    title: Monitoring
+    type: note
+  ca8137ad-927b-4c67-9957-79aa4191dea4:
+    x: 0
+    backgroundColor: '#b52026'
+    y: 12
+    text: '## How-To! Create a workflow that can bulk close detections within Next-Gen
+      SIEM'
+    width: 12
+    height: 1
+    textColor: '#f5f5f5'
+    title: ''
+    type: note
   note-1756956200065-0:
     x: 4
     backgroundColor: '#b52026'
@@ -910,6 +1218,49 @@ widgets:
     textColor: '#f5f5f5'
     title: ''
     type: note
+  292c87a0-db63-4d11-bf32-147c2c7fd42f:
+    x: 8
+    description: Click the vertical ellipses to the left of each widget name for a
+      link to the LogScale documentation for that widget type.
+    height: 4
+    queryString: |-
+      createEvents([
+       "widget=barchart",
+       "widget=eventlist",
+       "widget=gauge",
+       "widget=heatmap",
+       "widget=note",
+       "widget=parameter-panel",
+       "widget=piechart",
+       "widget=sankey",
+       "widget=scatter",
+       "widget=single-value",
+       "widget=table",
+       "widget=timechart",
+       "widget=worldmap"
+      ])
+      | kvParse()
+      | table(widget)
+    end: now
+    start: 10m
+    width: 4
+    y: 15
+    interactions:
+    - name: LogScale Widget Documentation
+      urlEncodeArgs: false
+      urlTemplate: https://library.humio.com/data-analysis/widgets-{{ fields.widget
+        }}.html
+      openInNewTab: true
+      type: customlink
+    options:
+      cell-overflow: wrap-text
+      column-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Interactions Example
+    isLive: false
+    type: query
   note-1756927309738-0:
     x: 0
     y: 0
@@ -918,12 +1269,22 @@ widgets:
       \ page to get started ingesting your logs into CrowdStrike!**\n---\nⓘ [Click\
       \ here to view all Data Connectors in current CID that are **not in an active\
       \ state**](/data-connectors/?filter=display_status%3A%27Disconnected%27%2Bdisplay_status%3A%27Error%27%2Bdisplay_status%3A%27Idle%27%2Bdisplay_status%3A%27Paused%27%2Bdisplay_status%3A%27Pending%27&pageSize=100).\n\
-      \n*This link displays connectors with **disconnected**, **error**, **idle**,\
+      \n*- This link displays connectors with **disconnected**, **error**, **idle**,\
       \ **paused**, or **pending** status that require attention. \nAddressing these\
       \ connector issues is critical for ensuring continuous data ingestion and maintaining\
-      \ effective detection coverage through your correlation rules.*"
-    width: 6
+      \ effective detection coverage through your correlation rules.*\n"
+    width: 7
     title: Getting started
+    type: note
+  240fee17-233d-4e01-b4f1-0f3d8cd1e412:
+    x: 0
+    backgroundColor: '#b52026'
+    y: 0
+    text: '# Widget Examples'
+    width: 12
+    height: 1
+    textColor: '#f5f5f5'
+    title: ' '
     type: note
   note-1757946663634-4:
     x: 0
@@ -937,9 +1298,87 @@ widgets:
     width: 12
     title: ''
     type: note
+  7b6e7419-fb5c-42ef-9cfd-38e0e4693021:
+    x: 0
+    y: 21
+    description: 'This query looks for the following events from the Falcon sensor
+      over a 24 hour period: UserLogon, NetworkConnectIP4, UserLogoff.'
+    height: 3
+    queryString: |-
+      /*
+      This query looks for the following events from the Falcon
+      sensor over a 24 hour period:
+          - UserLogon
+          - NetworkConnectIP4
+          - UserLogoff
+      You can try changing the sequence to "true" to see if the
+      events occurred in this exact order.
+      */
+      correlate(
+          user_logon: {
+              #repo="base_sensor" #event_simpleName="UserLogon"
+              | user.name <=> user_logoff.user.name
+          },
+          network_connection: {
+              #repo="base_sensor" #event_simpleName="NetworkConnectIP4"
+              | ComputerName <=> user_logon.ComputerName | ComputerName <=> user_logoff.ComputerName
+          },
+          user_logoff: {
+              #repo="base_sensor" #event_simpleName="UserLogoff"
+          },
+          within = 24hr,
+          sequence = false,
+          includeMatchesOnceOnly=true
+      )
+    end: now
+    start: 2d
+    width: 3
+    options:
+      cell-overflow: wrap-text
+      column-overflow: truncate
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: correlate() Example
+    isLive: false
+    type: query
+  note-1768925364113-0:
+    x: 0
+    backgroundColor: '#B52026'
+    y: 8
+    text: |+
+      ## ⓘ Did you know?
+      ### You can limit user access to Next-Gen SIEM detections and advanced event search data with [Access Scopes](https://docs.crowdstrike.com/r/s492d60d)
+
+    width: 12
+    height: 2
+    textColor: '#f5f5f5'
+    title: ''
+    type: note
+  note-1757129402228-0:
+    x: 0
+    y: 1
+    height: 4
+    text: |-
+      ## [Prompts](/charlotte-ai/) and [Promptbooks](/charlotte-ai/promptbooks)
+      ### Prompts
+      - Ask Charlotte AI questions about your environment such as adversary attributed activity or get help building queries to run in Advanced event search.
+      - Charlotte AI can also help [create Fusion workflows](https://docs.crowdstrike.com/r/x8a5a5c6), [queries for Falcon for IT](https://docs.crowdstrike.com/r/h08545ae), and [more](https://docs.crowdstrike.com/r/rec4bbba).
+      ### Promptbooks
+      - These are collections of prompts for common workflows that you can customize for your organization's needs to maximize efficiency. Promptbooks are similar to Fusion SOAR playbooks in that they streamline complex workflows.
+      ⓘ *Note that Charlotte AI leverages generative artificial intelligence models and its responses to user prompts are generated by generative artificial intelligence models. For more info, see [CrowdStrike Offerings Subprocessors](https://docs.crowdstrike.com/r/d1f180fb).*
+
+      ---
+
+      ### CrowdStrike documentation:
+      - [Charlotte AI Conversation Overview](https://docs.crowdstrike.com/r/d90de7f2)
+      - [Prompts and Promptbooks](https://docs.crowdstrike.com/r/v2d25a5f)
+    width: 6
+    title: ''
+    type: note
   75935dc3-6121-4859-a708-d3774e857fd2:
     x: 8
-    y: 11
+    y: 13
     description: This widget is shows the same data as the ipLocation() Example, but
       also uses Falcon Helper to make the country names easier to read using their
       full names instead of country codes.
@@ -957,10 +1396,67 @@ widgets:
     width: 4
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns: {}
       row-numbers-enabled: false
     visualization: table-view
     title: ipLocation() Example Enriched
+    isLive: false
+    type: query
+  1c9db9c0-5e5e-427f-8ba9-56d6e0922785:
+    x: 4
+    y: 13
+    height: 4
+    queryString: |-
+      createEvents([
+       "example=1st_item exampleEvent=1",
+       "example=1st_item exampleEvent=1",
+       "example=1st_item exampleEvent=1",
+       "example=2nd_item exampleEvent=1",
+       "example=2nd_item exampleEvent=1",
+       "example=3rd_item exampleEvent=1",
+       "example=1st_item exampleEvent=2",
+       "example=1st_item exampleEvent=2",
+       "example=2nd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=1st_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=3rd_item exampleEvent=3",
+       "example=3rd_item exampleEvent=3"
+      ])
+      | kvParse()
+      | case {
+          exampleEvent = 1 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp;
+          exampleEvent = 2 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp - 300000;
+          exampleEvent = 3 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp - 600000;
+          *;
+      }
+      | @timestamp := new_timestamp
+      | timeChart(span=5min, series=example, function=count())
+    end: now
+    start: 10m
+    width: 4
+    options:
+      legendTitle: Count
+      valueFormat: metric
+      xAxisTitle: Time
+      colorPalette: monoPeach
+      legendLocation: top
+      includeHistogram: false
+      titleSize: medium
+      reversePalette: false
+    visualization: heat-map
+    title: Heat Map Example
     isLive: false
     type: query
   note-1757277502792-1:
@@ -976,34 +1472,33 @@ widgets:
     type: note
   note-1757130147173-1:
     x: 6
-    y: 11
+    y: 5
     height: 4
     text: |-
       ## Fusion SOAR Automation with Charlotte AI
       ### [Watch this YouTube video for an example of how Charlotte AI can be used in a workflow to automate investigations into things like email](https://www.youtube.com/watch?v=TsNXfzu737s)
       ---
       ### Playbooks
-      - [Analyze Remote Management Tool Abuse with Charlotte](/workflow/fusion/content-library/playbooks/f924a36bc1ef4aa0a2851a9759c4860e)
-      - [Inline HTTP VirusTotal Enrichment Email Report](/workflow/fusion/content-library/playbooks/433b7b1132244adb93dab1b11c07e39a)
-      ### Actions
-      - [Triage Detection with Charlotte AI](/workflow/fusion/content-library/actions/98c19f1e71a14e4aa81a7ffd7a56b0eb_b144c6aad1da4990a5ae0ab003623262)
-      - [Investigate with Charlotte AI](/workflow/fusion/content-library/actions/5f0be43d535f7f082ee6c3b203e2870e)
-      - [Charlotte AI - Summarize incident](/workflow/fusion/content-library/actions/bdfecafafdb44919a458fcf51d6b93a7_e91306c4cc944cc79230ad804804c5b3)
-      - [Charlotte AI - LLM Completion](/workflow/fusion/content-library/actions/bdfecafafdb44919a458fcf51d6b93a7_98dec86072334d24b37dd798098cfd63)
-      - [Charlotte AI - Agentic Response](/workflow/fusion/content-library/actions/bdfecafafdb44919a458fcf51d6b93a7_6824c1fbdb6040e4bb0726b9d8d347d5)
-      - [Investigate case with Charlotte AI](/workflow/fusion/content-library/actions/9be6b7b4040e425da0747d11a4c99fce)
-      - [Charlotte AI - Analyze command line](/workflow/fusion/content-library/actions/bdfecafafdb44919a458fcf51d6b93a7_223a1d9e2f6446b8a5edcb28a3a5dad0)
+      ⓘ *CrowdStrike is continually working on new content. More playbooks that use Charlotte AI may exist than what is listed here*
+      - [Analyze command line of an endpoint detection with Charlotte AI](/content-library/details/global:fusion_playbook:7bab1a2a2ea54c4485cb47c08471f03f)
+      - [Analyze Remote Management Tool Abuse with Charlotte](/content-library/details/global:fusion_playbook:f924a36bc1ef4aa0a2851a9759c4860e)
+      - [Bulk Close All Detections in a Case](/content-library/details/global:fusion_playbook:1079fa0e79094b8187b8cb6878b18c09)
+      - [Inline HTTP VirusTotal Enrichment Email Report](/content-library/details/global:fusion_playbook:433b7b1132244adb93dab1b11c07e39a)
+      - [Triage email phishing report suspected of "Mailbox Recon" attack using LLM analysis](/content-library/details/global:fusion_playbook:8354d4300d4c447a943dbdbf54781603)
+      ### Actions and Triggers
+      - [View all available Actions and Triggers for Charlotte AI](/content-library/search?filter=_all%3A%27Charlotte%27%2Bcontent_type%3A%27fusion_action%27%2Bcontent_type%3A%27fusion_trigger%27&pageSize=60)
 
       ---
 
       ### CrowdStrike Documentation:
-      - [Charlotte AI Management > Managing promptbooks and Fusion SOAR workflows](https://docs.crowdstrike.com/r/rac6666a)
+      - [Create Fusion SOAR Workflows with Charlotte AI](https://docs.crowdstrike.com/r/ia567504)
+      - [Use Charlotte AI actions in Fusion SOAR workflows](https://docs.crowdstrike.com/r/t12eec20)
     width: 6
     title: ''
     type: note
   cebfe7f6-2714-422c-bb35-568d587fdaa9:
     x: 8
-    y: 8
+    y: 10
     description: This shows an example of using the groupBy() function to group together
       events by the same ComputerName.
     height: 3
@@ -1026,6 +1521,7 @@ widgets:
     width: 4
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns:
         ComputerName:
           width: 150
@@ -1035,16 +1531,16 @@ widgets:
     isLive: false
     type: query
   note-1758719503701-0:
-    x: 8
-    y: 4
+    x: 9
+    y: 5
     height: 2
     text: |-
       ```
       DASHBOARD INFO
-          Version: 1.2.0
-          Last Updated: 2025-10-29
+          Version: 1.3.0
+          Last Updated: 2026-01-25
       ```
-    width: 4
+    width: 3
     title: ''
     type: note
   note-1757024031218-0:
@@ -1057,7 +1553,7 @@ widgets:
     title: ''
     type: note
   note-1761313590713-0:
-    x: 7
+    x: 8
     y: 3
     height: 6
     text: |-
@@ -1071,7 +1567,7 @@ widgets:
       ###  [Zscaler Internet Access](https://vid.crowdstrike.com/watch/pbahoSvybCFatQu2Tt1hR1?)
 
       ⓘ ***See the links in the note next to this one to view documentation for setup of these and other data connectors in CrowdStrike***
-    width: 5
+    width: 4
     title: Tech Hub Connector Setup Videos
     type: note
   note-1756992212365-3:
@@ -1081,7 +1577,7 @@ widgets:
     text: |-
       # Introduction
 
-      ## - [See Falcon Fusion in Action](https://vid.crowdstrike.com/watch/qz3Z3r6HCgnYDLxDUt441A)
+      ## 🎦 [See Falcon Fusion in Action](https://vid.crowdstrike.com/watch/qz3Z3r6HCgnYDLxDUt441A)
     width: 4
     title: ''
     type: note
@@ -1131,6 +1627,95 @@ widgets:
     width: 4
     title: ''
     type: note
+  a182a8f0-cd8e-4e16-a34c-a72124b78421:
+    x: 8
+    y: 9
+    height: 4
+    queryString: |-
+      createEvents([
+       "example=1st_item exampleEvent=1",
+       "example=1st_item exampleEvent=1",
+       "example=1st_item exampleEvent=1",
+       "example=2nd_item exampleEvent=1",
+       "example=2nd_item exampleEvent=1",
+       "example=3rd_item exampleEvent=1",
+       "example=1st_item exampleEvent=2",
+       "example=1st_item exampleEvent=2",
+       "example=2nd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=3rd_item exampleEvent=2",
+       "example=1st_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=2nd_item exampleEvent=3",
+       "example=3rd_item exampleEvent=3",
+       "example=3rd_item exampleEvent=3"
+      ])
+      | kvParse()
+      | case {
+          exampleEvent = 1 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp;
+          exampleEvent = 2 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp - 300000;
+          exampleEvent = 3 |
+          now(as=current_timestamp)
+          | new_timestamp := current_timestamp - 600000;
+          *;
+      }
+
+      | case {
+          example = 2nd_item exampleEvent = 3 |
+          new_timestamp := new_timestamp + 100000;
+
+          example = 2nd_item  exampleEvent = /1|2/ |
+          new_timestamp := new_timestamp - 200000;
+
+          example = 3rd_item exampleEvent = 3 |
+          new_timestamp := new_timestamp + 250000;
+
+          example = 3rd_item  exampleEvent = /1|2/ |
+          new_timestamp := new_timestamp - 150000;
+          *;
+      }
+      | @timestamp := new_timestamp
+      | timeChart(span=2min, series=example, function=count())
+    end: now
+    start: 10m
+    width: 4
+    options:
+      series:
+        1st_item:
+          color:
+            dark: '#8280FF'
+            light: '#1C3CAE'
+        2nd_item:
+          color:
+            dark: '#4CD7F5'
+            light: '#0F99A1'
+        3rd_item:
+          color:
+            dark: '#FD74CD'
+            light: '#990072'
+      valueFormatX: abbreviated
+      xAxisTitle: Time
+      legend: false
+      yAxisTitle: Count
+      polyOrder: 2
+      xScaleType: linear
+      titleSize: medium
+      yZero: false
+      xZero: false
+      withXAxisTitle: false
+      regression: true
+      withYAxisTitle: true
+      regressionType: poly
+    visualization: scatter-chart
+    title: Scatter Chart Example (with Trend)
+    isLive: false
+    type: query
   note-1756950536191-0:
     x: 0
     y: 5
@@ -1142,7 +1727,7 @@ widgets:
     type: note
   note-1757104500926-0:
     x: 4
-    y: 11
+    y: 13
     height: 4
     text: |+
       You can enrich data through the use of [Lookup Files](https://docs.crowdstrike.com/r/rdb0abf5). This allows you to enhance your queries with a table of information to aid in threat hunting or general searching.
@@ -1156,16 +1741,27 @@ widgets:
     width: 4
     title: Enriching queries with Lookup Files
     type: note
+  b2eb8639-ed6d-4e77-bab0-80a7bc4a9334:
+    x: 10
+    backgroundColor: '#B52026'
+    y: 0
+    description: This will display the CrowdStrike logo if your CrowdStrike cloud
+      is set correctly in the widget next to this.
+    height: 3
+    text: '![CrowdStrike logo](https://assets.{{ parameter "CrowdStrike_cloud" }}crowdstrike.com/store/partners/crowdstrike/CrowdStrike%20Logo%20512x512%20-%20white%20background%20%281%29.png)'
+    width: 2
+    title: ' CrowdStrike logo'
+    type: note
   000ebefe-4bce-4e92-9d98-30fbe8bf93e4:
     x: 0
-    y: 15
+    y: 34
     description: This is not an exhaustive list of all dashboards available for external
       data sources due to CrowdStrike and our partners developing new dashboards regularly.
       You can view all available dashboards using the link in the red widget above,
       or import or develop your own using the information in the DIY note below.
     height: 8
     queryString: |-
-      // Last updated: 2025-09-18
+      // Last updated: 2026-01-25
 
       createEvents(["{
           \"Dashboard\": {
@@ -1392,19 +1988,104 @@ widgets:
             \"#Vendor.dash\": \"vmware\",
             \"#event.module.dash\": \"esxi\"
           }
-        }"])
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[F5 - BIG-IP - ASM Security Analytics](/investigate/search/custom-dashboards/F5%20-%20BIG-IP%20-%20ASM%20Security%20Analytics?repoOrViewName=search-all&packageScope=falcon/ngsiem-content)\",
+            \"Data Source / Data Connector\": \"F5 BIG-IP\",
+            \"Descriptions and Additional Notes\": \"This dashboard provides comprehensive F5 BIG-IP Application Security Manager\\n(ASM) analytics and monitoring capabilities for web application firewall\\nsecurity events.\",
+            \"#Vendor.dash\": \"f5networks\",
+            \"#event.module.dash\": \"bigip\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Salesforce - SaaS - SignIn Analytics](/investigate/search/custom-dashboards/Salesforce%20-%20SaaS%20-%20SignIn%20Analytics?repoOrViewName=search-all&packageScope=falcon/ngsiem-content)\",
+            \"Data Source / Data Connector\": \"Salesforce\",
+            \"Descriptions and Additional Notes\": \"Security analytics for Salesforce authentication events enabling threat hunting\\nand suspicious activity investigation.\",
+            \"#Vendor.dash\": \"salesforce\",
+            \"#event.module.dash\": \"salesforce\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Corelight log hunting](/investigate/search/custom-dashboards/Corelight%20log%20hunting?repoOrViewName=search-all&packageScope=falcon/ngsiem)\",
+            \"Data Source / Data Connector\": \"Corelight NDR\",
+            \"Descriptions and Additional Notes\": \"Partner-developed dashboard\",
+            \"#Vendor.dash\": \"corelight\",
+            \"#event.module.dash\": \"ndr\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Corelight ssl](/investigate/search/custom-dashboards/Corelight%20ssl?repoOrViewName=search-all&packageScope=falcon/ngsiem)\",
+            \"Data Source / Data Connector\": \"Corelight NDR\",
+            \"Descriptions and Additional Notes\": \"Partner-developed dashboard\",
+            \"#Vendor.dash\": \"corelight\",
+            \"#event.module.dash\": \"ndr\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Corelight vpn insights](/investigate/search/custom-dashboards/Corelight%20vpn%20insights?repoOrViewName=search-all&packageScope=falcon/ngsiem)\",
+            \"Data Source / Data Connector\": \"Corelight NDR\",
+            \"Descriptions and Additional Notes\": \"Partner-developed dashboard\",
+            \"#Vendor.dash\": \"corelight\",
+            \"#event.module.dash\": \"ndr\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Corelight x509](/investigate/search/custom-dashboards/Corelight%20x509?repoOrViewName=search-all&packageScope=falcon/ngsiem)\",
+            \"Data Source / Data Connector\": \"Corelight NDR\",
+            \"Descriptions and Additional Notes\": \"Partner-developed dashboard\",
+            \"#Vendor.dash\": \"corelight\",
+            \"#event.module.dash\": \"ndr\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Veeam - VDP - Security Activities](/investigate/search/custom-dashboards/Veeam%20-%20VDP%20-%20Security%20Activities?repoOrViewName=search-all&packageScope=falcon/ngsiem-partner-veeam)\",
+            \"Data Source / Data Connector\": \"Veeam Data Platform\",
+            \"Descriptions and Additional Notes\": \"Displays aggregated information about security activities on your Veeam Backup\\n& Replication and Veeam ONE servers.\",
+            \"#Vendor.dash\": \"Veeam\",
+            \"#event.module.dash\": \"\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Veeam - VDP - Monitoring](/investigate/search/custom-dashboards/Veeam%20-%20VDP%20-%20Monitoring?repoOrViewName=search-all&packageScope=falcon/ngsiem-partner-veeam)\",
+            \"Data Source / Data Connector\": \"Veeam Data Platform\",
+            \"Descriptions and Additional Notes\": \"Displays aggregated information about jobs run on your Veeam Backup &\\nReplication servers.\",
+            \"#Vendor.dash\": \"Veeam\",
+            \"#event.module.dash\": \"\"
+          }
+         }",
+         "{
+          \"Dashboard\": {
+            \"Dashboard Name\": \"[Kubernetes API Visibility](/investigate/search/custom-dashboards/Kubernetes%20API%20Visibility?repoOrViewName=search-all&packageScope=falcon/ngsiem)\",
+            \"Data Source / Data Connector\": \"Kubernetes audit logs from one of the following:\\n- Amazon Elastic Kubernetes Service (EKS)\\n- Microsoft Azure Kubernetes Service (AKS)\\n- Google Kubernetes Engine (GKE)\",
+            \"Descriptions and Additional Notes\": \"The dashboard provides visibility into your Kubernetes audit log collection and\\nAPI activity across AWS, Azure, and Google Cloud environments. The dashboard\\nincludes setting a parameter that allows you to focus on specific cloud\\nproviders, though some widgets may appear empty when filtered because different\\ncloud providers supply varying levels of audit log detail.\",
+            \"#Vendor.dash\": \"aws\\nmicrosoft\\ngoogle\",
+            \"#event.module.dash\": \"eks\\naks\\ngke\"
+          }
+         }"])
       | parseJson(removePrefixes=["Dashboard."])
 
       | case {
+        in("Data Source / Data Connector", ignoreCase=true, values=["*kubernetes*"]) | Data_Source := "Kubernetes";
         in("Data Source / Data Connector", ignoreCase=true, values=["*aws*", "*amazon*"]) | Data_Source := "AWS";
         in("Data Source / Data Connector", ignoreCase=true, values=["*corelight*"]) | Data_Source := "Corelight";
         in("Data Source / Data Connector", ignoreCase=true, values=["*mimecast*"]) | Data_Source := "Mimecast";
         in("Data Source / Data Connector", ignoreCase=true, values=["*extrahop*"]) | Data_Source := "Extrahop";
+        in("Data Source / Data Connector", ignoreCase=true, values=["*f5*"]) | Data_Source := "F5";
         in("Data Source / Data Connector", ignoreCase=true, values=["*fortinet*"]) | Data_Source := "Fortinet";
         in("Data Source / Data Connector", ignoreCase=true, values=["*azure*", "*microsoft*", "*entra*"]) | Data_Source := "Microsoft";
         in("Data Source / Data Connector", ignoreCase=true, values=["*okta*"]) | Data_Source := "Okta";
         in("Data Source / Data Connector", ignoreCase=true, values=["*palo*"]) | Data_Source := "Palo Alto";
+        in("Data Source / Data Connector", ignoreCase=true, values=["*salesforce*"]) | Data_Source := "Salesforce";
         in("Data Source / Data Connector", ignoreCase=true, values=["*snyk*"]) | Data_Source := "Snyk";
+        in("Data Source / Data Connector", ignoreCase=true, values=["*veeam*"]) | Data_Source := "Veeam";
         in("Data Source / Data Connector", ignoreCase=true, values=["*vmware*"]) | Data_Source := "VMware";
         *;
       }
@@ -1413,10 +2094,11 @@ widgets:
 
       | table(["Dashboard Name", "Descriptions and Additional Notes", "Data Source / Data Connector"], sortby="Dashboard Name", order=asc)
     end: now
-    start: 7d
+    start: 10m
     width: 12
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns:
         Dashboard Name:
           color: '#29a34bff'
@@ -1431,9 +2113,91 @@ widgets:
     title: Dashboards available for external data sources
     isLive: false
     type: query
+  8fdf3f64-eeaf-4d26-88f9-a46f3c576726:
+    x: 4
+    y: 9
+    height: 4
+    queryString: |-
+      createEvents(["source=1st_source destination=1st_destination",
+       "source=2nd_source destination=1st_destination",
+       "source=3rd_source destination=1st_destination",
+       "source=1st_source destination=2nd_destination",
+       "source=2nd_source destination=2nd_destination",
+       "source=1st_source destination=3rd_destination"
+      ])
+      | kvParse()
+      | sankey(source="source", target="destination")
+    end: now
+    start: 15m
+    width: 4
+    options:
+      series:
+        3rd_source:
+          color: '#34B248'
+        2nd_destination:
+          color:
+            dark: '#505265'
+            light: '#D3D3D3'
+        1st_source:
+          color: '#DB2D24'
+        3rd_destination:
+          color:
+            dark: '#B7B7B7'
+            light: '#7478A1'
+        2nd_source:
+          color: '#F5B800'
+        1st_destination:
+          color:
+            dark: '#EFEFEF'
+            light: '#3B364A'
+      stackSortType: total
+      labelPosition: inside
+      showAxes: false
+      stackSortOrder: ascending
+      seriesColorPalette: Humio category 20
+    visualization: sankey
+    title: Sankey Example
+    isLive: false
+    type: query
+  76c6848e-9325-47e4-9c44-107f3ba794a1:
+    x: 8
+    y: 1
+    height: 4
+    queryString: |-
+      createEvents(["example=1st_item",
+       "example=2nd_item",
+       "example=3rd_item",
+       "example=1st_item",
+       "example=2nd_item",
+       "example=1st_item"])
+      | kvParse()
+      | groupBy([example])
+    end: now
+    start: 15m
+    width: 4
+    options:
+      legendPosition: right
+      series:
+        1st_item:
+          color: '#f77f00'
+        2nd_item:
+          color: '#d62828'
+        3rd_item:
+          color: '#fcbf49'
+      valueFormat: abbreviated
+      legendLabelOverflow: full
+      enableTrellis: false
+      innerRadius: 27
+      seriesColorPalette: falcon12
+      maxSeriesCount: 50
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Pie Chart Example
+    isLive: false
+    type: query
   ab619cf9-d900-4198-8bb9-3ee19eafee60:
     x: 0
-    y: 15
+    y: 17
     description: 'This widget is borrowed from the "Next-Gen SIEM Reference Dashboard
       - v1.9.2" dashboard. It shows whether any source or destination IP addresses
       in logs from your environment exist within CrowdStrike''s IOC list. If any are
@@ -1535,6 +2299,7 @@ widgets:
     width: 6
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns:
         ioc.ip:
           color: '#AFDDF4'
@@ -1573,6 +2338,7 @@ widgets:
       - CrowdStrike-generated detections
       - Correlation Rules
       - Third-party detections
+      ⓘ *You can set exclusions on third-party detections to remove false-positives from the Unified Detections page. [Click here to see all of your current exclusions](/data-connectors/detection-exclusions)*
 
       ---
 
@@ -1583,29 +2349,32 @@ widgets:
     type: note
   note-1761756215578-0:
     x: 0
-    y: 8
+    y: 27
     description: Review each dashboard to see a list of the applicable Supported Data
       Sources
     height: 5
-    text: |2
-
+    text: |-
       |                                                                                                           Dashboard                                                                                                           | Description                                                                                                                                                                                                                                                                         |
       | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+      |                       [Compliance Monitoring - EU GDPR](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20EU%20GDPR?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                       | The GDPR Compliance Monitoring Dashboard provides organizations with visibility into their personal data processing activities and compliance posture across cloud storage, collaboration platforms, and data egress channels.                                                      |
+      |                          [Compliance Monitoring - FISMA](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20FISMA?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                          | This dashboard provides real-time visibility and continuous monitoring of FISMA compliance status with a primary focus on authentication controls and access management                                                                                                             |
       |                          [Compliance Monitoring - HIPAA](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20HIPAA?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                          | This dashboard surfaces important data that maps directly to the Health Insurance Portability and Accountability Act (HIPAA) compliance framework, facilitating organizations to meeting the appropriate controls for this compliance regulation.                                   |
       |                  [Compliance Monitoring - NERC CIP v2](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20NERC%20CIP%20v2?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                  | This dashboard surfaces important data that maps directly to the North American Electric Reliability Corporation Critical Infrastructure Protection (NERC CIP) compliance framework, facilitating organizations to meeting the appropriate controls for this compliance regulation. |
       | [Compliance Monitoring - NIST SP 800-53 Rev5 (AU)](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20NIST%20SP%20800-53%20Rev5%20%28AU%29?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl) | This dashboard surfaces important data that maps directly to the NIST SP 800-53 compliance framework, facilitating organizations in meeting the appropriate controls for this compliance regulation.                                                                                |
       |                       [Compliance Monitoring - PCI DSS](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20PCI%20DSS?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                       | This dashboard provides real-time visibility and continuous monitoring of PCI-DSS compliance status with a primary focus on authentication controls and access management to ensure cardholder data protection and regulatory adherence.                                            |
+      |                            [Compliance Monitoring - SOX](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20SOX?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                            | --                                                                                                                                                                                                                                                                                  |
     width: 12
     title: Compliance monitoring dashboards
     type: note
   note-1757087213965-1:
     x: 0
-    y: 8
+    y: 10
     height: 3
     text: |
       Being able to effectively use the CrowdStrike Query Language allows for better threat hunting, rule creation, dashboarding, and more.
 
-      To help improve your understanding of the use of this, the following documentation provides excellent guidance of learning this by using the different functions available:
+      To help improve your understanding of the use of this, the following links provide excellent guidance of learning this by using the different functions available:
+      - [New to Falcon Next-Gen SIEM? Start with these commonly-used query functions](https://www.crowdstrike.com/tech-hub/ng-siem/top-logscale-query-functions-for-new-customers/)
       - [Learn the CrowdStrike Query Language by Example](https://docs.crowdstrike.com/r/a4cc00c2)
       - [Learn the CrowdStrike Query Language Using Falcon Data](https://docs.crowdstrike.com/r/f22f03a6)
       ---
@@ -1616,8 +2385,8 @@ widgets:
   410c4a93-3670-401d-ac92-1b702ee5932c:
     x: 0
     backgroundColor: '#b52026'
-    y: 6
-    text: '# Other ways to interact with Charlotte AI'
+    y: 0
+    text: '# Ways to interact with Charlotte AI'
     width: 12
     height: 1
     textColor: '#f5f5f5'
@@ -1642,7 +2411,7 @@ widgets:
       ### Not seeing a data connector for your solution?
       **Logs are able to be brought into Next-Gen SIEM using one of our [Generic data connectors](/data-connectors/add-connection?filter=vendor_name%3A%27Generic%27).**
 
-      - **ⓘ Check out the "Generic Log Ingestion - Push Connector" Tech Hub Video to see how these can be set up**
+      - ⓘ Check out the **"Generic Log Ingestion - Push Connector" Tech Hub Video** for an example of how these can be set up
 
       **When using a Generic data connector, a parser must be selected to normalize the logs for use within the console. You can choose from one of our [Default parsers](/content-library/catalog/parser) available, or build your own parser with the help of our [AI generated parsing](https://docs.crowdstrike.com/r/q83fb13b) with a sample of the logs you wish to bring in.**
 
@@ -1652,7 +2421,7 @@ widgets:
     type: note
   f721802b-6a85-4692-9b28-b6b51e8827aa:
     x: 0
-    y: 11
+    y: 13
     description: Query functions like ipLocation() can provide quick understandings
       from logs, such as geolocation data for IP addresses. Check out the "🤖 Charlotte
       AI" section to see how Charlotte AI can help build a query to display location
@@ -1669,6 +2438,7 @@ widgets:
     width: 4
     options:
       cell-overflow: wrap-text
+      column-overflow: truncate
       configured-columns: {}
       row-numbers-enabled: false
     visualization: table-view
@@ -1685,14 +2455,24 @@ widgets:
     type: note
   parameter-panel-1756922584654-0:
     x: 0
-    y: 13
+    y: 32
     parameterIds:
     - Data_Source
     height: 2
-    width: 12
+    width: 6
     title: Select a vendor from the drop-down list to look for dashboards specific
       to their logs.
     type: parameterPanel
+  b094383e-4899-417f-91e1-685768f13a98:
+    x: 6
+    y: 32
+    height: 2
+    text: |-
+      ### Dashboards in Next-Gen SIEM can be set to deliver to an email address as a scheduled PDF Report
+      - [**Click here to read more about how to set this up**](https://docs.crowdstrike.com/r/qxh1mgpa)
+    width: 6
+    title: 🕑 Scheduled reports
+    type: note
   note-1757945888682-2:
     x: 0
     y: 13
@@ -1704,52 +2484,6 @@ widgets:
     width: 4
     title: ''
     type: note
-  7c5a3d3c-c12e-4d87-aa45-895e29ed7567:
-    x: 6
-    description: This widget will show any error messages for your 3rd-party data
-      connectors within the last 7 days
-    height: 3
-    queryString: |-
-      #repo = 3pi_connection_errors
-      | @dataConnectionID = *
-      | groupBy(field=[@dataConnectionID], function=[collect("@error_msg", limit=5)], limit=10)
-    end: now
-    start: 7d
-    width: 6
-    y: 0
-    interactions:
-    - name: Show connector details
-      urlEncodeArgs: true
-      urlTemplate: /data-connectors/connectors/{{ fields.@dataConnectionID }}/details
-      openInNewTab: true
-      type: customlink
-    - name: Edit connector
-      urlEncodeArgs: true
-      urlTemplate: /data-connectors/connectors/{{ fields.@dataConnectionID }}/edit
-      openInNewTab: true
-      type: customlink
-    - name: View all errors from the last 7 days
-      queryString: '#repo=3pi_connection_errors | @dataConnectionID=* | @dataConnectionID=?_dataConnectionID '
-      useWidgetTimeWindow: true
-      arguments:
-        _dataConnectionID: '["{{fields.@dataConnectionID}}"]'
-      openInNewTab: false
-      isLive: false
-      type: searchlink
-    options:
-      cell-overflow: truncate
-      configured-columns:
-        '@dataConnectionID':
-          color: '#F0424233'
-          width: 160
-        '@error_msg':
-          color: '#F5B800'
-          render-as: value
-      row-numbers-enabled: false
-    visualization: table-view
-    title: 3PI Error monitoring
-    isLive: false
-    type: query
   73c412a7-1fc4-4442-85e3-383fd510651f:
     x: 8
     backgroundColor: '#b52026'
@@ -1761,24 +2495,23 @@ widgets:
     type: note
   note-1756934974973-1:
     x: 0
-    y: 23
+    y: 17
     description: Resources to help you start creating more in CrowdStrike!
     height: 2
-    text: |2-
-
-      ### [Next-Gen SIEM dashboards available for download to be imported into your own CrowdStrike console](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards)
+    text: |-
       ### [LogScale documentation for building and editing Dashboards and Widgets](https://library.humio.com/data-analysis/dashboards.html)
-    width: 12
+      ### [Next-Gen SIEM dashboards available for download to be imported into your own CrowdStrike console](https://github.com/CrowdStrike/logscale-community-content/tree/main/Next-Gen-SIEM/Dashboards)
+    width: 8
     title: '🔧 DIY (Dashboard It Yourself) '
     type: note
-$schema: https://schemas.humio.com/dashboard/v0.20.0
+$schema: https://schemas.humio.com/dashboard/v0.23.0
 parameters:
   CrowdStrike_cloud:
     label: CrowdStrike_cloud
     order: 1
     values:
-      falcon.: US-1
       falcon.us-2.: US-2
+      falcon.: US-1
       falcon.eu-1.: EU-1
     type: list
     defaultValue: falcon.us-2.
@@ -1787,17 +2520,21 @@ parameters:
     label: Data_Source
     order: 2
     values:
+      Corelight: Corelight
+      Snyk: Snyk
+      Microsoft: Microsoft
+      Palo Alto: Palo Alto
+      F5: F5
       '*': All
       AWS: AWS
-      Corelight: Corelight
-      Extrahop: Extrahop
       Fortinet: Fortinet
-      Microsoft: Microsoft
-      Mimecast: Mimecast
-      Okta: Okta
-      Palo Alto: Palo Alto
-      Snyk: Snyk
       VMware: VMware
+      Okta: Okta
+      Extrahop: Extrahop
+      Kubernetes: Kubernetes
+      Mimecast: Mimecast
+      Veeam: Veeam
+      Salesforce: Salesforce
     type: list
     defaultValue: '*'
-    width: 1
+    width: 2
