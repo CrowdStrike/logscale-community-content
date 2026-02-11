@@ -542,15 +542,17 @@ widgets:
       **INSTRUCTOR LED COURSES**
 
       ⓘ *CSU courses level 200 and above may require additional licensing be purchased before you can enroll.*
-      - [**CQL 201**: Designing, Optimizing, and Modularizing CQL Queries](https://university.crowdstrike.com/learn/course/1450/cql-201-designing-optimizing-and-modularizing-cql-queries)
-      - [**SIEM 200**: Administering and Optimizing Next-Gen SIEM](https://university.crowdstrike.com/learn/course/1451/siem-200-administering-and-optimizing-next-gen-siem)
-      - [**SIEM 210**: Onboarding Third-Party Data and Managing Falcon Next-Gen SIEM](https://university.crowdstrike.com/learn/courses/998/siem-210-onboarding-third-party-data-and-managing-falcon-next-gen-siem)
-      - [**SIEM 211**: Incident Response and Investigation with Falcon Next-Gen SIEM](https://university.crowdstrike.com/pages/43/course-catalog?ctl131=t-_elearning_classroom~se-%22SIEM%20211%22)
+      - [**CQL 201**: Designing, Optimizing, and Modularizing CQL Queries](https://university.crowdstrike.com/learn/course/1450/cql-201-designing-optimizing-and-modularizing-cql-queries) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-cql-201-course-syllabuspdf)*)
+      - [**SIEM 200**: Administering and Optimizing Next-Gen SIEM](https://university.crowdstrike.com/learn/course/1451/siem-200-administering-and-optimizing-next-gen-siem) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-siem-200-course-syllabuspdf)*)
+      - [**SIEM 210**: Onboarding Third-Party Data and Managing Falcon Next-Gen SIEM](https://university.crowdstrike.com/learn/courses/998/siem-210-onboarding-third-party-data-and-managing-falcon-next-gen-siem) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-siem-210-course-syllabuspdf)*)
+      - [**SIEM 211**: Incident Response and Investigation with Falcon Next-Gen SIEM](https://university.crowdstrike.com/pages/43/course-catalog?ctl131=t-_elearning_classroom~se-%22SIEM%20211%22) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-siem-211-course-syllabuspdf)*)
 
       ---
       ## Courses for related content
       **ELEARNING COURSES**
       - [**ONUM 100**: Falcon Onum Foundations and Overview](https://university.crowdstrike.com/learn/courses/1822/onum-100-falcon-onum-foundations-and-overview)
+      - [**ONUM 101**: Getting Started with the Falcon Onum Console](https://university.crowdstrike.com/learn/courses/1823/onum-101-getting-started-with-the-falcon-onum-console)
+      - [**ONUM 102**: Building and Managing Pipelines](https://university.crowdstrike.com/learn/courses/1824/onum-102-building-and-managing-pipelines)
       - [**SIEM 106**: Case Management Fundamentals](https://university.crowdstrike.com/learn/courses/1762/siem-106-case-management-fundamentals)
       - [**FALCON 141**: Charlotte AI Fundamentals](https://university.crowdstrike.com/learn/courses/1513/falcon-141-charlotte-ai-fundamentals)
       - [**FALCON 175**: Falcon Foundry Fundamentals](https://university.crowdstrike.com/learn/courses/995/falcon-175-falcon-foundry-fundamentals)
@@ -1537,8 +1539,8 @@ widgets:
     text: |-
       ```
       DASHBOARD INFO
-          Version: 1.3.1
-          Last Updated: 2026-02-02
+          Version: 1.3.2
+          Last Updated: 2026-02-11
       ```
     width: 3
     title: ''
