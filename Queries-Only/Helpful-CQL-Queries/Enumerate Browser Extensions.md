@@ -4,6 +4,8 @@
 | format("[See Extension](https://chromewebstore.google.com/detail/%s)", field=[BrowserExtensionId], as="Chrome Store Link")
 | sort(order=desc, TotalEndpoints, limit=1000)
 | case{
+    in(BrowserName, values=["1","9"]) | BrowserName:="Firefox";
+    BrowserName="2" | BrowserName:="Safari"
     BrowserName="3" | BrowserName:="Chrome";
     BrowserName="4" | BrowserName:="Edge";
     *;
@@ -22,7 +24,7 @@ Enhanced version:
 | formatTime(format="%Y-%m-%dT%H:%M:%S.%L", field="BrowserExtensionInstalledTimestamp", as="ExtensionInstalledDateTime")
 // Convert browser name from decimal to human readable
 | case{
-  BrowserName="1" | BrowserName:="Firefox";
+  in(BrowserName, values=["1","9"]) | BrowserName:="Firefox";
   BrowserName="2" | BrowserName:="Safari" | format("[See Extension](https://apps.apple.com/us/app/%s)", field=[BrowserExtensionId], as="ExtensionLink");
   BrowserName="3" | BrowserName:="Chrome" | format("[See Extension](https://chromewebstore.google.com/detail/%s)", field=[BrowserExtensionId], as="ExtensionLink");
   BrowserName="4" | BrowserName:="Edge" | format("[See Extension](https://microsoftedge.microsoft.com/addons/detail/%s)", field=[BrowserExtensionId], as="ExtensionLink");
