@@ -18,6 +18,8 @@ Aggregate by Extension
 
 // Convert the browser name from decimal to human-readable
 | case{
+    in(BrowserName, values=["1","9"]) | BrowserName:="Firefox";
+    BrowserName="2" | BrowserName:="Safari"
     BrowserName="3" | BrowserName:="Chrome";
     BrowserName="4" | BrowserName:="Edge";
     *;
@@ -41,6 +43,8 @@ Aggregate by System and Browser Profile
 
 // Convert browser name from decimal to human readable
 | case{
+    in(BrowserName, values=["1","9"]) | BrowserName:="Firefox";
+    BrowserName="2" | BrowserName:="Safari"
     BrowserName="3" | BrowserName:="Chrome";
     BrowserName="4" | BrowserName:="Edge";
     *;
@@ -67,8 +71,12 @@ Hunt for specific keyword in extension name:
 
 // Convert browser name from decimal to human readable
 | case{
+    in(BrowserName, values=["1","9"]) | BrowserName:="Firefox";
+    BrowserName="2" | BrowserName:="Safari"
     BrowserName="3" | BrowserName:="Chrome";
     BrowserName="4" | BrowserName:="Edge";
     *;
 }
 ```
+
+You can find more similar queries [here](/Queries-Only/Helpful-CQL-Queries/Enumerate%20Browser%20Extensions.md).
