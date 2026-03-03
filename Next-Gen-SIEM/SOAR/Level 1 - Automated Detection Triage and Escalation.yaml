@@ -1,0 +1,70 @@
+# This is an exported workflow. Editing this file is not recommended.
+
+name: Making AI Real in the SOC - Level 1
+trigger:
+    next:
+        - severity_is_greater_than_or_equal_to_medium
+    event: Investigatable/EPP
+    name: Detection > EPP Detection
+    type: Signal
+    version_constraint: ~1
+actions:
+    AddCommentToCase:
+        id: a16f4fdd1b244b0bfeecd47e25dbe0e0
+        name: Add Comment to Case
+        properties:
+            case_id: ${CreateANewCase.id}
+            comment: ${data['TriageDetectionWithCharlotteAI.FaaS.charlotte_ai.triage_alert.agentic_response_summary']}
+            component_id: ${data['Trigger.Detection.DetectionID']}
+        version_constraint: ~1
+    CreateANewCase:
+        id: 4918bf9d85ecc06388eca16543bdbbdc
+        name: Create a new Case
+        next:
+            - Sleep
+        properties:
+            description: ${data['TriageDetectionWithCharlotteAI.FaaS.charlotte_ai.triage_alert.agentic_response_summary']}
+            detections:
+                - ${GetDetectionDetails.composite_id}
+                - ${GetDetectionDetails.linked_behavioral_detections}
+            name: Charlotte Escalation - ${data['GetDetectionDetails.display_name']}
+            severity_level: ${data['GetDetectionDetails.severity_level']}
+            status: new
+        version_constraint: ~1
+    GetDetectionDetails:
+        id: 089d7ff051b274992d1c3e15b59c8f6b
+        name: Get detection details
+        next:
+            - TriageDetectionWithCharlotteAI
+        properties:
+            investigatable_id: ${Trigger.Detection.DetectionID}
+        version_constraint: ~1
+    Sleep:
+        id: 4f1af1ae4c13dc1e3bcd725f8dc0f63b
+        name: Sleep
+        next:
+            - AddCommentToCase
+        properties:
+            sleep_time: 15s
+        version_constraint: ~1
+    TriageDetectionWithCharlotteAI:
+        id: 98c19f1e71a14e4aa81a7ffd7a56b0eb_b144c6aad1da4990a5ae0ab003623262
+        name: Triage Detection with Charlotte AI
+        next:
+            - triage_verdict_is_equal_to_true_positive
+        properties:
+            investigatable_id: ${GetDetectionDetails.composite_id}
+        version_constraint: ~0
+conditions:
+    severity_is_greater_than_or_equal_to_medium:
+        next:
+            - GetDetectionDetails
+        expression: Trigger.Detection.Severity:>=3
+        display:
+            - Severity is greater than or equal to Medium
+    triage_verdict_is_equal_to_true_positive:
+        next:
+            - CreateANewCase
+        expression: TriageDetectionWithCharlotteAI.FaaS.charlotte_ai.triage_alert.verdict:'true_positive'
+        display:
+            - Triage verdict is equal to true_positive

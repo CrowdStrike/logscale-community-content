@@ -1,0 +1,205 @@
+# This is an exported workflow. Editing this file is not recommended.
+
+name: Making AI Real in the SOC - Level 2
+trigger:
+    next:
+        - Sleep
+        - CreateVariable
+    event: Case/Created
+    name: Case > Case Created
+    type: Signal
+    version_constraint: ~1
+actions:
+    CreateVariable:
+        id: 702d15788dbbffdf0b68d8e2f3599aa4
+        class: CreateVariable
+        name: Create variable
+        next:
+            - data39getcasedetails_analysis_results_hosts_records39__null_ampampsizedata39getcasedetails_analysis_
+        properties:
+            variable_schema:
+                properties:
+                    lookback_period_hours:
+                        default: 4
+                        type: integer
+                type: object
+        version_constraint: ~1
+    GetCaseDetails:
+        id: 3dc4a68cf25bf32ceec6588c6d5c8989
+        name: Get case details
+        next:
+            - data39getcasedetails_analysis_results_hosts_records39__null_ampampsizedata39getcasedetails_analysis_
+        properties:
+            case_id: ${Trigger.Case.ID}
+        version_constraint: ~1
+    Sleep:
+        id: 4f1af1ae4c13dc1e3bcd725f8dc0f63b
+        name: Sleep
+        next:
+            - GetCaseDetails
+        properties:
+            sleep_time: 1m
+        version_constraint: ~1
+conditions:
+    data39getcasedetails_analysis_results_hosts_records39__null_ampampsizedata39getcasedetails_analysis_:
+        next:
+            - Loop
+        cel_expression: |-
+            data['GetCaseDetails.analysis_results.hosts.records'] != null &&
+            size(data['GetCaseDetails.analysis_results.hosts.records']) > 0
+        display:
+            - |-
+              data[&#39;GetCaseDetails.analysis_results.hosts.records&#39;] != null &amp;&amp;
+              size(data[&#39;GetCaseDetails.analysis_results.hosts.records&#39;]) &gt; 0
+loops:
+    Loop:
+        display: For each Analysis results hosts records; Concurrently
+        name: For each Analysis results hosts records; Concurrently
+        for:
+            input: GetCaseDetails.analysis_results.hosts.records
+            continue_on_partial_execution: true
+            sequential: false
+        trigger:
+            next:
+                - QueryForProcessAncestryInformationEvents
+        actions:
+            AddCommentToCase:
+                id: a16f4fdd1b244b0bfeecd47e25dbe0e0
+                name: Add Comment to Case
+                properties:
+                    case_id: ${Trigger.Case.ID}
+                    comment: |-
+                        ${data['CharlotteAILLMCompletion.FaaS.nlpassistantapi.llminvocator_handler.completion']}
+
+                        [Investigate Unusual Processes on Related Hosts](https://${cs.net.parseURL(data['QueryForProcessAncestryInformationEvents.download_url']).host}/investigate/search?end=&query=%7C%20correlate(%0A%20%20ProcessAncestryInformation%20%3A%20%7B%20%23event_simpleName%20%3D%20ProcessAncestryInformation%20%7C%20in(field%3Daid%2C%20values%3D%5B${cs.net.urlEncode(
+                          data['GetCaseDetails.analysis_results.hosts.records']
+                            .transformList(i, h, h.aid != null ? string(h.aid) : "")
+                            .filter(x, x != "")
+                            .join(",")
+                        )}%5D)%20%7C%20ExecutionChain%3A%3Dformat(format%3D%22%25s%0A%20%20%E2%94%94%20%25s%0A%20%20%20%20%E2%94%94%20%25s%0A%20%20%20%20%20%20%E2%94%94%20%25s%22%2C%20field%3D%5BGreatGrandParentBaseFileName%2C%20GrandParentBaseFileName%2C%20ParentBaseFileName%2C%20BaseFileName%5D)%7D%20include%3A%5BComputerName%2C%20aid%2C%20ExecutionChain%2C%20%40timestamp%2C%20TargetProcessId%2C%20BaseFileName%2C%20ParentBaseFileName%2C%20GrandParentBaseFileName%2C%20GreatGrandParentBaseFileName%2C%20SHA256HashData%5D%2C%0A%20%20ProcessRollup2%20%3A%20%7B%23event_simpleName%3DProcessRollup2%20%7C%20in(field%3Daid%2C%20values%3D%5B${cs.net.urlEncode(
+                          data['GetCaseDetails.analysis_results.hosts.records']
+                            .transformList(i, h, h.aid != null ? string(h.aid) : "")
+                            .filter(x, x != "")
+                            .join(",")
+                        )}%5D)%7D%20include%3A%5BCommandLine%2C%20ImageFileName%5D%2C%0A%20%20globalConstraints%3D%5BTargetProcessId%5D%2C%0A%20%20sequence%3Dfalse)&repo=all&searchViewInteractions=NoXSA&start=7d&timezone=America%2FNew_York "Query for Related ProcessAncestryInformation Events")
+                    component_id: ${data['GetCaseDetails.analysis_results.hosts.records.#.aid']}
+                version_constraint: ~1
+            CharlotteAILLMCompletion:
+                id: bdfecafafdb44919a458fcf51d6b93a7_98dec86072334d24b37dd798098cfd63
+                name: Charlotte AI - LLM Completion
+                next:
+                    - AddCommentToCase
+                properties:
+                    data_to_include:
+                        - ${QueryForProcessAncestryInformationEvents.raw_results}
+                    model_name: Claude Latest
+                    temperature: 0.1
+                    user_prompt: |-
+                        Task
+                        Generate a concise analyst case note for a case involving unusual parent–child process activity.
+
+                        Output Constraints
+
+                        Maximum 500 characters total.
+
+                        Exactly two paragraphs under the header.
+
+                        Do not merge all content into a single block.
+
+                        Maintain a concise, investigative tone.
+
+                        Structure Requirements
+
+                        Header (must appear exactly as written):
+                        Unusual Process Activity Analysis
+
+                        Paragraph 1: Summary (2–3 sentences)
+
+                        Clearly describe the unusual parent–child process relationship.
+
+                        Explicitly name all suspicious processes using backticks (e.g., powershell.exe).
+
+                        Explain why the behavior is significant (e.g., staging, remote execution, lateral movement, privilege escalation).
+
+                        Paragraph 2: Actions
+
+                        Include 2–3 short, actionable steps.
+
+                        Each action must appear on its own line.
+
+                        Do not use markdown formatting for the actions.
+
+                        Do not use bullets, numbering, or special characters.
+
+                        Template
+
+                        Unusual Process Activity Analysis
+                        [Insert 2–3 sentence summary describing the unusual parent–child activity. Explicitly name suspicious processes in backticks and explain why the deviation is risky.]
+
+                        [Action step]
+                        [Action step]
+                        [Action step]
+                version_constraint: ~0
+            QueryForProcessAncestryInformationEvents:
+                id: cdf5c3e0d69f156eaaf56c1f5d3f1b66
+                inline_configuration:
+                    input_schema:
+                        $schema: https://json-schema.org/draft-07/schema
+                        properties:
+                            host_ids:
+                                type: string
+                                title: Host ids
+                                default: '*'
+                        required:
+                            - host_ids
+                        type: object
+                        description: Generated request schema
+                    config:
+                        description: ""
+                        end: now
+                        last_modified_by: dylan.hancock@crowdstrike.com
+                        last_modified_timestamp: "2026-03-03T02:12:47.692Z"
+                        repo_or_view: search-all
+                        search_name: Query_for_ProcessAncestryInformation_events
+                        search_query: |-
+                            definetable(
+                                query={
+                                    createEvents([""])
+                                    | aidList:=?host_ids
+                                    | splitString(field=aidList, by=",", as=aid)
+                                    | split(aid)
+                                },
+                                include=aid,
+                                name=aid_list
+                            )
+
+                            | correlate(
+                              ProcessAncestryInformation : { #event_simpleName = ProcessAncestryInformation | match(file=aid_list, strict=true, field=aid, mode=string)} include:[ComputerName, aid, @timestamp, TargetProcessId, BaseFileName, ParentBaseFileName, GrandParentBaseFileName, GreatGrandParentBaseFileName, SHA256HashData],
+                              ProcessRollup2 : {#event_simpleName=ProcessRollup2 | match(file=aid_list, strict=true, field=aid, mode=string)} include:[CommandLine, ImageFileName],
+                              globalConstraints=[TargetProcessId],
+                              sequence=false)
+                              | @timestamp:=ProcessAncestryInformation.@timestamp
+                              | drop(fields=["ProcessAncestryInformation.@id", "ProcessAncestryInformation.@ingesttimestamp", "ProcessAncestryInformation.@timestamp", "ProcessAncestryInformation.@timestamp.nanos", "ProcessRollup2.@id", "ProcessRollup2.@ingesttimestamp", "ProcessRollup2.@timestamp", "ProcessRollup2.@timestamp.nanos", ProcessRollup2.TargetProcessId, ProcessAncestryInformation.TargetProcessId, ProcessAncestryInformation.aid])
+                              | tail(750)
+                        search_query_args:
+                            host_ids: '*'
+                        start: 7d
+                        tags: []
+                class: Inline.QueryEvent
+                name: Query_for_ProcessAncestryInformation_events
+                next:
+                    - event_count_is_greater_than_0
+                properties:
+                    host_ids: ${data['GetCaseDetails.analysis_results.hosts.records.#.aid']}
+                    logscale_search_end_time: now
+                    logscale_search_start_time: ${string(data['WorkflowCustomVariable.lookback_period_hours']) + "h"}
+                    output_files_only: false
+                    workflow_export_event_query_results_to_csv: false
+                version_constraint: ~1
+        conditions:
+            event_count_is_greater_than_0:
+                next:
+                    - CharlotteAILLMCompletion
+                expression: QueryForProcessAncestryInformationEvents.event_count:>0
+                display:
+                    - Event count is greater than 0
