@@ -542,15 +542,17 @@ widgets:
       **INSTRUCTOR LED COURSES**
 
       ⓘ *CSU courses level 200 and above may require additional licensing be purchased before you can enroll.*
-      - [**CQL 201**: Designing, Optimizing, and Modularizing CQL Queries](https://university.crowdstrike.com/learn/course/1450/cql-201-designing-optimizing-and-modularizing-cql-queries)
-      - [**SIEM 200**: Administering and Optimizing Next-Gen SIEM](https://university.crowdstrike.com/learn/course/1451/siem-200-administering-and-optimizing-next-gen-siem)
-      - [**SIEM 210**: Onboarding Third-Party Data and Managing Falcon Next-Gen SIEM](https://university.crowdstrike.com/learn/courses/998/siem-210-onboarding-third-party-data-and-managing-falcon-next-gen-siem)
-      - [**SIEM 211**: Incident Response and Investigation with Falcon Next-Gen SIEM](https://university.crowdstrike.com/pages/43/course-catalog?ctl131=t-_elearning_classroom~se-%22SIEM%20211%22)
+      - [**CQL 201**: Designing, Optimizing, and Modularizing CQL Queries](https://university.crowdstrike.com/learn/course/1450/cql-201-designing-optimizing-and-modularizing-cql-queries) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-cql-201-course-syllabuspdf)*)
+      - [**SIEM 200**: Administering and Optimizing Next-Gen SIEM](https://university.crowdstrike.com/learn/course/1451/siem-200-administering-and-optimizing-next-gen-siem) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-siem-200-course-syllabuspdf)*)
+      - [**SIEM 210**: Onboarding Third-Party Data and Managing Falcon Next-Gen SIEM](https://university.crowdstrike.com/learn/courses/998/siem-210-onboarding-third-party-data-and-managing-falcon-next-gen-siem) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-siem-210-course-syllabuspdf)*)
+      - [**SIEM 211**: Incident Response and Investigation with Falcon Next-Gen SIEM](https://university.crowdstrike.com/pages/43/course-catalog?ctl131=t-_elearning_classroom~se-%22SIEM%20211%22) (*[Course Syllabus](https://assets.crowdstrike.com/is/content/crowdstrikeinc/csu-siem-211-course-syllabuspdf)*)
 
       ---
       ## Courses for related content
       **ELEARNING COURSES**
       - [**ONUM 100**: Falcon Onum Foundations and Overview](https://university.crowdstrike.com/learn/courses/1822/onum-100-falcon-onum-foundations-and-overview)
+      - [**ONUM 101**: Getting Started with the Falcon Onum Console](https://university.crowdstrike.com/learn/courses/1823/onum-101-getting-started-with-the-falcon-onum-console)
+      - [**ONUM 102**: Building and Managing Pipelines](https://university.crowdstrike.com/learn/courses/1824/onum-102-building-and-managing-pipelines)
       - [**SIEM 106**: Case Management Fundamentals](https://university.crowdstrike.com/learn/courses/1762/siem-106-case-management-fundamentals)
       - [**FALCON 141**: Charlotte AI Fundamentals](https://university.crowdstrike.com/learn/courses/1513/falcon-141-charlotte-ai-fundamentals)
       - [**FALCON 175**: Falcon Foundry Fundamentals](https://university.crowdstrike.com/learn/courses/995/falcon-175-falcon-foundry-fundamentals)
@@ -1537,8 +1539,8 @@ widgets:
     text: |-
       ```
       DASHBOARD INFO
-          Version: 1.3.0
-          Last Updated: 2026-01-25
+          Version: 1.3.2
+          Last Updated: 2026-02-11
       ```
     width: 3
     title: ''
@@ -2359,10 +2361,11 @@ widgets:
       |                       [Compliance Monitoring - EU GDPR](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20EU%20GDPR?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                       | The GDPR Compliance Monitoring Dashboard provides organizations with visibility into their personal data processing activities and compliance posture across cloud storage, collaboration platforms, and data egress channels.                                                      |
       |                          [Compliance Monitoring - FISMA](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20FISMA?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                          | This dashboard provides real-time visibility and continuous monitoring of FISMA compliance status with a primary focus on authentication controls and access management                                                                                                             |
       |                          [Compliance Monitoring - HIPAA](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20HIPAA?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                          | This dashboard surfaces important data that maps directly to the Health Insurance Portability and Accountability Act (HIPAA) compliance framework, facilitating organizations to meeting the appropriate controls for this compliance regulation.                                   |
+      |               [Compliance Monitoring - ISO 27001:2022](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20ISO%2027001%3A2022?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cp)                | This dashboard surfaces important data that maps directly to the ISO 27001:2022 compliance framework, facilitating organizations to meeting the appropriate controls for this compliance regulation.                                                                                |
       |                  [Compliance Monitoring - NERC CIP v2](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20NERC%20CIP%20v2?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                  | This dashboard surfaces important data that maps directly to the North American Electric Reliability Corporation Critical Infrastructure Protection (NERC CIP) compliance framework, facilitating organizations to meeting the appropriate controls for this compliance regulation. |
       | [Compliance Monitoring - NIST SP 800-53 Rev5 (AU)](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20NIST%20SP%20800-53%20Rev5%20%28AU%29?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl) | This dashboard surfaces important data that maps directly to the NIST SP 800-53 compliance framework, facilitating organizations in meeting the appropriate controls for this compliance regulation.                                                                                |
       |                       [Compliance Monitoring - PCI DSS](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20PCI%20DSS?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                       | This dashboard provides real-time visibility and continuous monitoring of PCI-DSS compliance status with a primary focus on authentication controls and access management to ensure cardholder data protection and regulatory adherence.                                            |
-      |                            [Compliance Monitoring - SOX](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20SOX?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                            | --                                                                                                                                                                                                                                                                                  |
+      |                            [Compliance Monitoring - SOX](/investigate/search/custom-dashboards/Compliance%20Monitoring%20-%20SOX?repoOrViewName=search-all&packageScope=falcon/ngsiem-content-cpl)                            | This dashboard provides visibility and monitoring of Sarbanes-Oxley (SOX) compliance status, focusing on identity & access management, and network security controls.                                                                                                               |
     width: 12
     title: Compliance monitoring dashboards
     type: note
