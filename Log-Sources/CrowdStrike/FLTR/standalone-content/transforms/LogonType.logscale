@@ -1,5 +1,6 @@
 // Transform to convert LogonType decimal to human-readable value.
 | case {
+        LogonType = "0"  | LogonType := "System" ;
         LogonType = "2"  | LogonType := "Interactive" ;
         LogonType = "3"  | LogonType := "Network" ;
         LogonType = "4"  | LogonType := "Batch" ;
