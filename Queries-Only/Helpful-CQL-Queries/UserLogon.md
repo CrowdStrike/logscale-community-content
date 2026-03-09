@@ -16,7 +16,7 @@
 | UserSid=S-1-5-21-*
 | table(["@timestamp", "ClientComputerName", "UserName", "UserIsAdmin", "RemoteAccount", "LogonType", "AuthenticationPackage", "UserSid"])
 | $falcon/helper:enrich(field=UserIsAdmin)
-| $falcon/helper:enrich(field=UserLogon)
+| $falcon/helper:enrich(field=LogonType)
 ```
 
 ```
