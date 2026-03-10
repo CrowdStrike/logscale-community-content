@@ -3,7 +3,7 @@
 | in(LogonType, values=["2","10"])
 | ipLocation(aip)
 | $falcon/helper:enrich(field=UserIsAdmin)
-| $falcon/helper:enrich(field=UserLogon)
+| $falcon/helper:enrich(field=LogonType)
 | PasswordLastSet := PasswordLastSet*1000
 | ContextTimeStamp := ContextTimeStamp*1000
 | PasswordLastSet := formatTime("%Y-%m-%d %H:%M:%S", field=PasswordLastSet, locale=en_US, timezone=Z)
