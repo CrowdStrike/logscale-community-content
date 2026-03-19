@@ -24,4 +24,8 @@ sequence=true, within=10m)
 
 // Make ComputerName value stick out
 | Endpoint:=child.ComputerName
+
+// Create Link to Process Explorer
+
+| format("[Graph Explorer](/graphs/process-explorer/tree?id=pid:%s:%s&investigate=true&_cid=%s)", field=["child.aid", "child.TargetProcessId", "child.cid"], as="Graph Explorer")
 ```
