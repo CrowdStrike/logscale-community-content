@@ -2169,7 +2169,7 @@ widgets:
     x: 1
     y: 13
     height: 6
-    text: '![Charlotte AI](https://assets.{{ parameter "CrowdStrike_cloud" }}crowdstrike.com/content/cms-assets/product-docs/agentic-detection-start-ae2ea99cf6290ee936a580a90d17213b.png)'
+    text: '![Charlotte AI](https://assets.{{ parameter "CrowdStrike_cloud" }}crowdstrike.com/content/cms-assets/product-docs/agentic-detection-start-e7f04426e238ee9063bb859faf1765c3.png)'
     width: 6
     title: '  '
     type: note
