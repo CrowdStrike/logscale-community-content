@@ -1,7 +1,7 @@
 ---
 title: QueryJobs API Pagination
 created: 2026-04-29
-updated: 2026-05-06
+updated: 2026-05-11
 tags: [logscale, ngsiem, api, python, pagination]
 ---
 
@@ -63,17 +63,42 @@ python queryjob_paginator.py -h
 # One-time setup (same venv)
 pip install crowdstrike-falconpy
 
-# Environment variables (required)
+# Environment variables (required — or use -k/-s flags)
 export FALCON_CLIENT_ID="your-client-id"
 export FALCON_CLIENT_SECRET="your-client-secret"
-export FALCON_BASE_URL="https://api.us-2.crowdstrike.com"  # optional, defaults to US-1
-export CA_BUNDLE="/path/to/ca-bundle.pem"                  # optional, for corporate proxy
+
+# Optional environment variables
+export FALCON_BASE_URL="https://api.us-2.crowdstrike.com"  # defaults to US-1
+export FALCON_MEMBER_CID="child-cid"                       # for MSSP / flight control
+export CA_BUNDLE="/path/to/ca-bundle.pem"                  # for corporate proxy
 
 # Run
-python ngsiem_queryjob_paginator.py
+python ngsiem_queryjob_paginator.py -q '#event_simpleName=ProcessRollup2'
+
+# With options
+python ngsiem_queryjob_paginator.py -q '...' -r search-all --start 1h --end now
+python ngsiem_queryjob_paginator.py -q '...' -b https://api.us-2.crowdstrike.com
+python ngsiem_queryjob_paginator.py -q '...' -m CHILD_CID  # MSSP
+
+# Help
+python ngsiem_queryjob_paginator.py -h
 ```
 
-Configuration is in the script's `Configuration` section (REPO, QUERY_STRING, START, END, PAGE_SIZE, MAX_EVENTS).
+**Parameters:**
+
+| Flag | Env Var | Description | Default |
+|------|---------|-------------|---------|
+| `-k, --client-id` | `FALCON_CLIENT_ID` | OAuth2 client ID (required) | — |
+| `-s, --client-secret` | `FALCON_CLIENT_SECRET` | OAuth2 client secret (required) | — |
+| `-q, --query` | — | CQL query string (required) | — |
+| `-r, --repo` | — | NG-SIEM repository | `search-all` |
+| `--start` | — | Start time | `15m` |
+| `--end` | — | End time | `now` |
+| `-o, --output` | — | Output JSON file | `ngsiem_queryjob_results.json` |
+| `--max-events` | — | Max events to retrieve | unlimited |
+| `--page-size` | — | Events per cursor page | `200` |
+| `-b, --base-url` | `FALCON_BASE_URL` | CrowdStrike API base URL | US-1 |
+| `-m, --member-cid` | `FALCON_MEMBER_CID` | Child CID (MSSP / flight control) | — |
 
 Required API scope: **NGSIEM: Read + Write**
 
@@ -143,7 +168,8 @@ The `around` parameter creates a new QueryJob anchored on a specific event:
       - numberOfEventsAfter = 0
    c. Poll new job until done, collect events
    d. Deduplicate by @id (boundary event may repeat)
-   e. Repeat from (a) until no new events returned
+   e. Delete consumed QueryJob
+   f. Repeat from (a) until no new events returned
 ```
 
 ## API Endpoints
@@ -169,17 +195,22 @@ NG-SIEM repositories: `search-all`, `investigate_view`, `third-party`, `falcon_f
 ```python
 from falconpy import NGSIEM
 
-ngsiem = NGSIEM(client_id="...", client_secret="...", ssl_verify=False)
+with NGSIEM(client_id="...", client_secret="...") as ngsiem:
+    if ngsiem.token_fail_reason:
+        raise SystemExit(f"Auth failed: {ngsiem.token_fail_reason}")
 
-# Create
-resp = ngsiem.start_search(repository="search-all", query_string="...", start="1h", end="now")
-job_id = resp["resources"]["id"]
+    # Create
+    resp = ngsiem.start_search(repository="search-all", query_string="...", start="1h", end="now")
+    job_id = resp["resources"]["id"]
 
-# Poll (response is in resp["body"], not resp["resources"])
-resp = ngsiem.get_search_status(repository="search-all", id=job_id)
-data = resp.get("resources") or resp.get("body", {})
-events = data["events"]
-done = data["done"]
+    # Poll (response is in resp["body"], not resp["resources"])
+    resp = ngsiem.get_search_status(repository="search-all", id=job_id)
+    data = resp.get("resources") or resp.get("body", {})
+    events = data["events"]
+    done = data["done"]
+
+    # Cleanup
+    ngsiem.stop_search(repository="search-all", id=job_id)
 ```
 
 ## Important Notes
@@ -192,11 +223,10 @@ done = data["done"]
 
 ## SSL / Corporate Proxy
 
-For Zscaler environments, set `CA_BUNDLE` env var pointing to the CA certificate bundle. The FalconPy script reads this and passes it as `ssl_verify`. If the bundle doesn't cover the API endpoint, use `ssl_verify=False`.
+For Zscaler environments, set `CA_BUNDLE` env var pointing to the CA certificate bundle. The FalconPy script reads this and passes it as `ssl_verify`. If unset, SSL verification is enabled by default.
 
 ## References
 
 - [LogScale API — Query Jobs](https://library.humio.com/logscale-api/api-search-query.html)
-- [LogScale API — Pagination](https://library.humio.com/logscale-api/api-search-pagination.html)
-- [LogScale API — Query Result Pagination API](https://library.humio.com/logscale-api/api-search-pagination-api.html)
+- [LogScale API — Pagination](https://library.humio.com/logscale-api/api-search-pagination-api.html)
 - [NG-SIEM Search APIs (CrowdStrike docs)](https://falcon.crowdstrike.com/documentation/page/bda96fc1)

@@ -21,8 +21,8 @@ Activate venv (each session):
 
 Environment variables:
     export LOGSCALE_TOKEN="your-api-token"              # Required
-    export LOGSCALE_BASE_URL="https://your-instance/"   # Optional (default: sa-cluster)
-    export LOGSCALE_REPO="your-repo"                    # Optional (default: FDR_Talon_1)
+    export LOGSCALE_BASE_URL="https://your-instance/"   # Required
+    export LOGSCALE_REPO="your-repo"                    # Required
 
 Usage:
     python queryjob_paginator.py -q '#event_simpleName=ProcessRollup2'
@@ -33,6 +33,7 @@ Usage:
     # Optional flags:
     python queryjob_paginator.py -q '...' -s 1h -e now -o results.json --max-events 5000
 """
+from __future__ import annotations
 
 import argparse
 import json
@@ -42,12 +43,9 @@ import time
 
 import requests
 
-# ── Configuration ──────────────────────────────────────────────────────
-BASE_URL = os.environ.get("LOGSCALE_BASE_URL", "")
-REPO = os.environ.get("LOGSCALE_REPO", "")
+# ── Defaults ──────────────────────────────────────────────────────────
 START = "15m"
 END = "now"
-
 PAGE_SIZE = 200
 MAX_EVENTS = 0      # 0 = unlimited
 OUTPUT_FILE = "queryjob_results.json"
@@ -55,6 +53,7 @@ OUTPUT_FILE = "queryjob_results.json"
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
         description="LogScale QueryJob paginator with cursor-based pagination.",
         epilog="""Required environment variables:
@@ -77,8 +76,9 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def create_queryjob(query_string: str, start: str, end: str,
-                    page_size: int, around: dict | None = None) -> str:
+def create_queryjob(api_base: str, headers: dict, query_string: str,
+                    start: str, end: str, around: dict | None = None) -> str:
+    """Create a QueryJob and return its ID."""
     body = {
         "queryString": query_string,
         "start": start,
@@ -88,16 +88,22 @@ def create_queryjob(query_string: str, start: str, end: str,
     if around:
         body["around"] = around
 
-    resp = requests.post(API_BASE, headers=HEADERS, json=body)
+    resp = requests.post(api_base, headers=headers, json=body)
     resp.raise_for_status()
     return resp.json()["id"]
 
 
-def poll_until_done(job_id: str) -> dict:
-    poll_url = f"{API_BASE}/{job_id}"
+def delete_queryjob(api_base: str, headers: dict, job_id: str) -> None:
+    """Delete a QueryJob to free server resources."""
+    requests.delete(f"{api_base}/{job_id}", headers=headers)
+
+
+def poll_until_done(api_base: str, headers: dict, job_id: str) -> dict:
+    """Poll a QueryJob until done and return the result payload."""
+    poll_url = f"{api_base}/{job_id}"
 
     while True:
-        resp = requests.get(poll_url, headers=HEADERS)
+        resp = requests.get(poll_url, headers=headers)
         if resp.status_code == 404:
             return {"done": True, "events": [], "metaData": {}}
         resp.raise_for_status()
@@ -113,20 +119,21 @@ def poll_until_done(job_id: str) -> dict:
 def main():
     args = parse_args()
 
+    base_url = os.environ.get("LOGSCALE_BASE_URL", "")
+    repo = os.environ.get("LOGSCALE_REPO", "")
     token = os.environ.get("LOGSCALE_TOKEN")
     missing = []
     if not token:
         missing.append("LOGSCALE_TOKEN")
-    if not BASE_URL:
+    if not base_url:
         missing.append("LOGSCALE_BASE_URL")
-    if not REPO:
+    if not repo:
         missing.append("LOGSCALE_REPO")
     if missing:
         sys.exit(f"Error: set required environment variables: {', '.join(missing)}")
 
-    global API_BASE, HEADERS
-    API_BASE = f"{BASE_URL.rstrip('/')}/api/v1/repositories/{REPO}/queryjobs"
-    HEADERS = {
+    api_base = f"{base_url.rstrip('/')}/api/v1/repositories/{repo}/queryjobs"
+    headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
     }
@@ -139,15 +146,17 @@ def main():
     page_size = args.page_size
 
     print(f"Query:  {query_string}")
-    print(f"Repo:   {REPO}")
+    print(f"Repo:   {repo}")
     print(f"Range:  {start} → {end}")
     print()
 
     # Step 1: Initial query — get the first buffer of events
-    job_id = create_queryjob(query_string, start, end, page_size)
+    job_id = create_queryjob(api_base, headers, query_string, start, end)
     print(f"QueryJob created: {job_id}")
 
-    data = poll_until_done(job_id)
+    data = poll_until_done(api_base, headers, job_id)
+    delete_queryjob(api_base, headers, job_id)
+
     meta = data.get("metaData", {})
     has_more = meta.get("extraData", {}).get("hasMoreEvents", "false")
     processed = meta.get("processedEvents", "?")
@@ -175,14 +184,16 @@ def main():
             break
 
         page += 1
-        cursor_job_id = create_queryjob(query_string, start, end, page_size, around={
+        cursor_job_id = create_queryjob(api_base, headers, query_string, start, end, around={
             "eventId": anchor_id,
             "timestamp": int(anchor_ts),
             "numberOfEventsBefore": page_size,
             "numberOfEventsAfter": 0,
         })
 
-        cursor_data = poll_until_done(cursor_job_id)
+        cursor_data = poll_until_done(api_base, headers, cursor_job_id)
+        delete_queryjob(api_base, headers, cursor_job_id)
+
         events = cursor_data.get("events", [])
         new_events = [e for e in events if e.get("@id", "") not in seen_ids]
 
