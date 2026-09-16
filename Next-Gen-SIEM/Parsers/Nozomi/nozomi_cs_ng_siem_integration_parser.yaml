@@ -1,0 +1,595 @@
+name: nozomi-universal
+fieldsToBeRemovedBeforeParsing: []
+$schema: https://schemas.humio.com/parser/v0.3.0
+script: |-
+  // ============================================================================
+  // Nozomi Parser for CrowdStrike NG-SIEM
+  // Supports:
+  // - nozomi.alert
+  // - nozomi.asset
+  // - nozomi.node
+  // - nozomi.vulnerability
+  //
+  // Input format sent through the HEC / HTTP Event Connector:
+  // The HEC connector exposes the contents of the top-level HEC `event` field
+  // to the parser as `@rawstring`:
+  // {
+  //   "event": {...},
+  //   "observer": {...},
+  //   "host": {...},
+  //   "rule": {...},
+  //   "network": {...},
+  //   "vulnerability": {...},
+  //   "related": {...},
+  //   "nozomi": {...}
+  // }
+  // ============================================================================
+  
+  
+  // ============================================================================
+  // PREPARSE
+  // ============================================================================
+  
+  // CrowdStrike can send internal PlatformEvents through the same parser with an
+  // empty @rawstring. Skip those events and parse only non-empty Nozomi payloads.
+  case {
+    @source = "PlatformEvents" |
+      Vendor.parser_status := "platform_event_skipped";
+
+    @rawstring = "" |
+      Vendor.parser_status := "empty_rawstring_skipped";
+
+    @rawstring = * |
+      parseJson(field="@rawstring", prefix="Vendor.", excludeEmpty=true, handleNull=discard);
+
+    * |
+      Vendor.parser_status := "missing_rawstring_skipped"
+  }
+  
+  // Do NOT override @timestamp from event.created/nozomi.time here.
+  // The HEC envelope top-level `time` should control event time.
+  // This avoids hiding newly ingested events in old historical ranges.
+  
+  
+  // ============================================================================
+  // STATIC CPS METADATA
+  // ============================================================================
+  
+  | Parser.version := "1.2.1"
+  | Vendor := "nozomi"
+  | ecs.version := "8.11.0"
+  | Cps.version := "1.0.0"
+  
+  | event.module := "nozomi"
+  | observer.type := "ndr"
+  
+  
+  // ============================================================================
+  // COMMON PAYLOAD FIELDS
+  // ============================================================================
+  
+  // Dataset / kind from the Nozomi payload
+  | event.dataset := Vendor.event.dataset
+  | event.kind := Vendor.event.kind
+  | event.id := Vendor.nozomi.id
+  | event.created := Vendor.event.created
+  | event.severity := Vendor.event.severity
+  
+  
+  // Observer
+  | observer.vendor := Vendor.observer.vendor
+  | observer.product := Vendor.observer.product
+  | observer.type := Vendor.observer.type
+  | observer.hostname := Vendor.observer.hostname
+  
+  // Use a stable fallback when observer.hostname is missing.
+  | case {
+      observer.hostname = * |
+        observer.hostname := observer.hostname;
+  
+      * |
+        observer.hostname := "unknown"
+    }
+  
+  | observer.hostname := lower(observer.hostname)
+  
+  
+  // ============================================================================
+  // ALERTS
+  // ============================================================================
+  
+  | case {
+      event.dataset = "nozomi.alert" |
+  
+        event.kind := "alert"
+        | event.category[0] := "intrusion_detection"
+        | event.type[0] := "indicator"
+        | event.action := Vendor.event.action
+        | event.outcome := Vendor.event.outcome
+  
+        // Defaults if not provided by the Nozomi source
+        | case {
+            event.outcome = "success" |
+              event.outcome := "success";
+  
+            event.outcome = "failure" |
+              event.outcome := "failure";
+  
+            * |
+              event.outcome := "unknown"
+          }
+  
+        // Rule
+        | rule.id := Vendor.rule.id
+        | rule.name := Vendor.rule.name
+        | rule.description := Vendor.rule.description
+  
+        // Source: prefer normalized source object, fallback to nozomi raw fields
+        | source.ip := Vendor.source.ip
+        | source.mac := Vendor.source.mac
+        | source.port := Vendor.source.port
+        | source.zone := Vendor.source.zone
+  
+        | case {
+            source.ip = * |
+              source.ip := source.ip;
+  
+            Vendor.nozomi.ip_src = * |
+              source.ip := Vendor.nozomi.ip_src;
+  
+            * |
+              source.ip := source.ip
+          }
+  
+        | case {
+            source.mac = * |
+              source.mac := source.mac;
+  
+            Vendor.nozomi.mac_src = * |
+              source.mac := Vendor.nozomi.mac_src;
+  
+            * |
+              source.mac := source.mac
+          }
+  
+        | case {
+            source.port = * |
+              source.port := source.port;
+  
+            Vendor.nozomi.port_src = * |
+              source.port := Vendor.nozomi.port_src;
+  
+            * |
+              source.port := source.port
+          }
+  
+        | case {
+            source.zone = * |
+              source.zone := source.zone;
+  
+            Vendor.nozomi.zone_src = * |
+              source.zone := Vendor.nozomi.zone_src;
+  
+            * |
+              source.zone := source.zone
+          }
+  
+        // Destination: prefer normalized destination object, fallback to nozomi raw fields
+        | destination.ip := Vendor.destination.ip
+        | destination.mac := Vendor.destination.mac
+        | destination.port := Vendor.destination.port
+        | destination.zone := Vendor.destination.zone
+  
+        | case {
+            destination.ip = * |
+              destination.ip := destination.ip;
+  
+            Vendor.nozomi.ip_dst = * |
+              destination.ip := Vendor.nozomi.ip_dst;
+  
+            * |
+              destination.ip := destination.ip
+          }
+  
+        | case {
+            destination.mac = * |
+              destination.mac := destination.mac;
+  
+            Vendor.nozomi.mac_dst = * |
+              destination.mac := Vendor.nozomi.mac_dst;
+  
+            * |
+              destination.mac := destination.mac
+          }
+  
+        | case {
+            destination.port = * |
+              destination.port := destination.port;
+  
+            Vendor.nozomi.port_dst = * |
+              destination.port := Vendor.nozomi.port_dst;
+  
+            * |
+              destination.port := destination.port
+          }
+  
+        | case {
+            destination.zone = * |
+              destination.zone := destination.zone;
+  
+            Vendor.nozomi.zone_dst = * |
+              destination.zone := Vendor.nozomi.zone_dst;
+  
+            * |
+              destination.zone := destination.zone
+          }
+  
+        // Network
+        | network.protocol := Vendor.network.protocol
+        | network.transport := Vendor.network.transport
+  
+        | case {
+            network.transport = * |
+              network.transport := network.transport;
+  
+            Vendor.nozomi.transport_protocol = * |
+              network.transport := Vendor.nozomi.transport_protocol;
+  
+            * |
+              network.transport := network.transport
+          }
+  
+        | network.protocol := lower(network.protocol)
+        | network.transport := lower(network.transport)
+  
+        // Threat / MITRE if present
+        | threat.technique.id[0] := Vendor.threat.technique.id[0]
+        | threat.technique.name[0] := Vendor.threat.technique.name[0]
+        | threat.tactic.name[0] := Vendor.threat.tactic.name[0]
+  
+        // Nozomi alert fields
+        | Vendor.entity_type := "alert"
+        | Vendor.alert_id := Vendor.nozomi.id
+        | Vendor.ack := Vendor.nozomi.ack
+        | Vendor.alert_name := Vendor.nozomi.name
+        | Vendor.status := Vendor.nozomi.status
+        | Vendor.severity := Vendor.nozomi.severity
+        | Vendor.risk := Vendor.nozomi.risk
+        | Vendor.type_id := Vendor.nozomi.type_id
+        | Vendor.type_name := Vendor.nozomi.type_name
+        | Vendor.is_security := Vendor.nozomi.is_security
+        | Vendor.is_incident := Vendor.nozomi.is_incident
+        | Vendor.description := Vendor.nozomi.description
+        | Vendor.bpf_filter := Vendor.nozomi.bpf_filter
+        | Vendor.appliance_host := Vendor.nozomi.appliance_host
+        | Vendor.capture_device := Vendor.nozomi.capture_device
+        | Vendor.time := Vendor.nozomi.time
+        | Vendor.created_time := Vendor.nozomi.created_time
+        | Vendor.closed_time := Vendor.nozomi.closed_time
+        | Vendor.record_created_at := Vendor.nozomi.record_created_at
+        | Vendor.record_updated_at := Vendor.nozomi.record_updated_at
+        | Vendor.id_src := Vendor.nozomi.id_src
+        | Vendor.id_dst := Vendor.nozomi.id_dst
+        | Vendor.zone_src := Vendor.nozomi.zone_src
+        | Vendor.zone_dst := Vendor.nozomi.zone_dst
+        | Vendor.src_roles := Vendor.nozomi.src_roles
+        | Vendor.dst_roles := Vendor.nozomi.dst_roles;
+  
+      * |
+        event.dataset := event.dataset
+    }
+  
+  
+  // ============================================================================
+  // ASSETS
+  // ============================================================================
+  
+  | case {
+      event.dataset = "nozomi.asset" |
+  
+        event.kind := "state"
+        | event.category[0] := "host"
+        | event.type[0] := "info"
+  
+        // Host
+        | host.id := Vendor.nozomi.id
+        | host.name := Vendor.host.name
+        | host.ip[0] := Vendor.host.ip[0]
+        | host.mac[0] := Vendor.host.mac[0]
+        | host.type := Vendor.host.type
+  
+        // Device enrichment
+        | device.manufacturer := Vendor.device.manufacturer
+        | device.model := Vendor.device.model
+        | device.serial_number := Vendor.device.serial_number
+        | device.firmware_version := Vendor.device.firmware_version
+  
+        // Fallbacks from raw Nozomi fields
+        | case {
+            device.manufacturer = * |
+              device.manufacturer := device.manufacturer;
+  
+            Vendor.nozomi.vendor = * |
+              device.manufacturer := Vendor.nozomi.vendor;
+  
+            Vendor.nozomi.mac_vendor[0] = * |
+              device.manufacturer := Vendor.nozomi.mac_vendor[0];
+  
+            * |
+              device.manufacturer := device.manufacturer
+          }
+  
+        | case {
+            device.model = * |
+              device.model := device.model;
+  
+            Vendor.nozomi.product_name = * |
+              device.model := Vendor.nozomi.product_name;
+  
+            * |
+              device.model := device.model
+          }
+  
+        // Network
+        | network.zone[0] := Vendor.nozomi.zones[0]
+        | network.protocol[0] := Vendor.nozomi.protocols[0]
+  
+        // Labels/tags
+        | tags[0] := Vendor.nozomi.tags[0]
+        | tags[1] := Vendor.nozomi.tags[1]
+  
+        // Nozomi asset fields
+        | Vendor.entity_type := "asset"
+        | Vendor.asset_id := Vendor.nozomi.id
+        | Vendor.asset_name := Vendor.nozomi.name
+        | Vendor.asset_type := Vendor.nozomi.type
+        | Vendor.technology_category := Vendor.nozomi.technology_category
+        | Vendor.risk := Vendor.nozomi.risk
+        | Vendor.lifecycle := Vendor.nozomi.lifecycle
+        | Vendor.capture_device := Vendor.nozomi.capture_device
+        | Vendor.created_at := Vendor.nozomi.created_at
+        | Vendor.updated_at := Vendor.nozomi.updated_at
+        | Vendor.record_created_at := Vendor.nozomi.record_created_at
+        | Vendor.last_activity_time := Vendor.nozomi.last_activity_time
+        | Vendor.appliance_host := Vendor.nozomi.appliance_hosts[0]
+        | Vendor.roles[0] := Vendor.nozomi.roles[0]
+        | Vendor.protocols[0] := Vendor.nozomi.protocols[0]
+        | Vendor.zones[0] := Vendor.nozomi.zones[0];
+  
+      * |
+        event.dataset := event.dataset
+    }
+  
+  
+  // ============================================================================
+  // NODES
+  // ============================================================================
+  
+  | case {
+      event.dataset = "nozomi.node" |
+  
+        event.kind := "state"
+        | event.category[0] := "host"
+        | event.type[0] := "info"
+  
+        // Host
+        | host.id := Vendor.nozomi.id
+        | host.name := Vendor.host.name
+        | host.ip[0] := Vendor.host.ip[0]
+        | host.mac[0] := Vendor.host.mac[0]
+        | host.type := Vendor.host.type
+  
+        // Device fallback
+        | device.manufacturer := Vendor.device.manufacturer
+  
+        | case {
+            device.manufacturer = * |
+              device.manufacturer := device.manufacturer;
+  
+            Vendor.nozomi.vendor = * |
+              device.manufacturer := Vendor.nozomi.vendor;
+  
+            Vendor.nozomi.mac_vendor = * |
+              device.manufacturer := Vendor.nozomi.mac_vendor;
+  
+            * |
+              device.manufacturer := device.manufacturer
+          }
+  
+        | device.model := Vendor.device.model
+        | device.serial_number := Vendor.device.serial_number
+        | device.firmware_version := Vendor.device.firmware_version
+  
+        // Network
+        | network.zone := Vendor.network.zone
+        | network.protocol[0] := Vendor.network.protocols[0]
+  
+        // Nozomi node fields
+        | Vendor.entity_type := "node"
+        | Vendor.node_id := Vendor.nozomi.id
+        | Vendor.uid := Vendor.nozomi.uid
+        | Vendor.node_name := Vendor.nozomi.name
+        | Vendor.node_ip := Vendor.nozomi.ip
+        | Vendor.node_type := Vendor.nozomi.type
+        | Vendor.zone := Vendor.nozomi.zone
+        | Vendor.roles[0] := Vendor.nozomi.roles[0]
+        | Vendor.protocols[0] := Vendor.nozomi.protocols[0]
+        | Vendor.mac_address := Vendor.nozomi.mac_address
+        | Vendor.mac_vendor := Vendor.nozomi.mac_vendor
+        | Vendor.is_public := Vendor.nozomi.is_public
+        | Vendor.is_learned := Vendor.nozomi.is_learned
+        | Vendor.capture_device := Vendor.nozomi.capture_device
+        | Vendor.appliance_host := Vendor.nozomi.appliance_hosts[0]
+        | Vendor.first_activity_time := Vendor.nozomi.first_activity_time
+        | Vendor.last_activity_time := Vendor.nozomi.last_activity_time
+        | Vendor.record_created_at := Vendor.nozomi.record_created_at;
+  
+      * |
+        event.dataset := event.dataset
+    }
+  
+  
+  // ============================================================================
+  // VULNERABILITIES
+  // ============================================================================
+  
+  | case {
+      event.dataset = "nozomi.vulnerability" |
+  
+        event.kind := "alert"
+        | event.category[0] := "vulnerability"
+        | event.type[0] := "info"
+  
+        // Vulnerability
+        | vulnerability.id := Vendor.vulnerability.id
+        | vulnerability.score.base := Vendor.vulnerability.score.base
+        | vulnerability.severity := Vendor.vulnerability.severity
+        | vulnerability.description := Vendor.vulnerability.description
+        | vulnerability.category := Vendor.vulnerability.category
+        | vulnerability.reference[0] := Vendor.vulnerability.reference[0]
+  
+        // Fallbacks from raw Nozomi fields
+        | case {
+            vulnerability.id = * |
+              vulnerability.id := vulnerability.id;
+  
+            Vendor.nozomi.cve = * |
+              vulnerability.id := Vendor.nozomi.cve;
+  
+            * |
+              vulnerability.id := vulnerability.id
+          }
+  
+        | case {
+            vulnerability.description = * |
+              vulnerability.description := vulnerability.description;
+  
+            Vendor.nozomi.summary = * |
+              vulnerability.description := Vendor.nozomi.summary;
+  
+            * |
+              vulnerability.description := vulnerability.description
+          }
+  
+        | case {
+            vulnerability.category = * |
+              vulnerability.category := vulnerability.category;
+  
+            Vendor.nozomi.category = * |
+              vulnerability.category := Vendor.nozomi.category;
+  
+            * |
+              vulnerability.category := vulnerability.category
+          }
+  
+        | case {
+            vulnerability.score.base = * |
+              vulnerability.score.base := vulnerability.score.base;
+  
+            Vendor.nozomi.score = * |
+              vulnerability.score.base := Vendor.nozomi.score;
+  
+            * |
+              vulnerability.score.base := vulnerability.score.base
+          }
+  
+        // Host/related
+        | host.ip[0] := Vendor.host.ip[0]
+        | related.ip[0] := Vendor.related.ip[0]
+  
+        | case {
+            host.ip[0] = * |
+              host.ip[0] := host.ip[0];
+  
+            Vendor.nozomi.nodes[0] = * |
+              host.ip[0] := Vendor.nozomi.nodes[0];
+  
+            * |
+              host.ip[0] := host.ip[0]
+          }
+  
+        | case {
+            related.ip[0] = * |
+              related.ip[0] := related.ip[0];
+  
+            Vendor.nozomi.nodes[0] = * |
+              related.ip[0] := Vendor.nozomi.nodes[0];
+  
+            * |
+              related.ip[0] := related.ip[0]
+          }
+  
+        // Nozomi vulnerability fields
+        | Vendor.entity_type := "vulnerability"
+        | Vendor.vulnerability_id := Vendor.nozomi.id
+        | Vendor.cve := Vendor.nozomi.cve
+        | Vendor.probability := Vendor.nozomi.probability
+        | Vendor.score := Vendor.nozomi.score
+        | Vendor.status := Vendor.nozomi.status
+        | Vendor.closed_time := Vendor.nozomi.closed_time
+        | Vendor.likelihood := Vendor.nozomi.likelihood
+        | Vendor.summary := Vendor.nozomi.summary
+        | Vendor.category := Vendor.nozomi.category
+        | Vendor.time := Vendor.nozomi.time
+        | Vendor.node_ip := Vendor.nozomi.nodes[0];
+  
+      * |
+        event.dataset := event.dataset
+    }
+  
+  
+  // ============================================================================
+  // RELATED FIELDS
+  // ============================================================================
+  
+  | case {
+      event.dataset = "nozomi.alert" |
+        related.ip[0] := source.ip
+        | related.ip[1] := destination.ip
+        | related.hosts[0] := observer.hostname;
+  
+      event.dataset = "nozomi.asset" |
+        related.ip[0] := host.ip[0]
+        | related.hosts[0] := host.name;
+  
+      event.dataset = "nozomi.node" |
+        related.ip[0] := host.ip[0]
+        | related.hosts[0] := host.name;
+  
+      event.dataset = "nozomi.vulnerability" |
+        related.ip[0] := host.ip[0];
+  
+      *;
+    }
+  
+  
+  // ============================================================================
+  // POST NORMALIZATION
+  // ============================================================================
+  
+  // Useful searchable message
+  | case {
+      event.dataset = "nozomi.alert" |
+        message := rule.description;
+  
+      event.dataset = "nozomi.asset" |
+        message := host.name;
+  
+      event.dataset = "nozomi.node" |
+        message := host.name;
+  
+      event.dataset = "nozomi.vulnerability" |
+        message := vulnerability.description;
+  
+      * |
+        message := event.dataset
+    }
+tagFields:
+  - Cps.version
+  - Vendor
+  - ecs.version
+  - event.dataset
+  - event.kind
+  - event.module
+  - event.outcome
+  - observer.type
