@@ -141,7 +141,7 @@ widgets:
       | rename([[host.details, "host.details [max 5 displayed]"]])
 
       // Filter minimum number of hosts.
-      | host.distinct.count>=?minDistinctHostsFailed
+      | test(host.distinct.count>=?minDistinctHostsFailed)
 
       // Sort the results
       | sort(host.distinct.count, limit=1000)
