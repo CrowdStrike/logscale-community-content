@@ -527,6 +527,9 @@ NinjaRMM,ninjarmmagent.exe
 NinjaRMM,ninjarmmagentpatcher.exe
 NinjaRMM,ninjarmm-cli.exe
 NinjaRMM,ninjarmm*.exe
+Nizlo,nizlo.agent.exe
+Nizlo,nizlo.agent.updater.exe
+Nizlo,nizlo.remotebridge.exe
 NoMachine,nxplayer.bin
 NoMachine,nxclient.bin
 NoMachine,nxsh

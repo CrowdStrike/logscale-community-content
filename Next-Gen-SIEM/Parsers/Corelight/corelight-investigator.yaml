@@ -1,0 +1,1502 @@
+name: corelight-investigator
+fieldsToBeRemovedBeforeParsing: []
+testCases:
+- assertions:
+  - fieldsHaveValues:
+      rule.name: NXDOMAIN Beaconing
+      event.type[0]: info
+      event.id: a1b2c3d4-e5f6-7890-1234-567890abcdef
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/a1b2c3d4-e5f6-7890-1234-567890abcdef
+      event.severity: '30'
+      event.end: '1748437555'
+      event.start: '1748437555'
+      threat.technique.name[0]: Fallback Channels
+      event.duration: '0'
+      '#event.dataset': investigator.ml
+      event.type[1]: indicator
+      event.reason: NXDOMAIN Beaconing
+      threat.technique.name[1]: Dynamic Resolution
+      source.domain: suspicious-domain.example.org
+      destination.ip: 192.168.1.100
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+          "alert-to-detection-url": "https://demo.investigator.corelight.io/alert-to-detection/a1b2c3d4-e5f6-7890-1234-567890abcdef",
+          "alert_entity": {
+              "entity_category": "source",
+              "entity_id": "DOMAINsjdncajrgbrq3gbrbjrv.net",
+              "entity_name": "suspicious-domain.example.org",
+              "entity_type": "DOMAIN"
+          },
+          "alert_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+          "alert_info": {
+              "alert_name": "NXDOMAIN Beaconing",
+              "alert_type": "ml",
+              "content_id": "e3e083c9-3301-4359-bd54-9801154796c1"
+          },
+          "alert_keys": {
+              "tenant": "demo-tenant",
+              "tenant_alert": "test-hash-001",
+              "tenant_alert_entity": "test-hash-002",
+              "tenant_entity": "test-hash-003"
+          },
+          "alert_timestamp": {
+              "end": 1748437555,
+              "observed": 1748437555,
+              "start": 1748437555,
+              "ttl": 1756213555
+          },
+          "event_ids": [
+              "test-uid-001"
+          ],
+          "false_positive": false,
+          "mitre_tactics": [],
+          "mitre_techniques": [
+              "Command and Control :: Fallback Channels",
+              "Command and Control :: Dynamic Resolution"
+          ],
+          "ml": {
+              "average_technique_score_map": {},
+              "description": "",
+              "mode": "realtime",
+              "models": [
+                  {
+                      "features": [
+                          {
+                              "actual": 535,
+                              "contribution": 0.11791128164885432,
+                              "difference": 1.2868480134603444,
+                              "feature_name": "num_dns_requests"
+                          },
+                          {
+                              "actual": 12,
+                              "contribution": 0.05997998775210703,
+                              "difference": 0.6283336934809017,
+                              "feature_name": "max_dns_requests_minute"
+                          },
+                          {
+                              "actual": 535.0,
+                              "contribution": 0.0,
+                              "difference": 1.338030588104508,
+                              "feature_name": "num_rare_nx_requests"
+                          },
+                          {
+                              "actual": 10.7,
+                              "contribution": 0.12750717408469572,
+                              "difference": 0.9752643191452882,
+                              "feature_name": "avg_rare_nx_requests_minute"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.11493548293464471,
+                              "difference": 2.1058253591494944,
+                              "feature_name": "distinct_nxdomain_subdomains"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.07597649036079371,
+                              "difference": -0.20138861790295548,
+                              "feature_name": "distinct_subdomain"
+                          },
+                          {
+                              "actual": 0.0,
+                              "contribution": 0.07685749613487566,
+                              "difference": -0.5907696008508709,
+                              "feature_name": "avg_subdomain_entropy"
+                          },
+                          {
+                              "actual": 0.0,
+                              "contribution": 0.06881535886082538,
+                              "difference": -0.5376538797807106,
+                              "feature_name": "avg_subdomain_length"
+                          },
+                          {
+                              "actual": 0,
+                              "contribution": 0.06622034051842185,
+                              "difference": -0.529400316227755,
+                              "feature_name": "max_dns_subdomain_length"
+                          },
+                          {
+                              "actual": 0,
+                              "contribution": 0.07597136720828636,
+                              "difference": -0.5617431511381334,
+                              "feature_name": "max_dns_subdomain_part_length"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.05905161258282631,
+                              "difference": 0.056174937952371704,
+                              "feature_name": "id_orig_h_private"
+                          },
+                          {
+                              "actual": 1.0,
+                              "contribution": 0.15677340791366898,
+                              "difference": 14.20265484940922,
+                              "feature_name": "rare_nx_beaconing_score"
+                          }
+                      ],
+                      "model_alias": [
+                          "NXDOMAIN Beaconing Realtime Classifier v24"
+                      ],
+                      "model_name": "c2-dns-beacon_sipdomain_class_realtime_v024",
+                      "model_score": 59.0,
+                      "predicted_tag_id": "e3e083c9-3301-4359-bd54-9801154796c1"
+                  }
+              ],
+              "pipeline": "sipdomain",
+              "status": "suspicious",
+              "tag_id": "e3e083c9-3301-4359-bd54-9801154796c1",
+              "user_tag": {},
+              "whitelisted_info": []
+          },
+          "related_alert_entities": [
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.1.1.1",
+                  "entity_name": "192.168.1.100",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "source",
+                  "entity_id": "DOMAINsjdncajrgbrq3gbrbjrv.net",
+                  "entity_name": "suspicious-domain.example.org",
+                  "entity_type": "DOMAIN"
+              }
+          ],
+          "related_entities": [
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.1.1.1",
+                  "entity_name": "192.168.1.100",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "source",
+                  "entity_id": "DOMAINsjdncajrgbrq3gbrbjrv.net",
+                  "entity_name": "suspicious-domain.example.org",
+                  "entity_type": "DOMAIN"
+              }
+          ],
+          "score": 4,
+          "severity": 95,
+          "tenant": "demo-tenant"
+      }
+- assertions:
+  - fieldsHaveValues:
+      rule.name: NXDOMAIN Beaconing
+      event.type[0]: info
+      event.id: b2c3d4e5-f6g7-8901-2345-678901bcdefg
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      event.severity: '70'
+      event.end: '1748436635'
+      event.start: '1748436635'
+      threat.technique.name[0]: Fallback Channels
+      destination.domain: suspicious-domain.example.org
+      threat.framework: MITRE ATT&CK
+      event.duration: '0'
+      source.domain: test-domain.example.org
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/b2c3d4e5-f6g7-8901-2345-678901bcdefg
+      threat.tactic.name[0]: Command and Control
+      '#event.dataset': investigator.ml
+      event.type[1]: indicator
+      event.reason: NXDOMAIN Beaconing
+      threat.technique.name[1]: Dynamic Resolution
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+          "alert-to-detection-url": "https://demo.investigator.corelight.io/alert-to-detection/b2c3d4e5-f6g7-8901-2345-678901bcdefg",
+          "alert_entity": {
+              "entity_category": "destination",
+              "entity_id": "DOMAINsjdncajrgbrq3gbrbjrv.net",
+              "entity_name": "suspicious-domain.example.org",
+              "entity_type": "DOMAIN"
+          },
+          "alert_id": "b2c3d4e5-f6g7-8901-2345-678901bcdefg",
+          "alert_info": {
+              "alert_name": "NXDOMAIN Beaconing",
+              "alert_type": "ml",
+              "content_id": "e3e083c9-3301-4359-bd54-9801154796c1"
+          },
+          "alert_keys": {
+              "tenant": "demo-tenant",
+              "tenant_alert": "test-hash-001",
+              "tenant_alert_entity": "test-hash-002",
+              "tenant_entity": "test-hash-003"
+          },
+          "alert_timestamp": {
+              "end": 1748436635,
+              "observed": 1748436635,
+              "start": 1748436635,
+              "ttl": 1756212635
+          },
+          "event_ids": [
+              "test-uid-002"
+          ],
+          "false_positive": false,
+          "mitre_tactics": [
+              "Command and Control"
+          ],
+          "mitre_techniques": [
+              "Command and Control :: Fallback Channels",
+              "Command and Control :: Dynamic Resolution"
+          ],
+          "ml": {
+              "average_technique_score_map": {},
+              "description": "",
+              "mode": "realtime",
+              "models": [
+                  {
+                      "features": [
+                          {
+                              "actual": 531,
+                              "contribution": 0.1190770114327256,
+                              "difference": 1.276745980572624,
+                              "feature_name": "num_dns_requests"
+                          },
+                          {
+                              "actual": 12,
+                              "contribution": 0.06057339371491916,
+                              "difference": 0.6283336934809017,
+                              "feature_name": "max_dns_requests_minute"
+                          },
+                          {
+                              "actual": 531.0,
+                              "contribution": 0.0,
+                              "difference": 1.3278643084756634,
+                              "feature_name": "num_rare_nx_requests"
+                          },
+                          {
+                              "actual": 11.297872340425531,
+                              "contribution": 0.12812469778920613,
+                              "difference": 1.0321365233138742,
+                              "feature_name": "avg_rare_nx_requests_minute"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.11607187988895676,
+                              "difference": 2.1058253591494944,
+                              "feature_name": "distinct_nxdomain_subdomains"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.07672795070530454,
+                              "difference": -0.20138861790295548,
+                              "feature_name": "distinct_subdomain"
+                          },
+                          {
+                              "actual": 0.0,
+                              "contribution": 0.06837182356841198,
+                              "difference": -0.5907696008508709,
+                              "feature_name": "avg_subdomain_entropy"
+                          },
+                          {
+                              "actual": 0.0,
+                              "contribution": 0.06949606322578379,
+                              "difference": -0.5376538797807106,
+                              "feature_name": "avg_subdomain_length"
+                          },
+                          {
+                              "actual": 0,
+                              "contribution": 0.06687537012297701,
+                              "difference": -0.529400316227755,
+                              "feature_name": "max_dns_subdomain_length"
+                          },
+                          {
+                              "actual": 0,
+                              "contribution": 0.07672277693318855,
+                              "difference": -0.5617431511381334,
+                              "feature_name": "max_dns_subdomain_part_length"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.05963584568035942,
+                              "difference": 0.056174937952371704,
+                              "feature_name": "id_orig_h_private"
+                          },
+                          {
+                              "actual": 1.0,
+                              "contribution": 0.1583231869381671,
+                              "difference": 14.20265484940922,
+                              "feature_name": "rare_nx_beaconing_score"
+                          }
+                      ],
+                      "model_alias": [
+                          "NXDOMAIN Beaconing Realtime Classifier v24"
+                      ],
+                      "model_name": "c2-dns-beacon_sipdomain_class_realtime_v024",
+                      "model_score": 58.0,
+                      "predicted_tag_id": "e3e083c9-3301-4359-bd54-9801154796c1"
+                  }
+              ],
+              "pipeline": "sipdomain",
+              "status": "suspicious",
+              "tag_id": "e3e083c9-3301-4359-bd54-9801154796c1",
+              "user_tag": {},
+              "whitelisted_info": []
+          },
+          "related_alert_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "DOMAINsjdncajrgbrq3gbr.net",
+                  "entity_name": "test-domain.example.org",
+                  "entity_type": "DOMAIN"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "DOMAINsjdncajrgbrq3gbrbjrv.net",
+                  "entity_name": "suspicious-domain.example.org",
+                  "entity_type": "DOMAIN"
+              }
+          ],
+          "related_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "DOMAINsjdncajrgbrq3gbr.net",
+                  "entity_name": "test-domain.example.org",
+                  "entity_type": "DOMAIN"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "DOMAINsjdncajrgbrq3gbrbjrv.net",
+                  "entity_name": "suspicious-domain.example.org",
+                  "entity_type": "DOMAIN"
+              }
+          ],
+          "score": 7,
+          "severity": 95,
+          "tenant": "demo-tenant"
+      }
+- assertions:
+  - fieldsHaveValues:
+      rule.name: NXDOMAIN Beaconing
+      event.type[0]: info
+      event.id: c3d4e5f6-g7h8-9012-3456-789012cdefgh
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      event.severity: '10'
+      event.end: '1748438429'
+      event.start: '1748438429'
+      source.ip: 192.168.1.100
+      threat.technique.name[0]: Fallback Channels
+      threat.framework: MITRE ATT&CK
+      event.duration: '0'
+      destination.ip: 192.168.1.101
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/c3d4e5f6-g7h8-9012-3456-789012cdefgh
+      threat.tactic.name[0]: Command and Control
+      '#event.dataset': investigator.ml
+      event.type[1]: indicator
+      event.reason: NXDOMAIN Beaconing
+      threat.technique.name[1]: Dynamic Resolution
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+          "alert-to-detection-url": "https://demo.investigator.corelight.io/alert-to-detection/c3d4e5f6-g7h8-9012-3456-789012cdefgh",
+          "alert_entity":  {
+              "entity_category": "source",
+              "entity_id": "IP1.1.1.1",
+              "entity_name": "192.168.1.100",
+              "entity_type": "IP"
+          },
+          "alert_id": "c3d4e5f6-g7h8-9012-3456-789012cdefgh",
+          "alert_info": {
+              "alert_name": "NXDOMAIN Beaconing",
+              "alert_type": "ml",
+              "content_id": "e3e083c9-3301-4359-bd54-9801154796c1"
+          },
+          "alert_keys": {
+              "tenant": "demo-tenant",
+              "tenant_alert": "test-hash-001",
+              "tenant_alert_entity": "test-hash-002",
+              "tenant_entity": "test-hash-003"
+          },
+          "alert_timestamp": {
+              "end": 1748438429,
+              "observed": 1748438429,
+              "start": 1748438429,
+              "ttl": 1756214429
+          },
+          "event_ids": [
+              "test-uid-003"
+          ],
+          "false_positive": false,
+          "mitre_tactics": [
+              "Command and Control"
+          ],
+          "mitre_techniques": [
+              "Command and Control :: Fallback Channels",
+              "Command and Control :: Dynamic Resolution"
+          ],
+          "ml": {
+              "average_technique_score_map": {},
+              "description": "",
+              "mode": "realtime",
+              "models": [
+                  {
+                      "features": [
+                          {
+                              "actual": 530,
+                              "contribution": 0.12044470415065071,
+                              "difference": 1.2742204723506938,
+                              "feature_name": "num_dns_requests"
+                          },
+                          {
+                              "actual": 12,
+                              "contribution": 0.07116618981815928,
+                              "difference": 0.6283336934809017,
+                              "feature_name": "max_dns_requests_minute"
+                          },
+                          {
+                              "actual": 530.0,
+                              "contribution": 0.0,
+                              "difference": 1.3253227385684525,
+                              "feature_name": "num_rare_nx_requests"
+                          },
+                          {
+                              "actual": 11.521739130434783,
+                              "contribution": 0.10925001110702796,
+                              "difference": 1.0534317011087029,
+                              "feature_name": "avg_rare_nx_requests_minute"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.11723125714747794,
+                              "difference": 2.1058253591494944,
+                              "feature_name": "distinct_nxdomain_subdomains"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.07749435730353531,
+                              "difference": -0.20138861790295548,
+                              "feature_name": "distinct_subdomain"
+                          },
+                          {
+                              "actual": 0.0,
+                              "contribution": 0.06905476842637967,
+                              "difference": -0.5907696008508709,
+                              "feature_name": "avg_subdomain_entropy"
+                          },
+                          {
+                              "actual": 0.0,
+                              "contribution": 0.07019010310004423,
+                              "difference": -0.5376538797807106,
+                              "feature_name": "avg_subdomain_length"
+                          },
+                          {
+                              "actual": 0,
+                              "contribution": 0.06754336827097575,
+                              "difference": -0.529400316227755,
+                              "feature_name": "max_dns_subdomain_length"
+                          },
+                          {
+                              "actual": 0,
+                              "contribution": 0.07748913185532375,
+                              "difference": -0.5617431511381334,
+                              "feature_name": "max_dns_subdomain_part_length"
+                          },
+                          {
+                              "actual": 1,
+                              "contribution": 0.06023153481501269,
+                              "difference": 0.056174937952371704,
+                              "feature_name": "id_orig_h_private"
+                          },
+                          {
+                              "actual": 1.0,
+                              "contribution": 0.15990457400541275,
+                              "difference": 14.20265484940922,
+                              "feature_name": "rare_nx_beaconing_score"
+                          }
+                      ],
+                      "model_alias": [
+                          "NXDOMAIN Beaconing Realtime Classifier v24"
+                      ],
+                      "model_name": "c2-dns-beacon_sipdomain_class_realtime_v024",
+                      "model_score": 57.0,
+                      "predicted_tag_id": "e3e083c9-3301-4359-bd54-9801154796c1"
+                  }
+              ],
+              "pipeline": "sipdomain",
+              "status": "suspicious",
+              "tag_id": "e3e083c9-3301-4359-bd54-9801154796c1",
+              "user_tag": {},
+              "whitelisted_info": []
+          },
+          "related_alert_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.1.1.1",
+                  "entity_name": "192.168.1.100",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.11.1.11",
+                  "entity_name": "192.168.1.101",
+                  "entity_type": "IP"
+              }
+          ],
+          "related_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.1.1.1",
+                  "entity_name": "192.168.1.100",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.11.1.11",
+                  "entity_name": "192.168.1.101",
+                  "entity_type": "IP"
+              }
+          ],
+          "score": 2,
+          "severity": 95,
+          "tenant": "demo-tenant"
+      }
+- assertions:
+  - fieldsHaveValues:
+      file.mime_type: application/x-dosexec
+      client.port: '58304'
+      rule.name: Yara_File_Badrabbit_Gen1
+      file.hash.md5: a1b2c3d4e5f6789012345678901234ab
+      event.id: test-event-id-001
+      network.protocol: http
+      source.port: '58304'
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/d4e5f6g7-h8i9-0123-4567-890123defghi
+      event.severity: '30'
+      event.end: '1746710155'
+      source.ip: 192.168.1.102
+      file.name: 2025-02-08/b2c3d4e5f6g7890123456789012345bc.exe
+      event.duration: '0'
+      event.type[0]: info
+      observer.hostname: test-sensor-001
+      '#event.dataset': investigator.yara_corelight
+      event.type[1]: indicator
+      event.start: '1746710155'
+      server.port: '80'
+      destination.port: '80'
+      file.hash.sha1: b2c3d4e5f6g7890123456789012345bc
+      event.reason: Yara_File_Badrabbit_Gen1
+      server.ip: 192.168.1.103
+      client.ip: 192.168.1.102
+      destination.ip: 192.168.1.103
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+          "alert-to-detection-url": "https://demo.investigator.corelight.io/alert-to-detection/d4e5f6g7-h8i9-0123-4567-890123defghi",
+          "alert_entity": {
+              "entity_category": "source",
+              "entity_id": "IP1.2.1.2",
+              "entity_name": "192.168.1.102",
+              "entity_type": "IP"
+          },
+          "alert_id": "d4e5f6g7-h8i9-0123-4567-890123defghi",
+          "alert_info": {
+              "alert_name": "Yara_File_Badrabbit_Gen1",
+              "alert_type": "yara_corelight",
+              "content_id": "f704d76f6ee8945b9654bbfac64eb75d"
+          },
+          "alert_keys": {
+              "tenant": "demo-tenant-two",
+              "tenant_alert": "test-hash-004",
+              "tenant_alert_entity": "test-hash-005",
+              "tenant_entity": "test-hash-006"
+          },
+          "alert_timestamp": {
+              "end": 1746710155,
+              "observed": 1746710155,
+              "start": 1746710155,
+              "ttl": 1754486155
+          },
+          "event_ids": [
+              "test-hash-007"
+          ],
+          "false_positive": false,
+          "related_alert_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.2.1.2",
+                  "entity_name": "192.168.1.102",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.3.1.3",
+                  "entity_name": "192.168.1.103",
+                  "entity_type": "IP"
+              }
+          ],
+          "related_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.2.1.2",
+                  "entity_name": "192.168.1.102",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.3.1.3",
+                  "entity_name": "192.168.1.103",
+                  "entity_type": "IP"
+              }
+          ],
+          "score": 4,
+          "severity": 75,
+          "tenant": "demo-tenant-two",
+          "yara_corelight": {
+              "destination_ip": "192.168.1.103",
+              "file_matches": 10,
+              "file_name": "2025-02-08/b2c3d4e5f6g7890123456789012345bc.exe",
+              "fuid": "test-file-id-001",
+              "match_meta": [
+                  "description=Detects BadRabbit Ransomware",
+                  "author=Florian Roth (Nextron Systems)",
+                  "id=272e50f8-5aef-52ec-a5d0-01e8504d6c55",
+                  "date=2017-10-25",
+                  "modified=2023-12-05",
+                  "reference=https://pastebin.com/Y7pJv3tK",
+                  "source_url=https://github.com/Neo23x0/signature-base/blob/c3fb6b179826dfb6bd146f4fa64fa9d7f84bc358/yara/crime_badrabbit.yar#L11-L40",
+                  "license_url=https://github.com/Neo23x0/signature-base/blob/c3fb6b179826dfb6bd146f4fa64fa9d7f84bc358/LICENSE",
+                  "logic_hash=21c63a02d0284ce759b087f4869c4ed8e6b50c37ffeb724538567e28aeae16ac",
+                  "score=75",
+                  "quality=85",
+                  "tags=FILE",
+                  "license=Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE",
+                  "hash1=8ebc97e05c8e1073bda2efb6f4d00ad7e789260afa2c276f0c72740b838a0a93",
+                  "hash2=579fd8a0385482fb4c789561a30b09f25671e86422f40ef5cca2036b28f99648",
+                  "hash3=630325cac09ac3fab908f903e3b00d0dadd5fdaa0875ed8496fcbb97a558d0da"
+              ],
+              "match_namespace": "default",
+              "match_rule": "Yara_File_Badrabbit_Gen1",
+              "match_tags": [
+                  "FILE"
+              ],
+              "md5": "a1b2c3d4e5f6789012345678901234ab",
+              "mime_type": "application/x-dosexec",
+              "orig_h": "192.168.1.102",
+              "orig_p": 58304,
+              "path": "yara_corelight",
+              "resp_h": "192.168.1.103",
+              "resp_p": 80,
+              "severity_info": {
+                  "level": 75
+              },
+              "sha1": "b2c3d4e5f6g7890123456789012345bc",
+              "sha256": "",
+              "source": "HTTP",
+              "source_ip": "192.168.1.102",
+              "system_name": "test-sensor-001",
+              "uid": "test-event-id-001"
+          }
+      }
+- assertions:
+  - fieldsHaveValues:
+      rule.name: Anomalous SSH Destination from Internal Subnet
+      event.id: test-event-id-002
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      event.severity: '30'
+      event.end: '1746682209'
+      event.start: '1746682209'
+      source.ip: 192.168.1.104
+      threat.technique.name[0]: Remote Services
+      event.reason: Anomalous SSH Destination from Internal Subnet
+      threat.framework: MITRE ATT&CK
+      event.duration: '0'
+      destination.ip: 192.168.1.105
+      event.type[0]: info
+      observer.hostname: test-sensor-001
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/e5f6g7h8-i9j0-1234-5678-901234efghij
+      threat.tactic.name[0]: Lateral Movement
+      '#event.dataset': investigator.anomaly
+      event.type[1]: indicator
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+          "alert-to-detection-url": "https://demo.investigator.corelight.io/alert-to-detection/e5f6g7h8-i9j0-1234-5678-901234efghij",
+          "alert_entity": {
+              "entity_category": "source",
+              "entity_id": "IP1.4.1.4",
+              "entity_name": "192.168.1.104",
+              "entity_type": "IP"
+          },
+          "alert_id": "e5f6g7h8-i9j0-1234-5678-901234efghij",
+          "alert_info": {
+              "alert_name": "Anomalous SSH Destination from Internal Subnet",
+              "alert_type": "anomaly",
+              "content_id": "corelight_ad_ssh_connections"
+          },
+          "alert_keys": {
+              "tenant": "demo-tenant-two",
+              "tenant_alert": "test-hash-008",
+              "tenant_alert_entity": "test-hash-009",
+              "tenant_entity": "test-hash-010"
+          },
+          "alert_timestamp": {
+              "end": 1746682209,
+              "observed": 1746682209,
+              "start": 1746682209,
+              "ttl": 1754458209
+          },
+          "anomaly": {
+              "anomaly_type": "AnomalyDetection::ANOMALY",
+              "baselining_end_timestamp": 1746595809,
+              "baselining_start_timestamp": 1743917409,
+              "destination_ip": "192.168.1.105",
+              "entity": "10.0.6.0/24",
+              "entity_training_items": [
+                  "10.0.1.0/24",
+                  "10.0.2.0/24",
+                  "10.0.3.0/24",
+                  "remote_ips"
+              ],
+              "ignorable": false,
+              "item": "10.0.4.0/24",
+              "item_assoc_entities": [
+                  "remote_ips"
+              ],
+              "item_assoc_entities_similarity": [
+                  "0.31"
+              ],
+              "item_score": 0.77,
+              "nn1_entities": [
+                  "10.0.5.0/24"
+              ],
+              "nn1_entity_similarity": 0.75,
+              "nn1_pred_items": [],
+              "nn1_train_items": [
+                  "10.0.2.0/24",
+                  "10.0.3.0/24",
+                  "remote_ips"
+              ],
+              "orig_h": "192.168.1.104",
+              "original_entity": "192.168.1.104/32",
+              "path": "anomaly",
+              "source_ip": "192.168.1.104",
+              "system_name": "test-sensor-001",
+              "uid": "test-event-id-002",
+              "usecase": "corelight_ad_ssh_connections",
+              "usecase_description": "Anomalous SSH Destination from Internal Subnet"
+          },
+          "event_ids": [
+              "test-hash-011"
+          ],
+          "false_positive": false,
+          "mitre_tactics": [
+              "Lateral Movement"
+          ],
+          "mitre_techniques": [
+              "Lateral Movement :: Remote Services"
+          ],
+          "related_alert_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.4.1.4",
+                  "entity_name": "192.168.1.104",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.5.1.5",
+                  "entity_name": "192.168.1.105",
+                  "entity_type": "IP"
+              }
+          ],
+          "related_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.4.1.4",
+                  "entity_name": "192.168.1.104",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.5.1.5",
+                  "entity_name": "192.168.1.105",
+                  "entity_type": "IP"
+              }
+          ],
+          "score": 4,
+          "severity": 0.77,
+          "tenant": "demo-tenant-two"
+      }
+- assertions:
+  - fieldsHaveValues:
+      rule.name: SSHamble scanner
+      event.type[0]: info
+      event.id: f6g7h8i9-j0k1-2345-6789-012345fghijk
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      event.severity: '50'
+      event.end: '1746710155'
+      event.start: '1746710155'
+      source.ip: 192.168.1.106
+      threat.technique.name[0]: Active Scanning
+      event.reason: SSHamble scanner
+      threat.framework: MITRE ATT&CK
+      event.duration: '0'
+      destination.ip: 192.168.1.107
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/f6g7h8i9-j0k1-2345-6789-012345fghijk
+      threat.tactic.name[0]: Reconnaissance
+      '#event.dataset': investigator.custom_search_rule
+      event.type[1]: indicator
+    outputEventIndex: 0
+  event:
+    rawString: "{\n    \"alert-to-detection-url\": \"https://demo.investigator.corelight.io/alert-to-detection/f6g7h8i9-j0k1-2345-6789-012345fghijk\"\
+      ,\n    \"alert_entity\": {\n        \"entity_category\": \"source\",\n     \
+      \   \"entity_id\": \"IP1.6.1.6\",\n        \"entity_name\": \"192.168.1.106\",\n \
+      \       \"entity_type\": \"IP\"\n    },\n    \"alert_id\": \"f6g7h8i9-j0k1-2345-6789-012345fghijk\"\
+      ,\n    \"alert_info\": {\n        \"alert_name\": \"SSHamble scanner\",\n  \
+      \      \"alert_type\": \"custom_search_rule\",\n        \"content_id\": \"4963f114-826e-4315-ad28-7703035372ba\"\
+      \n    },\n    \"alert_keys\": {\n        \"tenant\": \"demo-tenant-two\",\n     \
+      \   \"tenant_alert\": \"test-hash-012\",\n        \"tenant_alert_entity\"\
+      : \"test-hash-013\",\n        \"tenant_entity\": \"test-hash-014\"\
+      \n    },\n    \"alert_timestamp\": {\n        \"end\": 1746710155,\n       \
+      \ \"observed\": 1746710155,\n        \"start\": 1746710155,\n        \"ttl\"\
+      : 1754486155\n    },\n    \"event_ids\": [\n        \"test-hash-015\"\
+      \n    ],\n    \"false_positive\": false,\n    \"mitre_tactics\": [\n       \
+      \ \"Reconnaissance\"\n    ],\n    \"mitre_techniques\": [\n        \"Reconnaissance\
+      \ :: Active Scanning\"\n    ],\n    \"related_alert_entities\": [\n        {\n\
+      \            \"entity_category\": \"destination\",\n            \"entity_id\"\
+      : \"IP1.7.1.7\",\n            \"entity_name\": \"192.168.1.107\",\n            \"\
+      entity_type\": \"IP\"\n        },\n        {\n            \"entity_category\"\
+      : \"source\",\n            \"entity_id\": \"IP1.6.1.6\",\n            \"entity_name\"\
+      : \"192.168.1.106\",\n            \"entity_type\": \"IP\"\n        }\n    ],\n   \
+      \ \"related_entities\": [\n        {\n            \"entity_category\": \"destination\"\
+      ,\n            \"entity_id\": \"IP1.7.1.7\",\n            \"entity_name\": \"\
+      192.168.1.107\",\n            \"entity_type\": \"IP\"\n        },\n        {\n   \
+      \         \"entity_category\": \"source\",\n            \"entity_id\": \"IP1.6.1.6\"\
+      , \n            \"entity_name\": \"192.168.1.106\",\n            \"entity_type\":\
+      \ \"IP\"\n        }\n    ],\n    \"score\": 6,\n    \"severity\": 0,\n    \"\
+      tenant\": \"demo-tenant-two\"\n}"
+- assertions:
+  - fieldsHaveValues:
+      rule.name: Attempted Connection to a DGA Domain
+      event.type[0]: info
+      event.id: g7h8i9j0-k1l2-3456-7890-123456ghijkl
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      event.severity: '50'
+      event.end: '1746655740'
+      event.start: '1746655740'
+      threat.technique.name[0]: Dynamic Resolution
+      destination.domain: malicious-domain.example.org
+      threat.framework: MITRE ATT&CK
+      event.duration: '0'
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/g7h8i9j0-k1l2-3456-7890-123456ghijkl
+      threat.tactic.name[0]: Command and Control
+      '#event.dataset': investigator.ml
+      event.type[1]: indicator
+      event.reason: Attempted Connection to a DGA Domain
+      threat.technique.name[1]: Fallback Channels
+    outputEventIndex: 0
+  event:
+    rawString: "{\n    \"alert-to-detection-url\": \"https://demo.investigator.corelight.io/alert-to-detection/g7h8i9j0-k1l2-3456-7890-123456ghijkl\"\
+      ,\n    \"alert_entity\": {\n        \"entity_category\": \"destination\",\n\
+      \        \"entity_id\": \"DOMAIN10xzveo18bql031wrnti813xpc0v.net\",\n      \
+      \  \"entity_name\": \"malicious-domain.example.org\",\n        \"entity_type\"\
+      : \"DOMAIN\"\n    },\n    \"alert_id\": \"g7h8i9j0-k1l2-3456-7890-123456ghijkl\"\
+      ,\n    \"alert_info\": {\n        \"alert_name\": \"Attempted Connection to\
+      \ a DGA Domain\",\n        \"alert_type\": \"ml\",\n        \"content_id\":\
+      \ \"bea8e937-d3f8-464d-9592-5c7467ea786e\"\n    },\n    \"alert_keys\": {\n\
+      \        \"tenant\": \"demo-tenant-three\",\n        \"tenant_alert\": \"test-hash-016\"\
+      ,\n        \"tenant_alert_entity\": \"test-hash-017\",\n\
+      \        \"tenant_entity\": \"test-hash-018\"\n    },\n \
+      \   \"alert_timestamp\": {\n        \"end\": 1746655740,\n        \"observed\"\
+      : 1746655740,\n        \"start\": 1746655740,\n        \"ttl\": 1754431740\n\
+      \    }, \n    \"event_ids\": [\n        \"test-uid-004\"\
+      \n    ],\n    \"false_positive\": false,\n    \"mitre_tactics\": [\n       \
+      \ \"Command and Control\"\n    ],\n    \"mitre_techniques\": [\n        \"Command\
+      \ and Control :: Dynamic Resolution\",\n        \"Command and Control :: Fallback\
+      \ Channels\"\n    ],\n    \"ml\": {\n        \"average_technique_score_map\"\
+      : {},\n        \"description\": \"\",\n        \"mode\": \"realtime\",\n   \
+      \     \"models\": [\n            {\n                \"features\": [\n      \
+      \              {\n                        \"actual\": 28,\n                \
+      \        \"contribution\": 0.04900535512162393,\n                        \"\
+      difference\": 2.894859740445859,\n                        \"feature_name\":\
+      \ \"sld_length\"\n                    },\n                    {\n          \
+      \              \"actual\": 0.10714285714285714,\n                        \"\
+      contribution\": 0.11410916642658477,\n                        \"difference\"\
+      : -2.314410266858263,\n                        \"feature_name\": \"ratio_sld_vowel\"\
+      \n                    },\n                    {\n                        \"\
+      actual\": 0.5,\n                        \"contribution\": 0.0019555972373951915,\n\
+      \                        \"difference\": -0.8355490133227437,\n            \
+      \            \"feature_name\": \"ratio_sld_consonant\"\n                   \
+      \ },\n                    {\n                        \"actual\": 4.666666666666667,\n\
+      \                        \"contribution\": 0.01766279140311774,\n          \
+      \              \"difference\": 2.351666478607586,\n                        \"\
+      feature_name\": \"ratio_sld_consonant_vowel\"\n                    },\n    \
+      \                {\n                        \"actual\": 0.3928571428571429,\n\
+      \                        \"contribution\": 0.018056738935262336,\n         \
+      \               \"difference\": 4.860567480957434,\n                       \
+      \ \"feature_name\": \"ratio_sld_digit\"\n                    },\n          \
+      \          {\n                        \"actual\": 0.0,\n                   \
+      \     \"contribution\": 0.0009745495346739144,\n                        \"difference\"\
+      : -0.31706789864834123,\n                        \"feature_name\": \"ratio_sld_hyphen\"\
+      \n                    },\n                    {\n                        \"\
+      actual\": 0.04,\n                        \"contribution\": 0.00002607032372204357,\n\
+      \                        \"difference\": -1.0577463249507244,\n            \
+      \            \"feature_name\": \"frequency_tld\"\n                    },\n \
+      \                   {\n                        \"actual\": 531330261,\n    \
+      \                    \"contribution\": 0.00010783266976269098,\n           \
+      \             \"difference\": 0.17975049939979337,\n                       \
+      \ \"feature_name\": \"alexa_rank\"\n                    },\n               \
+      \     {\n                        \"actual\": 0,\n                        \"\
+      contribution\": 3.8287073407502473e-7,\n                        \"difference\"\
+      : -0.0989473607243111,\n                        \"feature_name\": \"num_phishing_names\"\
+      \n                    },\n                    {\n                        \"\
+      actual\": 0.28125,\n                        \"contribution\": 0.0029473930794832485,\n\
+      \                        \"difference\": -3.338731718023223,\n             \
+      \           \"feature_name\": \"avg_character_continuity_rate\"\n          \
+      \          },\n                    {\n                        \"actual\": 0,\n\
+      \                        \"contribution\": 0.0,\n                        \"\
+      difference\": -0.006403252303887677,\n                        \"feature_name\"\
+      : \"flag_internationalized_domain\"\n                    },\n              \
+      \      {\n                        \"actual\": 4.066108939837481,\n         \
+      \               \"contribution\": 0.05857705520918351,\n                   \
+      \     \"difference\": 2.175193848950988,\n                        \"feature_name\"\
+      : \"sld_entropy\"\n                    },\n                    {\n         \
+      \               \"actual\": 1.4090941221089006,\n                        \"\
+      contribution\": 0.0007401701511810599,\n                        \"difference\"\
+      : 0.6591054888286965,\n                        \"feature_name\": \"sld_kl_div_english\"\
+      \n                    },\n                    {\n                        \"\
+      actual\": 15,\n                        \"contribution\": 0.1712908714671347,\n\
+      \                        \"difference\": 5.150729285982689,\n              \
+      \          \"feature_name\": \"num_sld_tokens\"\n                    },\n  \
+      \                  {\n                        \"actual\": 3,\n             \
+      \           \"contribution\": 0.03006963182582111,\n                       \
+      \ \"difference\": -1.2246998947867014,\n                        \"feature_name\"\
+      : \"max_sld_token_length\"\n                    },\n                    {\n\
+      \                        \"actual\": 1.8666666666666667,\n                 \
+      \       \"contribution\": 0.07188541688343704,\n                        \"difference\"\
+      : -1.3432203140190522,\n                        \"feature_name\": \"avg_sld_token_length\"\
+      \n                    },\n                    {\n                        \"\
+      actual\": 0.5357142857142857,\n                        \"contribution\": 0.17092847444195966,\n\
+      \                        \"difference\": 1.9699484564283365,\n             \
+      \           \"feature_name\": \"ratio_sld_tokens_2_length\"\n              \
+      \      },\n                    {\n                        \"actual\": 0.9987055659294128,\n\
+      \                        \"contribution\": 0.291662502418923,\n            \
+      \            \"difference\": 3.2449370596023965,\n                        \"\
+      feature_name\": \"dga_score\"\n                    }\n                ],\n \
+      \               \"model_alias\": [\n                    \"Algorithmically Generated\
+      \ Domain Realtime Classifier v5\"\n                ],\n                \"model_name\"\
+      : \"c2-agd_domain_class_realtime_v005\",\n                \"model_score\": 100.0,\n\
+      \                \"predicted_tag_id\": \"bea8e937-d3f8-464d-9592-5c7467ea786e\"\
+      \n            }\n        ],\n        \"pipeline\": \"domain\",\n        \"status\"\
+      : \"malicious\",\n        \"tag_id\": \"bea8e937-d3f8-464d-9592-5c7467ea786e\"\
+      ,\n        \"user_tag\": {},\n        \"whitelisted_info\": []\n    },\n   \
+      \ \"related_alert_entities\": [\n        {\n            \"entity_category\"\
+      : \"destination\",\n            \"entity_id\": \"DOMAIN10xzveo18bql031wrnti813xpc0v.net\"\
+      ,\n            \"entity_name\": \"malicious-domain.example.org\",\n    \
+      \        \"entity_type\": \"DOMAIN\"\n        }\n    ],\n    \"related_entities\"\
+      : [\n        {\n            \"entity_category\": \"destination\",\n        \
+      \    \"entity_id\": \"DOMAIN10xzveo18bql031wrnti813xpc0v.net\",\n          \
+      \  \"entity_name\": \"malicious-domain.example.org\",\n            \"entity_type\"\
+      : \"DOMAIN\"\n        }\n    ],\n    \"score\": 5,\n    \"severity\": 80,\n\
+      \    \"tenant\": \"demo-tenant-three\"\n}"
+- assertions:
+  - fieldsHaveValues:
+      client.port: '49740'
+      rule.name: ET INFO Observed Discord Domain in DNS Lookup (discordapp .com)
+      event.type[0]: info
+      event.id: test-event-id-003
+      network.protocol: dns
+      source.port: '49740'
+      event.category[1]: threat
+      '#event.kind': alert
+      '#observer.type': ndr
+      event.category[0]: network
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/h8i9j0k1-l2m3-4567-8901-234567hijklm
+      event.severity: '50'
+      event.end: '1746661551'
+      source.ip: 192.168.1.108
+      event.duration: '0'
+      '#event.dataset': investigator.suricata_corelight
+      event.type[1]: indicator
+      event.start: '1746661551'
+      server.port: '53'
+      destination.port: '53'
+      event.reason: ET INFO Observed Discord Domain in DNS Lookup (discordapp .com)
+      server.ip: 192.168.1.109
+      client.ip: 192.168.1.108
+      destination.ip: 192.168.1.109
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+          "alert-to-detection-url": "https://demo.investigator.corelight.io/alert-to-detection/h8i9j0k1-l2m3-4567-8901-234567hijklm",
+          "alert_entity": {
+              "entity_category": "source",
+              "entity_id": "IP1.8.1.8",
+              "entity_name": "192.168.1.108",
+              "entity_type": "IP"
+          },
+          "alert_id": "h8i9j0k1-l2m3-4567-8901-234567hijklm",
+          "alert_info": {
+              "alert_name": "ET INFO Observed Discord Domain in DNS Lookup (discordapp .com)",
+              "alert_type": "suricata_corelight",
+              "content_id": "SURI-2035466"
+          },
+          "alert_keys": {
+              "tenant": "demo-tenant-three",
+              "tenant_alert": "test-hash-019",
+              "tenant_alert_entity": "test-hash-020",
+              "tenant_entity": "test-hash-021"
+          },
+          "alert_timestamp": {
+              "end": 1746661551,
+              "observed": 1746661551,
+              "start": 1746661551,
+              "ttl": 1754437551
+          },
+          "event_ids": [
+              "test-hash-022"
+          ],
+          "false_positive": false,
+          "related_alert_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.8.1.8",
+                  "entity_name": "192.168.1.108",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.9.1.9",
+                  "entity_name": "192.168.1.109",
+                  "entity_type": "IP"
+              }
+          ],
+          "related_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.8.1.8",
+                  "entity_name": "192.168.1.108",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.9.1.9",
+                  "entity_name": "192.168.1.109",
+                  "entity_type": "IP"
+              }
+          ],
+          "score": 2,
+          "severity": 3,
+          "suricata_corelight": {
+              "action": "allowed",
+              "category": "Misc activity",
+              "community_id": "test-community-id-001",
+              "destination_ip": "192.168.1.109",
+              "destination_port": 53,
+              "flow_id": "2105766811190635",
+              "gid": 1,
+              "metadata": [],
+              "payload": null,
+              "pcap_cnt": 0,
+              "rev": null,
+              "service": "dns",
+              "signature_id": 2035466,
+              "source_ip": "192.168.1.108",
+              "source_port": 49740,
+              "suri_id": "test-suri-id-001",
+              "tx_id": 0,
+              "uid": "test-event-id-003"
+          },
+          "tenant": "demo-tenant-three"
+      }
+- assertions:
+  - fieldsHaveValues:
+      client.port: '60276'
+      rule.name: Sliver C2 MTLS traffic detected
+      event.id: test-event-id-004
+      source.port: '60276'
+      event.category[1]: threat
+      '#event.kind': alert
+      event.category[0]: network
+      event.end: '1746661829'
+      source.ip: 192.168.1.110
+      threat.technique.name[0]: Application Layer Protocol
+      threat.framework: MITRE ATT&CK
+      event.duration: '0'
+      event.type[0]: info
+      observer.hostname: test-sensor-002
+      '#observer.type': ndr
+      network.transport: tcp
+      threat.indicator.reference: https://demo.investigator.corelight.io/alert-to-detection/i9j0k1l2-m3n4-5678-9012-345678ijklmn
+      threat.tactic.name[0]: Command and Control
+      '#event.dataset': investigator.notice
+      event.type[1]: indicator
+      event.start: '1746661829'
+      server.port: '8888'
+      destination.port: '8888'
+      event.reason: DetectSliver::SLIVER_MTLS_PORT
+      server.ip: 192.168.1.112
+      client.ip: 192.168.1.110
+      destination.ip: 192.168.1.112
+    outputEventIndex: 0
+  event:
+    rawString: |-
+      {
+          "alert-to-detection-url": "https://demo.investigator.corelight.io/alert-to-detection/i9j0k1l2-m3n4-5678-9012-345678ijklmn",
+          "alert_entity": {
+              "entity_category": "source",
+              "entity_id": "IP1.10.1.10",
+              "entity_name": "192.168.1.110",
+              "entity_type": "IP"
+          },
+          "alert_id": "i9j0k1l2-m3n4-5678-9012-345678ijklmn",
+          "alert_info": {
+              "alert_name": "DetectSliver::SLIVER_MTLS_PORT",
+              "alert_type": "notice",
+              "content_id": "DetectSliver::SLIVER_MTLS_PORT"
+          },
+          "alert_keys": {
+              "tenant": "demo-tenant-four",
+              "tenant_alert": "test-hash-023",
+              "tenant_alert_entity": "test-hash-024",
+              "tenant_entity": "test-hash-025"
+          },
+          "alert_timestamp": {
+              "end": 1746661829,
+              "observed": 1746661829,
+              "start": 1746661829,
+              "ttl": 1754437829
+          },
+          "event_ids": [
+              "test-hash-026"
+          ],
+          "false_positive": false,
+          "mitre_tactics": [
+              "Command and Control"
+          ],
+          "mitre_techniques": [
+              "Command and Control :: Application Layer Protocol"
+          ],
+          "notice": {
+              "actions": [
+                  "Notice::ACTION_LOG"
+              ],
+              "destination_ip": "192.168.1.112",
+              "dropped": null,
+              "dst": "192.168.1.112",
+              "file_desc": null,
+              "file_mime_type": null,
+              "fuid": null,
+              "msg": "Sliver C2 MTLS traffic detected",
+              "n": null,
+              "note": "DetectSliver::SLIVER_MTLS_PORT",
+              "orig_h": "192.168.1.110",
+              "orig_p": 60276,
+              "p": 8888,
+              "path": "notice",
+              "peer_descr": "worker-01",
+              "proto": "tcp",
+              "remote_location": null,
+              "resp_h": "192.168.1.112",
+              "resp_p": 8888,
+              "severity_info": {
+                  "level": 6,
+                  "name": "informational (default)"
+              },
+              "source_ip": "192.168.1.110",
+              "src": "192.168.1.110",
+              "sub": "server_name='-', JA3=test-ja3-hash-001, JA3S=test-ja3s-hash-001",
+              "suppress_for": 3600.0,
+              "system_name": "test-sensor-002",
+              "uid": "test-event-id-004"
+          },
+          "related_alert_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.10.1.10",
+                  "entity_name": "192.168.1.110",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.12.1.12",
+                  "entity_name": "192.168.1.112",
+                  "entity_type": "IP"
+              }
+          ],
+          "related_entities": [
+              {
+                  "entity_category": "source",
+                  "entity_id": "IP1.10.1.10",
+                  "entity_name": "192.168.1.110",
+                  "entity_type": "IP"
+              },
+              {
+                  "entity_category": "destination",
+                  "entity_id": "IP1.12.1.12",
+                  "entity_name": "192.168.1.112",
+                  "entity_type": "IP"
+              }
+          ],
+          "score": 9,
+          "severity": 6,
+          "tenant": "demo-tenant-four"
+      }
+$schema: https://schemas.humio.com/parser/v0.3.0
+script: |
+  // Corelight Investigator Parser
+
+  // #region PREPARSE
+  /************************************************************
+  ****** Parse timestamp and log headers
+  ****** Extract message field for parsing
+  ****** Parse structured data
+  ************************************************************/
+
+  // Documentation: https://docs.corelight.com/docs/sensor/investigator/settings/alert-export-schema.html
+
+  parseJson(prefix="Vendor.", excludeEmpty=true, handleNull=discard)
+  | parseTimestamp("unixtime", field=Vendor.alert_timestamp.observed)
+
+  // #endregion
+
+  // #region METADATA
+  /************************************************************
+  ****** Static Metadata Definitions
+  ************************************************************/
+  | Parser.version:="1.0.1"
+  | Cps.version := "1.1.0"
+  | Vendor:="corelight"
+  | ecs.version:="9.2.0"
+  | event.module := "investigator"
+  | event.kind := "alert"
+
+  // #endregion
+
+  // #region NORMALIZATION
+  /************************************************************
+  ****** Parse unstructured data (i.e. message field)
+  ****** Normalize fields to data model
+  ************************************************************/
+
+  // Event Fields
+  | event.dataset := format(format="investigator.%s", field=["Vendor.alert_info.alert_type"])
+  | event.dataset := lower(event.dataset)
+  | event.reason := Vendor.alert_info.alert_name
+  | array:append("event.category[]", values=["network", "threat"])
+  | array:append("event.type[]", values=["info", "indicator"])
+  | event.start := Vendor.alert_timestamp.start
+  | event.end := Vendor.alert_timestamp.end
+  | event.duration := event.end - event.start
+
+  // Observer fields
+  | observer.type := "ndr"
+
+  // Alert type specific values
+  | Vendor.alert_info.alert_type match {
+      "notice" =>
+          event.id := Vendor.notice.uid
+          | event.action := Vendor.notice.actions[0]
+          | observer.hostname := Vendor.notice.system_name
+          | network.transport := Vendor.notice.proto
+          | source.ip := Vendor.notice.orig_h
+          | source.port := Vendor.notice.orig_p
+          | destination.ip := Vendor.notice.resp_h
+          | destination.port := Vendor.notice.resp_p
+          | file.mime_type := Vendor.notice.file_mime_type
+          | rule.name := Vendor.notice.msg
+          | Vendor.notice.severity_info.name match {
+              // severity.level 5, 6 & 7
+              in(values=["notification","informational*","debugging"]) =>
+                  event.severity := "10";
+              // severity.level 4
+              "warning" =>
+                  event.severity := "30";
+              // severity.level 3
+              "error" =>
+                  event.severity := "50";
+              // severity.level 2
+              "critical" =>
+                  event.severity := "70";
+              // severity.level 1 and 0
+              in(values=["alert", "emergency"]) =>
+                  event.severity := "90";
+              * => *;
+          }
+      ;
+      "suricata_corelight" =>
+          event.id := Vendor.suricata_corelight.uid
+          | event.action := Vendor.suricata_corelight.action
+          | source.ip := Vendor.suricata_corelight.source_ip
+          | source.port := Vendor.suricata_corelight.source_port
+          | destination.ip := Vendor.suricata_corelight.destination_ip
+          | destination.port := Vendor.suricata_corelight.destination_port
+          | network.protocol := lower(Vendor.suricata_corelight.service)
+          | Vendor.severity match {
+              // "informational"
+              "4" =>
+                  event.severity := "10";
+              // "minor"
+              "3" =>
+                  event.severity := "50";
+              // "major"
+              "2" =>
+                  event.severity := "70";
+              // "critical"
+              "1" =>
+                  event.severity := "90";
+              * => *;
+          }
+      ;
+      in(values=["custom_search_rule", "ml"]) =>
+          event.id := Vendor.alert_id
+          | Vendor.score match{
+              in(values=[0,1, 2])=>
+                  event.severity := "10";
+              in(values=[3,4])=>
+                  event.severity := "30";
+              in(values=[5,6]) =>
+                  event.severity := "50";
+              in(values=[7,8]) =>
+                  event.severity := "70";
+              in(values=[9,10]) =>
+                  event.severity := "90";
+              * => *;
+          }
+      ;
+      "yara_corelight" =>
+          event.id := Vendor.yara_corelight.uid
+          | observer.hostname := Vendor.yara_corelight.system_name
+          | source.ip := Vendor.yara_corelight.orig_h
+          | source.port := Vendor.yara_corelight.orig_p
+          | destination.ip := Vendor.yara_corelight.resp_h
+          | destination.port := Vendor.yara_corelight.resp_p
+          | network.protocol := lower(Vendor.yara_corelight.source)
+          | file.name := Vendor.yara_corelight.file_name
+          | file.hash.md5 := lower(Vendor.yara_corelight.md5)
+          | file.hash.sha1 := lower(Vendor.yara_corelight.sha1)
+          | file.hash.sha256 := lower(Vendor.yara_corelight.sha256)
+          | file.mime_type := lower(Vendor.yara_corelight.mime_type)
+          | Vendor.score match {
+              in(values=[0,1, 2])=>
+                  event.severity := "10";
+              in(values=[3,4])=>
+                  event.severity := "30";
+              in(values=[5,6]) =>
+                  event.severity := "50";
+              in(values=[7,8]) =>
+                  event.severity := "70";
+              in(values=[9,10]) =>
+                  event.severity := "90";
+              * => *;
+            }
+      ;
+      "anomaly" =>
+          event.id := Vendor.anomaly.uid
+          | observer.hostname := Vendor.anomaly.system_name
+          | source.ip := Vendor.anomaly.orig_h
+          | destination.ip := Vendor.anomaly.destination_ip
+          | Vendor.score match{
+              in(values=[0,1, 2])=>
+                  event.severity := "10";
+              in(values=[3,4])=>
+                  event.severity := "30";
+              in(values=[5,6]) =>
+                  event.severity := "50";
+              in(values=[7,8]) =>
+                  event.severity := "70";
+              in(values=[9,10]) =>
+                  event.severity := "90";
+              * => *;
+          }
+  }
+
+  // Set Client and Server Fields for notice and suricata alerts
+  | Vendor.alert_info.alert_type match {
+      in(values=["notice", "suricata_corelight", "yara_corelight"]) =>
+          client.ip := source.ip
+          | client.port := source.port
+          | server.ip := destination.ip
+          | server.port := destination.port;
+      * => *;
+  }
+  
+  // Domain Fields
+  | objectArray:eval(array="Vendor.related_alert_entities[]", asArray="source.ip[]", function={
+        Vendor.related_alert_entities.entity_category = "source" 
+        | Vendor.related_alert_entities.entity_type = /ip/i
+        | source.ip := Vendor.related_alert_entities.entity_name
+  })
+    | source.ip := source.ip[0]
+    | objectArray:eval(array="Vendor.related_alert_entities[]", asArray="source.domain[]", function={
+        Vendor.related_alert_entities.entity_category = "source" 
+        | Vendor.related_alert_entities.entity_type = /domain/i
+        | source.domain := Vendor.related_alert_entities.entity_name
+    })
+    | source.domain := source.domain[0]
+
+    | objectArray:eval(array="Vendor.related_alert_entities[]", asArray="destination.ip[]", function={
+        Vendor.related_alert_entities.entity_category = "destination" 
+        | Vendor.related_alert_entities.entity_type = /ip/i
+        | destination.ip := Vendor.related_alert_entities.entity_name
+    })
+    | destination.ip := destination.ip[0]
+    | objectArray:eval(array="Vendor.related_alert_entities[]", asArray="destination.domain[]", function={
+        Vendor.related_alert_entities.entity_category = "destination" 
+        | Vendor.related_alert_entities.entity_type = /domain/i
+        | destination.domain := Vendor.related_alert_entities.entity_name
+    })
+    | destination.domain := destination.domain[0]
+  // CrowdStrike Detection name
+  | rule.name := coalesce([rule.name, event.reason])
+
+  // Threat link reference
+  | threat.indicator.reference := lower("Vendor.alert-to-detection-url")
+
+  // Tactic & Technique
+  | case {
+      Vendor.mitre_tactics[0] = *
+          | threat.framework := "MITRE ATT&CK";
+      *
+  }
+  | objectArray:eval(array="Vendor.mitre_tactics[]", asArray="threat.tactic.name[]", var=x, function={threat.tactic.name := x})
+  | objectArray:eval(array="Vendor.mitre_techniques[]", asArray="threat.technique.name[]", var=x, function={threat.technique.name := splitString(field=x, by=" :: ", index=1)})
+
+  // #endregion
+
+  // #region POST-NORMALIZATION
+  /************************************************************
+  ****** Post Normalization
+  ****** Custom parser logic needed after normalization
+  ************************************************************/
+
+  // #endregion
+
+tagFields:
+- Cps.version
+- Vendor
+- ecs.version
+- event.dataset
+- event.kind
+- event.module
+- event.outcome
+- observer.type

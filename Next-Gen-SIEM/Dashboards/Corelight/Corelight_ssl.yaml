@@ -1,0 +1,202 @@
+name: Corelight ssl
+description: ''
+timeSelector: {}
+sharedTimeInterval:
+  enabled: true
+  isLive: false
+  start: 1d
+labels:
+- Corelight
+- Data
+widgets:
+  50a7dfff-fcb2-4a51-ab25-817cfd9d8203:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values = ["ndr.ssl", "ndr.ssl_red"])
+      | join(query={#Vendor = corelight and #event.module = ndr
+                  | in(field=#event.dataset, values=[ndr.conn, ndr.conn_long, ndr.conn_red])
+                  },
+            field=event.id,
+            include=[network.direction],
+            limit=200000)
+      | in(field=observer.hostname, values=[?system_name])
+      | network.direction=?{direction=*} and ?{additional_filter=*}
+      | "Subject ID" := coalesce([Vendor.subject, destination.address])
+      | top(["Subject ID"], percent=true)
+      | format(format="%.2f", field=percent, as=Percent)
+      | rename([[_count, Count]])
+      | drop([percent])
+    end: now
+    start: 24h
+    width: 12
+    y: 1
+    interactions:
+    - name: Details of top certificate subjects
+      titleTemplate: Details of {{ fields["Subject ID"] }}
+      queryString: "#Vendor = corelight and #event.module = ndr\n| in(field=#event.dataset,\
+        \ values = [\"ndr.ssl\", \"ndr.ssl_red\"])\n| join(query={#Vendor = corelight\
+        \ and #event.module = ndr\n            | in(field=#event.dataset, values=[ndr.conn,\
+        \ ndr.conn_long, ndr.conn_red])\n            }, \n      field=event.id, \n\
+        \      include=[network.direction], \n      limit=200000)\n| in(field=observer.hostname,\
+        \ values=[?system_name])\n| network.direction=?direction and ?additional_filter\n\
+        | c_id := coalesce([Vendor.subject, destination.address])\n| c_id = ?c_id"
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        c_id: '["{{ fields[\"Subject ID\"] }}"]'
+        direction: '["{{ parameters.direction }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top certificate subjects
+    isLive: false
+    type: query
+  72b7142d-3209-4112-9d92-1fe19b6c58ee:
+    x: 0
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values = ["ndr.ssl", "ndr.ssl_red"])
+      | join(query={#Vendor = corelight and #event.module = ndr
+                  | in(field=#event.dataset, values=[ndr.conn, ndr.conn_long, ndr.conn_red])
+                  },
+            field=event.id,
+            include=[network.direction],
+            limit=200000)
+      | in(field=observer.hostname, values=[?system_name])
+      | ?{additional_filter=*}
+      | network.direction=internal or network.direction=inbound
+      | top([Vendor.validation_status], percent=true)
+      | format(format="%.2f", field=[percent], as=Percent)
+      | rename([[_count, Count], [Vendor.validation_status, "Validation Status"]])
+      | drop([percent])
+    end: now
+    start: 24h
+    width: 6
+    y: 5
+    interactions:
+    - name: Details of validation status
+      titleTemplate: Details of {{ fields["Validation Status"] }}
+      queryString: "#Vendor = corelight and #event.module = ndr\n| in(field=#event.dataset,\
+        \ values = [\"ndr.ssl\", \"ndr.ssl_red\"])\n| join(query={#Vendor = corelight\
+        \ and #event.module = ndr\n            | in(field=#event.dataset, values=[ndr.conn,\
+        \ ndr.conn_long, ndr.conn_red])\n            }, \n      field=event.id, \n\
+        \      include=[network.direction], \n      limit=200000)\n| in(field=observer.hostname,\
+        \ values=[?system_name])\n| ?additional_filter\n| network.direction=internal\
+        \ or network.direction=inbound\n| Vendor.validation_status=?validation_status"
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+        validation_status: '["{{ fields[\"Validation Status\"] }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
+    title: Top local responders - validation status
+    isLive: false
+    type: query
+  9d90761a-9805-4109-9907-20cbe35283f4:
+    x: 6
+    height: 4
+    queryString: |-
+      #Vendor = corelight and #event.module = ndr
+      | in(field=#event.dataset, values = ["ndr.ssl", "ndr.ssl_red"])
+      | join(query={#Vendor = corelight and #event.module = ndr
+                  | in(field=#event.dataset, values=[ndr.conn, ndr.conn_long, ndr.conn_red])
+                  },
+            field=event.id,
+            include=[network.direction],
+            limit=200000)
+      | in(field=observer.hostname, values=[?system_name])
+      | network.direction=?{direction=*} and ?{additional_filter=*}
+      | top([Vendor.cipher])
+    end: now
+    start: 24h
+    width: 6
+    y: 5
+    interactions:
+    - name: Details of top ciphers
+      titleTemplate: Details of {{ fields.Vendor.cipher }}
+      queryString: "#Vendor = corelight and #event.module = ndr\n| in(field=#event.dataset,\
+        \ values = [\"ndr.ssl\", \"ndr.ssl_red\"])\n| join(query={#Vendor = corelight\
+        \ and #event.module = ndr\n            | in(field=#event.dataset, values=[ndr.conn,\
+        \ ndr.conn_long, ndr.conn_red])\n            }, \n      field=event.id, \n\
+        \      include=[network.direction], \n      limit=200000)\n| in(field=observer.hostname,\
+        \ values=[?system_name])\n| network.direction=?direction and ?additional_filter\n\
+        | Vendor.cipher = ?cipher\n| rename([[Vendor.subject, \"SSL Subject\"], [destination.address,\
+        \ \"SSL Subject Common Name\"], [Vendor.cipher, \"SSL Cipher\"], [network.direction,\
+        \ \"Direction\"]])\n| select([\"SSL Subject\", \"SSL Subject Common Name\"\
+        , \"SSL Cipher\", Direction])"
+      useWidgetTimeWindow: true
+      arguments:
+        additional_filter: '["{{ parameters.additional_filter }}"]'
+        cipher: '["{{ fields.Vendor.cipher }}"]'
+        direction: '["{{ parameters.direction }}"]'
+        system_name: '["{{ parameters.system_name }}"]'
+      openInNewTab: true
+      isLive: false
+      type: searchlink
+    options:
+      legendPosition: right
+      series: {}
+      legendLabelOverflow: truncate
+      innerRadius: 0
+      maxSeriesCount: 10
+      withLegendTitle: false
+    visualization: pie-chart
+    title: Top ciphers
+    isLive: false
+    type: query
+  note-1735643808000-0:
+    x: 0
+    y: 0
+    height: 1
+    text: ''
+    width: 12
+    title: SSL
+    type: note
+$schema: https://schemas.humio.com/dashboard/v0.20.0
+parameters:
+  additional_filter:
+    label: Additional filter
+    order: 3
+    type: text
+    defaultValue: '*'
+    width: 1
+  direction:
+    label: Direction
+    order: 2
+    values:
+      internal: Internal
+      '*': All
+      inbound: Inbound
+      outbound: Outbound
+      external: External
+    type: list
+    defaultValue: '*'
+    width: 1
+  system_name:
+    label: Corelight sensor
+    query: |-
+      #Vendor = corelight and #event.module = ndr
+      | groupBy([observer.hostname], function=[])
+    timeInterval: 24h
+    useDashboardTimeIfSet: true
+    type: query
+    defaultValue: '*'
+    width: 1
+    order: 1
+    valueField: observer.hostname
