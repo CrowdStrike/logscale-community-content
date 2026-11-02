@@ -4,12 +4,12 @@
 | #repo=base_sensor
 | ParentBaseFileName=explorer.exe
 | TargetProcessId=*
-|in(field="FileName",ignoreCase=true, values=[
+| in(field="FileName",ignoreCase=true, values=[
     *powershell*,*pwsh*,*cmd*,*mshta*,*wscript*,*cscript*,
     *rundll32*,*regsvr32*,*wmic*,*msbuild*,*installutil*,
     *bitsadmin*,*curl*,*ftp*,*hh*,*schtasks*,*certutil*
 ])
-|in(field="CommandLine",ignoreCase=true, values=[
+| in(field="CommandLine",ignoreCase=true, values=[
     *iex*,*irm*,*iwr*,*invoke-webrequest*,*http*,*https*,
     *ftp*,*smb*,*download*,*encodedcommand*,*bypass*,
     *invoke-expression*,*reflection.assembly*,*frombase64string*,
