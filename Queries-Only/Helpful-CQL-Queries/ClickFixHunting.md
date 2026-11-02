@@ -1,5 +1,5 @@
+```
 // Fleshed out query for clickfix detection
-
 #event_simpleName=ProcessRollup2 
 | #repo=base_sensor
 | ParentBaseFileName=explorer.exe
@@ -17,3 +17,4 @@
 ])
 | process_tree := format("[PT](/graphs/process-explorer/tree?_cid=%s&id=pid:%s:%s&investigate=true&pid=pid:%s:%s)", field=["#repo.cid","aid","TargetProcessId","aid","TargetProcessId"])
 | groupBy([process_tree,ComputerName,ParentBaseFileName,FileName,CommandLine], limit=max)
+```
