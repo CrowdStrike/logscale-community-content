@@ -187,6 +187,9 @@ Netop Remote Control (Impero Connect),nhstw32.exe
 NinjaRMM,ninjarmm-cli.exe
 NinjaRMM,NinjaRMMAgenPatcher.exe
 NinjaRMM,ninjarmmagent.exe
+Nizlo,Nizlo.Agent.exe
+Nizlo,Nizlo.Agent.Updater.exe
+Nizlo,Nizlo.RemoteBridge.exe
 Netop Remote Control (aka Impero Connect),nldrw32.exe
 Neturo,ntrntservice.exe
 NTR Remote,NTRsupportPro_EN.exe
