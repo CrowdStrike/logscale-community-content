@@ -6,16 +6,16 @@ In the example below, correlate looks for the commands whoami, net, and systemin
 correlate(
     // Search for whoami executions on Windows
     whoami: {
-         #event_simpleName=ProcessRollup2 event_platform=Win FileName="whoami.exe" 
+        #repo="base_sensor" #event_simpleName=ProcessRollup2 event_platform=Win FileName="whoami.exe"
     } include: [aid, ComputerName, FileName],
     // Search for net executions on Windows
     net: {
-         #event_simpleName=ProcessRollup2 event_platform=Win FileName=/^net1?\.exe$/
+        #repo="base_sensor" #event_simpleName=ProcessRollup2 event_platform=Win FileName=/^net1?\.exe$/
           | aid <=> whoami.aid
           } include: [aid, ComputerName, FileName],
     // Search for systeminfo executions on Windows
     systeminfo: {
-         #event_simpleName=ProcessRollup2 event_platform=Win FileName="systeminfo.exe"
+        #repo="base_sensor" #event_simpleName=ProcessRollup2 event_platform=Win FileName="systeminfo.exe"
           | aid <=> net.aid
           } include: [aid, ComputerName, FileName],
 sequence=false, within=5m)
